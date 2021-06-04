@@ -1,0 +1,120 @@
+{
+	"name": "visual-studio-code-plugin-for-alm-octane",
+	"displayName": "Visual Studio Code plugin for ALM Octane",
+	"description": "With the ALM Octane Visual Studio Code plugin, you can do your ALM Octane work (on stories, defects, tasks, and so on) directly within the Visual Studio Code development framework.",
+	"version": "0.0.1",
+	"engines": {
+		"vscode": "^1.56.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"*",
+		"onCommand:visual-studio-code-plugin-for-alm-octane.helloWorld"
+	],
+	"main": "./out/extension.js",
+	"contributes": {
+		"configuration": [
+			{
+				"title": "Visual Studio Code plugin for ALM Octane",
+				"properties": {
+					"visual-studio-code-plugin-for-alm-octane.server.uri": {
+						"type": "string",
+						"description": "Server URL",
+						"format": "uri",
+						"scope": "window"
+					},
+					"visual-studio-code-plugin-for-alm-octane.server.space": {
+						"type": "string",
+						"description": "Space",
+						"format": "number",
+						"scope": "window"
+					},
+					"visual-studio-code-plugin-for-alm-octane.server.workspace": {
+						"type": "string",
+						"description": "Workspace",
+						"format": "number",
+						"scope": "window"
+					},
+					"visual-studio-code-plugin-for-alm-octane.user.userName": {
+						"type": "string",
+						"description": "Username",
+						"scope": "window"
+					},
+					"visual-studio-code-plugin-for-alm-octane.user.password": {
+						"type": "string",
+						"description": "Password",
+						"scope": "window"
+					}
+				}
+			}
+		],
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "visual-studio-code-plugin-for-alm-octane-explorer",
+					"title": "My Work - ALM Octane",
+					"icon": "media/logo2.svg"
+				}
+			]
+		},
+		"views": {
+			"visual-studio-code-plugin-for-alm-octane-explorer": [
+				{
+					"id": "myWork",
+					"name": "Defects",
+					"icon": "media/favicon.png",
+					"contextualTitle": "Package Explorer"
+				}
+			]
+		},
+		"menus": {
+			"view/title": [
+				{
+					"command": "visual-studio-code-plugin-for-alm-octane.myWork.refreshEntry",
+					"when": "view == myWork",
+					"group": "navigation"
+				}
+			]
+		},
+		"commands": [
+			{
+				"command": "visual-studio-code-plugin-for-alm-octane.helloWorld",
+				"title": "Hello World"
+			},
+			{
+				"command": "visual-studio-code-plugin-for-alm-octane.myWork.refreshEntry",
+				"title": "Refresh",
+				"icon": {
+					"light": "resources/light/refresh.svg",
+					"dark": "resources/dark/refresh.svg"
+				}
+			}
+		]
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"watch": "tsc -watch -p ./",
+		"pretest": "npm run compile && npm run lint",
+		"lint": "eslint src --ext ts",
+		"test": "node ./out/test/runTest.js"
+	},
+	"devDependencies": {
+		"@types/vscode": "^1.56.0",
+		"@types/glob": "^7.1.3",
+		"@types/mocha": "^8.0.4",
+		"@types/node": "^12.11.7",
+		"eslint": "^7.19.0",
+		"@typescript-eslint/eslint-plugin": "^4.14.1",
+		"@typescript-eslint/parser": "^4.14.1",
+		"glob": "^7.1.6",
+		"mocha": "^8.2.1",
+		"typescript": "^4.1.3",
+		"vscode-test": "^1.5.0"
+	},
+	"dependencies": {
+		"@microfocus/alm-octane-js-rest-sdk": "^15.0.2-0.1"
+	}
+}
