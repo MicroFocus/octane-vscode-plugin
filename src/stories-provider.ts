@@ -3,7 +3,7 @@ import { OctaneEntity } from "./octane-service";
 
 export class MyStoriesProvider extends MyWorkProvider {
 
-    getRelevantEntities(): OctaneEntity[] {
+    async getRelevantEntities(): Promise<OctaneEntity[]> {
         const result = this.service.getMyStories();
         return result;
     }

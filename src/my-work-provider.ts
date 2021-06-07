@@ -22,11 +22,11 @@ export abstract class MyWorkProvider implements vscode.TreeDataProvider<MyWorkIt
             if (!this.service.isLoggedIn()) {
                 return null;
             }
-            return this.getRelevantEntities().map(e => this.getMyWorkItem(e));
+            return this.getRelevantEntities().then((r: any) => r.map((e: any) => this.getMyWorkItem(e)));
         } 
     }
 
-    abstract getRelevantEntities(): OctaneEntity[];
+    abstract getRelevantEntities(): Promise<OctaneEntity[]>;
 
     getMyWorkItem(i: any): MyWorkItem {
         const item = new MyWorkItem(i.id + ' ' + i.name);

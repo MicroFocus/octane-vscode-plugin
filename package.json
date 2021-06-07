@@ -11,7 +11,9 @@
 	],
 	"activationEvents": [
 		"*",
-		"onCommand:visual-studio-code-plugin-for-alm-octane.myWork.refreshEntry",
+		"onCommand:visual-studio-code-plugin-for-alm-octane.myDefects.refreshEntry",
+		"onCommand:visual-studio-code-plugin-for-alm-octane.myStories.refreshEntry",
+		"onCommand:visual-studio-code-plugin-for-alm-octane.myQualityStories.refreshEntry",
 		"onView:visual-studio-code-plugin-for-alm-octane-explorer"
 	],
 	"main": "./out/extension.js",
@@ -63,7 +65,7 @@
 		"views": {
 			"visual-studio-code-plugin-for-alm-octane-explorer": [
 				{
-					"id": "myWork",
+					"id": "myDefects",
 					"name": "Defects",
 					"icon": "media/favicon.png"
 				},
@@ -82,16 +84,42 @@
 		"menus": {
 			"view/title": [
 				{
-					"command": "visual-studio-code-plugin-for-alm-octane.myWork.refreshEntry",
-					"when": "view == myWork",
+					"command": "visual-studio-code-plugin-for-alm-octane.myDefects.refreshEntry",
+					"when": "view == myDefects",
+					"group": "navigation"
+				},
+				{
+					"command": "visual-studio-code-plugin-for-alm-octane.myStories.refreshEntry",
+					"when": "view == myStories",
+					"group": "navigation"
+				},
+				{
+					"command": "visual-studio-code-plugin-for-alm-octane.myQualityStories.refreshEntry",
+					"when": "view == myQualityStories",
 					"group": "navigation"
 				}
 			]
 		},
 		"commands": [
 			{
-				"command": "visual-studio-code-plugin-for-alm-octane.myWork.refreshEntry",
-				"title": "Refresh",
+				"command": "visual-studio-code-plugin-for-alm-octane.myDefects.refreshEntry",
+				"title": "Refresh MyDefects",
+				"icon": {
+					"light": "resources/light/refresh.svg",
+					"dark": "resources/dark/refresh.svg"
+				}
+			},
+			{
+				"command": "visual-studio-code-plugin-for-alm-octane.myStories.refreshEntry",
+				"title": "Refresh MyStories",
+				"icon": {
+					"light": "resources/light/refresh.svg",
+					"dark": "resources/dark/refresh.svg"
+				}
+			},
+			{
+				"command": "visual-studio-code-plugin-for-alm-octane.myQualityStories.refreshEntry",
+				"title": "Refresh MyQualityStories",
 				"icon": {
 					"light": "resources/light/refresh.svg",
 					"dark": "resources/dark/refresh.svg"

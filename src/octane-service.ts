@@ -36,20 +36,20 @@ export class OctaneService {
             .execute();
         this.loggedInUserId = result.data[0].id;
 
-        this.entities = await this.getMyWork();
-
-        vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myWork.refreshEntry');
+        vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myDefects.refreshEntry');
+        vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myStories.refreshEntry');
+        vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myQualityStories.refreshEntry');
     }
 
     public isLoggedIn(): boolean {
         return this.loggedInUserId !== null;
     }
 
-    private async getMyWork(): Promise<OctaneEntity[]> {
+    private async refreshMyWork(subtype: String): Promise<OctaneEntity[]> {
         const response = await this.octane.get(Octane.Octane.entityTypes.workItems)
             .fields('name')
             .query(
-                Query.field('subtype').inComparison(['defect', 'story', 'quality_story']).and()
+                Query.field('subtype').inComparison([subtype]).and()
                 .field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
                 .build()
             )
@@ -64,21 +64,18 @@ export class OctaneService {
         return OctaneService._instance;
     }
 
-    public getMyDefects(): OctaneEntity[] {
-        return this.getFilteredEntities('defect');
+    public async getMyDefects(): Promise<OctaneEntity[]> {
+        return this.refreshMyWork('defect');
     }
 
-    public getMyStories(): OctaneEntity[] {
-        return this.getFilteredEntities('story');
+    public async getMyStories(): Promise<OctaneEntity[]> {
+        return this.refreshMyWork('story');
     }
 
-    public getMyQualityStories(): OctaneEntity[] {
-        return this.getFilteredEntities('quality_story');
+    public async getMyQualityStories(): Promise<OctaneEntity[]> {
+        return this.refreshMyWork('quality_story');
     }
 
-    private getFilteredEntities(type: String): OctaneEntity[] {
-        return this.entities.filter((e, i, a) => e.type === type);
-    }
 }
 
 export class OctaneEntity {
