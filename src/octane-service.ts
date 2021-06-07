@@ -10,6 +10,8 @@ export class OctaneService {
     private user?: String;
     private loggedInUserId?: number;
 
+    private entities: OctaneEntity[] = [];
+
     private constructor() {
         const uri = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.uri');
         const space = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.space');
@@ -28,28 +30,31 @@ export class OctaneService {
         }
     }
 
-    private initialize() {
-        this.octane.get(Octane.Octane.entityTypes.workspaceUsers)
+    private async initialize() {
+        const result = await this.octane.get(Octane.Octane.entityTypes.workspaceUsers)
             .query(Query.field('name').equal(this.user).build())
-            .execute().then((r: any) => {
-                this.loggedInUserId = r.data[0].id;
-            });
+            .execute();
+        this.loggedInUserId = result.data[0].id;
+
+        this.entities = await this.getMyWork();
+
+        vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myWork.refreshEntry');
     }
 
     public isLoggedIn(): boolean {
-        return this.loggedInUserId != null;
+        return this.loggedInUserId !== null;
     }
 
-    public getMyWork(): Thenable<OctaneEntity[]> {
-        return this.octane.get(Octane.Octane.entityTypes.workItems)
+    private async getMyWork(): Promise<OctaneEntity[]> {
+        const response = await this.octane.get(Octane.Octane.entityTypes.workItems)
             .fields('name')
             .query(
                 Query.field('subtype').inComparison(['defect', 'story', 'quality_story']).and()
                 .field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
                 .build()
             )
-            .execute()
-            .then((r: any) => r.data.map((i: any) => new OctaneEntity(i)));
+            .execute();
+        return response.data.map((i: any) => new OctaneEntity(i));
     }
 
     public static getInstance(): OctaneService {
@@ -57,6 +62,22 @@ export class OctaneService {
             OctaneService._instance = new OctaneService();
         }
         return OctaneService._instance;
+    }
+
+    public getMyDefects(): OctaneEntity[] {
+        return this.getFilteredEntities('defect');
+    }
+
+    public getMyStories(): OctaneEntity[] {
+        return this.getFilteredEntities('story');
+    }
+
+    public getMyQualityStories(): OctaneEntity[] {
+        return this.getFilteredEntities('quality_story');
+    }
+
+    private getFilteredEntities(type: String): OctaneEntity[] {
+        return this.entities.filter((e, i, a) => e.type === type);
     }
 }
 

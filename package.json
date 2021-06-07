@@ -11,7 +11,8 @@
 	],
 	"activationEvents": [
 		"*",
-		"onCommand:visual-studio-code-plugin-for-alm-octane.helloWorld"
+		"onCommand:visual-studio-code-plugin-for-alm-octane.myWork.refreshEntry",
+		"onView:visual-studio-code-plugin-for-alm-octane-explorer"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -64,8 +65,17 @@
 				{
 					"id": "myWork",
 					"name": "Defects",
-					"icon": "media/favicon.png",
-					"contextualTitle": "Package Explorer"
+					"icon": "media/favicon.png"
+				},
+				{
+					"id": "myStories",
+					"name": "Stories",
+					"icon": "media/favicon.png"
+				},
+				{
+					"id": "myQualityStories",
+					"name": "Quality Stories",
+					"icon": "media/favicon.png"
 				}
 			]
 		},
@@ -79,10 +89,6 @@
 			]
 		},
 		"commands": [
-			{
-				"command": "visual-studio-code-plugin-for-alm-octane.helloWorld",
-				"title": "Hello World"
-			},
 			{
 				"command": "visual-studio-code-plugin-for-alm-octane.myWork.refreshEntry",
 				"title": "Refresh",

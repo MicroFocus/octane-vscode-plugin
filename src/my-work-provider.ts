@@ -1,12 +1,12 @@
 import * as vscode from 'vscode';
 import { OctaneEntity, OctaneService } from './octane-service';
 
-export class MyWorkProvider implements vscode.TreeDataProvider<MyWorkItem> {
+export abstract class MyWorkProvider implements vscode.TreeDataProvider<MyWorkItem> {
 
     private _onDidChangeTreeData: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
     readonly onDidChangeTreeData: vscode.Event<any> = this._onDidChangeTreeData.event;
     
-    private service: OctaneService;
+    protected service: OctaneService;
     private user?: String;
     
     constructor() {
@@ -22,9 +22,11 @@ export class MyWorkProvider implements vscode.TreeDataProvider<MyWorkItem> {
             if (!this.service.isLoggedIn()) {
                 return null;
             }
-            return this.service.getMyWork().then(r => r.map(e => this.getMyWorkItem(e)));
+            return this.getRelevantEntities().map(e => this.getMyWorkItem(e));
         } 
     }
+
+    abstract getRelevantEntities(): OctaneEntity[];
 
     getMyWorkItem(i: any): MyWorkItem {
         const item = new MyWorkItem(i.id + ' ' + i.name);

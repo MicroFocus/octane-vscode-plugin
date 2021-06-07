@@ -1,38 +1,35 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import { DefectsProvider } from './defects-provider';
 import { MyWorkProvider } from './my-work-provider';
 import { OctaneService } from './octane-service';
+import { MyQualityStoriesProvider } from './quality-stories-provider';
+import { MyStoriesProvider } from './stories-provider';
 
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "visual-studio-code-plugin-for-alm-octane" is now active!');
-
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from Visual Studio Code plugin for ALM Octane!');
-	});
-
 	OctaneService.getInstance();
 
-	const myWorkProvider = new MyWorkProvider();
+	const myWorkProvider = new DefectsProvider();
 	vscode.window.registerTreeDataProvider('myWork', myWorkProvider);
 
-	vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.myWork.refreshEntry', () =>
-		myWorkProvider.refresh()
-  	);
+	const myStoriesProvider = new MyStoriesProvider();
+	vscode.window.registerTreeDataProvider('myStories', myStoriesProvider);
 
-	context.subscriptions.push(disposable);
+	const myQualityStoriesProvider = new MyQualityStoriesProvider();
+	vscode.window.registerTreeDataProvider('myQualityStories', myQualityStoriesProvider);
+
+	let refreshCommand = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.myWork.refreshEntry', () => {
+		myWorkProvider.refresh();
+		myStoriesProvider.refresh();
+		myQualityStoriesProvider.refresh();
+	});
+
+	context.subscriptions.push(refreshCommand);
 }
 
 // this method is called when your extension is deactivated
