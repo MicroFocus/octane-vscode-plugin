@@ -47,13 +47,14 @@ export class OctaneService {
 
     private async refreshMyWork(subtype: String): Promise<OctaneEntity[]> {
         const response = await this.octane.get(Octane.Octane.entityTypes.workItems)
-            .fields('name')
+            .fields('name', 'story_points', 'phase')
             .query(
                 Query.field('subtype').inComparison([subtype]).and()
                 .field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
                 .build()
             )
             .execute();
+        console.log(response);
         return response.data.map((i: any) => new OctaneEntity(i));
     }
 
@@ -83,10 +84,14 @@ export class OctaneEntity {
     public id: number;
     public type?: string;
     public name?: string;
+    public storyPoints?: string;
+    public phase?: string;
 
     constructor(i?: any) {
         this.id = (i && i.id) ? i.id : null;
         this.type = (i && i.type) ? i.type : null;
         this.name = (i && i.name) ? i.name : null;
+        this.storyPoints = (i && i.story_points) ? i.story_points : null;
+        this.phase = (i && i.phase) ? i.phase.id : null;
     }
 }
