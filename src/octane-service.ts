@@ -11,6 +11,7 @@ export class OctaneService {
     private loggedInUserId?: number;
 
     private entities: OctaneEntity[] = [];
+    private metaphases?: Metaphase[];
 
     private constructor() {
         const uri = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.uri');
@@ -36,6 +37,14 @@ export class OctaneService {
             .execute();
         this.loggedInUserId = result.data[0].id;
 
+        {
+            const result = await this.octane.get(Octane.Octane.entityTypes.metaphases)
+                .fields('id', 'name', 'phase')
+                .execute();
+            this.metaphases = result.data.map((m: any) => new Metaphase(m));
+            console.log(this.metaphases);
+        }
+
         vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myDefects.refreshEntry');
         vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myStories.refreshEntry');
         vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myQualityStories.refreshEntry');
@@ -50,8 +59,8 @@ export class OctaneService {
             .fields('name', 'story_points', 'phase')
             .query(
                 Query.field('subtype').inComparison([subtype]).and()
-                .field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
-                .build()
+                    .field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
+                    .build()
             )
             .execute();
         console.log(response);
@@ -77,21 +86,41 @@ export class OctaneService {
         return this.refreshMyWork('quality_story');
     }
 
+    public getPhaseLabel(phase: OctaneEntity): string {
+        if (this.metaphases) {
+            const label = this.metaphases.filter(m => (m.phase && m.phase.filter(p => p.id === phase.id)))[0].name;
+            return label ? label : '';
+        }
+        return '';
+    }
 }
 
 export class OctaneEntity {
 
-    public id: number;
+    public id: string;
     public type?: string;
     public name?: string;
     public storyPoints?: string;
-    public phase?: string;
+    public phase?: OctaneEntity | OctaneEntity[];
+    public references?: OctaneEntity[];
 
     constructor(i?: any) {
         this.id = (i && i.id) ? i.id : null;
         this.type = (i && i.type) ? i.type : null;
         this.name = (i && i.name) ? i.name : null;
         this.storyPoints = (i && i.story_points) ? i.story_points : null;
-        this.phase = (i && i.phase) ? i.phase.id : null;
+        if (i.phase) {
+            if (i.phase.data) {
+                this.phase = i.phase.data.map((ref: any) => new OctaneEntity(ref));
+            } else {
+                this.phase = new OctaneEntity(i.phase);
+            }
+        } 
     }
+}
+
+export class Metaphase extends OctaneEntity {
+
+    public phase?: OctaneEntity[];
+
 }

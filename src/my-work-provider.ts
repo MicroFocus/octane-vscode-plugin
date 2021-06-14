@@ -5,12 +5,12 @@ export abstract class MyWorkProvider implements vscode.TreeDataProvider<MyWorkIt
 
     private _onDidChangeTreeData: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
     readonly onDidChangeTreeData: vscode.Event<any> = this._onDidChangeTreeData.event;
-    
+
     protected service: OctaneService;
     private user?: String;
-    
+
     constructor() {
-       this.service = OctaneService.getInstance();
+        this.service = OctaneService.getInstance();
     }
 
     getTreeItem(element: MyWorkItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
@@ -23,7 +23,7 @@ export abstract class MyWorkProvider implements vscode.TreeDataProvider<MyWorkIt
                 return null;
             }
             return this.getRelevantEntities().then((r: OctaneEntity[]) => r.map((e: OctaneEntity) => this.getMyWorkItem(e)));
-        } 
+        }
     }
 
     abstract getRelevantEntities(): Promise<OctaneEntity[]>;
@@ -41,17 +41,19 @@ export abstract class MyWorkProvider implements vscode.TreeDataProvider<MyWorkIt
 
     resolveTreeItem(item: MyWorkItem, element: MyWorkItem, token: vscode.CancellationToken): vscode.ProviderResult<MyWorkItem> {
         if (item.entity) {
-            item.tooltip = new vscode.MarkdownString('**' + item.entity.id + '** ' + item.entity.name 
-            + '\n\n'
-            + '| SP: ' + item.entity.storyPoints + ' '
-            + '| Phase: ' + item.entity.phase + ' ');
+            item.tooltip = new vscode.MarkdownString(
+                '**' + item.entity.id + '** ' + item.entity.name
+                + '\n\n'
+                + '| SP: ' + item.entity.storyPoints + ' '
+                + (item.entity.phase instanceof OctaneEntity ? '| Phase: ' + this.service.getPhaseLabel(item.entity.phase) + ' ' : '')
+            );
         }
         return item;
     }
 }
 
 export class MyWorkItem extends vscode.TreeItem {
-    
+
     public entity?: OctaneEntity;
 
     constructor(
@@ -62,7 +64,7 @@ export class MyWorkItem extends vscode.TreeItem {
 }
 
 export class MyWorkItemLabel implements vscode.TreeItemLabel {
-    
+
     label: string;
     highlights?: [number, number][] | undefined;
 
@@ -70,5 +72,5 @@ export class MyWorkItemLabel implements vscode.TreeItemLabel {
         this.label = item.id + ' ' + item.name;
         this.highlights = [[0, item.id.length]];
     }
-    
+
 }
