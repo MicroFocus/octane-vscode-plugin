@@ -13,6 +13,7 @@
 		"*",
 		"onCommand:visual-studio-code-plugin-for-alm-octane.myBacklog.refreshEntry",
 		"onCommand:visual-studio-code-plugin-for-alm-octane.myTests.refreshEntry",
+		"onCommand:visual-studio-code-plugin-for-alm-octane.myFeatures.refreshEntry",
 		"onCommand:visual-studio-code-plugin-for-alm-octane.myMentions.refreshEntry",
 		"onView:visual-studio-code-plugin-for-alm-octane-explorer"
 	],
@@ -75,6 +76,11 @@
 					"icon": "media/favicon.png"
 				},
 				{
+					"id": "myFeatures",
+					"name": "Features",
+					"icon": "media/favicon.png"
+				},
+				{
 					"id": "myMentions",
 					"name": "Mentions",
 					"icon": "media/favicon.png"
@@ -91,6 +97,11 @@
 				{
 					"command": "visual-studio-code-plugin-for-alm-octane.myTests.refreshEntry",
 					"when": "view == myTests",
+					"group": "navigation"
+				},
+				{
+					"command": "visual-studio-code-plugin-for-alm-octane.myFeatures.refreshEntry",
+					"when": "view == myFeatures",
 					"group": "navigation"
 				},
 				{
@@ -112,6 +123,14 @@
 			{
 				"command": "visual-studio-code-plugin-for-alm-octane.myTests.refreshEntry",
 				"title": "Refresh MyStories",
+				"icon": {
+					"light": "resources/light/refresh.svg",
+					"dark": "resources/dark/refresh.svg"
+				}
+			},
+			{
+				"command": "visual-studio-code-plugin-for-alm-octane.myFeatures.refreshEntry",
+				"title": "Refresh MyFeatures",
 				"icon": {
 					"light": "resources/light/refresh.svg",
 					"dark": "resources/dark/refresh.svg"

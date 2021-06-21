@@ -43,6 +43,7 @@ export class OctaneService {
             vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myBacklog.refreshEntry');
             vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myTests.refreshEntry');
             vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myMentions.refreshEntry');
+            vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myFeatures.refreshEntry');
         }
     }
 
@@ -82,6 +83,10 @@ export class OctaneService {
 
     public async getMyDefects(): Promise<OctaneEntity[]> {
         return this.refreshMyWork('defect');
+    }
+
+    public async getMyFeatures(): Promise<OctaneEntity[]> {
+        return this.refreshMyWork('feature');
     }
 
     public async getMyStories(): Promise<OctaneEntity[]> {
