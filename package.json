@@ -11,9 +11,9 @@
 	],
 	"activationEvents": [
 		"*",
-		"onCommand:visual-studio-code-plugin-for-alm-octane.myDefects.refreshEntry",
-		"onCommand:visual-studio-code-plugin-for-alm-octane.myStories.refreshEntry",
-		"onCommand:visual-studio-code-plugin-for-alm-octane.myQualityStories.refreshEntry",
+		"onCommand:visual-studio-code-plugin-for-alm-octane.myBacklog.refreshEntry",
+		"onCommand:visual-studio-code-plugin-for-alm-octane.myTests.refreshEntry",
+		"onCommand:visual-studio-code-plugin-for-alm-octane.myMentions.refreshEntry",
 		"onView:visual-studio-code-plugin-for-alm-octane-explorer"
 	],
 	"main": "./out/extension.js",
@@ -65,18 +65,18 @@
 		"views": {
 			"visual-studio-code-plugin-for-alm-octane-explorer": [
 				{
-					"id": "myDefects",
-					"name": "Defects",
+					"id": "myBacklog",
+					"name": "Backlog",
 					"icon": "media/favicon.png"
 				},
 				{
-					"id": "myStories",
-					"name": "Stories",
+					"id": "myTests",
+					"name": "Tests",
 					"icon": "media/favicon.png"
 				},
 				{
-					"id": "myQualityStories",
-					"name": "Quality Stories",
+					"id": "myMentions",
+					"name": "Mentions",
 					"icon": "media/favicon.png"
 				}
 			]
@@ -84,33 +84,33 @@
 		"menus": {
 			"view/title": [
 				{
-					"command": "visual-studio-code-plugin-for-alm-octane.myDefects.refreshEntry",
-					"when": "view == myDefects",
+					"command": "visual-studio-code-plugin-for-alm-octane.myBacklog.refreshEntry",
+					"when": "view == myBacklog",
 					"group": "navigation"
 				},
 				{
-					"command": "visual-studio-code-plugin-for-alm-octane.myStories.refreshEntry",
-					"when": "view == myStories",
+					"command": "visual-studio-code-plugin-for-alm-octane.myTests.refreshEntry",
+					"when": "view == myTests",
 					"group": "navigation"
 				},
 				{
-					"command": "visual-studio-code-plugin-for-alm-octane.myQualityStories.refreshEntry",
-					"when": "view == myQualityStories",
+					"command": "visual-studio-code-plugin-for-alm-octane.myMentions.refreshEntry",
+					"when": "view == myMentions",
 					"group": "navigation"
 				}
 			]
 		},
 		"commands": [
 			{
-				"command": "visual-studio-code-plugin-for-alm-octane.myDefects.refreshEntry",
-				"title": "Refresh MyDefects",
+				"command": "visual-studio-code-plugin-for-alm-octane.myBacklog.refreshEntry",
+				"title": "Refresh MyBacklog",
 				"icon": {
 					"light": "resources/light/refresh.svg",
 					"dark": "resources/dark/refresh.svg"
 				}
 			},
 			{
-				"command": "visual-studio-code-plugin-for-alm-octane.myStories.refreshEntry",
+				"command": "visual-studio-code-plugin-for-alm-octane.myTests.refreshEntry",
 				"title": "Refresh MyStories",
 				"icon": {
 					"light": "resources/light/refresh.svg",
@@ -118,8 +118,8 @@
 				}
 			},
 			{
-				"command": "visual-studio-code-plugin-for-alm-octane.myQualityStories.refreshEntry",
-				"title": "Refresh MyQualityStories",
+				"command": "visual-studio-code-plugin-for-alm-octane.myMentions.refreshEntry",
+				"title": "Refresh MyMentions",
 				"icon": {
 					"light": "resources/light/refresh.svg",
 					"dark": "resources/dark/refresh.svg"
@@ -149,6 +149,7 @@
 		"vscode-test": "^1.5.0"
 	},
 	"dependencies": {
-		"@microfocus/alm-octane-js-rest-sdk": "^15.0.2-0.1"
+		"@microfocus/alm-octane-js-rest-sdk": "^15.0.2-0.1",
+		"string-strip-html": "^8.3.0"
 	}
 }

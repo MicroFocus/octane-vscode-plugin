@@ -1,15 +1,15 @@
 import * as vscode from 'vscode';
-import { OctaneEntity, OctaneService } from './octane-service';
+import { MyMentionsProvider } from './mentions-provider';
+import { OctaneEntity, OctaneService, Comment } from './octane-service';
 
 export abstract class MyWorkProvider implements vscode.TreeDataProvider<MyWorkItem> {
 
     private _onDidChangeTreeData: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
     readonly onDidChangeTreeData: vscode.Event<any> = this._onDidChangeTreeData.event;
 
-    protected service: OctaneService;
     private user?: String;
 
-    constructor() {
+    constructor(protected service: OctaneService) {
         this.service = OctaneService.getInstance();
     }
 
@@ -68,9 +68,13 @@ export class MyWorkItemLabel implements vscode.TreeItemLabel {
     label: string;
     highlights?: [number, number][] | undefined;
 
-    constructor(item: any) {
-        this.label = item.id + ' ' + item.name;
-        this.highlights = [[0, item.id.length]];
+    constructor(item: Comment | any) {
+        if ((<Comment> item).getStrippedText) {
+            this.label = item.id + ' ' + item.getStrippedText();
+        } else {
+            this.label = item.id + ' ' + item.name;
+            // this.highlights = [[0, item.id.length]];
+        }
     }
 
 }

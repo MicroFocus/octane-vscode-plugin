@@ -1,10 +1,10 @@
 import { MyWorkProvider } from "./my-work-provider";
 import { OctaneEntity } from "./octane-service";
 
-export class MyQualityStoriesProvider extends MyWorkProvider {
+export class BacklogProvider extends MyWorkProvider {
 
     async getRelevantEntities(): Promise<OctaneEntity[]> {
-        const result = this.service.getMyQualityStories();
+        const result = this.service.getMyBacklog();
         return result;
     }
 

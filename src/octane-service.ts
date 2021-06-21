@@ -1,19 +1,19 @@
 import * as vscode from 'vscode';
 import * as Octane from '@microfocus/alm-octane-js-rest-sdk';
 import * as Query from '@microfocus/alm-octane-js-rest-sdk/lib/query';
+import { stripHtml } from 'string-strip-html';
 
 export class OctaneService {
 
     private static _instance: OctaneService;
 
-    private octane?;
+    private octane?: any;
+
     private user?: String;
     private loggedInUserId?: number;
-
-    private entities: OctaneEntity[] = [];
     private metaphases?: Metaphase[];
 
-    private constructor() {
+    public async initialize() {
         const uri = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.uri');
         const space = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.space');
         const workspace = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.workspace');
@@ -27,38 +27,40 @@ export class OctaneService {
                 user: this.user,
                 password: password
             });
-            this.initialize();
-        }
-    }
-
-    private async initialize() {
-        const result = await this.octane.get(Octane.Octane.entityTypes.workspaceUsers)
-            .query(Query.field('name').equal(this.user).build())
-            .execute();
-        this.loggedInUserId = result.data[0].id;
-
-        {
-            const result = await this.octane.get(Octane.Octane.entityTypes.metaphases)
-                .fields('id', 'name', 'phase')
+            const result: any = await this.octane.get(Octane.Octane.entityTypes.workspaceUsers)
+                .query(Query.field('name').equal(this.user).build())
                 .execute();
-            this.metaphases = result.data.map((m: any) => new Metaphase(m));
-            console.log(this.metaphases);
-        }
+            this.loggedInUserId = result.data[0].id;
 
-        vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myDefects.refreshEntry');
-        vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myStories.refreshEntry');
-        vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myQualityStories.refreshEntry');
+            {
+                const result = await this.octane.get(Octane.Octane.entityTypes.metaphases)
+                    .fields('id', 'name', 'phase')
+                    .execute();
+                this.metaphases = result.data.map((m: any) => new Metaphase(m));
+                console.log(this.metaphases);
+            }
+
+            vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myBacklog.refreshEntry');
+            vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myTests.refreshEntry');
+            vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myMentions.refreshEntry');
+        }
     }
 
     public isLoggedIn(): boolean {
         return this.loggedInUserId !== null;
     }
 
-    private async refreshMyWork(subtype: String): Promise<OctaneEntity[]> {
+    private async refreshMyWork(subtype: String | String[]): Promise<OctaneEntity[]> {
+        let subtypes: String[] = [];
+        if (!Array.isArray(subtype)) {
+            subtypes.push(subtype);
+        } else {
+            subtypes = subtype;
+        } 
         const response = await this.octane.get(Octane.Octane.entityTypes.workItems)
             .fields('name', 'story_points', 'phase')
             .query(
-                Query.field('subtype').inComparison([subtype]).and()
+                Query.field('subtype').inComparison(subtypes).and()
                     .field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
                     .build()
             )
@@ -74,6 +76,10 @@ export class OctaneService {
         return OctaneService._instance;
     }
 
+    public async getMyBacklog(): Promise<OctaneEntity[]> {
+        return this.refreshMyWork(['defect', 'story', 'quality_story']);
+    }
+
     public async getMyDefects(): Promise<OctaneEntity[]> {
         return this.refreshMyWork('defect');
     }
@@ -84,6 +90,31 @@ export class OctaneService {
 
     public async getMyQualityStories(): Promise<OctaneEntity[]> {
         return this.refreshMyWork('quality_story');
+    }
+
+    public async getMyTests(): Promise<OctaneEntity[]> {
+        const response = await this.octane.get(Octane.Octane.entityTypes.tests)
+            .fields('name')
+            .query(
+                Query.field('subtype').inComparison(['test_manual','gherkin_test','scenario_test']).and()
+                    .field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
+                    .build()
+            )
+            .execute();
+        console.log(response);
+        return response.data.map((i: any) => new OctaneEntity(i));
+    }
+
+    public async getMyMentions(): Promise<OctaneEntity[]> {
+        const response = await this.octane.get(Octane.Octane.entityTypes.comments)
+            .fields('text', 'owner_work_item', 'author')
+            .query(
+                Query.field('mention_user').equal(Query.field('id').equal(this.loggedInUserId))
+                    .build()
+            )
+            .execute();
+        console.log(response);
+        return response.data.map((i: any) => new Comment(i));
     }
 
     public getPhaseLabel(phase: OctaneEntity): string {
@@ -115,7 +146,7 @@ export class OctaneEntity {
             } else {
                 this.phase = new OctaneEntity(i.phase);
             }
-        } 
+        }
     }
 }
 
@@ -124,3 +155,18 @@ export class Metaphase extends OctaneEntity {
     public phase?: OctaneEntity[];
 
 }
+
+export class Comment extends OctaneEntity {
+
+    public text: string;
+
+    constructor(i?: any) {
+        super(i);
+        this.text = (i && i.text) ? i.text : '';
+    }
+
+    getStrippedText(): string {
+        return stripHtml(this.text).result;
+    }
+}
+

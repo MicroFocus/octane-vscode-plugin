@@ -1,44 +1,45 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import { DefectsProvider } from './defects-provider';
+import { BacklogProvider } from './backlog-provider';
 import { OctaneService } from './octane-service';
-import { MyQualityStoriesProvider } from './quality-stories-provider';
-import { MyStoriesProvider } from './stories-provider';
+import { MyMentionsProvider } from './mentions-provider';
+import { MyTestsProvider } from './tests-provider';
 
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
-	OctaneService.getInstance();
+	const service = OctaneService.getInstance();
+	service.initialize();
 
-	const myDefectsProvider = new DefectsProvider();
-	vscode.window.registerTreeDataProvider('myDefects', myDefectsProvider);
+	const myBacklogProvider = new BacklogProvider(service);
+	vscode.window.registerTreeDataProvider('myBacklog', myBacklogProvider);
 
-	const myStoriesProvider = new MyStoriesProvider();
-	vscode.window.registerTreeDataProvider('myStories', myStoriesProvider);
+	const myTestsProvider = new MyTestsProvider(service);
+	vscode.window.registerTreeDataProvider('myTests', myTestsProvider);
 
-	const myQualityStoriesProvider = new MyQualityStoriesProvider();
-	vscode.window.registerTreeDataProvider('myQualityStories', myQualityStoriesProvider);
+	const myMentionsProvider = new MyMentionsProvider(service);
+	vscode.window.registerTreeDataProvider('myMentions', myMentionsProvider);
 
 	{
-		let refreshCommand = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.myDefects.refreshEntry', () => {
-			myDefectsProvider.refresh();
+		let refreshCommand = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.myBacklog.refreshEntry', () => {
+			myBacklogProvider.refresh();
 		});
 		context.subscriptions.push(refreshCommand);
 	}
 
 	{
-		let refreshCommand = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.myStories.refreshEntry', () => {
-			myStoriesProvider.refresh();
+		let refreshCommand = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.myTests.refreshEntry', () => {
+			myTestsProvider.refresh();
 		});
 		context.subscriptions.push(refreshCommand);
 	}
 
 	{
-		let refreshCommand = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.myQualityStories.refreshEntry', () => {
-			myQualityStoriesProvider.refresh();
+		let refreshCommand = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.myMentions.refreshEntry', () => {
+			myMentionsProvider.refresh();
 		});
 		context.subscriptions.push(refreshCommand);
 	}
