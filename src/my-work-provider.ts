@@ -32,6 +32,7 @@ export abstract class MyWorkProvider implements vscode.TreeDataProvider<MyWorkIt
         const item = new MyWorkItem(new MyWorkItemLabel(i));
         item.id = '' + i.id;
         item.entity = i;
+        item.iconPath = i.iconPath;
         return item;
     }
 

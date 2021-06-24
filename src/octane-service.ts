@@ -139,6 +139,7 @@ export class OctaneEntity {
     public storyPoints?: string;
     public phase?: OctaneEntity | OctaneEntity[];
     public references?: OctaneEntity[];
+    public iconPath?: vscode.Uri;
 
     constructor(i?: any) {
         this.id = (i && i.id) ? i.id : null;
@@ -151,6 +152,22 @@ export class OctaneEntity {
             } else {
                 this.phase = new OctaneEntity(i.phase);
             }
+        }
+        if (i.subtype) {
+            if (i.subtype == 'defect')
+                this.iconPath = vscode.Uri.file(`${__filename}/../../media/treeIcons/D.svg`);
+            if (i.subtype == 'story')
+                this.iconPath = vscode.Uri.file(`${__filename}/../../media/treeIcons/US.svg`);
+            if (i.subtype == 'quality_story')
+                this.iconPath = vscode.Uri.file(`${__filename}/../../media/treeIcons/QS.svg`);
+            if (i.subtype == 'feature')
+                this.iconPath = vscode.Uri.file(`${__filename}/../../media/treeIcons/F.svg`);
+            if (i.subtype == 'scenario_test')
+                this.iconPath = vscode.Uri.file(`${__filename}/../../media/treeIcons/BSC.svg`);
+            if (i.subtype == 'test_manual')
+                this.iconPath = vscode.Uri.file(`${__filename}/../../media/treeIcons/MT.svg`);
+            if (i.subtype == 'auto_test')
+                this.iconPath = vscode.Uri.file(`${__filename}/../../media/treeIcons/AT.svg`);
         }
     }
 }
