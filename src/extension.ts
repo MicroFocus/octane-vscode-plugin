@@ -6,6 +6,7 @@ import { OctaneService } from './octane-service';
 import { MyMentionsProvider } from './mentions-provider';
 import { MyTestsProvider } from './tests-provider';
 import { MyFeatureProvider } from './feature-provider';
+import { MyWorkItem } from './my-work-provider';
 
 
 // this method is called when your extension is activated
@@ -54,6 +55,29 @@ export function activate(context: vscode.ExtensionContext) {
 		});
 		context.subscriptions.push(refreshCommand);
 	}
+
+	{
+		let detailsCommand = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.details', async (node: MyWorkItem) => {
+			console.log(`Successfully called details on ${JSON.stringify(node.entity)}.`);
+			const uri = vscode.Uri.parse(`${myWorkScheme}:${JSON.stringify(node.entity)}`);
+			const doc = await vscode.workspace.openTextDocument(uri); // calls back into the provider
+			await vscode.window.showTextDocument(doc, { preview: false });
+		});
+		context.subscriptions.push(detailsCommand);
+	}
+
+	const myWorkScheme = 'alm-octane-entity';
+	const myWorkSchemeProvider = new class implements vscode.TextDocumentContentProvider {
+
+		// emitter and its event
+		onDidChangeEmitter = new vscode.EventEmitter<vscode.Uri>();
+		onDidChange = this.onDidChangeEmitter.event;
+
+		provideTextDocumentContent(uri: vscode.Uri): string {
+			return uri.path;
+		}
+	};
+	context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider(myWorkScheme, myWorkSchemeProvider));
 }
 
 // this method is called when your extension is deactivated

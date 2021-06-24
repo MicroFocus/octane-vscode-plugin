@@ -109,6 +109,13 @@
 					"when": "view == myMentions",
 					"group": "navigation"
 				}
+			],
+			"view/item/context": [
+				{
+					"command": "visual-studio-code-plugin-for-alm-octane.details",
+					"when": "view == myMentions || view == myFeatures || view == myTests || view == myBacklog",
+					"group": "inline"
+				}
 			]
 		},
 		"commands": [
@@ -139,6 +146,14 @@
 			{
 				"command": "visual-studio-code-plugin-for-alm-octane.myMentions.refreshEntry",
 				"title": "Refresh MyMentions",
+				"icon": {
+					"light": "resources/light/refresh.svg",
+					"dark": "resources/dark/refresh.svg"
+				}
+			},
+			{
+				"command": "visual-studio-code-plugin-for-alm-octane.details",
+				"title": "Details",
 				"icon": {
 					"light": "resources/light/refresh.svg",
 					"dark": "resources/dark/refresh.svg"
