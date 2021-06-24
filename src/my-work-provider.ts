@@ -60,6 +60,7 @@ export class MyWorkItem extends vscode.TreeItem {
         public readonly label: vscode.TreeItemLabel
     ) {
         super(label, vscode.TreeItemCollapsibleState.None);
+        // this.command = vscode.command.
     }
 }
 
