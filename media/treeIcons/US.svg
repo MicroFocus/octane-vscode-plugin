@@ -3,8 +3,8 @@
 
  <g>
   <title>Layer 1</title>
-  <ellipse ry="135.5" rx="135.5" id="svg_1" cy="309.5" cx="404.59902" stroke="#000" fill="#fff"/>
-  <ellipse stroke-width="0" stroke="#000" ry="68" rx="68" id="svg_3" cy="67.64286" cx="68" fill="#ffb000"/>
-  <text font-weight="bold" transform="matrix(2.46639 0 0 2.46639 -77.2146 -80.0557)" stroke="#000" xml:space="preserve" text-anchor="start" font-family="Noto Sans JP" font-size="24" stroke-width="0" id="svg_6" y="68" x="44.53694" fill="#000000">US</text>
+  <ellipse fill="#fff" stroke="#000" cx="404.59902" cy="309.5" id="svg_1" rx="135.5" ry="135.5"/>
+  <ellipse fill="#ffb000" cx="68" cy="67.64286" id="svg_3" rx="68" ry="68" stroke="#000" stroke-width="0"/>
+  <text style="cursor: move;" fill="#000000" x="44.20186" y="67.88831" id="svg_6" stroke-width="0" font-size="24" font-family="Noto Sans JP" text-anchor="start" xml:space="preserve" stroke="#000" transform="matrix(2.46639 0 0 2.46639 -77.2146 -80.0557)" font-weight="bold">US</text>
  </g>
 </svg>
