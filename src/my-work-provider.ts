@@ -80,7 +80,6 @@ export abstract class MyWorkProvider implements vscode.TreeDataProvider<MyWorkIt
 export class MyWorkItem extends vscode.TreeItem {
 
     public entity?: OctaneEntity;
-    public iconPath?: vscode.Uri;
 
     constructor(
         public readonly label: vscode.TreeItemLabel
