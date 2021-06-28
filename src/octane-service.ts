@@ -139,6 +139,7 @@ export class OctaneEntity {
     public storyPoints?: string;
     public phase?: OctaneEntity | OctaneEntity[];
     public references?: OctaneEntity[];
+    public subtype?: string;
 
     constructor(i?: any) {
         this.id = (i && i.id) ? i.id : null;
@@ -152,6 +153,7 @@ export class OctaneEntity {
                 this.phase = new OctaneEntity(i.phase);
             }
         }
+        this.subtype = i?.subtype ?? '';
     }
 }
 
