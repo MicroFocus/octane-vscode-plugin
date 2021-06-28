@@ -56,13 +56,18 @@ export function activate(context: vscode.ExtensionContext) {
 		context.subscriptions.push(refreshCommand);
 	}
 
+	// {
+	// 	let detailsCommand = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.details', async (node: MyWorkItem) => {
+	// 		console.log(`Successfully called details on ${JSON.stringify(node.entity)}.`);
+	// 		const uri = vscode.Uri.parse(`${myWorkScheme}:${JSON.stringify(node.entity)}`);
+	// 		const doc = await vscode.workspace.openTextDocument(uri); // calls back into the provider
+	// 		await vscode.window.showTextDocument(doc, { preview: false });
+	// 	});
+	// 	context.subscriptions.push(detailsCommand);
+	// }
 	{
-		let detailsCommand = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.details', async (node: MyWorkItem) => {
-			console.log(`Successfully called details on ${JSON.stringify(node.entity)}.`);
-			const uri = vscode.Uri.parse(`${myWorkScheme}:${JSON.stringify(node.entity)}`);
-			const doc = await vscode.workspace.openTextDocument(uri); // calls back into the provider
-			await vscode.window.showTextDocument(doc, { preview: false });
-		});
+		let detailsCommand = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.details',
+			(node: MyWorkItem) => vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(`${myWorkScheme}:${JSON.stringify(node.entity)}`)));
 		context.subscriptions.push(detailsCommand);
 	}
 

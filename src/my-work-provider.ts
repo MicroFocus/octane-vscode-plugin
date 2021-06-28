@@ -38,24 +38,24 @@ export abstract class MyWorkProvider implements vscode.TreeDataProvider<MyWorkIt
 
     private getIconForEntity(entity: OctaneEntity): vscode.Uri  {
         if (entity?.subtype) {
-            if (entity?.subtype == 'defect')
-                return vscode.Uri.file(`${__filename}/../../media/treeIcons/D.svg`);
-            if (entity?.subtype == 'story')
-                return vscode.Uri.file(`${__filename}/../../media/treeIcons/US.svg`);
-            if (entity?.subtype == 'quality_story')
-                return vscode.Uri.file(`${__filename}/../../media/treeIcons/QS.svg`);
-            if (entity?.subtype == 'feature')
-                return vscode.Uri.file(`${__filename}/../../media/treeIcons/F.svg`);
-            if (entity?.subtype == 'scenario_test')
-                return vscode.Uri.file(`${__filename}/../../media/treeIcons/BSC.svg`);
-            if (entity?.subtype == 'test_manual')
-                return vscode.Uri.file(`${__filename}/../../media/treeIcons/MT.svg`);
-            if (entity?.subtype == 'auto_test')
-                return vscode.Uri.file(`${__filename}/../../media/treeIcons/AT.svg`);
-            if (entity?.subtype == 'gherkin_test')
-                return vscode.Uri.file(`${__filename}/../../media/treeIcons/GT.svg`);
-            if (entity?.subtype == 'test_suite')
-                return vscode.Uri.file(`${__filename}/../../media/treeIcons/TS.svg`);
+            if (entity?.subtype === 'defect')
+                {return vscode.Uri.file(`${__filename}/../../media/treeIcons/D.svg`);}
+            if (entity?.subtype === 'story')
+                {return vscode.Uri.file(`${__filename}/../../media/treeIcons/US.svg`);}
+            if (entity?.subtype === 'quality_story')
+                {return vscode.Uri.file(`${__filename}/../../media/treeIcons/QS.svg`);}
+            if (entity?.subtype === 'feature')
+                {return vscode.Uri.file(`${__filename}/../../media/treeIcons/F.svg`);}
+            if (entity?.subtype === 'scenario_test')
+                {return vscode.Uri.file(`${__filename}/../../media/treeIcons/BSC.svg`);}
+            if (entity?.subtype === 'test_manual')
+                {return vscode.Uri.file(`${__filename}/../../media/treeIcons/MT.svg`);}
+            if (entity?.subtype === 'auto_test')
+                {return vscode.Uri.file(`${__filename}/../../media/treeIcons/AT.svg`);}
+            if (entity?.subtype === 'gherkin_test')
+                {return vscode.Uri.file(`${__filename}/../../media/treeIcons/GT.svg`);}
+            if (entity?.subtype === 'test_suite')
+                {return vscode.Uri.file(`${__filename}/../../media/treeIcons/TS.svg`);}
         }
         return vscode.Uri.file('');
     }
@@ -85,7 +85,7 @@ export class MyWorkItem extends vscode.TreeItem {
         public readonly label: vscode.TreeItemLabel
     ) {
         super(label, vscode.TreeItemCollapsibleState.None);
-        // this.command = vscode.command.
+        this.command = { command: 'visual-studio-code-plugin-for-alm-octane.details', title: 'Details', arguments: [this]};
     }
 }
 

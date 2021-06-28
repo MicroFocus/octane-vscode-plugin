@@ -40,6 +40,13 @@ export class OctaneService {
                 console.log(this.metaphases);
             }
 
+            {
+                const result = await this.octane.get(Octane.Octane.entityTypes.fieldsMetadata)
+                    .query(Query.field('entity_name').inComparison(['feature', 'defect', 'story', 'quality_story', 'test_manual','gherkin_test','scenario_test']).build())
+                    .execute();
+                console.log(result.data.map((p: { name: any; }) => p.name));
+            }
+
             vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myBacklog.refreshEntry');
             vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myTests.refreshEntry');
             vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myMentions.refreshEntry');

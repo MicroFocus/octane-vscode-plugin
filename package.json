@@ -109,13 +109,6 @@
 					"when": "view == myMentions",
 					"group": "navigation"
 				}
-			],
-			"view/item/context": [
-				{
-					"command": "visual-studio-code-plugin-for-alm-octane.details",
-					"when": "view == myMentions || view == myFeatures || view == myTests || view == myBacklog",
-					"group": "inline"
-				}
 			]
 		},
 		"commands": [
