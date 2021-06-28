@@ -59,7 +59,7 @@ export class OctaneService {
             subtypes = subtype;
         } 
         const response = await this.octane.get(Octane.Octane.entityTypes.workItems)
-            .fields('name', 'story_points', 'phase')
+            .fields('name', 'story_points', 'phase', 'owner', 'invested_hours', 'estimated_hours', 'remaining_hours', 'detected_by', 'severity')
             .query(
                 Query.field('subtype').inComparison(subtypes).and()
                     .field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
@@ -139,12 +139,25 @@ export class OctaneEntity {
     public storyPoints?: string;
     public phase?: OctaneEntity | OctaneEntity[];
     public references?: OctaneEntity[];
-
+    public owner?: string;
+    public investedHours?: string;
+    public remainingHours?: string;
+    public estimatedHours?: string;
+    public detectedBy?: string;
+    public severity?: string;
+    
     constructor(i?: any) {
         this.id = (i && i.id) ? i.id : null;
         this.type = (i && i.type) ? i.type : null;
         this.name = (i && i.name) ? i.name : null;
         this.storyPoints = (i && i.story_points) ? i.story_points : null;
+        this.owner = i?.owner?.id ?? null;
+        this.investedHours = i?.invested_hours ?? null;
+        this.remainingHours = i?.remaining_hours ?? null;
+        this.estimatedHours = i?.estimated_hours ?? null;
+        this.detectedBy = i?.detected_by ?? null;
+        this.severity = i?.severity?.id ?? null;
+        
         if (i.phase) {
             if (i.phase.data) {
                 this.phase = i.phase.data.map((ref: any) => new OctaneEntity(ref));

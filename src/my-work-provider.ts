@@ -44,8 +44,15 @@ export abstract class MyWorkProvider implements vscode.TreeDataProvider<MyWorkIt
             item.tooltip = new vscode.MarkdownString(
                 '**' + item.entity.id + '** ' + item.entity.name
                 + '\n\n'
-                + '| SP: ' + item.entity.storyPoints + ' '
+                + '| SP: ' + item.entity.storyPoints  + ' '
                 + (item.entity.phase instanceof OctaneEntity ? '| Phase: ' + this.service.getPhaseLabel(item.entity.phase) + ' ' : '')
+                + '| Owner: ' + (item.entity.owner ?? '-') + ' '
+                + '| Detected by: ' + (item.entity.detectedBy ?? '-' ) + ' '
+                + '| Severity: ' + (item.entity.severity?.split(/[\s.]+/).pop() ?? '-' ) + ' '
+                + '\n\n'
+                + '| Invested Hours: ' + (item.entity.investedHours ?? '-' ) + ' '
+                + '| Remaining Hours: ' + (item.entity.remainingHours ?? '-' ) + ' '
+                + '| Estimated Hours: ' + (item.entity.estimatedHours ?? '-' ) + ' '
             );
         }
         return item;
