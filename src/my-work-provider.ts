@@ -70,16 +70,16 @@ export abstract class MyWorkProvider implements vscode.TreeDataProvider<MyWorkIt
                 '**' + item.entity.id + '** ' + (item.entity?.name ?? '' )
                 + '\n\n'
                 + (item.entity.type != 'test' && item.entity.type != 'comment' ? '| SP: ' + (item.entity.storyPoints ?? '-')  + ' ' : '')
-                + (item.entity.phase instanceof OctaneEntity ? '| Phase: ' + this.service.getPhaseLabel(item.entity.phase) + ' ' : '')
+                + (item.entity.phase instanceof OctaneEntity ? '| Phase: ' + (this.service.getPhaseLabel(item.entity.phase) ?? '-') + ' ' : '')
                 + (item.entity.subtype == 'defect' ? '| Severity: ' + (item.entity.severity?.split(/[\s.]+/).pop() ?? '-' ) + ' ' : '')
                 + '\n\n'
-                + '| Owner: ' + (item.entity.owner?.full_name ?? '-')+ ' '
+                + (item.entity.type != 'comment' ? '| Owner: ' + (item.entity.owner?.full_name ?? '-') + ' ' : '')
                 + (item.entity.subtype == 'defect' ? '| Detected by: ' + (item.entity.detectedBy?.full_name ?? '-' ) + ' ' : '')
                 + '| Auther: ' + (item.entity.author?.full_name ?? '-')+ ' '
                 + '\n\n'
-                + (item.entity.type != 'comment' ? '| Invested Hours: ' + (item.entity.investedHours ?? '-' ) + ' ' : '')
-                + (item.entity.type != 'comment' ? '| Remaining Hours: ' + (item.entity.remainingHours ?? '-' ) + ' ' : '')
-                + (item.entity.type != 'comment' ? '| Estimated Hours: ' + (item.entity.estimatedHours ?? '-' ) + ' ' : '')
+                + (item.entity.type != 'comment' && item.entity.type != 'test' ? '| Invested Hours: ' + (item.entity.investedHours ?? '-' ) + ' ' : '')
+                + (item.entity.type != 'comment' && item.entity.type != 'test' ? '| Remaining Hours: ' + (item.entity.remainingHours ?? '-' ) + ' ' : '')
+                + (item.entity.type != 'comment' && item.entity.type != 'test' ? '| Estimated Hours: ' + (item.entity.estimatedHours ?? '-' ) + ' ' : '')
             );
         }
         return item;

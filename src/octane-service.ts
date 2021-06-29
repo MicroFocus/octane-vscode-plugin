@@ -109,15 +109,22 @@ export class OctaneService {
 
     public async getMyTests(): Promise<OctaneEntity[]> {
         const response = await this.octane.get(Octane.Octane.entityTypes.tests)
-            .fields('name')
+            .fields('name', 'owner', 'author', 'phase')
             .query(
                 Query.field('subtype').inComparison(['test_manual','gherkin_test','scenario_test']).and()
                     .field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
                     .build()
             )
             .execute();
-        console.log(response);
-        return response.data.map((i: any) => new OctaneEntity(i));
+        let entities = [];
+        for(let i = 0; i < response.data.length; i++) {
+            let entity = new OctaneEntity(response.data[i]);
+            entity.owner = (await this.getUserFromEntity(entity.owner));
+            entity.author = (await this.getUserFromEntity(entity.author));
+            entities.push(entity);
+        };
+        console.log(entities);
+        return entities;
     }
 
     public async getMyMentions(): Promise<OctaneEntity[]> {
@@ -128,8 +135,14 @@ export class OctaneService {
                     .build()
             )
             .execute();
-        console.log(response);
-        return response.data.map((i: any) => new Comment(i));
+        let entities = [];
+        for(let i = 0; i < response.data.length; i++) {
+            let entity = new Comment(response.data[i]);
+            entity.author = (await this.getUserFromEntity(entity.author));
+            entities.push(entity);
+        };
+        console.log(entities);
+        return entities;
     }
 
     public getPhaseLabel(phase: OctaneEntity): string {
