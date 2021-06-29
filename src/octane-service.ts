@@ -146,7 +146,7 @@ export class OctaneService {
         .at(user?.id)
         .execute();
         return response;
-    }
+    }    
 }
 
 export class OctaneEntity {
@@ -174,7 +174,7 @@ export class OctaneEntity {
         this.remainingHours = i?.remaining_hours ?? null;
         this.estimatedHours = i?.estimated_hours ?? null;
         this.detectedBy = i?.detected_by ?? null;
-        this.severity = i?.severity ?? null;
+        this.severity = i?.severity?.id ?? null;
         this.owner = i?.owner ?? null;
         this.author = i?.author ?? null;
         if (i.phase) {

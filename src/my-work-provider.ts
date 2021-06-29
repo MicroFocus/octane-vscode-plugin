@@ -71,7 +71,7 @@ export abstract class MyWorkProvider implements vscode.TreeDataProvider<MyWorkIt
                 + '\n\n'
                 + '| SP: ' + (item.entity.storyPoints ?? '-')  + ' '
                 + (item.entity.phase instanceof OctaneEntity ? '| Phase: ' + this.service.getPhaseLabel(item.entity.phase) + ' ' : '')
-                + (item.entity.subtype == 'defect' ? '| Severity: ' + (item.entity.severity ?? '-' ) + ' ' : '')
+                + (item.entity.subtype == 'defect' ? '| Severity: ' + (item.entity.severity?.split(/[\s.]+/).pop() ?? '-' ) + ' ' : '')
                 + '\n\n'
                 + '| Owner: ' + (item.entity.owner?.full_name ?? '-')+ ' '
                 + (item.entity.subtype == 'defect' ? '| Detected by: ' + (item.entity.detectedBy?.full_name ?? '-' ) + ' ' : '')
