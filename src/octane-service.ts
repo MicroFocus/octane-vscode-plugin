@@ -59,7 +59,9 @@ export class OctaneService {
             subtypes = subtype;
         } 
         const response = await this.octane.get(Octane.Octane.entityTypes.workItems)
-            .fields('name', 'story_points', 'phase', 'owner', 'invested_hours', 'estimated_hours', 'remaining_hours', 'detected_by', 'severity', 'author')
+            .fields('name', 'story_points', 'phase', 'owner', 
+                    'invested_hours', 'estimated_hours', 'remaining_hours', 
+                    'detected_by', 'severity', 'author', 'detected_by')
             .query(
                 Query.field('subtype').inComparison(subtypes).and()
                     .field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
@@ -71,8 +73,10 @@ export class OctaneService {
             let entity = new OctaneEntity(response.data[i]);
             entity.owner = (await this.getUserFromEntity(entity.owner));
             entity.author = (await this.getUserFromEntity(entity.author));
+            entity.detectedBy = (await this.getUserFromEntity(entity.detectedBy));
             entities.push(entity);
         };
+        console.log(entities);
         return entities;
     }
 
@@ -157,7 +161,7 @@ export class OctaneEntity {
     public investedHours?: string;
     public remainingHours?: string;
     public estimatedHours?: string;
-    public detectedBy?: string;
+    public detectedBy?: User;
     public severity?: string;
     public subtype?: string;
     public author?: User;
@@ -170,7 +174,7 @@ export class OctaneEntity {
         this.remainingHours = i?.remaining_hours ?? null;
         this.estimatedHours = i?.estimated_hours ?? null;
         this.detectedBy = i?.detected_by ?? null;
-        this.severity = i?.severity?.id ?? null;
+        this.severity = i?.severity ?? null;
         this.owner = i?.owner ?? null;
         this.author = i?.author ?? null;
         if (i.phase) {

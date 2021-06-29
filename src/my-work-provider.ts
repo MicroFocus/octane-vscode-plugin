@@ -67,13 +67,14 @@ export abstract class MyWorkProvider implements vscode.TreeDataProvider<MyWorkIt
     resolveTreeItem(item: MyWorkItem, element: MyWorkItem, token: vscode.CancellationToken): vscode.ProviderResult<MyWorkItem> {
         if (item.entity) {
             item.tooltip = new vscode.MarkdownString(
-                '**' + item.entity.id + '** ' + item.entity.name
+                '**' + item.entity.id + '** ' + (item.entity?.name ?? '' )
                 + '\n\n'
-                + '| SP: ' + item.entity.storyPoints  + ' '
+                + '| SP: ' + (item.entity.storyPoints ?? '-')  + ' '
                 + (item.entity.phase instanceof OctaneEntity ? '| Phase: ' + this.service.getPhaseLabel(item.entity.phase) + ' ' : '')
+                + (item.entity.subtype == 'defect' ? '| Severity: ' + (item.entity.severity ?? '-' ) + ' ' : '')
+                + '\n\n'
                 + '| Owner: ' + (item.entity.owner?.full_name ?? '-')+ ' '
-                + (item.entity.subtype == 'defect' ? '| Detected by: ' + (item.entity.detectedBy ?? '-' ) + ' ' : '')
-                + (item.entity.subtype == 'defect' ? '| Severity: ' + (item.entity.severity?.split(/[\s.]+/).pop() ?? '-' ) + ' ' : '')
+                + (item.entity.subtype == 'defect' ? '| Detected by: ' + (item.entity.detectedBy?.full_name ?? '-' ) + ' ' : '')
                 + '| Auther: ' + (item.entity.author?.full_name ?? '-')+ ' '
                 + '\n\n'
                 + '| Invested Hours: ' + (item.entity.investedHours ?? '-' ) + ' '
