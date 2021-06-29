@@ -69,7 +69,7 @@ export abstract class MyWorkProvider implements vscode.TreeDataProvider<MyWorkIt
             item.tooltip = new vscode.MarkdownString(
                 '**' + item.entity.id + '** ' + (item.entity?.name ?? '' )
                 + '\n\n'
-                + '| SP: ' + (item.entity.storyPoints ?? '-')  + ' '
+                + (item.entity.type != 'test' && item.entity.type != 'comment' ? '| SP: ' + (item.entity.storyPoints ?? '-')  + ' ' : '')
                 + (item.entity.phase instanceof OctaneEntity ? '| Phase: ' + this.service.getPhaseLabel(item.entity.phase) + ' ' : '')
                 + (item.entity.subtype == 'defect' ? '| Severity: ' + (item.entity.severity?.split(/[\s.]+/).pop() ?? '-' ) + ' ' : '')
                 + '\n\n'
@@ -77,9 +77,9 @@ export abstract class MyWorkProvider implements vscode.TreeDataProvider<MyWorkIt
                 + (item.entity.subtype == 'defect' ? '| Detected by: ' + (item.entity.detectedBy?.full_name ?? '-' ) + ' ' : '')
                 + '| Auther: ' + (item.entity.author?.full_name ?? '-')+ ' '
                 + '\n\n'
-                + '| Invested Hours: ' + (item.entity.investedHours ?? '-' ) + ' '
-                + '| Remaining Hours: ' + (item.entity.remainingHours ?? '-' ) + ' '
-                + '| Estimated Hours: ' + (item.entity.estimatedHours ?? '-' ) + ' '
+                + (item.entity.type != 'comment' ? '| Invested Hours: ' + (item.entity.investedHours ?? '-' ) + ' ' : '')
+                + (item.entity.type != 'comment' ? '| Remaining Hours: ' + (item.entity.remainingHours ?? '-' ) + ' ' : '')
+                + (item.entity.type != 'comment' ? '| Estimated Hours: ' + (item.entity.estimatedHours ?? '-' ) + ' ' : '')
             );
         }
         return item;
