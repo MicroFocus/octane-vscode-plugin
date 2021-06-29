@@ -59,7 +59,7 @@ export class OctaneService {
             subtypes = subtype;
         } 
         const response = await this.octane.get(Octane.Octane.entityTypes.workItems)
-            .fields('name', 'story_points', 'phase', 'owner', 'invested_hours', 'estimated_hours', 'remaining_hours', 'detected_by', 'severity')
+            .fields('name', 'story_points', 'phase', 'owner', 'invested_hours', 'estimated_hours', 'remaining_hours', 'detected_by', 'severity', 'author')
             .query(
                 Query.field('subtype').inComparison(subtypes).and()
                     .field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
@@ -69,7 +69,8 @@ export class OctaneService {
         let entities = [];
         for(let i = 0; i < response.data.length; i++) {
             let entity = new OctaneEntity(response.data[i]);
-            entity.owner = (await this.getOwnerFromEntity(entity));
+            entity.owner = (await this.getUserFromEntity(entity.owner));
+            entity.author = (await this.getUserFromEntity(entity.author));
             entities.push(entity);
         };
         return entities;
@@ -135,10 +136,10 @@ export class OctaneService {
         return '';
     }
 
-    public async getOwnerFromEntity (entity: OctaneEntity): Promise<Owner> {
+    public async getUserFromEntity (user: User | undefined): Promise<User> {
         const response = await this.octane.get(Octane.Octane.entityTypes.workspaceUsers)
         .fields('full_name')    
-        .at(entity.owner?.id)
+        .at(user?.id)
         .execute();
         return response;
     }
@@ -152,13 +153,14 @@ export class OctaneEntity {
     public storyPoints?: string;
     public phase?: OctaneEntity | OctaneEntity[];
     public references?: OctaneEntity[];
-    public owner?: Owner;
+    public owner?: User;
     public investedHours?: string;
     public remainingHours?: string;
     public estimatedHours?: string;
     public detectedBy?: string;
     public severity?: string;
     public subtype?: string;
+    public author?: User;
     constructor(i?: any) {
         this.id = (i && i.id) ? i.id : null;
         this.type = (i && i.type) ? i.type : null;
@@ -170,6 +172,7 @@ export class OctaneEntity {
         this.detectedBy = i?.detected_by ?? null;
         this.severity = i?.severity?.id ?? null;
         this.owner = i?.owner ?? null;
+        this.author = i?.author ?? null;
         if (i.phase) {
             if (i.phase.data) {
                 this.phase = i.phase.data.map((ref: any) => new OctaneEntity(ref));
@@ -181,7 +184,7 @@ export class OctaneEntity {
     }
 }
 
-export class Owner {
+export class User {
 
     public id: string;
     public full_name?: string;
