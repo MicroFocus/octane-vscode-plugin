@@ -66,8 +66,13 @@ export class OctaneService {
                     .build()
             )
             .execute();
-        console.log(response);
-        return response.data.map((i: any) => new OctaneEntity(i));
+        let entities = [];
+        for(let i = 0; i < response.data.length; i++) {
+            let entity = new OctaneEntity(response.data[i]);
+            entity.owner = (await this.getOwnerFromEntity(entity));
+            entities.push(entity);
+        };
+        return entities;
     }
 
     public static getInstance(): OctaneService {
@@ -129,6 +134,14 @@ export class OctaneService {
         }
         return '';
     }
+
+    public async getOwnerFromEntity (entity: OctaneEntity): Promise<Owner> {
+        const response = await this.octane.get(Octane.Octane.entityTypes.workspaceUsers)
+        .fields('full_name')    
+        .at(entity.owner?.id)
+        .execute();
+        return response;
+    }
 }
 
 export class OctaneEntity {
@@ -139,7 +152,7 @@ export class OctaneEntity {
     public storyPoints?: string;
     public phase?: OctaneEntity | OctaneEntity[];
     public references?: OctaneEntity[];
-    public owner?: string;
+    public owner?: Owner;
     public investedHours?: string;
     public remainingHours?: string;
     public estimatedHours?: string;
@@ -151,13 +164,12 @@ export class OctaneEntity {
         this.type = (i && i.type) ? i.type : null;
         this.name = (i && i.name) ? i.name : null;
         this.storyPoints = (i && i.story_points) ? i.story_points : null;
-        this.owner = i?.owner?.id ?? null;
         this.investedHours = i?.invested_hours ?? null;
         this.remainingHours = i?.remaining_hours ?? null;
         this.estimatedHours = i?.estimated_hours ?? null;
         this.detectedBy = i?.detected_by ?? null;
         this.severity = i?.severity?.id ?? null;
-        
+        this.owner = i?.owner ?? null;
         if (i.phase) {
             if (i.phase.data) {
                 this.phase = i.phase.data.map((ref: any) => new OctaneEntity(ref));
@@ -166,6 +178,18 @@ export class OctaneEntity {
             }
         }
     }
+}
+
+export class Owner {
+
+    public id: string;
+    public full_name?: string;
+
+    constructor(i?: any) {
+        this.id = i?.id ?? null;
+        this.full_name = i?.full_name ?? '';
+    }
+
 }
 
 export class Metaphase extends OctaneEntity {
