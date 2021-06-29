@@ -158,7 +158,7 @@ export class OctaneEntity {
     public estimatedHours?: string;
     public detectedBy?: string;
     public severity?: string;
-    
+    public subtype?: string;
     constructor(i?: any) {
         this.id = (i && i.id) ? i.id : null;
         this.type = (i && i.type) ? i.type : null;
@@ -177,6 +177,7 @@ export class OctaneEntity {
                 this.phase = new OctaneEntity(i.phase);
             }
         }
+        this.subtype = i?.subtype ?? '';
     }
 }
 

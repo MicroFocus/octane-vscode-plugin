@@ -32,7 +32,32 @@ export abstract class MyWorkProvider implements vscode.TreeDataProvider<MyWorkIt
         const item = new MyWorkItem(new MyWorkItemLabel(i));
         item.id = '' + i.id;
         item.entity = i;
+        item.iconPath = this.getIconForEntity(i);
         return item;
+    }
+
+    private getIconForEntity(entity: OctaneEntity): vscode.Uri  {
+        if (entity?.subtype) {
+            if (entity?.subtype == 'defect')
+                return vscode.Uri.file(`${__filename}/../../media/treeIcons/D.svg`);
+            if (entity?.subtype == 'story')
+                return vscode.Uri.file(`${__filename}/../../media/treeIcons/US.svg`);
+            if (entity?.subtype == 'quality_story')
+                return vscode.Uri.file(`${__filename}/../../media/treeIcons/QS.svg`);
+            if (entity?.subtype == 'feature')
+                return vscode.Uri.file(`${__filename}/../../media/treeIcons/F.svg`);
+            if (entity?.subtype == 'scenario_test')
+                return vscode.Uri.file(`${__filename}/../../media/treeIcons/BSC.svg`);
+            if (entity?.subtype == 'test_manual')
+                return vscode.Uri.file(`${__filename}/../../media/treeIcons/MT.svg`);
+            if (entity?.subtype == 'auto_test')
+                return vscode.Uri.file(`${__filename}/../../media/treeIcons/AT.svg`);
+            if (entity?.subtype == 'gherkin_test')
+                return vscode.Uri.file(`${__filename}/../../media/treeIcons/GT.svg`);
+            if (entity?.subtype == 'test_suite')
+                return vscode.Uri.file(`${__filename}/../../media/treeIcons/TS.svg`);
+        }
+        return vscode.Uri.file('');
     }
 
     public refresh(): any {
