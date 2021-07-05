@@ -69,17 +69,17 @@ export abstract class MyWorkProvider implements vscode.TreeDataProvider<MyWorkIt
             item.tooltip = new vscode.MarkdownString(
                 '**' + item.entity.id + '** ' + (item.entity?.name ?? '' )
                 + '\n\n'
-                + (item.entity.type != 'test' && item.entity.type != 'comment' ? '| SP: ' + (item.entity.storyPoints ?? '-')  + ' ' : '')
+                + (item.entity.type !== 'test' && item.entity.type !== 'comment' ? '| SP: ' + (item.entity.storyPoints ?? '-')  + ' ' : '')
                 + (item.entity.phase instanceof OctaneEntity ? '| Phase: ' + (this.service.getPhaseLabel(item.entity.phase) ?? '-') + ' ' : '')
-                + (item.entity.subtype == 'defect' ? '| Severity: ' + (item.entity.severity?.split(/[\s.]+/).pop() ?? '-' ) + ' ' : '')
+                + (item.entity.subtype === 'defect' ? '| Severity: ' + (item.entity.severity?.split(/[\s.]+/).pop() ?? '-' ) + ' ' : '')
                 + '\n\n'
-                + (item.entity.type != 'comment' ? '| Owner: ' + (item.entity.owner?.full_name ?? '-') + ' ' : '')
-                + (item.entity.subtype == 'defect' ? '| Detected by: ' + (item.entity.detectedBy?.full_name ?? '-' ) + ' ' : '')
-                + '| Auther: ' + (item.entity.author?.full_name ?? '-')+ ' '
+                + (item.entity.type !== 'comment' ? '| Owner: ' + (item.entity.owner?.fullName ?? '-') + ' ' : '')
+                + (item.entity.subtype === 'defect' ? '| Detected by: ' + (item.entity.detectedBy?.fullName ?? '-' ) + ' ' : '')
+                + '| Auther: ' + (item.entity.author?.fullName ?? '-')+ ' '
                 + '\n\n'
-                + (item.entity.type != 'comment' && item.entity.type != 'test' ? '| Invested Hours: ' + (item.entity.investedHours ?? '-' ) + ' ' : '')
-                + (item.entity.type != 'comment' && item.entity.type != 'test' ? '| Remaining Hours: ' + (item.entity.remainingHours ?? '-' ) + ' ' : '')
-                + (item.entity.type != 'comment' && item.entity.type != 'test' ? '| Estimated Hours: ' + (item.entity.estimatedHours ?? '-' ) + ' ' : '')
+                + (item.entity.type !== 'comment' && item.entity.type !== 'test' ? '| Invested Hours: ' + (item.entity.investedHours ?? '-' ) + ' ' : '')
+                + (item.entity.type !== 'comment' && item.entity.type !== 'test' ? '| Remaining Hours: ' + (item.entity.remainingHours ?? '-' ) + ' ' : '')
+                + (item.entity.type !== 'comment' && item.entity.type !== 'test' ? '| Estimated Hours: ' + (item.entity.estimatedHours ?? '-' ) + ' ' : '')
             );
         }
         return item;

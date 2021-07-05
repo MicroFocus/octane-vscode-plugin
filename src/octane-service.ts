@@ -51,6 +51,7 @@ export class OctaneService {
             vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myTests.refreshEntry');
             vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myMentions.refreshEntry');
             vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myFeatures.refreshEntry');
+            vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myRequirements.refreshEntry');
         }
     }
 
@@ -75,6 +76,8 @@ export class OctaneService {
                     .build()
             )
             .execute();
+        console.log(response);
+
         let entities = [];
         for(let i = 0; i < response.data.length; i++) {
             let entity = new OctaneEntity(response.data[i]);
@@ -96,6 +99,29 @@ export class OctaneService {
 
     public async getMyBacklog(): Promise<OctaneEntity[]> {
         return this.refreshMyWork(['defect', 'story', 'quality_story']);
+    }
+
+    public async getMyRequirements(): Promise<OctaneEntity[]> {
+        const response = await this.octane.get(Octane.Octane.entityTypes.requirements)
+            .fields('name', 'phase', 'owner', 'author')
+            .query(
+                Query.field('subtype').inComparison(['requirement_document']).and()
+                    .field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
+                    .build()
+            )
+            .execute();
+        console.log(response);
+
+        let entities = [];
+        for(let i = 0; i < response.data.length; i++) {
+            let entity = new OctaneEntity(response.data[i]);
+            entity.owner = (await this.getUserFromEntity(entity.owner));
+            entity.author = (await this.getUserFromEntity(entity.author));
+            entity.detectedBy = (await this.getUserFromEntity(entity.detectedBy));
+            entities.push(entity);
+        };
+        console.log(entities);
+        return entities;
     }
 
     public async getMyDefects(): Promise<OctaneEntity[]> {
@@ -160,10 +186,13 @@ export class OctaneService {
         return '';
     }
 
-    public async getUserFromEntity (user: User | undefined): Promise<User> {
+    public async getUserFromEntity (user: User | undefined): Promise<User|undefined> {
+        if (!user) {
+            return;
+        }
         const response = await this.octane.get(Octane.Octane.entityTypes.workspaceUsers)
         .fields('full_name')    
-        .at(user?.id)
+        .at(user.id)
         .execute();
         return response;
     }    
@@ -211,11 +240,11 @@ export class OctaneEntity {
 export class User {
 
     public id: string;
-    public full_name?: string;
+    public fullName?: string;
 
     constructor(i?: any) {
         this.id = i?.id ?? null;
-        this.full_name = i?.full_name ?? '';
+        this.fullName = i?.full_name ?? '';
     }
 
 }
