@@ -2,11 +2,12 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { BacklogProvider } from './backlog-provider';
-import { OctaneService } from './octane-service';
+import { OctaneEntity, OctaneService } from './octane-service';
 import { MyMentionsProvider } from './mentions-provider';
 import { MyTestsProvider } from './tests-provider';
 import { MyFeatureProvider } from './feature-provider';
 import { MyWorkItem } from './my-work-provider';
+import { DataPanelProvider } from './DataPanel';
 
 
 // this method is called when your extension is activated
@@ -65,11 +66,20 @@ export function activate(context: vscode.ExtensionContext) {
 	// 	});
 	// 	context.subscriptions.push(detailsCommand);
 	// }
+
 	{
 		let detailsCommand = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.details',
-			(node: MyWorkItem) => vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(`${myWorkScheme}:${JSON.stringify(node.entity)}`)));
+			(node: MyWorkItem) => { 
+				const data = node.entity;
+				console.log(data);
+				vscode.commands.executeCommand('vscode.open', DataPanelProvider);
+			});
 		context.subscriptions.push(detailsCommand);
+		// vscode.window.registerCustomEditorProvider(
+		// 	DataPanelProvider.viewType
+		// )
 	}
+
 
 	const myWorkScheme = 'alm-octane-entity';
 	const myWorkSchemeProvider = new class implements vscode.TextDocumentContentProvider {
