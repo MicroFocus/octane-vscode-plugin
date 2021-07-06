@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
-import { DataPanelProvider } from './DataPanel';
+import { MyTextEditor } from './my-text-editor';
 
-class Document implements vscode.CustomDocument {
+class MyWorkDocument implements vscode.CustomDocument {
     
     uri: vscode.Uri;
     

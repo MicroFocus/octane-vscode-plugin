@@ -7,7 +7,7 @@ import { MyMentionsProvider } from './mentions-provider';
 import { MyTestsProvider } from './tests-provider';
 import { MyFeatureProvider } from './feature-provider';
 import { MyWorkItem } from './my-work-provider';
-import { DataPanelProvider } from './DataPanel';
+import { MyTextEditor } from './my-text-editor';
 import { MyRequirementsProvider } from './requirements-provider';
 
 
@@ -83,7 +83,7 @@ export function activate(context: vscode.ExtensionContext) {
 			(node: MyWorkItem) => { 
 				const data = node.entity;
 				console.log(data);
-				vscode.commands.executeCommand('vscode.open', DataPanelProvider);
+				vscode.commands.executeCommand('vscode.open', MyTextEditor.viewType);
 			});
 		context.subscriptions.push(detailsCommand);
 		// vscode.window.registerCustomEditorProvider(
