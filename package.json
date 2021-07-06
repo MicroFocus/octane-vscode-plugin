@@ -15,6 +15,7 @@
 		"onCommand:visual-studio-code-plugin-for-alm-octane.myTests.refreshEntry",
 		"onCommand:visual-studio-code-plugin-for-alm-octane.myFeatures.refreshEntry",
 		"onCommand:visual-studio-code-plugin-for-alm-octane.myMentions.refreshEntry",
+		"onCommand:visual-studio-code-plugin-for-alm-octane.myRequirements.refreshEntry",
 		"onView:visual-studio-code-plugin-for-alm-octane-explorer"
 	],
 	"main": "./out/extension.js",
@@ -84,6 +85,11 @@
 					"id": "myMentions",
 					"name": "Mentions",
 					"icon": "media/favicon.png"
+				},
+				{
+					"id": "myRequirements",
+					"name": "Requirements",
+					"icon": "media/favicon.png"
 				}
 			]
 		},
@@ -107,6 +113,11 @@
 				{
 					"command": "visual-studio-code-plugin-for-alm-octane.myMentions.refreshEntry",
 					"when": "view == myMentions",
+					"group": "navigation"
+				},
+				{
+					"command": "visual-studio-code-plugin-for-alm-octane.myRequirements.refreshEntry",
+					"when": "view == myRequirements",
 					"group": "navigation"
 				}
 			]
@@ -139,6 +150,14 @@
 			{
 				"command": "visual-studio-code-plugin-for-alm-octane.myMentions.refreshEntry",
 				"title": "Refresh MyMentions",
+				"icon": {
+					"light": "resources/light/refresh.svg",
+					"dark": "resources/dark/refresh.svg"
+				}
+			},
+			{
+				"command": "visual-studio-code-plugin-for-alm-octane.myRequirements.refreshEntry",
+				"title": "Refresh MyRequirements",
 				"icon": {
 					"light": "resources/light/refresh.svg",
 					"dark": "resources/dark/refresh.svg"

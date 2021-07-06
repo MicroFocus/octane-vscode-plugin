@@ -8,6 +8,7 @@ import { MyTestsProvider } from './tests-provider';
 import { MyFeatureProvider } from './feature-provider';
 import { MyWorkItem } from './my-work-provider';
 import { DataPanelProvider } from './DataPanel';
+import { MyRequirementsProvider } from './requirements-provider';
 
 
 // this method is called when your extension is activated
@@ -28,6 +29,9 @@ export function activate(context: vscode.ExtensionContext) {
 
 	const myMentionsProvider = new MyMentionsProvider(service);
 	vscode.window.registerTreeDataProvider('myMentions', myMentionsProvider);
+
+	const myRequirementsProvider = new MyRequirementsProvider(service);
+	vscode.window.registerTreeDataProvider('myRequirements', myRequirementsProvider);
 
 	{
 		let refreshCommand = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.myBacklog.refreshEntry', () => {
@@ -53,6 +57,13 @@ export function activate(context: vscode.ExtensionContext) {
 	{
 		let refreshCommand = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.myMentions.refreshEntry', () => {
 			myMentionsProvider.refresh();
+		});
+		context.subscriptions.push(refreshCommand);
+	}
+
+	{
+		let refreshCommand = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.myRequirements.refreshEntry', () => {
+			myRequirementsProvider.refresh();
 		});
 		context.subscriptions.push(refreshCommand);
 	}
