@@ -16,7 +16,8 @@
 		"onCommand:visual-studio-code-plugin-for-alm-octane.myFeatures.refreshEntry",
 		"onCommand:visual-studio-code-plugin-for-alm-octane.myMentions.refreshEntry",
 		"onCommand:visual-studio-code-plugin-for-alm-octane.myRequirements.refreshEntry",
-		"onView:visual-studio-code-plugin-for-alm-octane-explorer"
+		"onView:visual-studio-code-plugin-for-alm-octane-explorer",
+		"onCommand:visual-studio-code-plugin-for-alm-octane.details"
 	],
 	"main": "./out/extension.js",
 	"contributes": {

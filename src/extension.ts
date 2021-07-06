@@ -77,33 +77,34 @@ export function activate(context: vscode.ExtensionContext) {
 	// 	});
 	// 	context.subscriptions.push(detailsCommand);
 	// }
-
+	const myWorkScheme = 'alm-octane-entity';
 	{
+
+
 		let detailsCommand = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.details',
-			(node: MyWorkItem) => { 
+			(node: MyWorkItem) => {
 				const data = node.entity;
 				console.log(data);
-				vscode.commands.executeCommand('vscode.open', MyTextEditor.viewType);
+				const uri = vscode.Uri.parse(`${myWorkScheme}:${JSON.stringify(node.entity)}`);
+				vscode.commands.executeCommand('vscode.open', uri);
 			});
-		context.subscriptions.push(detailsCommand);
-		// vscode.window.registerCustomEditorProvider(
-		// 	DataPanelProvider.viewType
-		// )
+		const provider = vscode.window.registerCustomEditorProvider(myWorkScheme, new MyTextEditor(context));
+		context.subscriptions.push(provider);
 	}
 
 
-	const myWorkScheme = 'alm-octane-entity';
-	const myWorkSchemeProvider = new class implements vscode.TextDocumentContentProvider {
 
-		// emitter and its event
-		onDidChangeEmitter = new vscode.EventEmitter<vscode.Uri>();
-		onDidChange = this.onDidChangeEmitter.event;
+	// const myWorkSchemeProvider = new class implements vscode.TextDocumentContentProvider {
+	// 	// const myWorkScheme = 'alm-octane-entity';
+	// 	// emitter and its event
+	// 	onDidChangeEmitter = new vscode.EventEmitter<vscode.Uri>();
+	// 	onDidChange = this.onDidChangeEmitter.event;
 
-		provideTextDocumentContent(uri: vscode.Uri): string {
-			return uri.path;
-		}
-	};
-	context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider(myWorkScheme, myWorkSchemeProvider));
+	// 	provideTextDocumentContent(uri: vscode.Uri): string {
+	// 		return uri.path;
+	// 	}
+	// };
+	// context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider(myWorkScheme, myWorkSchemeProvider));
 }
 
 // this method is called when your extension is deactivated
