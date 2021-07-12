@@ -77,19 +77,55 @@ export function activate(context: vscode.ExtensionContext) {
 	// 	});
 	// 	context.subscriptions.push(detailsCommand);
 	// }
+	
 	const myWorkScheme = 'alm-octane-entity';
 	{
-
-
 		let detailsCommand = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.details',
-			(node: MyWorkItem) => {
+			async (node: MyWorkItem) => {
 				const data = node.entity;
-				console.log(data);
-				const uri = vscode.Uri.parse(`${myWorkScheme}:${JSON.stringify(node.entity)}`);
-				vscode.commands.executeCommand('vscode.open', uri);
+				const uri = vscode.Uri.parse(`${myWorkScheme}:${JSON.stringify(data)}`);
+
+				const panel = vscode.window.createWebviewPanel(
+					'myEditor',
+					data?.id ?? '',
+					vscode.ViewColumn.One,
+					{}
+				);
+				panel.webview.html = getHtmlForWebview(panel.webview, context, data);
 			});
-		const provider = vscode.window.registerCustomEditorProvider(myWorkScheme, new MyTextEditor(context));
-		context.subscriptions.push(provider);
+
+		context.subscriptions.push(detailsCommand);
+
+
+		function getHtmlForWebview(webview: vscode.Webview, context: any, data: OctaneEntity | undefined): string {
+			const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(
+				context.extensionUri, 'media', 'vscode.css'));
+			const myStyle = webview.asWebviewUri(vscode.Uri.joinPath(
+				context.extensionUri, 'media', 'my-css.css'));
+			return `
+				<!DOCTYPE html>
+				<head>
+					<link href="${styleVSCodeUri}" rel="stylesheet" />
+					<link href="${myStyle}" rel="stylesheet" />
+				</head>
+				<body>
+					<div class="information">
+						<div class="information-left">
+							<input readonly type="text" value="${data?.id ?? ''}">
+							<span></span><input readonly type="text" value="${data?.name ?? ''}">
+						</div>
+						<div class="information-right">
+							<input readonly type="text" value="${data?.owner?.fullName ?? '-'}">
+							<span></span><input readonly type="text" value="${data?.author?.fullName ?? '-'}">
+						</div>
+					</div>
+					<br><br><br>
+					<button class="save" type="button">Save</button>
+				</body>
+		
+			`;
+		}
+
 	}
 
 

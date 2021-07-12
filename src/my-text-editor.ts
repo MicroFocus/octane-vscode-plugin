@@ -1,52 +1,20 @@
 import * as vscode from 'vscode';
 
-export class MyTextEditor implements vscode.CustomTextEditorProvider {
+export class MyTextEditor implements vscode.TextDocumentContentProvider {
 
-    public static readonly viewType: string = 'alm-octane-entity';
+    public static readonly viewType: string = 'myEditor';
 
     public constructor(
         private context: vscode.ExtensionContext
     ) { }
 
-    resolveCustomTextEditor(document: vscode.TextDocument, webviewPanel: vscode.WebviewPanel): void | Thenable<void> {
-
-        webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview);
-
-        function updateWebview() {
-            webviewPanel.webview.postMessage({
-                type: 'update',
-                text: document.getText(),
-            });
-        }
-        const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument(e => {
-        	if (e.document.uri.toString() === document.uri.toString()) {
-        		updateWebview();
-        	}
-        });
-        webviewPanel.onDidDispose(() => {
-            changeDocumentSubscription.dispose();
-        });
-
-        webviewPanel.webview.onDidReceiveMessage(e => {
-			console.log("e = ",e);
-		});
-
-        updateWebview();
+    onDidChangeEmitter = new vscode.EventEmitter<vscode.Uri>();
+    onDidChange = this.onDidChangeEmitter.event;
+    provideTextDocumentContent(uri: vscode.Uri): string {
+        const data = JSON.parse(uri.path);
+        return "data";
     }
 
-    private getHtmlForWebview(webview: vscode.Webview): string {
-        const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(
-            this.context.extensionUri, 'media', 'vscode.css'));
-        return `
-		<!DOCTYPE html>
-		<head>
-            <link href="${styleVSCodeUri}" rel="stylesheet" />
-		</head>
-		<body>
-			<input>
-		</body>
-
-	`;
-    }
+    
 
 }

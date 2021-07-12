@@ -1,0 +1,25 @@
+
+.information {
+    display: flex;
+    flex-direction: column;
+}
+
+.information-left {
+    display: flex;
+}
+
+.information-right {
+    display: flex;
+}
+
+span {
+    margin: .5rem;
+}
+
+input {
+    margin-top: 0.5rem;
+}
+
+.save {
+    margin-top: 5rem !important;
+}
