@@ -41,18 +41,6 @@ export class OctaneService {
             }
 
             {
-                const fields = await this.octane.get(Octane.Octane.entityTypes.fieldsMetadata)
-                    // .fields()
-                    // .query(Query.field('id').equal('235359').build())
-                    .execute();
-                const result = await this.octane.get(Octane.Octane.entityTypes.workItems)
-                    .fields()
-                    .query(Query.field('id').equal('235359').build())
-                    .execute();
-                console.log("result = ", result);
-            }
-
-            {
                 const result = await this.octane.get(Octane.Octane.entityTypes.fieldsMetadata)
                     .query(Query.field('entity_name').inComparison(['feature', 'defect', 'story', 'quality_story', 'test_manual', 'gherkin_test', 'scenario_test']).build())
                     .execute();
@@ -209,13 +197,6 @@ export class OctaneService {
         return response;
     }
 
-    public async getFieldsFromOctaneForType(type: string): Promise<OctaneEntity[]> {
-        const result = await this.octane.get(Octane.Octane.entityTypes.fieldsMetadata)
-            // .fields('id', 'name', 'phase')
-            .execute();
-        console.log("result = ", result);
-        return result;
-    }
 }
 
 export class OctaneEntity {
