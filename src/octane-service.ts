@@ -191,12 +191,11 @@ export class OctaneService {
             return;
         }
         const response = await this.octane.get(Octane.Octane.entityTypes.workspaceUsers)
-            .fields('full_name')
-            .at(user.id)
-            .execute();
-        return response;
-    }
-
+        .fields('full_name')    
+        .at(user.id)
+        .execute();
+        return new User(response);
+    }    
 }
 
 export class OctaneEntity {
@@ -223,10 +222,10 @@ export class OctaneEntity {
         this.investedHours = i?.invested_hours ?? null;
         this.remainingHours = i?.remaining_hours ?? null;
         this.estimatedHours = i?.estimated_hours ?? null;
-        this.detectedBy = i?.detected_by ?? null;
+        this.detectedBy = new User(i?.detected_by);
         this.severity = i?.severity?.id ?? null;
-        this.owner = i?.owner ?? null;
-        this.author = i?.author ?? null;
+        this.owner = new User(i?.owner);
+        this.author = new User(i?.author);
         if (i.phase) {
             if (i.phase.data) {
                 this.phase = i.phase.data.map((ref: any) => new OctaneEntity(ref));
