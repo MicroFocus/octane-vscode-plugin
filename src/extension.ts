@@ -96,6 +96,29 @@ export function activate(context: vscode.ExtensionContext) {
 
 		context.subscriptions.push(detailsCommand);
 
+		function getDataForSubtype(entity: OctaneEntity | undefined): [string, string] {
+			if (entity?.subtype) {
+				if (entity?.subtype === 'defect')
+					return ["D", "#b21646"]
+				if (entity?.subtype === 'story')
+					return ["US", "#ffb000"]
+				if (entity?.subtype === 'quality_story')
+					return ["QS", "#33c180"]
+				if (entity?.subtype === 'feature')
+					return ["F", "#e57828"]
+				if (entity?.subtype === 'scenario_test')
+					return ["BSC", "#75da4d"]
+				if (entity?.subtype === 'test_manual')
+					return ["MT", "#00abf3"]
+				if (entity?.subtype === 'auto_test')
+					return ["AT", "#9b1e83"]
+				if (entity?.subtype === 'gherkin_test')
+					return ["GT", "#00a989"]
+				if (entity?.subtype === 'test_suite')
+					return ["TS", "#271782"]
+			}
+			return ['', ''];
+		}
 
 		function getHtmlForWebview(webview: vscode.Webview, context: any, data: OctaneEntity | undefined): string {
 			const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(
@@ -110,6 +133,9 @@ export function activate(context: vscode.ExtensionContext) {
 				</head>
 				<body>
 					<div class="top-container">
+						<div class="icon-container" style="background-color: ${getDataForSubtype(data)[1]}">
+							<span class="label">${getDataForSubtype(data)[0]}</span>
+						</div>
 						<div class="name-container">
 							<h3>${data?.name ?? '-'}</h3>
 						</div>
