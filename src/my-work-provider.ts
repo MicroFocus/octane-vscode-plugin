@@ -75,7 +75,7 @@ export abstract class MyWorkProvider implements vscode.TreeDataProvider<MyWorkIt
                 + '\n\n'
                 + (item.entity.type !== 'comment' ? '| Owner: ' + (item.entity.owner?.fullName ?? '-') + ' ' : '')
                 + (item.entity.subtype === 'defect' ? '| Detected by: ' + (item.entity.detectedBy?.fullName ?? '-' ) + ' ' : '')
-                + '| Auther: ' + (item.entity.author?.fullName ?? '-')+ ' '
+                + '| Author: ' + (item.entity.author?.fullName ?? '-')+ ' '
                 + '\n\n'
                 + (item.entity.type !== 'comment' && item.entity.type !== 'test' ? '| Invested Hours: ' + (item.entity.investedHours ?? '-' ) + ' ' : '')
                 + (item.entity.type !== 'comment' && item.entity.type !== 'test' ? '| Remaining Hours: ' + (item.entity.remainingHours ?? '-' ) + ' ' : '')
