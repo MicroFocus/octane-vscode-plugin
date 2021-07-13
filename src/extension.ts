@@ -77,7 +77,7 @@ export function activate(context: vscode.ExtensionContext) {
 	// 	});
 	// 	context.subscriptions.push(detailsCommand);
 	// }
-	
+
 	const myWorkScheme = 'alm-octane-entity';
 	{
 		let detailsCommand = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.details',
@@ -109,18 +109,70 @@ export function activate(context: vscode.ExtensionContext) {
 					<link href="${myStyle}" rel="stylesheet" />
 				</head>
 				<body>
-					<div class="information">
-						<div class="information-left">
-							<input readonly type="text" value="${data?.id ?? ''}">
-							<span></span><input readonly type="text" value="${data?.name ?? ''}">
+					<div class="top-container">
+						<div class="name-container">
+							<h3>${data?.name ?? '-'}</h3>
 						</div>
-						<div class="information-right">
-							<input readonly type="text" value="${data?.owner?.fullName ?? '-'}">
-							<span></span><input readonly type="text" value="${data?.author?.fullName ?? '-'}">
+						<div class="action-container">
+							<select name="action" class="action">
+								<option value="saab">In progress</option>
+								<option value="saab">In Testing</option>
+								<option value="saab">Finished</option>
+					  		</select>
+							<button class="save" type="button">Save</button>
+							<button class="refresh" type="button">Refresh</button>
 						</div>
 					</div>
-					<br><br><br>
-					<button class="save" type="button">Save</button>
+					<div class="information">
+					<br>
+					<hr>
+						General
+						<div class="information-container">
+							<div class="container">
+								<span>Id</span>
+								<input readonly type="text" value="${data?.id ?? '-'}">
+							</div>
+							<div class="container">
+								<span>Name</span>
+								<input readonly type="text" value="${data?.name ?? '-'}">
+							</div>
+							<div class="container">
+								<span>Story points</span>
+								<input readonly type="text" value="${data?.storyPoints ?? '-'}">
+							</div>
+						</div>
+						<div class="information-container">
+							<div class="container">
+								<span>Owner</span>
+								<input readonly type="text" value="${data?.owner?.fullName ?? '-'}">
+							</div>
+							<div class="container">
+								<span>Author</span>
+								<input readonly type="text" value="${data?.author?.fullName ?? '-'}">
+							</div>
+							<div class="container">
+								<span>Detected by</span>
+								<input readonly type="text" value="${data?.detectedBy?.fullName ?? '-'}">
+							</div>
+						</div>
+						<br>
+						<hr>
+						Description
+						<div class="information-container">
+							<div class="container">
+								<input class="description" readonly type="text" value="${''}">
+							</div>
+						</div>
+						<br>
+						<hr>
+						Comments
+						<div class="information-container">
+							<div class="comments-container">
+								<input type="text" value="${''}">
+								<button class="comments" type="button">Comment</button>
+							</div>
+						</div>
+					</div>
 				</body>
 		
 			`;
