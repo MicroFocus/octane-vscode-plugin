@@ -42,7 +42,7 @@ export class OctaneService {
 
             {
                 const result = await this.octane.get(Octane.Octane.entityTypes.fieldsMetadata)
-                    .query(Query.field('entity_name').inComparison(['feature', 'defect', 'story', 'quality_story', 'test_manual','gherkin_test','scenario_test']).build())
+                    .query(Query.field('entity_name').inComparison(['feature', 'defect', 'story', 'quality_story', 'test_manual', 'gherkin_test', 'scenario_test']).build())
                     .execute();
                 console.log(result.data.map((p: { name: any; }) => p.name));
             }
@@ -65,11 +65,11 @@ export class OctaneService {
             subtypes.push(subtype);
         } else {
             subtypes = subtype;
-        } 
+        }
         const response = await this.octane.get(Octane.Octane.entityTypes.workItems)
-            .fields('name', 'story_points', 'phase', 'owner', 
-                    'invested_hours', 'estimated_hours', 'remaining_hours', 
-                    'detected_by', 'severity', 'author', 'detected_by')
+            .fields('name', 'story_points', 'phase', 'owner',
+                'invested_hours', 'estimated_hours', 'remaining_hours',
+                'detected_by', 'severity', 'author', 'detected_by')
             .query(
                 Query.field('subtype').inComparison(subtypes).and()
                     .field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
@@ -79,7 +79,7 @@ export class OctaneService {
         console.log(response);
 
         let entities = [];
-        for(let i = 0; i < response.data.length; i++) {
+        for (let i = 0; i < response.data.length; i++) {
             let entity = new OctaneEntity(response.data[i]);
             entity.owner = (await this.getUserFromEntity(entity.owner));
             entity.author = (await this.getUserFromEntity(entity.author));
@@ -113,7 +113,7 @@ export class OctaneService {
         console.log(response);
 
         let entities = [];
-        for(let i = 0; i < response.data.length; i++) {
+        for (let i = 0; i < response.data.length; i++) {
             let entity = new OctaneEntity(response.data[i]);
             entity.owner = (await this.getUserFromEntity(entity.owner));
             entity.author = (await this.getUserFromEntity(entity.author));
@@ -144,13 +144,13 @@ export class OctaneService {
         const response = await this.octane.get(Octane.Octane.entityTypes.tests)
             .fields('name', 'owner', 'author', 'phase')
             .query(
-                Query.field('subtype').inComparison(['test_manual','gherkin_test','scenario_test']).and()
+                Query.field('subtype').inComparison(['test_manual', 'gherkin_test', 'scenario_test']).and()
                     .field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
                     .build()
             )
             .execute();
         let entities = [];
-        for(let i = 0; i < response.data.length; i++) {
+        for (let i = 0; i < response.data.length; i++) {
             let entity = new OctaneEntity(response.data[i]);
             entity.owner = (await this.getUserFromEntity(entity.owner));
             entity.author = (await this.getUserFromEntity(entity.author));
@@ -169,7 +169,7 @@ export class OctaneService {
             )
             .execute();
         let entities = [];
-        for(let i = 0; i < response.data.length; i++) {
+        for (let i = 0; i < response.data.length; i++) {
             let entity = new Comment(response.data[i]);
             entity.author = (await this.getUserFromEntity(entity.author));
             entities.push(entity);
@@ -186,7 +186,7 @@ export class OctaneService {
         return '';
     }
 
-    public async getUserFromEntity (user: User | undefined): Promise<User|undefined> {
+    public async getUserFromEntity(user: User | undefined): Promise<User | undefined> {
         if (!user) {
             return;
         }
