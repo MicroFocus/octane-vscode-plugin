@@ -17,7 +17,9 @@ export class OctaneWebview {
         return vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.details',
             async (node: MyWorkItem) => {
                 const data = node.entity;
-                const uri = vscode.Uri.parse(`${this.myWorkScheme}:${JSON.stringify(data)}`);
+                if (!data || !data.subtype) {
+                    return;
+                }
 
                 const panel = vscode.window.createWebviewPanel(
                     'myEditor',
@@ -25,44 +27,41 @@ export class OctaneWebview {
                     vscode.ViewColumn.One,
                     {}
                 );
-                panel.webview.html = getHtmlForWebview(panel.webview, context, data);
+
+                const fields = await OctaneService.getInstance().getFieldsForType(data.subtype);
+                if (!fields) {
+                    return;
+                }
+                const fullData = await OctaneService.getInstance().getDataFromOctaneForTypeAndId(data.subtype, data.id);
+                console.log('testing =====');
+                console.log(fullData);
+                panel.webview.html = getHtmlForWebview(panel.webview, context, fullData, fields);
             });
     }
 
-    // public static getDataFromOctane(id: string){
-    //     return this.octaneService.getFieldsFromOctaneForType(id);
-    // }
 }
 
 function getDataForSubtype(entity: OctaneEntity | undefined): [string, string] {
     if (entity?.subtype) {
-        if (entity?.subtype === 'defect')
-            return ["D", "#b21646"]
-        if (entity?.subtype === 'story')
-            return ["US", "#ffb000"]
-        if (entity?.subtype === 'quality_story')
-            return ["QS", "#33c180"]
-        if (entity?.subtype === 'feature')
-            return ["F", "#e57828"]
-        if (entity?.subtype === 'scenario_test')
-            return ["BSC", "#75da4d"]
-        if (entity?.subtype === 'test_manual')
-            return ["MT", "#00abf3"]
-        if (entity?.subtype === 'auto_test')
-            return ["AT", "#9b1e83"]
-        if (entity?.subtype === 'gherkin_test')
-            return ["GT", "#00a989"]
-        if (entity?.subtype === 'test_suite')
-            return ["TS", "#271782"]
+        if (entity?.subtype === 'defect') { return ["D", "#b21646"]; }
+        if (entity?.subtype === 'story') { return ["US", "#ffb000"]; }
+        if (entity?.subtype === 'quality_story') { return ["QS", "#33c180"]; }
+        if (entity?.subtype === 'feature') { return ["F", "#e57828"]; }
+        if (entity?.subtype === 'scenario_test') { return ["BSC", "#75da4d"]; }
+        if (entity?.subtype === 'test_manual') { return ["MT", "#00abf3"]; }
+        if (entity?.subtype === 'auto_test') { return ["AT", "#9b1e83"]; }
+        if (entity?.subtype === 'gherkin_test') { return ["GT", "#00a989"]; }
+        if (entity?.subtype === 'test_suite') { return ["TS", "#271782"]; }
     }
     return ['', ''];
 }
 
-function getHtmlForWebview(webview: vscode.Webview, context: any, data: OctaneEntity | undefined): string {
+function getHtmlForWebview(webview: vscode.Webview, context: any, data: any | OctaneEntity | undefined, fields: any[]): string {
     const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(
         context.extensionUri, 'media', 'vscode.css'));
     const myStyle = webview.asWebviewUri(vscode.Uri.joinPath(
         context.extensionUri, 'media', 'my-css.css'));
+
     return `
         <!DOCTYPE html>
         <head>

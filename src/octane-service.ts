@@ -13,7 +13,7 @@ export class OctaneService {
     private loggedInUserId?: number;
     private metaphases?: Metaphase[];
 
-    private octaneMap = new Map();
+    private octaneMap = new Map<String, any[]>();
 
     public async initialize() {
         const uri = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.uri');
@@ -40,27 +40,6 @@ export class OctaneService {
                     .execute();
                 this.metaphases = result.data.map((m: any) => new Metaphase(m));
                 console.log(this.metaphases);
-            }
-
-            {
-                const result = await this.octane.get(Octane.Octane.entityTypes.fieldsMetadata)
-                    .query(Query.field('entity_name').inComparison(['feature', 'defect', 'story', 'quality_story', 'test_manual', 'gherkin_test', 'scenario_test']).build())
-                    .execute();
-                console.log(result.data.map((p: { name: any; }) => p.name));
-            }
-
-            {
-                const result = await this.octane.get(Octane.Octane.entityTypes.fieldsMetadata)
-                    .query(Query.field('entity_name').inComparison(['feature', 'defect', 'story', 'quality_story', 'test_manual', 'gherkin_test', 'scenario_test']).build())
-                    .execute();
-                
-                result.data.forEach((element: any) => {
-                    setValueForMap(this.octaneMap, element.entity_name, element.name); 
-                });
-
-                console.log("=====>", this.octaneMap);
-                console.log(this.octaneMap.get('feature'));
-                console.log(this.getDataFromOctaneForTypeAndId('feature', '235359'));
             }
 
             vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myBacklog.refreshEntry');
@@ -213,10 +192,35 @@ export class OctaneService {
         return new User(response);
     }
 
+    private async getRemoteFieldsForType(type: string) {
+        const result = await this.octane.get(Octane.Octane.entityTypes.fieldsMetadata)
+            .query(Query.field('entity_name').inComparison([type])
+                .and()
+                .field('visible_in_ui').equal('true')
+                .build())
+            .execute();
+
+        result.data.forEach((element: any) => {
+            setValueForMap(this.octaneMap, element.entity_name, element);
+        });
+    }
+
+    public async getFieldsForType(type: string) {
+        if (!this.octaneMap.get(type)) {
+            await this.getRemoteFieldsForType(type);
+        }
+        return this.octaneMap.get(type);
+    }
+
     public async getDataFromOctaneForTypeAndId(type: string, id: string) {
+        const fields = await this.getFieldsForType(type);
+        if (!fields) {
+            console.error(`Could not determine fields for type ${type}.`);
+            return;
+        }
         const result = await this.octane.get(Octane.Octane.entityTypes.workItems)
             .fields(
-                this.octaneMap.get(type)
+              fields.map( (f: any) => f.name)
             )
             .at(id)
             .execute();
