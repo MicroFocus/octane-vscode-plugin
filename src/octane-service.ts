@@ -60,6 +60,7 @@ export class OctaneService {
 
                 console.log("=====>", this.octaneMap);
                 console.log(this.octaneMap.get('feature'));
+                console.log(this.getDataFromOctaneForTypeAndId('feature', '235359'));
             }
 
             vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myBacklog.refreshEntry');
@@ -212,12 +213,12 @@ export class OctaneService {
         return new User(response);
     }
 
-    public async getFieldsFromOctaneForType(type: string) {
+    public async getDataFromOctaneForTypeAndId(type: string, id: string) {
         const result = await this.octane.get(Octane.Octane.entityTypes.workItems)
             .fields(
                 this.octaneMap.get(type)
             )
-            .at(type)
+            .at(id)
             .execute();
         return result;
     }
