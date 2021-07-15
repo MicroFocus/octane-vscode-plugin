@@ -49,6 +49,19 @@ export class OctaneService {
                 console.log(result.data.map((p: { name: any; }) => p.name));
             }
 
+            {
+                const result = await this.octane.get(Octane.Octane.entityTypes.fieldsMetadata)
+                    .query(Query.field('entity_name').inComparison(['feature', 'defect', 'story', 'quality_story', 'test_manual', 'gherkin_test', 'scenario_test']).build())
+                    .execute();
+                
+                result.data.forEach((element: any) => {
+                    setValueForMap(this.octaneMap, element.entity_name, element.name); 
+                });
+
+                console.log("=====>", this.octaneMap);
+                console.log(this.octaneMap.get('feature'));
+            }
+
             vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myBacklog.refreshEntry');
             vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myTests.refreshEntry');
             vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myMentions.refreshEntry');
@@ -199,21 +212,12 @@ export class OctaneService {
         return new User(response);
     }
 
-    public async getFieldsFromOctaneForType(type: string): Promise<OctaneEntity[]> {
+    public async getFieldsFromOctaneForType(type: string) {
         const result = await this.octane.get(Octane.Octane.entityTypes.workItems)
-            .fields('has_new_user_items', 'parent', 'release', 'rank', 'id',
-                'last_modified', 'priority', 'taxonomies', 'followed_by_me', 'blocked',
-                'has_attachments', 'story_points', 'sprint', 'author', 'tasks_number', 'name',
-                'description', 'detected_in_release', 'subtype', 'detected_by', 'owner', 'severity',
-                'creation_time', 'version_stamp', 'program', 'workspace_id', 'path,num_comments', 'item_origin',
-                'committers', 'quality_story_type', 'phase_age', 'ancestors', 'client_lock_stamp', 'has_children',
-                'pull_requests_count', 'product_areas', 'remaining_hours', 'commit_count', 'commit_files', 'user_tags',
-                'has_comments', 'estimated_hours', 'metaphase', 'logical_name', 'limit_line', 'ordering', 'assigned_to_me',
-                'flag_rules', 'phase_to_time_in_phase', 'has_coverage', 'invested_hours', 'is_draft', 'is_in_filter',
-                'dependence', 'new_tasks', 'logical_path', 'depends_on', 'global_text_search_result', 'team,branches_count',
-                'blocked_reason', 'progress', 'vulnerabilities', 'cycle_time_expiration', 'original_id', 'time_in_current_phase'
+            .fields(
+                this.octaneMap.get(type)
             )
-            .at('235050')
+            .at(type)
             .execute();
         return result;
     }
@@ -290,3 +294,10 @@ export class Comment extends OctaneEntity {
     }
 }
 
+function setValueForMap(map: any, key: any, value: any) {
+    if (!map.has(key)) {
+        map.set(key, [value]);
+        return;
+    }
+    map.get(key).push(value);
+}
