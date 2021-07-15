@@ -1,12 +1,18 @@
 import * as vscode from 'vscode';
 import * as Octane from '@microfocus/alm-octane-js-rest-sdk';
 import { MyWorkItem } from './my-work-provider';
-import { OctaneEntity } from './octane-service';
+import { OctaneEntity, OctaneService } from './octane-service';
 
 export class OctaneWebview {
 
     public static myWorkScheme = 'alm-octane-entity';
-    
+
+    constructor(
+        protected octaneService: OctaneService
+    ) {
+        this.octaneService = OctaneService.getInstance();
+    }
+
     public static register(context: vscode.ExtensionContext) {
         return vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.details',
             async (node: MyWorkItem) => {
@@ -22,6 +28,10 @@ export class OctaneWebview {
                 panel.webview.html = getHtmlForWebview(panel.webview, context, data);
             });
     }
+
+    // public static getDataFromOctane(id: string){
+    //     return this.octaneService.getFieldsFromOctaneForType(id);
+    // }
 }
 
 function getDataForSubtype(entity: OctaneEntity | undefined): [string, string] {

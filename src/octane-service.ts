@@ -13,6 +13,8 @@ export class OctaneService {
     private loggedInUserId?: number;
     private metaphases?: Metaphase[];
 
+    private octaneMap = new Map();
+
     public async initialize() {
         const uri = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.uri');
         const space = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.space');
@@ -191,11 +193,30 @@ export class OctaneService {
             return;
         }
         const response = await this.octane.get(Octane.Octane.entityTypes.workspaceUsers)
-        .fields('full_name')    
-        .at(user.id)
-        .execute();
+            .fields('full_name')
+            .at(user.id)
+            .execute();
         return new User(response);
-    }    
+    }
+
+    public async getFieldsFromOctaneForType(type: string): Promise<OctaneEntity[]> {
+        const result = await this.octane.get(Octane.Octane.entityTypes.workItems)
+            .fields('has_new_user_items', 'parent', 'release', 'rank', 'id',
+                'last_modified', 'priority', 'taxonomies', 'followed_by_me', 'blocked',
+                'has_attachments', 'story_points', 'sprint', 'author', 'tasks_number', 'name',
+                'description', 'detected_in_release', 'subtype', 'detected_by', 'owner', 'severity',
+                'creation_time', 'version_stamp', 'program', 'workspace_id', 'path,num_comments', 'item_origin',
+                'committers', 'quality_story_type', 'phase_age', 'ancestors', 'client_lock_stamp', 'has_children',
+                'pull_requests_count', 'product_areas', 'remaining_hours', 'commit_count', 'commit_files', 'user_tags',
+                'has_comments', 'estimated_hours', 'metaphase', 'logical_name', 'limit_line', 'ordering', 'assigned_to_me',
+                'flag_rules', 'phase_to_time_in_phase', 'has_coverage', 'invested_hours', 'is_draft', 'is_in_filter',
+                'dependence', 'new_tasks', 'logical_path', 'depends_on', 'global_text_search_result', 'team,branches_count',
+                'blocked_reason', 'progress', 'vulnerabilities', 'cycle_time_expiration', 'original_id', 'time_in_current_phase'
+            )
+            .at('235050')
+            .execute();
+        return result;
+    }
 }
 
 export class OctaneEntity {
