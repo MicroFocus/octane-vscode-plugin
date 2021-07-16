@@ -32,11 +32,11 @@ export abstract class MyWorkProvider implements vscode.TreeDataProvider<MyWorkIt
         const item = new MyWorkItem(new MyWorkItemLabel(i));
         item.id = '' + i.id;
         item.entity = i;
-        item.iconPath = this.getIconForEntity(i);
+        item.iconPath = MyWorkProvider.getIconForEntity(i);
         return item;
     }
 
-    private getIconForEntity(entity: OctaneEntity): vscode.Uri  {
+    public static getIconForEntity(entity: OctaneEntity): vscode.Uri  {
         if (entity?.subtype) {
             if (entity?.subtype === 'defect')
                 {return vscode.Uri.file(`${__filename}/../../media/treeIcons/D.svg`);}

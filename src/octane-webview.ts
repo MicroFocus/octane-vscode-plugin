@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as Octane from '@microfocus/alm-octane-js-rest-sdk';
-import { MyWorkItem } from './my-work-provider';
+import { MyWorkItem, MyWorkProvider } from './my-work-provider';
 import { OctaneEntity, OctaneService } from './octane-service';
 import { count } from 'console';
 
@@ -28,14 +28,12 @@ export class OctaneWebview {
                     vscode.ViewColumn.One,
                     {}
                 );
-
+                panel.iconPath = MyWorkProvider.getIconForEntity(data);
                 const fields = await OctaneService.getInstance().getFieldsForType(data.subtype);
                 if (!fields) {
                     return;
                 }
                 const fullData = await OctaneService.getInstance().getDataFromOctaneForTypeAndId(data.subtype, data.id);
-                console.log('testing =====');
-                console.log(fullData);
                 panel.webview.html = getHtmlForWebview(panel.webview, context, fullData, fields);
             });
     }
