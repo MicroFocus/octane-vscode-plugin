@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as Octane from '@microfocus/alm-octane-js-rest-sdk';
 import { MyWorkItem } from './my-work-provider';
 import { OctaneEntity, OctaneService } from './octane-service';
+import { count } from 'console';
 
 export class OctaneWebview {
 
@@ -62,6 +63,7 @@ function getHtmlForWebview(webview: vscode.Webview, context: any, data: any | Oc
     const myStyle = webview.asWebviewUri(vscode.Uri.joinPath(
         context.extensionUri, 'media', 'my-css.css'));
 
+
     return `
         <!DOCTYPE html>
         <head>
@@ -87,45 +89,10 @@ function getHtmlForWebview(webview: vscode.Webview, context: any, data: any | Oc
                 </div>
             </div>
             <div class="information">
-            <br>
-            <hr>
-                General
-                <div class="information-container">
-                    <div class="container">
-                        <span>Id</span>
-                        <input readonly type="text" value="${data?.id ?? '-'}">
-                    </div>
-                    <div class="container">
-                        <span>Name</span>
-                        <input readonly type="text" value="${data?.name ?? '-'}">
-                    </div>
-                    <div class="container">
-                        <span>Story points</span>
-                        <input readonly type="text" value="${data?.storyPoints ?? '-'}">
-                    </div>
-                </div>
-                <div class="information-container">
-                    <div class="container">
-                        <span>Owner</span>
-                        <input readonly type="text" value="${data?.owner?.fullName ?? '-'}">
-                    </div>
-                    <div class="container">
-                        <span>Author</span>
-                        <input readonly type="text" value="${data?.author?.fullName ?? '-'}">
-                    </div>
-                    <div class="container">
-                        <span>Detected by</span>
-                        <input readonly type="text" value="${data?.detectedBy?.fullName ?? '-'}">
-                    </div>
-                </div>
                 <br>
                 <hr>
-                Description
-                <div class="information-container">
-                    <div class="container">
-                        <input class="description" readonly type="text" value="${''}">
-                    </div>
-                </div>
+                General
+                ${generateElement(data, fields)}
                 <br>
                 <hr>
                 Comments
@@ -135,9 +102,103 @@ function getHtmlForWebview(webview: vscode.Webview, context: any, data: any | Oc
                         <button class="comments" type="button">Comment</button>
                     </div>
                 </div>
+                <br>
             </div>
         </body>
 
     `;
+
+    // return `
+    //     <!DOCTYPE html>
+    //     <head>
+    //         <link href="${styleVSCodeUri}" rel="stylesheet" />
+    //         <link href="${myStyle}" rel="stylesheet" />
+    //     </head>
+    //     <body>
+    //         <div class="top-container">
+    //             <div class="icon-container" style="background-color: ${getDataForSubtype(data)[1]}">
+    //                 <span class="label">${getDataForSubtype(data)[0]}</span>
+    //             </div>
+    //             <div class="name-container">
+    //                 <h3>${data?.name ?? '-'}</h3>
+    //             </div>
+    //             <div class="action-container">
+    //                 <select name="action" class="action">
+    //                     <option value="saab">In progress</option>
+    //                     <option value="saab">In Testing</option>
+    //                     <option value="saab">Finished</option>
+    //                   </select>
+    //                 <button class="save" type="button">Save</button>
+    //                 <button class="refresh" type="button">Refresh</button>
+    //             </div>
+    //         </div>
+    //         <div class="information">
+    //         <br>
+    //         <hr>
+    //             General
+    //             ${generateElement(data, fields)}
+    //             <div class="information-container">
+    //                 <div class="container">
+    //                     <span>Owner</span>
+    //                     <input readonly type="text" value="${data?.owner?.fullName ?? '-'}">
+    //                 </div>
+    //                 <div class="container">
+    //                     <span>Author</span>
+    //                     <input readonly type="text" value="${data?.author?.fullName ?? '-'}">
+    //                 </div>
+    //                 <div class="container">
+    //                     <span>Detected by</span>
+    //                     <input readonly type="text" value="${data?.detectedBy?.fullName ?? '-'}">
+    //                 </div>
+    //             </div>
+    //             <br>
+    //             <hr>
+    //             Description
+    //             <div class="information-container">
+    //                 <div class="container">
+    //                     <input class="description" readonly type="text" value="${''}">
+    //                 </div>
+    //             </div>
+    //             <br>
+    //             <hr>
+    //             Comments
+    //             <div class="information-container">
+    //                 <div class="comments-container">
+    //                     <input type="text" value="${''}">
+    //                     <button class="comments" type="button">Comment</button>
+    //                 </div>
+    //             </div>
+    //         </div>
+    //     </body>
+
+    // `;
+}
+
+function generateElement(data: any | OctaneEntity | undefined, fields: any[]): string {
+    console.log("data   === ", data);
+    console.log("fields === ", fields);
+
+    let html: string = ``;
+    let counter: number = 0;
+
+    fields.forEach((field: any) => {
+        if(counter == 0) {
+            html += `<div class="information-container">`
+        }
+        const element = `
+            <div class="container">
+                <span>${field.label}</span>
+                <input readonly type="${field.field_type}" value="${data[field.name] ?? '-'}">
+            </div>
+        `;
+        html += element;
+        if(counter == 2) {
+            html += `</div>`
+        }
+        counter = counter == 2 ? 0 : counter+1;
+    });
+
+    return html;
+
 }
 
