@@ -134,11 +134,11 @@ function generateBodyElement(data: any | OctaneEntity | undefined, fields: any[]
         `;
     mainFields.forEach((key): any => {
         const field = mapFields.get(key);
-        if (!field) return;
+        if (!field) { return; }
         html += `
                 <div class="container">
                     <span>${field.label}</span>
-                    <input readonly type="${field.field_type}" value="${data[field.name] ?? '-'}">
+                    <input readonly type="${field.field_type}" value="${getFieldValue(data, field.name)}">
                 </div>
             `;
     });
@@ -156,22 +156,35 @@ function generateBodyElement(data: any | OctaneEntity | undefined, fields: any[]
     `;
     mapFields.forEach((field, key) => {
         if (!mainFields.includes(key)) {
-            if (counter == 0) {
-                html += `<div class="information-container">`
+            if (counter === 0) {
+                html += `<div class="information-container">`;
             }
             const element = `
                 <div class="container">
                     <span>${field.label}</span>
-                    <input readonly type="${field.field_type}" value="${data[field.name] ?? '-'}">
+                    <input readonly type="${field.field_type}" value="${getFieldValue(data, field.name)}">
                 </div>
             `;
             html += element;
-            if (counter == columnCount) {
-                html += `</div>`
+            if (counter === columnCount) {
+                html += `</div>`;
             }
-            counter = counter == columnCount ? 0 : counter + 1;
+            counter = counter === columnCount ? 0 : counter + 1;
         }
     });
     return html;
 }
 
+function getFieldValue(data: any, fieldName: string): String {
+    const field = data[fieldName];
+    if (!field) {
+        return '-';
+    }
+    if (field['name']) {
+        return field['name'];
+    }
+    if (field['full_name']) {
+        return field['full_name'];
+    }
+    return field;
+}
