@@ -86,12 +86,22 @@ function getHtmlForWebview(webview: vscode.Webview, context: any, data: any | Oc
                     <button class="refresh" type="button">Refresh</button>
                 </div>
             </div>
-            <div class="information">
-                <br>
-                <hr>
-                General
-                ${generateElement(data, fields)}
-                <br>
+            <div class="element">
+                <div class="information">
+                    ${generateBodyElement(data, fields)}
+                </div>
+                <div class="comments-sidebar">
+                    ${generateCommentElement(data, fields)}
+                </div>
+            </div>
+        </body>
+
+    `;
+}
+
+function generateCommentElement(data: any | OctaneEntity | undefined, fields: any[]): string {
+    let html: string = ``;
+    html += `   <br>
                 <hr>
                 Comments
                 <div class="information-container">
@@ -100,104 +110,67 @@ function getHtmlForWebview(webview: vscode.Webview, context: any, data: any | Oc
                         <button class="comments" type="button">Comment</button>
                     </div>
                 </div>
-                <br>
-            </div>
-        </body>
-
-    `;
-
-    // return `
-    //     <!DOCTYPE html>
-    //     <head>
-    //         <link href="${styleVSCodeUri}" rel="stylesheet" />
-    //         <link href="${myStyle}" rel="stylesheet" />
-    //     </head>
-    //     <body>
-    //         <div class="top-container">
-    //             <div class="icon-container" style="background-color: ${getDataForSubtype(data)[1]}">
-    //                 <span class="label">${getDataForSubtype(data)[0]}</span>
-    //             </div>
-    //             <div class="name-container">
-    //                 <h3>${data?.name ?? '-'}</h3>
-    //             </div>
-    //             <div class="action-container">
-    //                 <select name="action" class="action">
-    //                     <option value="saab">In progress</option>
-    //                     <option value="saab">In Testing</option>
-    //                     <option value="saab">Finished</option>
-    //                   </select>
-    //                 <button class="save" type="button">Save</button>
-    //                 <button class="refresh" type="button">Refresh</button>
-    //             </div>
-    //         </div>
-    //         <div class="information">
-    //         <br>
-    //         <hr>
-    //             General
-    //             ${generateElement(data, fields)}
-    //             <div class="information-container">
-    //                 <div class="container">
-    //                     <span>Owner</span>
-    //                     <input readonly type="text" value="${data?.owner?.fullName ?? '-'}">
-    //                 </div>
-    //                 <div class="container">
-    //                     <span>Author</span>
-    //                     <input readonly type="text" value="${data?.author?.fullName ?? '-'}">
-    //                 </div>
-    //                 <div class="container">
-    //                     <span>Detected by</span>
-    //                     <input readonly type="text" value="${data?.detectedBy?.fullName ?? '-'}">
-    //                 </div>
-    //             </div>
-    //             <br>
-    //             <hr>
-    //             Description
-    //             <div class="information-container">
-    //                 <div class="container">
-    //                     <input class="description" readonly type="text" value="${''}">
-    //                 </div>
-    //             </div>
-    //             <br>
-    //             <hr>
-    //             Comments
-    //             <div class="information-container">
-    //                 <div class="comments-container">
-    //                     <input type="text" value="${''}">
-    //                     <button class="comments" type="button">Comment</button>
-    //                 </div>
-    //             </div>
-    //         </div>
-    //     </body>
-
-    // `;
+                <br>`;
+    return html;
 }
 
-function generateElement(data: any | OctaneEntity | undefined, fields: any[]): string {
-    console.log("data   === ", data);
-    console.log("fields === ", fields);
+function generateBodyElement(data: any | OctaneEntity | undefined, fields: any[]): string {
+    // console.log("data   === ", data);
+    // console.log("fields === ", fields);
 
     let html: string = ``;
     let counter: number = 0;
+    const columnCount: number = 2;
     let mainFields: string[] = ['id', 'name', 'phase'];
-    let sortedFields = [
-        ...fields.filter((field) => mainFields.includes(field.name)),
-        ...fields.filter((field) => !mainFields.includes(field.name))
-    ];
-    sortedFields.forEach((field: any) => {
-        if (counter == 0) {
-            html += `<div class="information-container">`
-        }
-        const element = `
-            <div class="container">
-                <span>${field.label}</span>
-                <input readonly type="${field.field_type}" value="${data[field.name] ?? '-'}">
-            </div>
+    let mapFields = new Map<string, any>();
+    fields.forEach((field): any => {
+        mapFields.set(field.name, field);
+    });
+    html += `
+                <br>
+                <hr>
+                General
+                <div class="information-container">
         `;
-        html += element;
-        if (counter == 2) {
-            html += `</div>`
+    mainFields.forEach((key): any => {
+        const field = mapFields.get(key);
+        if (!field) return;
+        html += `
+                <div class="container">
+                    <span>${field.label}</span>
+                    <input readonly type="${field.field_type}" value="${data[field.name] ?? '-'}">
+                </div>
+            `;
+    });
+    html += `   </div>
+                <br>
+                <hr>
+                Description
+                <div class="information-container">
+                    <div class="container">
+                        <input class="description" readonly type="text" value="${''}">
+                    </div>
+                </div>
+                <br>
+                <hr>
+    `;
+    mapFields.forEach((field, key) => {
+        if (!mainFields.includes(key)) {
+            if (counter == 0) {
+                html += `<div class="information-container">`
+            }
+            const element = `
+                <div class="container">
+                    <span>${field.label}</span>
+                    <input readonly type="${field.field_type}" value="${data[field.name] ?? '-'}">
+                </div>
+            `;
+            html += element;
+            if (counter == columnCount) {
+                html += `</div>`
+            }
+            counter = counter == columnCount ? 0 : counter + 1;
         }
-        counter = counter == 2 ? 0 : counter + 1;
     });
     return html;
 }
