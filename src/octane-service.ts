@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as Octane from '@microfocus/alm-octane-js-rest-sdk';
 import * as Query from '@microfocus/alm-octane-js-rest-sdk/lib/query';
 import { stripHtml } from 'string-strip-html';
+import { runInNewContext } from 'vm';
 
 export class OctaneService {
 
@@ -220,11 +221,40 @@ export class OctaneService {
         }
         const result = await this.octane.get(Octane.Octane.entityTypes.workItems)
             .fields(
-              fields.map( (f: any) => f.name)
+                fields.map((f: any) => f.name)
             )
             .at(id)
             .execute();
-        return result;
+        return await this.fillEntityWithReferences(result);
+    }
+
+    public async fillEntityWithReferences(data: any): Promise<OctaneEntity> {
+        if (!data.subtype) {
+            return data;
+        }
+        const fields = await this.getFieldsForType(data.subtype);
+        if (!fields) {
+            return data;
+        }
+
+        const references = fields.filter(f => f.field_type === 'reference');
+        console.log('references=', references);
+        for (const r of references) {
+            console.log("Field: ", r.name, "; value: ", data[r.name]);
+            if (data[r.name]) {
+                const endPoint = entityTypeApiEndpoint.get(data[r.name].type);
+                if (endPoint) {
+                    const fields = entityTypeAndDefaultFields.get(data[r.name].type);
+                    const value = await this.octane.get(endPoint)
+                        .fields(fields ? fields : 'name')
+                        .at(data[r.name].id)
+                        .execute();
+                    data[r.name] = value;
+                }
+            }
+        };
+        console.log('Fulldata: ', data);
+        return data;
     }
 }
 
@@ -306,3 +336,63 @@ function setValueForMap(map: any, key: any, value: any) {
     }
     map.get(key).push(value);
 }
+
+const entityTypeApiEndpoint: Map<String, String> = new Map([
+    ['application_module', Octane.Octane.entityTypes.applicationModules],
+    ['attachment', Octane.Octane.entityTypes.applicationModules],
+    ['automated_run', Octane.Octane.entityTypes.automatedRuns],
+    ['ci_build', Octane.Octane.entityTypes.ciBuilds],
+    ['comment', Octane.Octane.entityTypes.comments],
+    ['defect', Octane.Octane.entityTypes.defects],
+    ['epic', Octane.Octane.entityTypes.epics],
+    ['feature', Octane.Octane.entityTypes.features],
+    ['gherkin_test', Octane.Octane.entityTypes.gherkinTest],
+    ['list_node', Octane.Octane.entityTypes.listNodes],
+    ['manual_run', Octane.Octane.entityTypes.manualRuns],
+    ['manualTest', Octane.Octane.entityTypes.manualTests],
+    ['metaphase', Octane.Octane.entityTypes.metaphases],
+    ['milestone', Octane.Octane.entityTypes.milestones],
+    ['phase', Octane.Octane.entityTypes.phases],
+    ['pipeline_node', Octane.Octane.entityTypes.pipelineNodes],
+    ['pipeline_run', Octane.Octane.entityTypes.pipelineRuns],
+    ['previous_run', Octane.Octane.entityTypes.previousRuns],
+    ['program', Octane.Octane.entityTypes.programs],
+    ['release', Octane.Octane.entityTypes.releases],
+    ['requirement_document', Octane.Octane.entityTypes.requirementDocuments],
+    ['requirement_folder', Octane.Octane.entityTypes.requirementFolders],
+    ['requirement_root', Octane.Octane.entityTypes.requirementRoots],
+    ['requirement', Octane.Octane.entityTypes.requirements],
+    ['role', Octane.Octane.entityTypes.roles],
+    ['run_step', Octane.Octane.entityTypes.runSteps],
+    ['run', Octane.Octane.entityTypes.runs],
+    ['scm_commit', Octane.Octane.entityTypes.scmCommits],
+    ['sprint', Octane.Octane.entityTypes.sprints],
+    ['story', Octane.Octane.entityTypes.stories],
+    ['suite_run', Octane.Octane.entityTypes.suiteRun],
+    ['task', Octane.Octane.entityTypes.tasks],
+    ['taxonomy_category_node', Octane.Octane.entityTypes.taxonomyCategoryNodes],
+    ['taxonomy_item_node', Octane.Octane.entityTypes.taxonomyItemNodes],
+    ['taxonomy_node', Octane.Octane.entityTypes.taxonomyNodes],
+    ['team_sprint', Octane.Octane.entityTypes.teamSprints],
+    ['team', Octane.Octane.entityTypes.teams],
+    ['test_suite_link_to_automated_test', Octane.Octane.entityTypes.testSuiteLinkToAutomatedTests],
+    ['test_suite_link_to_gherkin_test', Octane.Octane.entityTypes.testSuiteLinkToGherkinTests],
+    ['test_suite_link_to_manual_test', Octane.Octane.entityTypes.testSuiteLinkToManualTests],
+    ['test_suite_link_to_test', Octane.Octane.entityTypes.testSuiteLinkToTests],
+    ['test_suite', Octane.Octane.entityTypes.testSuites],
+    ['test', Octane.Octane.entityTypes.tests],
+    ['transition', Octane.Octane.entityTypes.transitions],
+    ['user_item', Octane.Octane.entityTypes.userItems],
+    ['user_tag', Octane.Octane.entityTypes.userTags],
+    ['user', Octane.Octane.entityTypes.users],
+    ['work_item_root', Octane.Octane.entityTypes.workItemRoots],
+    ['work_item', Octane.Octane.entityTypes.workItems],
+    ['workspace_role', Octane.Octane.entityTypes.workspaceRoles],
+    ['workspace_user', Octane.Octane.entityTypes.workspaceUsers],
+    ['quality_story', Octane.Octane.entityTypes.qualityStories]
+]);
+
+const entityTypeAndDefaultFields: Map<String, String> = new Map([
+    ['user', 'full_name'],
+    ['workspace_user', 'full_name'],
+]);
