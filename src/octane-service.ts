@@ -213,13 +213,25 @@ export class OctaneService {
         return this.octaneMap.get(type);
     }
 
-    public async getDataFromOctaneForTypeAndId(type: string, id: string) {
-        const fields = await this.getFieldsForType(type);
-        if (!fields) {
-            console.error(`Could not determine fields for type ${type}.`);
+    public async getDataFromOctaneForTypeAndId(type: string | undefined, subType: string | undefined, id: string) {
+        const octaneType = subType || type;
+        if (!octaneType) {
             return;
         }
-        const result = await this.octane.get(Octane.Octane.entityTypes.workItems)
+        const fields = await this.getFieldsForType(octaneType);
+        if (!fields) {
+            console.error(`Could not determine fields for type ${octaneType}.`);
+            return;
+        }
+        const apiEntityType = type || subType;
+        if (!apiEntityType) {
+            return;
+        }
+        const endPoint = entityTypeApiEndpoint.get(apiEntityType);
+        if (!endPoint) {
+            return;
+        }
+        const result = await this.octane.get(endPoint)
             .fields(
                 fields.map((f: any) => f.name)
             )
@@ -229,10 +241,11 @@ export class OctaneService {
     }
 
     public async fillEntityWithReferences(data: any): Promise<OctaneEntity> {
-        if (!data.subtype) {
+        if (!data.subtype && !data.type) {
             return data;
         }
-        const fields = await this.getFieldsForType(data.subtype);
+        const entityType = data.subtype || data.type;
+        const fields = await this.getFieldsForType(entityType);
         if (!fields) {
             return data;
         }

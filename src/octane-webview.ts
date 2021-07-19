@@ -33,7 +33,7 @@ export class OctaneWebview {
                 if (!fields) {
                     return;
                 }
-                const fullData = await OctaneService.getInstance().getDataFromOctaneForTypeAndId(data.subtype, data.id);
+                const fullData = await OctaneService.getInstance().getDataFromOctaneForTypeAndId(data.type, data.subtype, data.id);
                 panel.webview.html = getHtmlForWebview(panel.webview, context, fullData, fields);
             });
     }
