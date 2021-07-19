@@ -178,9 +178,13 @@ function generateElement(data: any | OctaneEntity | undefined, fields: any[]): s
 
     let html: string = ``;
     let counter: number = 0;
-
-    fields.forEach((field: any) => {
-        if(counter == 0) {
+    let mainFields: string[] = ['id', 'name', 'phase'];
+    let sortedFields = [
+        ...fields.filter((field) => mainFields.includes(field.name)),
+        ...fields.filter((field) => !mainFields.includes(field.name))
+    ];
+    sortedFields.forEach((field: any) => {
+        if (counter == 0) {
             html += `<div class="information-container">`
         }
         const element = `
@@ -190,13 +194,11 @@ function generateElement(data: any | OctaneEntity | undefined, fields: any[]): s
             </div>
         `;
         html += element;
-        if(counter == 2) {
+        if (counter == 2) {
             html += `</div>`
         }
-        counter = counter == 2 ? 0 : counter+1;
+        counter = counter == 2 ? 0 : counter + 1;
     });
-
     return html;
-
 }
 
