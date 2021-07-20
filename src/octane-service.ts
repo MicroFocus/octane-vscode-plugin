@@ -252,17 +252,49 @@ export class OctaneService {
 
         const references = fields.filter(f => f.field_type === 'reference');
         console.log('references=', references);
+
+        // {
+        //     try {
+        //         const applMF = await this.getFieldsForType('application_module');
+        //         console.log('Application module fields: ', applMF);
+        //         const value = await this.octane.get(Octane.Octane.entityTypes.applicationModules)
+        //             .fields('name')
+        //             .query(Query.field('id').inComparison([5026, 5020, 5012]).build())
+        //             .execute();
+        //         console.log('Test application modules: ', value);
+        //     } catch (error) {
+        //         if (error) {
+        //             console.error(error);
+        //         }
+        //     }
+
+        // }
+
         for (const r of references) {
-            console.log("Field: ", r.name, "; value: ", data[r.name]);
             if (data[r.name]) {
-                const endPoint = entityTypeApiEndpoint.get(data[r.name].type);
-                if (endPoint) {
-                    const fields = entityTypeAndDefaultFields.get(data[r.name].type);
-                    const value = await this.octane.get(endPoint)
-                        .fields(fields ? fields : 'name')
-                        .at(data[r.name].id)
-                        .execute();
-                    data[r.name] = value;
+                if (r.field_type_data.multiple) {
+                    if (data[r.name].data && data[r.name].data.length) {
+                        const endPoint = entityTypeApiEndpoint.get(data[r.name].data[0].type);
+                        if (endPoint) {
+                            const fields = entityTypeAndDefaultFields.get(data[r.name].data[0].type);
+                            console.log(r.name, ': ', endPoint, '; ', data[r.name].data.map((f: any) => f.id));
+                            const value = await this.octane.get(endPoint)
+                                .fields(fields ? fields : 'name')
+                                .query(Query.field('id').inComparison(data[r.name].data.map((f: any) => f.id)).build())
+                                .execute();
+                            data[r.name] = value;
+                        }
+                    }
+                } else {
+                    const endPoint = entityTypeApiEndpoint.get(data[r.name].type);
+                    if (endPoint) {
+                        const fields = entityTypeAndDefaultFields.get(data[r.name].type);
+                        const value = await this.octane.get(endPoint)
+                            .fields(fields ? fields : 'name')
+                            .at(data[r.name].id)
+                            .execute();
+                        data[r.name] = value;
+                    }
                 }
             }
         };
@@ -408,4 +440,5 @@ const entityTypeApiEndpoint: Map<String, String> = new Map([
 const entityTypeAndDefaultFields: Map<String, String> = new Map([
     ['user', 'full_name'],
     ['workspace_user', 'full_name'],
+    ['list_node', 'name,logical_name,index'],
 ]);
