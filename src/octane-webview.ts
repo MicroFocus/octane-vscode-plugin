@@ -142,11 +142,9 @@ function generateBodyElement(data: any | OctaneEntity | undefined, fields: any[]
                         <span>${field.label}</span>
                         <select class="select">
                     `;
-            // data.forEach((element: any) => {
-                html += `
+            html += `
                     <option value="${getFieldValue(data, field.name)}">${getFieldValue(data, field.name)}</option>
-                `; 
-            // });
+                    `;
             html += `
                         </select>
                     </div>
@@ -159,7 +157,7 @@ function generateBodyElement(data: any | OctaneEntity | undefined, fields: any[]
                     </div>
                     `;
         }
-        
+
     });
     html += `   </div>
                 <br>
@@ -194,10 +192,17 @@ function generateBodyElement(data: any | OctaneEntity | undefined, fields: any[]
     return html;
 }
 
-function getFieldValue(data: any, fieldName: string): String {
+function getFieldValue(data: any, fieldName: string): String | string[] {
     const field = data[fieldName];
     if (!field) {
         return '-';
+    }
+    if (field['data']) {
+        const ref: string[] = [];
+        field['data'].forEach((r: any) => {
+            ref.push(r.name + ' ');
+        });
+        return ref.length ? ref : '-';
     }
     if (field['name']) {
         return field['name'];
