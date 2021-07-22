@@ -47,6 +47,14 @@ input {
     min-width: 200px;
 }
 
+.select-container {
+    display: flex;
+    flex-direction: column;
+    margin: .5rem;
+    flex: 1;
+    min-width: 200px;
+}
+
 hr {
     width: 100%;
     border-color: #0e639c;
@@ -98,6 +106,12 @@ hr {
 .action {
     width: 20rem;
     background-color: #cccccc;
+}
+
+.select {
+    background-color: #cccccc;
+    margin-top: 0.5rem;
+    height: 1.8rem;
 }
 
 .save {

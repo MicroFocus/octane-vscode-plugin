@@ -135,12 +135,31 @@ function generateBodyElement(data: any | OctaneEntity | undefined, fields: any[]
     mainFields.forEach((key): any => {
         const field = mapFields.get(key);
         if (!field) { return; }
-        html += `
-                <div class="container">
-                    <span>${field.label}</span>
-                    <input readonly type="${field.field_type}" value="${getFieldValue(data, field.name)}">
-                </div>
-            `;
+
+        if (field.field_type == 'reference') {
+            html += `
+                    <div class="select-container">
+                        <span>${field.label}</span>
+                        <select class="select">
+                    `;
+            // data.forEach((element: any) => {
+                html += `
+                    <option value="${getFieldValue(data, field.name)}">${getFieldValue(data, field.name)}</option>
+                `; 
+            // });
+            html += `
+                        </select>
+                    </div>
+                    `;
+        } else {
+            html += `
+                    <div class="container">
+                        <span>${field.label}</span>
+                        <input readonly type="${field.field_type}" value="${getFieldValue(data, field.name)}">
+                    </div>
+                    `;
+        }
+        
     });
     html += `   </div>
                 <br>
