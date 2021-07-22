@@ -136,7 +136,7 @@ function generateBodyElement(data: any | OctaneEntity | undefined, fields: any[]
         const field = mapFields.get(key);
         if (!field) { return; }
 
-        if (field.field_type == 'reference') {
+        if (field.field_type === 'reference') {
             html += `
                     <div class="select-container">
                         <span>${field.label}</span>
@@ -200,7 +200,7 @@ function getFieldValue(data: any, fieldName: string): String | string[] {
     if (field['data']) {
         const ref: string[] = [];
         field['data'].forEach((r: any) => {
-            ref.push(r.name + ' ');
+            ref.push(' ' + r.name);
         });
         return ref.length ? ref : '-';
     }
