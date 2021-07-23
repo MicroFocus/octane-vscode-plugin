@@ -3,6 +3,7 @@ import * as Octane from '@microfocus/alm-octane-js-rest-sdk';
 import { MyWorkItem, MyWorkProvider } from './my-work-provider';
 import { OctaneEntity, OctaneService } from './octane-service';
 import { count } from 'console';
+import { stripHtml } from 'string-strip-html';
 
 export class OctaneWebview {
 
@@ -165,24 +166,33 @@ function generateBodyElement(data: any | OctaneEntity | undefined, fields: any[]
                 Description
                 <div class="information-container">
                     <div class="container">
-                        <input class="description" readonly type="text" value="${''}">
+                        <textarea class="description" readonly type="text">${stripHtml(getFieldValue(data, 'description').toString()).result}</textarea>
                     </div>
                 </div>
                 <br>
                 <hr>
     `;
     mapFields.forEach((field, key) => {
-        if (!mainFields.includes(key)) {
+        if (!['description', ...mainFields].includes(key)) {
             if (counter === 0) {
                 html += `<div class="information-container">`;
             }
-            const element = `
+
+            if (field.field_type === 'reference') {
+                html += `
+                <div class="container">
+                    <span>${field.label}</span>
+                    <textarea readonly rows="2" style="resize: none"}">${getFieldValue(data, field.name)}</textarea>
+                </div>
+            `;
+            } else {
+                html += `
                 <div class="container">
                     <span>${field.label}</span>
                     <input readonly type="${field.field_type}" value="${getFieldValue(data, field.name)}">
                 </div>
             `;
-            html += element;
+            }
             if (counter === columnCount) {
                 html += `</div>`;
             }
