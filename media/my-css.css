@@ -2,14 +2,14 @@
 .information {
     display: flex;
     flex-direction: column;
-    width: 75%;
+    /* width: 75%; */
 }
 
 .comments-sidebar {
     display: flex;
     flex-direction: column;
     margin-left: 1rem;
-    width: 25%;
+    /* width: 25%; */
 }
 
 .information-container {
@@ -30,7 +30,7 @@ input {
 .comments-container {
     display: flex;
     flex-direction: row;
-    width: 400px;
+    width: 100%;
     margin-top: 2.5rem;
 }
 
@@ -126,5 +126,5 @@ hr {
 
 .element {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
 }
