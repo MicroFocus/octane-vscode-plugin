@@ -77,6 +77,9 @@ function getHtmlForWebview(webview: vscode.Webview, context: any, data: any | Oc
                 <div class="name-container">
                     <h3>${data?.name ?? '-'}</h3>
                 </div>
+                <div class="name-container">
+                    <h3>|  Move to</h3>
+                </div>
                 <div class="action-container">
                     ${generatePhaseSelectElement(data, fields)}
                 </div>

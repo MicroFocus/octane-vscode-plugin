@@ -79,7 +79,7 @@ hr {
 }
 
 .name-container {
-    margin: 0.5rem 0 0 0.5rem !important;
+    margin: 0.8rem 0 0 0.5rem !important;
 }
 
 .action-container {
@@ -91,7 +91,7 @@ hr {
 
 .icon-container {
     display: flex;
-    margin: 1.4rem 0 0 0.5rem;
+    margin: 1.6rem 0 0 0.5rem;
     border-radius: 50%;
     background-color: transparent;
     height: 25px;
