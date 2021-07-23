@@ -13,6 +13,7 @@ export class OctaneService {
     private user?: String;
     private loggedInUserId?: number;
     private metaphases?: Metaphase[];
+    private transitions?: Transition[];
 
     private octaneMap = new Map<String, any[]>();
 
@@ -41,6 +42,20 @@ export class OctaneService {
                     .execute();
                 this.metaphases = result.data.map((m: any) => new Metaphase(m));
                 console.log(this.metaphases);
+            }
+
+            {
+                const result = await this.octane.get(Octane.Octane.entityTypes.transitions)
+                    .fields('id', 'entity', 'logical_name', 'is_primary', 'source_phase', 'target_phase')
+                    .execute();
+                this.transitions = result.data.map((t: any) => new Transition(t));
+                if (this.transitions) {
+                    this.transitions.forEach((t: any) => {
+                        t.sourcePhase.name = this.getPhaseLabel(t.sourcePhase);
+                        t.targetPhase.name = this.getPhaseLabel(t.targetPhase);
+                    });
+                }
+                console.log(this.transitions);
             }
 
             vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myBacklog.refreshEntry');
@@ -176,7 +191,7 @@ export class OctaneService {
 
     public getPhaseLabel(phase: OctaneEntity): string {
         if (this.metaphases) {
-            const label = this.metaphases.filter(m => (m.phase && m.phase.filter(p => p.id === phase.id)))[0].name;
+            const label = this.metaphases.filter(m => (m.phase && m.phase.filter(p => p.id === phase.id)[0]))[0].name;
             return label ? label : '';
         }
         return '';
@@ -301,6 +316,16 @@ export class OctaneService {
         console.log('Fulldata: ', data);
         return data;
     }
+
+    public getPhaseTransitionForEntity(phaseId: string): Transition[] {
+        if (this.transitions) {
+            const transitions = this.transitions.filter(t =>
+                (t.sourcePhase && t.sourcePhase.id === phaseId)
+            );
+            return transitions;
+        }
+        return [];
+    }
 }
 
 export class OctaneEntity {
@@ -339,6 +364,35 @@ export class OctaneEntity {
             }
         }
         this.subtype = i?.subtype ?? '';
+    }
+}
+
+export class Transition {
+
+    public id: string;
+    public entity?: string;
+    public logicalName?: string;
+    public sourcePhase?: OctaneEntity;
+    public targetPhase?: OctaneEntity;
+
+    constructor(i?: any) {
+        this.id = i?.id ?? null;
+        this.entity = i?.entity ?? '';
+        this.logicalName = i?.logical_name ?? '';
+        if (i.source_phase) {
+            if (i.source_phase.data) {
+                this.sourcePhase = i.source_phase.data.map((ref: any) => new OctaneEntity(ref));
+            } else {
+                this.sourcePhase = new OctaneEntity(i.source_phase);
+            }
+        }
+        if (i.target_phase) {
+            if (i.target_phase.data) {
+                this.targetPhase = i.target_phase.data.map((ref: any) => new OctaneEntity(ref));
+            } else {
+                this.targetPhase = new OctaneEntity(i.target_phase);
+            }
+        }
     }
 }
 

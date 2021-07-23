@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as Octane from '@microfocus/alm-octane-js-rest-sdk';
 import { MyWorkItem, MyWorkProvider } from './my-work-provider';
-import { OctaneEntity, OctaneService } from './octane-service';
+import { OctaneEntity, OctaneService, Transition } from './octane-service';
 import { count } from 'console';
 import { stripHtml } from 'string-strip-html';
 
@@ -78,13 +78,7 @@ function getHtmlForWebview(webview: vscode.Webview, context: any, data: any | Oc
                     <h3>${data?.name ?? '-'}</h3>
                 </div>
                 <div class="action-container">
-                    <select name="action" class="action">
-                        <option value="saab">In progress</option>
-                        <option value="saab">In Testing</option>
-                        <option value="saab">Finished</option>
-                      </select>
-                    <button class="save" type="button">Save</button>
-                    <button class="refresh" type="button">Refresh</button>
+                    ${generatePhaseSelectElement(data, fields)}
                 </div>
             </div>
             <div class="element">
@@ -98,6 +92,25 @@ function getHtmlForWebview(webview: vscode.Webview, context: any, data: any | Oc
         </body>
 
     `;
+}
+
+function generatePhaseSelectElement(data: any | OctaneEntity | undefined, fields: any[]): string {
+    let html: string = ``;
+    let transitions: Transition[] = OctaneService.getInstance().getPhaseTransitionForEntity(data.phase.id);
+    html += `<select name="action" class="action">`;
+    html += `
+            <option>${getFieldValue(data, 'phase')}</option>
+        `;
+    transitions.forEach((target: any) => {
+        if (!target) { return; }
+        html += `
+            <option>${target.targetPhase.name}</option>
+        `;
+    });
+    html += `</select>
+            <button class="save" type="button">Save</button>
+            <button class="refresh" type="button">Refresh</button>`;
+    return html;
 }
 
 function generateCommentElement(data: any | OctaneEntity | undefined, fields: any[]): string {
@@ -116,9 +129,6 @@ function generateCommentElement(data: any | OctaneEntity | undefined, fields: an
 }
 
 function generateBodyElement(data: any | OctaneEntity | undefined, fields: any[]): string {
-    // console.log("data   === ", data);
-    // console.log("fields === ", fields);
-
     let html: string = ``;
     let counter: number = 0;
     const columnCount: number = 2;
@@ -136,29 +146,12 @@ function generateBodyElement(data: any | OctaneEntity | undefined, fields: any[]
     mainFields.forEach((key): any => {
         const field = mapFields.get(key);
         if (!field) { return; }
-
-        if (field.field_type === 'reference') {
-            html += `
-                    <div class="select-container">
-                        <span>${field.label}</span>
-                        <select class="select">
-                    `;
-            html += `
-                    <option value="${getFieldValue(data, field.name)}">${getFieldValue(data, field.name)}</option>
-                    `;
-            html += `
-                        </select>
-                    </div>
-                    `;
-        } else {
-            html += `
-                    <div class="container">
-                        <span>${field.label}</span>
-                        <input readonly type="${field.field_type}" value="${getFieldValue(data, field.name)}">
-                    </div>
-                    `;
-        }
-
+        html += `
+                <div class="container">
+                    <span>${field.label}</span>
+                    <input readonly type="${field.field_type}" value="${getFieldValue(data, field.name)}">
+                </div>
+                `;
     });
     html += `   </div>
                 <br>
