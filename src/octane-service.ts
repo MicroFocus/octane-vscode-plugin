@@ -14,6 +14,7 @@ export class OctaneService {
     private loggedInUserId?: number;
     private metaphases?: Metaphase[];
     private transitions?: Transition[];
+    private phases = new Map<string, string>();
 
     private octaneMap = new Map<String, any[]>();
 
@@ -42,6 +43,17 @@ export class OctaneService {
                     .execute();
                 this.metaphases = result.data.map((m: any) => new Metaphase(m));
                 console.log(this.metaphases);
+            }
+
+            {
+                let result = await this.octane.get(Octane.Octane.entityTypes.phases)
+                    .fields('id', 'name')
+                    .execute();
+                if (result.data) {
+                    result.data.forEach((phase: any) => {
+                        this.phases.set(phase.id, phase.name);
+                    });
+                }
             }
 
             {
@@ -190,8 +202,8 @@ export class OctaneService {
     }
 
     public getPhaseLabel(phase: OctaneEntity): string {
-        if (this.metaphases) {
-            const label = this.metaphases.filter(m => (m.phase && m.phase.filter(p => p.id === phase.id)[0]))[0].name;
+        if (this.phases) {
+            const label = this.phases.get(phase.id);
             return label ? label : '';
         }
         return '';
@@ -322,6 +334,7 @@ export class OctaneService {
             const transitions = this.transitions.filter(t =>
                 (t.sourcePhase && t.sourcePhase.id === phaseId)
             );
+            console.log("transitions----", transitions);
             return transitions;
         }
         return [];
