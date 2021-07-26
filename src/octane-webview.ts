@@ -1,17 +1,27 @@
 import * as vscode from 'vscode';
 import * as Octane from '@microfocus/alm-octane-js-rest-sdk';
-import { MyWorkItem } from './my-work-provider';
-import { OctaneEntity } from './octane-service';
+import { MyWorkItem, MyWorkProvider } from './my-work-provider';
+import { OctaneEntity, OctaneService, Transition } from './octane-service';
+import { count } from 'console';
+import { stripHtml } from 'string-strip-html';
 
 export class OctaneWebview {
 
     public static myWorkScheme = 'alm-octane-entity';
-    
+
+    constructor(
+        protected octaneService: OctaneService
+    ) {
+        this.octaneService = OctaneService.getInstance();
+    }
+
     public static register(context: vscode.ExtensionContext) {
         return vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.details',
             async (node: MyWorkItem) => {
                 const data = node.entity;
-                const uri = vscode.Uri.parse(`${this.myWorkScheme}:${JSON.stringify(data)}`);
+                if (!data || !data.subtype) {
+                    return;
+                }
 
                 const panel = vscode.window.createWebviewPanel(
                     'myEditor',
@@ -19,40 +29,40 @@ export class OctaneWebview {
                     vscode.ViewColumn.One,
                     {}
                 );
-                panel.webview.html = getHtmlForWebview(panel.webview, context, data);
+                panel.iconPath = MyWorkProvider.getIconForEntity(data);
+                const fields = await OctaneService.getInstance().getFieldsForType(data.subtype);
+                if (!fields) {
+                    return;
+                }
+                const fullData = await OctaneService.getInstance().getDataFromOctaneForTypeAndId(data.type, data.subtype, data.id);
+                panel.webview.html = getHtmlForWebview(panel.webview, context, fullData, fields);
             });
     }
+
 }
 
 function getDataForSubtype(entity: OctaneEntity | undefined): [string, string] {
     if (entity?.subtype) {
-        if (entity?.subtype === 'defect')
-            return ["D", "#b21646"]
-        if (entity?.subtype === 'story')
-            return ["US", "#ffb000"]
-        if (entity?.subtype === 'quality_story')
-            return ["QS", "#33c180"]
-        if (entity?.subtype === 'feature')
-            return ["F", "#e57828"]
-        if (entity?.subtype === 'scenario_test')
-            return ["BSC", "#75da4d"]
-        if (entity?.subtype === 'test_manual')
-            return ["MT", "#00abf3"]
-        if (entity?.subtype === 'auto_test')
-            return ["AT", "#9b1e83"]
-        if (entity?.subtype === 'gherkin_test')
-            return ["GT", "#00a989"]
-        if (entity?.subtype === 'test_suite')
-            return ["TS", "#271782"]
+        if (entity?.subtype === 'defect') { return ["D", "#b21646"]; }
+        if (entity?.subtype === 'story') { return ["US", "#ffb000"]; }
+        if (entity?.subtype === 'quality_story') { return ["QS", "#33c180"]; }
+        if (entity?.subtype === 'feature') { return ["F", "#e57828"]; }
+        if (entity?.subtype === 'scenario_test') { return ["BSC", "#75da4d"]; }
+        if (entity?.subtype === 'test_manual') { return ["MT", "#00abf3"]; }
+        if (entity?.subtype === 'auto_test') { return ["AT", "#9b1e83"]; }
+        if (entity?.subtype === 'gherkin_test') { return ["GT", "#00a989"]; }
+        if (entity?.subtype === 'test_suite') { return ["TS", "#271782"]; }
     }
     return ['', ''];
 }
 
-function getHtmlForWebview(webview: vscode.Webview, context: any, data: OctaneEntity | undefined): string {
+function getHtmlForWebview(webview: vscode.Webview, context: any, data: any | OctaneEntity | undefined, fields: any[]): string {
     const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(
         context.extensionUri, 'media', 'vscode.css'));
     const myStyle = webview.asWebviewUri(vscode.Uri.joinPath(
         context.extensionUri, 'media', 'my-css.css'));
+
+
     return `
         <!DOCTYPE html>
         <head>
@@ -67,57 +77,48 @@ function getHtmlForWebview(webview: vscode.Webview, context: any, data: OctaneEn
                 <div class="name-container">
                     <h3>${data?.name ?? '-'}</h3>
                 </div>
+                <div class="name-container">
+                    <h3>|  Move to</h3>
+                </div>
                 <div class="action-container">
-                    <select name="action" class="action">
-                        <option value="saab">In progress</option>
-                        <option value="saab">In Testing</option>
-                        <option value="saab">Finished</option>
-                      </select>
-                    <button class="save" type="button">Save</button>
-                    <button class="refresh" type="button">Refresh</button>
+                    ${generatePhaseSelectElement(data, fields)}
                 </div>
             </div>
-            <div class="information">
-            <br>
-            <hr>
-                General
-                <div class="information-container">
-                    <div class="container">
-                        <span>Id</span>
-                        <input readonly type="text" value="${data?.id ?? '-'}">
-                    </div>
-                    <div class="container">
-                        <span>Name</span>
-                        <input readonly type="text" value="${data?.name ?? '-'}">
-                    </div>
-                    <div class="container">
-                        <span>Story points</span>
-                        <input readonly type="text" value="${data?.storyPoints ?? '-'}">
-                    </div>
+            <div class="element">
+                <div class="information">
+                    ${generateBodyElement(data, fields)}
                 </div>
-                <div class="information-container">
-                    <div class="container">
-                        <span>Owner</span>
-                        <input readonly type="text" value="${data?.owner?.fullName ?? '-'}">
-                    </div>
-                    <div class="container">
-                        <span>Author</span>
-                        <input readonly type="text" value="${data?.author?.fullName ?? '-'}">
-                    </div>
-                    <div class="container">
-                        <span>Detected by</span>
-                        <input readonly type="text" value="${data?.detectedBy?.fullName ?? '-'}">
-                    </div>
+                <div class="comments-sidebar">
+                    ${generateCommentElement(data, fields)}
                 </div>
-                <br>
-                <hr>
-                Description
-                <div class="information-container">
-                    <div class="container">
-                        <input class="description" readonly type="text" value="${''}">
-                    </div>
-                </div>
-                <br>
+            </div>
+        </body>
+
+    `;
+}
+
+function generatePhaseSelectElement(data: any | OctaneEntity | undefined, fields: any[]): string {
+    let html: string = ``;
+    let transitions: Transition[] = OctaneService.getInstance().getPhaseTransitionForEntity(data.phase.id);
+    html += `<select name="action" class="action">`;
+    html += `
+            <option>${getFieldValue(data, 'phase')}</option>
+        `;
+    transitions.forEach((target: any) => {
+        if (!target) { return; }
+        html += `
+            <option>${target.targetPhase.name}</option>
+        `;
+    });
+    html += `</select>
+            <button class="save" type="button">Save</button>
+            <button class="refresh" type="button">Refresh</button>`;
+    return html;
+}
+
+function generateCommentElement(data: any | OctaneEntity | undefined, fields: any[]): string {
+    let html: string = ``;
+    html += `   <br>
                 <hr>
                 Comments
                 <div class="information-container">
@@ -126,9 +127,94 @@ function getHtmlForWebview(webview: vscode.Webview, context: any, data: OctaneEn
                         <button class="comments" type="button">Comment</button>
                     </div>
                 </div>
-            </div>
-        </body>
-
-    `;
+                <br>`;
+    return html;
 }
 
+function generateBodyElement(data: any | OctaneEntity | undefined, fields: any[]): string {
+    let html: string = ``;
+    let counter: number = 0;
+    const columnCount: number = 2;
+    let mainFields: string[] = ['id', 'name', 'phase'];
+    let mapFields = new Map<string, any>();
+    fields.forEach((field): any => {
+        mapFields.set(field.name, field);
+    });
+    html += `
+                <br>
+                <hr>
+                General
+                <div class="information-container">
+        `;
+    mainFields.forEach((key): any => {
+        const field = mapFields.get(key);
+        if (!field) { return; }
+        html += `
+                <div class="container">
+                    <span>${field.label}</span>
+                    <input readonly type="${field.field_type}" value="${getFieldValue(data, field.name)}">
+                </div>
+                `;
+    });
+    html += `   </div>
+                <br>
+                <hr>
+                Description
+                <div class="information-container">
+                    <div class="container">
+                        <textarea class="description" readonly type="text">${stripHtml(getFieldValue(data, 'description').toString()).result}</textarea>
+                    </div>
+                </div>
+                <br>
+                <hr>
+    `;
+    mapFields.forEach((field, key) => {
+        if (!['description', ...mainFields].includes(key)) {
+            if (counter === 0) {
+                html += `<div class="information-container">`;
+            }
+
+            if (field.field_type === 'reference') {
+                html += `
+                <div class="container">
+                    <span>${field.label}</span>
+                    <textarea readonly rows="2" style="resize: none"}">${getFieldValue(data, field.name)}</textarea>
+                </div>
+            `;
+            } else {
+                html += `
+                <div class="container">
+                    <span>${field.label}</span>
+                    <input readonly type="${field.field_type}" value="${getFieldValue(data, field.name)}">
+                </div>
+            `;
+            }
+            if (counter === columnCount) {
+                html += `</div>`;
+            }
+            counter = counter === columnCount ? 0 : counter + 1;
+        }
+    });
+    return html;
+}
+
+function getFieldValue(data: any, fieldName: string): String | string[] {
+    const field = data[fieldName];
+    if (!field) {
+        return '-';
+    }
+    if (field['data']) {
+        const ref: string[] = [];
+        field['data'].forEach((r: any) => {
+            ref.push(' ' + r.name);
+        });
+        return ref.length ? ref : '-';
+    }
+    if (field['name']) {
+        return field['name'];
+    }
+    if (field['full_name']) {
+        return field['full_name'];
+    }
+    return field;
+}
