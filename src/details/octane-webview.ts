@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
-import * as Octane from '@microfocus/alm-octane-js-rest-sdk';
-import { MyWorkItem, MyWorkProvider } from './treeview/my-work-provider';
-import { OctaneEntity, OctaneService, Transition } from './octane/service/octane-service';
-import { count } from 'console';
+import { MyWorkItem, MyWorkProvider } from '../treeview/my-work-provider';
+import { OctaneService } from '../octane/service/octane-service';
+import { Transition } from "../octane/model/transition";
+import { OctaneEntity } from "../octane/model/octane-entity";
 import { stripHtml } from 'string-strip-html';
 
 export class OctaneWebview {
