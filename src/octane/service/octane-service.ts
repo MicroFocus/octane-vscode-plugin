@@ -190,52 +190,7 @@ export class OctaneService {
             )
             .at(id)
             .execute();
-        return await this.fillEntityWithReferences(result);
-    }
-
-    public async fillEntityWithReferences(data: any): Promise<OctaneEntity> {
-        if (!data.subtype && !data.type) {
-            return data;
-        }
-        const entityType = data.subtype || data.type;
-        const fields = await this.getFieldsForType(entityType);
-        if (!fields) {
-            return data;
-        }
-
-        const references = fields.filter(f => f.field_type === 'reference');
-        console.log('references=', references);
-
-        for (const r of references) {
-            if (data[r.name]) {
-                if (r.field_type_data.multiple) {
-                    if (data[r.name].data && data[r.name].data.length) {
-                        const endPoint = entityTypeApiEndpoint.get(data[r.name].data[0].type);
-                        if (endPoint) {
-                            const fields = entityTypeAndDefaultFields.get(data[r.name].data[0].type);
-                            console.log(r.name, ': ', endPoint, '; ', data[r.name].data.map((f: any) => f.id));
-                            const value = await this.octane.get(endPoint)
-                                .fields(fields ? fields : 'name')
-                                .query(Query.field('id').inComparison(data[r.name].data.map((f: any) => f.id)).build())
-                                .execute();
-                            data[r.name] = value;
-                        }
-                    }
-                } else {
-                    const endPoint = entityTypeApiEndpoint.get(data[r.name].type);
-                    if (endPoint) {
-                        const fields = entityTypeAndDefaultFields.get(data[r.name].type);
-                        const value = await this.octane.get(endPoint)
-                            .fields(fields ? fields : 'name')
-                            .at(data[r.name].id)
-                            .execute();
-                        data[r.name] = value;
-                    }
-                }
-            }
-        };
-        console.log('Fulldata: ', data);
-        return data;
+        return result;
     }
 
     public getPhaseTransitionForEntity(phaseId: string): Transition[] {
@@ -311,10 +266,4 @@ const entityTypeApiEndpoint: Map<String, String> = new Map([
     ['workspace_role', Octane.Octane.entityTypes.workspaceRoles],
     ['workspace_user', Octane.Octane.entityTypes.workspaceUsers],
     ['quality_story', Octane.Octane.entityTypes.qualityStories]
-]);
-
-const entityTypeAndDefaultFields: Map<String, String> = new Map([
-    ['user', 'full_name'],
-    ['workspace_user', 'full_name'],
-    ['list_node', 'name,logical_name,index'],
 ]);
