@@ -30,7 +30,11 @@ export class OctaneService {
                 sharedSpace: space,
                 workspace: workspace,
                 user: this.user,
-                password: password
+                password: password,
+                headers: {
+                    // eslint-disable-next-line @typescript-eslint/naming-convention
+                    ALM_OCTANE_TECH_PREVIEW: true
+                },
             });
             const result: any = await this.octane.get(Octane.Octane.entityTypes.workspaceUsers)
                 .query(Query.field('name').equal(this.user).build())
@@ -126,7 +130,7 @@ export class OctaneService {
 
     public async getMyRequirements(): Promise<OctaneEntity[]> {
         const response = await this.octane.get(Octane.Octane.entityTypes.requirements)
-            .fields('name', 'phase', 'owner', 'author')
+            .fields('name', 'phase', 'owner{id,name,full_name}', 'author{id,name,full_name}')
             .query(
                 Query.field('subtype').inComparison(['requirement_document']).and()
                     .field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))

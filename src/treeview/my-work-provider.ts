@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
-import { MyMentionsProvider } from './mentions-provider';
-import { OctaneEntity, OctaneService, Comment } from './octane-service';
+import { OctaneEntity, OctaneService, Comment } from '../octane/service/octane-service';
 
 export abstract class MyWorkProvider implements vscode.TreeDataProvider<MyWorkItem> {
 

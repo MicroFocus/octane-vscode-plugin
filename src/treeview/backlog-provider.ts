@@ -1,5 +1,5 @@
 import { MyWorkProvider } from "./my-work-provider";
-import { OctaneEntity } from "./octane-service";
+import { OctaneEntity } from "../octane/service/octane-service";
 
 export class BacklogProvider extends MyWorkProvider {
 

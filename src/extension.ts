@@ -1,14 +1,12 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import { BacklogProvider } from './backlog-provider';
-import { OctaneEntity, OctaneService } from './octane-service';
-import { MyMentionsProvider } from './mentions-provider';
-import { MyTestsProvider } from './tests-provider';
-import { MyFeatureProvider } from './feature-provider';
-import { MyWorkItem } from './my-work-provider';
-import { MyTextEditor } from './my-text-editor';
-import { MyRequirementsProvider } from './requirements-provider';
+import { BacklogProvider } from './treeview/backlog-provider';
+import { OctaneService } from './octane/service/octane-service';
+import { MyMentionsProvider } from './treeview/mentions-provider';
+import { MyTestsProvider } from './treeview/tests-provider';
+import { MyFeatureProvider } from './treeview/feature-provider';
+import { MyRequirementsProvider } from './treeview/requirements-provider';
 import { OctaneWebview } from './octane-webview';
 
 
