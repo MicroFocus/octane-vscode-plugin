@@ -29,7 +29,9 @@ export class OctaneWebview {
                     'myEditor',
                     data?.id ?? '',
                     vscode.ViewColumn.One,
-                    {}
+                    {
+                        enableScripts: true
+                    }
                 );
                 panel.iconPath = MyWorkProvider.getIconForEntity(data);
                 const fields = await OctaneService.getInstance().getFieldsForType(data.subtype);
@@ -37,6 +39,7 @@ export class OctaneWebview {
                     return;
                 }
                 this.fullData = await OctaneService.getInstance().getDataFromOctaneForTypeAndId(data.type, data.subtype, data.id);
+                console.log(panel.webview.options.enableScripts);
                 panel.webview.html = getHtmlForWebview(panel.webview, context, this.fullData, fields);
             });
     }
@@ -64,17 +67,18 @@ function getHtmlForWebview(webview: vscode.Webview, context: any, data: any | Oc
     const myStyle = webview.asWebviewUri(vscode.Uri.joinPath(
         context.extensionUri, 'media', 'my-css.css'));
 
+    // function onSave() {
+    //     console.log("-------------------------");
+    //     console.log(OctaneWebview.fullData);
+    //     const res = OctaneService.getInstance().setValueForField(OctaneWebview.fullData, 'name', 'alma');
+    //     console.log("----> ", res);
+    // }
 
     return `
         <!DOCTYPE html>
         <head>
             <link href="${styleVSCodeUri}" rel="stylesheet" />
             <link href="${myStyle}" rel="stylesheet" />
-            <script>
-                document.getElementById("saveId").addEventListener('click', e => {
-                  console.log("Hello");
-                });
-            </script>
         </head>
         <body>
             <div class="top-container">
@@ -89,6 +93,11 @@ function getHtmlForWebview(webview: vscode.Webview, context: any, data: any | Oc
                 </div>
                 <div class="action-container">
                     ${generatePhaseSelectElement(data, fields)}
+                    <script>
+                        document.getElementById("saveId").addEventListener('click', e => {
+                            console.log("Hello");
+                        });
+                    </script>
                 </div>
             </div>
             <div class="element">
@@ -118,7 +127,7 @@ function generatePhaseSelectElement(data: any | OctaneEntity | undefined, fields
         `;
     });
     html += `</select>
-            <button id="saveId" class="save" type="button" onclick="onSave()">Save</button>
+            <button id="saveId" class="save" type="button">Save</button>
             <button class="refresh" type="button">Refresh</button>`;
     return html;
 }
@@ -224,11 +233,4 @@ function getFieldValue(data: any, fieldName: string): String | string[] {
         return field['full_name'];
     }
     return field;
-}
-
-function onSave() {
-    console.log("-------------------------");
-    console.log(OctaneWebview.fullData);
-    const res = OctaneService.getInstance().setValueForField(OctaneWebview.fullData, 'name', 'alma');
-    console.log("----> ",res);
 }
