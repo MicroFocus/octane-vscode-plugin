@@ -339,6 +339,18 @@ export class OctaneService {
         }
         return [];
     }
+
+    public setValueForField(data: any, fieldName: string, value: OctaneEntity | string): OctaneEntity | undefined {
+        if (!data[fieldName]) {
+            return;
+        }
+        data[fieldName] = value;
+        return data;
+    }
+
+    private updateEntity(entityName: string, body: any) {
+        this.octane.update(entityName, body);
+    }
 }
 
 export class OctaneEntity {
