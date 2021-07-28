@@ -1,23 +1,21 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import { BacklogProvider } from './backlog-provider';
-import { OctaneEntity, OctaneService } from './octane-service';
-import { MyMentionsProvider } from './mentions-provider';
-import { MyTestsProvider } from './tests-provider';
-import { MyFeatureProvider } from './feature-provider';
-import { MyWorkItem } from './my-work-provider';
-import { MyTextEditor } from './my-text-editor';
-import { MyRequirementsProvider } from './requirements-provider';
-import { OctaneWebview } from './octane-webview';
+import { BacklogProvider } from './treeview/backlog-provider';
+import { OctaneService } from './octane/service/octane-service';
+import { MyMentionsProvider } from './treeview/mentions-provider';
+import { MyTestsProvider } from './treeview/tests-provider';
+import { MyFeatureProvider } from './treeview/feature-provider';
+import { MyRequirementsProvider } from './treeview/requirements-provider';
+import { OctaneWebview } from './details/octane-webview';
 
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
 
 	const service = OctaneService.getInstance();
-	service.initialize();
+	await service.initialize();
 
 	const myBacklogProvider = new BacklogProvider(service);
 	vscode.window.registerTreeDataProvider('myBacklog', myBacklogProvider);
@@ -74,6 +72,12 @@ export function activate(context: vscode.ExtensionContext) {
 		context.subscriptions.push(OctaneWebview.register(context));
 	}
 
+           
+	vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myBacklog.refreshEntry');
+	vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myTests.refreshEntry');
+	vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myMentions.refreshEntry');
+	vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myFeatures.refreshEntry');
+	vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myRequirements.refreshEntry');
 }
 
 // this method is called when your extension is deactivated

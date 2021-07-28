@@ -21,12 +21,6 @@
 	],
 	"main": "./out/extension.js",
 	"contributes": {
-		"customEditors": [
-			{
-				"viewType": "myEditor",
-				"displayName": "My Editor"
-			}
-		],
 		"configuration": [
 			{
 				"title": "Visual Studio Code plugin for ALM Octane",
