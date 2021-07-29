@@ -39,7 +39,6 @@ export class OctaneWebview {
                     return;
                 }
                 this.fullData = await OctaneService.getInstance().getDataFromOctaneForTypeAndId(data.type, data.subtype, data.id);
-                console.log(panel.webview.options.enableScripts);
                 panel.webview.html = getHtmlForWebview(panel.webview, context, this.fullData, fields);
             });
     }
@@ -66,13 +65,8 @@ function getHtmlForWebview(webview: vscode.Webview, context: any, data: any | Oc
         context.extensionUri, 'media', 'vscode.css'));
     const myStyle = webview.asWebviewUri(vscode.Uri.joinPath(
         context.extensionUri, 'media', 'my-css.css'));
-
-    // function onSave() {
-    //     console.log("-------------------------");
-    //     console.log(OctaneWebview.fullData);
-    //     const res = OctaneService.getInstance().setValueForField(OctaneWebview.fullData, 'name', 'alma');
-    //     console.log("----> ", res);
-    // }
+    const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(
+        context.extensionUri, 'src/details', 'edit-service.js'));
 
     return `
         <!DOCTYPE html>
@@ -93,11 +87,7 @@ function getHtmlForWebview(webview: vscode.Webview, context: any, data: any | Oc
                 </div>
                 <div class="action-container">
                     ${generatePhaseSelectElement(data, fields)}
-                    <script>
-                        document.getElementById("saveId").addEventListener('click', e => {
-                            console.log("Hello");
-                        });
-                    </script>
+                    <script src="${scriptUri}"></script>
                 </div>
             </div>
             <div class="element">
