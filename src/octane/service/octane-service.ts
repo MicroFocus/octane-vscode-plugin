@@ -3,6 +3,7 @@ import * as Octane from '@microfocus/alm-octane-js-rest-sdk';
 import * as Query from '@microfocus/alm-octane-js-rest-sdk/lib/query';
 import { OctaneEntity } from '../model/octane-entity';
 import { Transition } from '../model/transition';
+import { Comment } from '../model/comment';
 
 export class OctaneService {
 
@@ -71,7 +72,7 @@ export class OctaneService {
                     .build()
             )
             .execute();
-        let entities = response.data.map((r:any) => new OctaneEntity(r));
+        let entities = response.data.map((r: any) => new OctaneEntity(r));
         console.log(entities);
         return entities;
     }
@@ -98,7 +99,7 @@ export class OctaneService {
             .execute();
         console.log(response);
 
-        let entities = response.data.map((r:any) => new OctaneEntity(r));
+        let entities = response.data.map((r: any) => new OctaneEntity(r));
         console.log(entities);
         return entities;
     }
@@ -128,7 +129,7 @@ export class OctaneService {
                     .build()
             )
             .execute();
-        let entities = response.data.map((r:any) => new OctaneEntity(r));
+        let entities = response.data.map((r: any) => new OctaneEntity(r));
         console.log(entities);
         return entities;
     }
@@ -141,22 +142,28 @@ export class OctaneService {
                     .build()
             )
             .execute();
-        let entities = response.data.map((r:any) => new OctaneEntity(r));
+        let entities = response.data.map((r: any) => new Comment(r));
         console.log(entities);
         return entities;
     }
 
     private async getRemoteFieldsForType(type: string) {
-        const result = await this.octane.get(Octane.Octane.entityTypes.fieldsMetadata)
-            .query(Query.field('entity_name').inComparison([type])
-                .and()
-                .field('visible_in_ui').equal('true')
-                .build())
-            .execute();
+        try {
+            const result = await this.octane.get(Octane.Octane.entityTypes.fieldsMetadata)
+                .query(Query.field('entity_name').inComparison([type])
+                    .and()
+                    .field('visible_in_ui').equal('true')
+                    // .and()
+                    // .field('deprecated').equal(Query.NULL)
+                    .build())
+                .execute();
 
-        result.data.forEach((element: any) => {
-            setValueForMap(this.octaneMap, element.entity_name, element);
-        });
+            result.data.forEach((element: any) => {
+                setValueForMap(this.octaneMap, element.entity_name, element);
+            });
+        } catch (e) {
+            console.error('While fetching remote fields.', e);
+        }
     }
 
     public async getFieldsForType(type: string) {
