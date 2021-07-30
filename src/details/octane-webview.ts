@@ -40,6 +40,19 @@ export class OctaneWebview {
                 }
                 this.fullData = await OctaneService.getInstance().getDataFromOctaneForTypeAndId(data.type, data.subtype, data.id);
                 panel.webview.html = getHtmlForWebview(panel.webview, context, this.fullData, fields);
+                panel.webview.onDidReceiveMessage(m => {
+                    // console.log("from js ---- > ", m);
+                    if (m.type === 'get') {
+                        panel.webview.postMessage({
+                            type: 'post',
+                            from: 'webview',
+                            data: fields
+                        });
+                    }
+                    if (m.type === 'update') {
+                        OctaneService.getInstance().updateEntity('', m.data);
+                    }
+                });
             });
     }
 
@@ -158,8 +171,11 @@ function generateBodyElement(data: any | OctaneEntity | undefined, fields: any[]
         html += `
                 <div class="container">
                     <span>${field.label}</span>
-                    <input readonly type="${field.field_type}" value="${getFieldValue(data, field.name)}">
+                    <input id="${field.label}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
                 </div>
+                <script>
+                        document.getElementById("${field.label}").readOnly = !${field.editable};
+                </script>
                 `;
     });
     html += `   </div>
@@ -168,8 +184,11 @@ function generateBodyElement(data: any | OctaneEntity | undefined, fields: any[]
                 Description
                 <div class="information-container">
                     <div class="container">
-                        <textarea class="description" readonly type="text">${stripHtml(getFieldValue(data, 'description').toString()).result}</textarea>
+                        <textarea id="Description" class="description" type="text">${stripHtml(getFieldValue(data, 'description').toString()).result}</textarea>
                     </div>
+                    <script>
+                        document.getElementById("Description").readOnly = !false;
+                    </script>
                 </div>
                 <br>
                 <hr>
@@ -184,14 +203,20 @@ function generateBodyElement(data: any | OctaneEntity | undefined, fields: any[]
                 html += `
                 <div class="container">
                     <span>${field.label}</span>
-                    <textarea readonly rows="2" style="resize: none"}">${getFieldValue(data, field.name)}</textarea>
+                    <textarea id="${field.label}" rows="2" style="resize: none"}">${getFieldValue(data, field.name)}</textarea>
+                    <script>
+                        document.getElementById("${field.label}").readOnly = !${field.editable};
+                    </script>
                 </div>
             `;
             } else {
                 html += `
                 <div class="container">
                     <span>${field.label}</span>
-                    <input readonly type="${field.field_type}" value="${getFieldValue(data, field.name)}">
+                    <input id="${field.label}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
+                    <script>
+                        document.getElementById("${field.label}").readOnly = !${field.editable};
+                    </script>
                 </div>
             `;
             }
