@@ -50,7 +50,7 @@ export class OctaneWebview {
                         });
                     }
                     if (m.type === 'update') {
-                        OctaneService.getInstance().updateEntity('', m.data);
+                        OctaneService.getInstance().updateEntity(data.type, data.subtype, m.data);
                     }
                 });
             });

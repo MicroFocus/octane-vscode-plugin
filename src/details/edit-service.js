@@ -26,7 +26,7 @@
                 if (field.label === 'Description') {
                     // newData[field.label] = (document.getElementById(field.label))?.value;
                 } else {
-                    newData[field.label] = (document.getElementById(field.label))?.value;
+                    newData[field.name] = (document.getElementById(field.label))?.value;
                 }
             });
             vscode.postMessage({

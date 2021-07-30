@@ -211,9 +211,19 @@ export class OctaneService {
         return [];
     }
 
-    public updateEntity(entityName: string, body: any) {
+    public updateEntity(type: string | undefined, subType: string | undefined, body: any) {
         console.log("update", body);
-        // this.octane.update(entityName, body);
+        const apiEntityType = type || subType;
+        if (!apiEntityType) {
+            return;
+        }
+        const endPoint = entityTypeApiEndpoint.get(apiEntityType);
+        if (!endPoint) {
+            return;
+        }
+        console.log(`Octane.entityTypes.${endPoint}`);
+        // this.octane.update(`Octane.entityTypes.${endPoint}`, body).execute();
+        this.octane.update(Octane.Octane.entityTypes.defects, body).execute();
     }
 }
 
