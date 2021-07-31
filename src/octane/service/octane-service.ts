@@ -4,6 +4,7 @@ import * as Query from '@microfocus/alm-octane-js-rest-sdk/lib/query';
 import { OctaneEntity } from '../model/octane-entity';
 import { Transition } from '../model/transition';
 import { Comment } from '../model/comment';
+import { AlmOctaneAuthenticationProvider, AlmOctaneAuthenticationSession, AlmOctaneAuthenticationType } from '../../auth/authentication-provider';
 
 export class OctaneService {
 
@@ -18,23 +19,54 @@ export class OctaneService {
 
     private octaneMap = new Map<String, any[]>();
 
+    public async testAuthentication(uri: string, space: string | undefined, workspace: string | undefined, username: string, password: string | undefined, cookie: string | undefined): Promise<string | undefined> {
+        const octaneInstace = new Octane.Octane({
+            server: uri,
+            sharedSpace: space,
+            workspace: workspace,
+            user: username,
+            password: password,
+            headers: {
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                ALM_OCTANE_TECH_PREVIEW: true,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                Cookie: cookie !== undefined ? `LWSSO_COOKIE_KEY=${cookie}` : undefined
+            }
+        });
+        try {
+            const result: any = await octaneInstace.get(Octane.Octane.entityTypes.workspaceUsers)
+                .query(Query.field('name').equal(username).build())
+                .execute();
+            console.info('Successful auth test.');
+            return result.data[0].full_name;
+        } catch (e) {
+            console.error('Error while testing auth.', e);
+            return;
+        }
+    }
+
     public async initialize() {
+
         const uri = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.uri');
         const space = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.space');
         const workspace = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.workspace');
         this.user = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.user.userName');
-        const password = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.user.password');
-        if (uri && space && workspace && this.user && password) {
+
+        const session = await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: false }) as AlmOctaneAuthenticationSession;
+
+        if (uri && space && workspace && this.user && session) {
             this.octane = new Octane.Octane({
                 server: uri,
                 sharedSpace: space,
                 workspace: workspace,
                 user: this.user,
-                password: password,
+                password: session.type === AlmOctaneAuthenticationType.userNameAndPassword ? session.accessToken : undefined,
                 headers: {
                     // eslint-disable-next-line @typescript-eslint/naming-convention
-                    ALM_OCTANE_TECH_PREVIEW: true
-                },
+                    ALM_OCTANE_TECH_PREVIEW: true,
+                    // eslint-disable-next-line @typescript-eslint/naming-convention
+                    Cookie: session.type === AlmOctaneAuthenticationType.browser ? `LWSSO_COOKIE_KEY=${session.accessToken}` : undefined
+                }
             });
             const result: any = await this.octane.get(Octane.Octane.entityTypes.workspaceUsers)
                 .query(Query.field('name').equal(this.user).build())
