@@ -39,6 +39,7 @@ export class OctaneWebview {
                     return;
                 }
                 this.fullData = await OctaneService.getInstance().getDataFromOctaneForTypeAndId(data.type, data.subtype, data.id);
+                console.log("fullData", this.fullData);
                 panel.webview.html = getHtmlForWebview(panel.webview, context, this.fullData, fields);
                 panel.webview.onDidReceiveMessage(m => {
                     // console.log("from js ---- > ", m);
@@ -46,7 +47,10 @@ export class OctaneWebview {
                         panel.webview.postMessage({
                             type: 'post',
                             from: 'webview',
-                            data: fields
+                            data: {
+                                fields: fields,
+                                fullData: this.fullData
+                            }
                         });
                     }
                     if (m.type === 'update') {

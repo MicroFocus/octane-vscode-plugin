@@ -15,10 +15,10 @@
     }
 
     window.addEventListener('message', e => {
-        const fields = e.data.data;
-        if (fields) {
+        const fields = e.data.data.fields;
+        const fullData = e.data.data.fullData;
+        if (fields && fullData) {
             let mapFields = new Map();
-            let newData = {};
             fields.forEach(field => {
                 mapFields.set(field.name, field);
             });
@@ -26,13 +26,15 @@
                 if (field.label === 'Description') {
                     // newData[field.label] = (document.getElementById(field.label))?.value;
                 } else {
-                    newData[field.name] = (document.getElementById(field.label))?.value;
+                    if (fullData[field.name]) {
+                        fullData[field.name] = (document.getElementById(field.label))?.value;
+                    }
                 }
             });
             vscode.postMessage({
                 type: 'update',
                 from: 'edit-service',
-                data: newData
+                data: fullData
             });
         }
 
