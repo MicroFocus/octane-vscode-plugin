@@ -39,7 +39,7 @@
                 }
 
             });
-            updatedData['name'] = "Name update test";
+            updatedData['name'] = (document.getElementById('Name'))?.value;
             // console.log("updatedData", updatedData);
             vscode.postMessage({
                 type: 'update',
