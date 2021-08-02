@@ -19,7 +19,7 @@ export class OctaneService {
 
     private octaneMap = new Map<String, any[]>();
 
-    public async testAuthentication(uri: string, space: string | undefined, workspace: string | undefined, username: string, password: string | undefined, cookie: string | undefined): Promise<string | undefined> {
+    public async testAuthentication(uri: string, space: string | undefined, workspace: string | undefined, username: string, password: string | undefined, cookieName: string | undefined, cookie: string | undefined): Promise<string | undefined> {
         const octaneInstace = new Octane.Octane({
             server: uri,
             sharedSpace: space,
@@ -30,7 +30,7 @@ export class OctaneService {
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 ALM_OCTANE_TECH_PREVIEW: true,
                 // eslint-disable-next-line @typescript-eslint/naming-convention
-                Cookie: cookie !== undefined ? `LWSSO_COOKIE_KEY=${cookie}` : undefined
+                Cookie: cookie !== undefined ? `${cookieName}=${cookie}` : undefined
             }
         });
         try {
@@ -65,7 +65,7 @@ export class OctaneService {
                     // eslint-disable-next-line @typescript-eslint/naming-convention
                     ALM_OCTANE_TECH_PREVIEW: true,
                     // eslint-disable-next-line @typescript-eslint/naming-convention
-                    Cookie: session.type === AlmOctaneAuthenticationType.browser ? `LWSSO_COOKIE_KEY=${session.accessToken}` : undefined
+                    Cookie: session.type === AlmOctaneAuthenticationType.browser ? `${session.cookieName}=${session.accessToken}` : undefined
                 }
             });
             const result: any = await this.octane.get(Octane.Octane.entityTypes.workspaceUsers)

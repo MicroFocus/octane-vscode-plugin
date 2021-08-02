@@ -18,7 +18,8 @@ export class AlmOctaneAuthenticationSession implements vscode.AuthenticationSess
 		public accessToken: string,
 		public account: vscode.AuthenticationSessionAccountInformation,
 		public scopes: readonly string[],
-		public type: AlmOctaneAuthenticationType) {
+		public type: AlmOctaneAuthenticationType,
+		public cookieName: string = 'LWSSO_COOKIE_KEY') {
 	}
 }
 
@@ -64,7 +65,7 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 		if (uri === undefined || user === undefined) {
 			throw new Error('No authentication possible. Incomplete authentication details. ');
 		}
-		const authTestResult = await OctaneService.getInstance().testAuthentication(uri, space, workspace, user, password, undefined);
+		const authTestResult = await OctaneService.getInstance().testAuthentication(uri, space, workspace, user, password, undefined, undefined);
 		if (authTestResult) {
 			const session = {
 				id: uuid(),
@@ -74,6 +75,7 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 				},
 				scopes: ['default'],
 				accessToken: password,
+				cookieName: '',
 				type: AlmOctaneAuthenticationType.userNameAndPassword
 			};
 			await this.storeSession(session);
@@ -101,7 +103,7 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 				const decoratedFetchToken = retryDecorator(this.fetchToken, { retries: 100, delay: 1000 });
 				const token = await decoratedFetchToken(uri, user, response);
 				console.info('Fetchtoken returned: ', token);
-				const authTestResult = await OctaneService.getInstance().testAuthentication(uri, space, workspace, user, undefined, token.access_token);
+				const authTestResult = await OctaneService.getInstance().testAuthentication(uri, space, workspace, user, undefined, token.cookie_name, token.access_token);
 				if (authTestResult === undefined) {
 					throw new Error('Authentication failed.');
 				}
@@ -113,6 +115,7 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 					},
 					scopes: scopes,
 					accessToken: token.access_token,
+					cookieName: token.cookie_name,
 					type: AlmOctaneAuthenticationType.browser
 				};
 				await this.storeSession(session);
