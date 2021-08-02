@@ -211,7 +211,7 @@ export class OctaneService {
         return [];
     }
 
-    public updateEntity(type: string | undefined, subType: string | undefined, body: any) {
+    public async updateEntity(type: string | undefined, subType: string | undefined, body: any) {
         console.log("update", body);
         const apiEntityType = subType || type;
         if (!apiEntityType) {
@@ -221,7 +221,8 @@ export class OctaneService {
         if (!endPoint) {
             return;
         }
-        this.octane.update(`Octane.Octane.entityTypes.${endPoint}`, body).execute();
+        let entity = await this.octane.get(endPoint).at(body.id).execute();
+        this.octane.update(endPoint, body).execute().then(undefined, console.error);
     }
 }
 
