@@ -175,6 +175,23 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 				await this.keychain.deleteToken();
 				return [];
 			}
+
+			const uri: string | undefined = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.uri');
+			const space: string | undefined = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.space');
+			const workspace: string | undefined = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.workspace');
+			const user: string | undefined = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.user.userName');
+
+			if (uri === undefined || user === undefined) {
+				await this.keychain.deleteToken();
+				return [];
+			}
+
+			const authTestResult = await OctaneService.getInstance().testAuthentication(uri, space, workspace, user, sessionData.accessToken, sessionData.cookieName, sessionData.accessToken);
+			if (authTestResult === undefined) {
+				await this.keychain.deleteToken();
+				return [];
+			}
+
 			return [sessionData];
 		} catch (e) {
 			console.error(`Error reading token: ${e}`);

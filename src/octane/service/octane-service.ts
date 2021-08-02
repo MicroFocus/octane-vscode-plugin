@@ -25,7 +25,7 @@ export class OctaneService {
             sharedSpace: space,
             workspace: workspace,
             user: username,
-            password: password,
+            password: cookie !== undefined ? undefined : password,
             headers: {
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 ALM_OCTANE_TECH_PREVIEW: true,
