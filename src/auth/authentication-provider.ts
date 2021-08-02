@@ -19,7 +19,7 @@ export class AlmOctaneAuthenticationSession implements vscode.AuthenticationSess
 		public account: vscode.AuthenticationSessionAccountInformation,
 		public scopes: readonly string[],
 		public type: AlmOctaneAuthenticationType,
-		public cookieName: string = 'LWSSO_COOKIE_KEY') {
+		public cookieName: string = '') {
 	}
 }
 

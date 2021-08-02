@@ -50,6 +50,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                                 await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: true });
                             } else {
                                 await this.authenticationProvider.createManualSession(data.password);
+                                await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: true });
                             }
                         } catch (e) {
                             console.error('While creating session.', e);
