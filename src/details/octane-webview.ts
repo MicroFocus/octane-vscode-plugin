@@ -197,39 +197,37 @@ function generateBodyElement(data: any | OctaneEntity | undefined, fields: any[]
                 <br>
                 <hr>
     `;
-    mapFields.forEach((field, key) => {
+    mapFields.forEach(async (field, key) => {
         if (!['description', ...mainFields].includes(key)) {
             if (counter === 0) {
                 html += `<div class="information-container">`;
             }
-            // console.log("html->", field);
             if (field.field_type === 'reference') {
-            //     html += `
-            //     <div class="container">
-            //         <span>${field.label}</span>
-            //         <textarea id="${field.label}" rows="2" style="resize: none"}">${getFieldValue(data, field.name)}</textarea>
-            //         <script>
-            //             document.getElementById("${field.label}").readOnly = !${field.editable};
-            //         </script>
-            //     </div>
-            // `;
-                html += `
+                if (field.field_type_data.multiple) {
+                        html += `
+                        <div class="container">
+                            <span>${field.label}</span>
+                            <textarea id="${field.label}" rows="2" style="resize: none"}">${getFieldValue(data, field.name)}</textarea>
+                            <script>
+                                document.getElementById("${field.label}").readOnly = !${field.editable};
+                            </script>
+                        </div>
+                    `;
+                } else {
+                    html += `
                     <div class="select-container">
                         <span>${field.label}</span>
                         <select class="reference-select">
-                `;
-                html += `<option value="none" selected disabled hidden>${getFieldValue(data, field.name)}</option>`
-                let referenceData: any[] = ['alma', 'korte'];
-                referenceData.forEach((element: any) => {
-                    html += `
-                                <option value="${element}">${element}</option>
                     `;
-                });
-                html += `
+                    html += `<option value="none" selected disabled hidden>${getFieldValue(data, field.name)}</option>`;
+                    // let options = await OctaneService.getInstance().getFullDataForEntity('release');
+                    // options.data.forEach((option: any) => {
+                    //     html += `<option value="${option.name}">${option.name}</option>`;
+                    // });
+                    html += `
                         </select>
-                    </div>
-                `;
-
+                    </div>`;
+                }
             } else {
                 html += `
                 <div class="container">
@@ -250,7 +248,7 @@ function generateBodyElement(data: any | OctaneEntity | undefined, fields: any[]
     return html;
 }
 
-function getFieldValue(data: any, fieldName: string): String | string[] {
+function getFieldValue(data: any, fieldName: string): string | any[] {
     const field = data[fieldName];
     if (!field) {
         return '-';
@@ -258,7 +256,8 @@ function getFieldValue(data: any, fieldName: string): String | string[] {
     if (field['data']) {
         const ref: string[] = [];
         field['data'].forEach((r: any) => {
-            ref.push(' ' + r.name);
+            // ref.push(' ' + r.name);
+            ref.push(r);
         });
         return ref.length ? ref : '-';
     }

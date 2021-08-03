@@ -224,6 +224,16 @@ export class OctaneService {
         let entity = await this.octane.get(endPoint).at(body.id).execute();
         this.octane.update(endPoint, body).execute().then(undefined, console.error);
     }
+
+    public async getFullDataForEntity(entityTypes: string) {
+        const endPoint = entityTypeApiEndpoint.get(entityTypes);
+        if (!endPoint) {
+            return;
+        }
+        const result = await this.octane.get(endPoint)
+            .execute();
+        return result;
+    }
 }
 
 function setValueForMap(map: any, key: any, value: any) {
@@ -233,6 +243,8 @@ function setValueForMap(map: any, key: any, value: any) {
     }
     map.get(key).push(value);
 }
+
+
 
 const entityTypeApiEndpoint: Map<String, String> = new Map([
     ['application_module', Octane.Octane.entityTypes.applicationModules],
