@@ -80,6 +80,7 @@ export class OctaneService {
                 this.transitions = result.data.map((t: any) => new Transition(t));
                 console.log(this.transitions);
             }
+
         }
     }
 

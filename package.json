@@ -147,6 +147,14 @@
 		},
 		"commands": [
 			{
+				"command": "visual-studio-code-plugin-for-alm-octane.commitMessage",
+				"title": "Copy commit message",
+				"icon": {
+					"light": "resources/light/refresh.svg",
+					"dark": "resources/dark/refresh.svg"
+				}
+			},
+			{
 				"command": "visual-studio-code-plugin-for-alm-octane.myWelcome.refreshEntry",
 				"title": "Refresh MyWelcome",
 				"icon": {
