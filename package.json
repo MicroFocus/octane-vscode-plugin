@@ -148,10 +148,22 @@
 				{
 					"command": "visual-studio-code-plugin-for-alm-octane.commitMessage",
 					"group": "inline"
+				},
+				{
+					"command": "visual-studio-code-plugin-for-alm-octane.myTests.download",
+					"group": "inline"
 				}
 			]
 		},
 		"commands": [
+			{
+				"command": "visual-studio-code-plugin-for-alm-octane.myTests.download",
+				"title": "Download test",
+				"icon": {
+					"dark": "media/dark/download.svg",
+					"light": "media/light/download.svg"
+				}
+			},
 			{
 				"command": "visual-studio-code-plugin-for-alm-octane.commitMessage",
 				"title": "Copy commit message",

@@ -243,6 +243,16 @@ export class OctaneService {
         }
         return [];
     }
+
+    public async downloadScriptForTest(e: OctaneEntity): Promise<string> {
+        try {
+            const script = await this.octane.get(Octane.Octane.entityTypes.tests).at(e.id).script().execute();
+            return script;
+        } catch (e) {
+            console.error('While downloading script.', e);
+            throw e;
+        }
+    }
 }
 
 function setValueForMap(map: any, key: any, value: any) {
