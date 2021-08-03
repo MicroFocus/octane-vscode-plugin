@@ -202,17 +202,34 @@ function generateBodyElement(data: any | OctaneEntity | undefined, fields: any[]
             if (counter === 0) {
                 html += `<div class="information-container">`;
             }
-
+            // console.log("html->", field);
             if (field.field_type === 'reference') {
+            //     html += `
+            //     <div class="container">
+            //         <span>${field.label}</span>
+            //         <textarea id="${field.label}" rows="2" style="resize: none"}">${getFieldValue(data, field.name)}</textarea>
+            //         <script>
+            //             document.getElementById("${field.label}").readOnly = !${field.editable};
+            //         </script>
+            //     </div>
+            // `;
                 html += `
-                <div class="container">
-                    <span>${field.label}</span>
-                    <textarea id="${field.label}" rows="2" style="resize: none"}">${getFieldValue(data, field.name)}</textarea>
-                    <script>
-                        document.getElementById("${field.label}").readOnly = !${field.editable};
-                    </script>
-                </div>
-            `;
+                    <div class="select-container">
+                        <span>${field.label}</span>
+                        <select class="reference-select">
+                `;
+                html += `<option value="none" selected disabled hidden>${getFieldValue(data, field.name)}</option>`
+                let referenceData: any[] = ['alma', 'korte'];
+                referenceData.forEach((element: any) => {
+                    html += `
+                                <option value="${element}">${element}</option>
+                    `;
+                });
+                html += `
+                        </select>
+                    </div>
+                `;
+
             } else {
                 html += `
                 <div class="container">

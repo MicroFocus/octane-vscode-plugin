@@ -121,6 +121,13 @@ hr {
     height: 1.8rem;
 }
 
+.reference-select {
+    background-color: #3c3c3c;
+    color: #cccccc;
+    margin-top: 0.5rem;
+    height: 2.8rem;
+}
+
 .save {
     margin: 0 0 0 0.5rem;
     width: 5rem;
