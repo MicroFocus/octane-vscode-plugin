@@ -151,6 +151,7 @@
 				},
 				{
 					"command": "visual-studio-code-plugin-for-alm-octane.myTests.download",
+					"when": "view == myTests",
 					"group": "inline"
 				}
 			]
