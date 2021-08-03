@@ -8,14 +8,42 @@ import { MyTestsProvider } from './treeview/tests-provider';
 import { MyFeatureProvider } from './treeview/feature-provider';
 import { MyRequirementsProvider } from './treeview/requirements-provider';
 import { OctaneWebview } from './details/octane-webview';
+import { AlmOctaneAuthenticationProvider } from './auth/authentication-provider';
+import { WelcomeViewProvider } from './treeview/welcome';
 
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
+	const authProvider = new AlmOctaneAuthenticationProvider(context);
+	context.subscriptions.push(authProvider);
 
 	const service = OctaneService.getInstance();
+
+	vscode.authentication.onDidChangeSessions(async e => {
+		console.info('Received session change', e);
+		if (e.provider && e.provider.id === AlmOctaneAuthenticationProvider.type) {
+			await service.initialize();
+			const iSession = await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: false });
+			await vscode.commands.executeCommand('setContext', 'visual-studio-code-plugin-for-alm-octane.hasSession', iSession ? true : false);
+		}
+	});
+
+	const session = await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: false });
+
+	// Testing
+	{
+		// await authProvider.logout();
+	}
+
+	vscode.commands.executeCommand('setContext', 'visual-studio-code-plugin-for-alm-octane.hasSession', session ? true : false);
 	await service.initialize();
+
+	const welcomeViewProvider = new WelcomeViewProvider(context.extensionUri, authProvider);
+	context.subscriptions.push(vscode.window.registerWebviewViewProvider('visual-studio-code-plugin-for-alm-octane.myWelcome', welcomeViewProvider));
+	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.myWelcome.refreshEntry', () => {
+	}));
+
 
 	const myBacklogProvider = new BacklogProvider(service);
 	vscode.window.registerTreeDataProvider('myBacklog', myBacklogProvider);
@@ -67,17 +95,18 @@ export async function activate(context: vscode.ExtensionContext) {
 		context.subscriptions.push(refreshCommand);
 	}
 
-	
+
 	{
 		context.subscriptions.push(OctaneWebview.register(context));
 	}
 
-           
+
 	vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myBacklog.refreshEntry');
 	vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myTests.refreshEntry');
 	vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myMentions.refreshEntry');
 	vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myFeatures.refreshEntry');
 	vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myRequirements.refreshEntry');
+
 }
 
 // this method is called when your extension is deactivated
