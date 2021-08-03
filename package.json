@@ -143,6 +143,12 @@
 					"when": "view == visual-studio-code-plugin-for-alm-octane.myWelcome",
 					"group": "navigation"
 				}
+			],
+			"view/item/context": [
+				{
+					"command": "visual-studio-code-plugin-for-alm-octane.commitMessage",
+					"group": "inline"
+				}
 			]
 		},
 		"commands": [
@@ -150,8 +156,8 @@
 				"command": "visual-studio-code-plugin-for-alm-octane.commitMessage",
 				"title": "Copy commit message",
 				"icon": {
-					"light": "resources/light/refresh.svg",
-					"dark": "resources/dark/refresh.svg"
+					"dark": "media/dark/commit.svg",
+					"light": "media/light/commit.svg"
 				}
 			},
 			{
