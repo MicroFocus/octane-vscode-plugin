@@ -80,6 +80,7 @@ export class OctaneService {
                 this.transitions = result.data.map((t: any) => new Transition(t));
                 console.log(this.transitions);
             }
+
         }
     }
 
@@ -273,7 +274,16 @@ export class OctaneService {
         } catch (e) {
             console.error('While getFullDataForEntity()', e);
         }
+    }
 
+    public async downloadScriptForTest(e: OctaneEntity): Promise<string> {
+        try {
+            const script = await this.octane.get(Octane.Octane.entityTypes.tests).at(e.id).script().execute();
+            return script;
+        } catch (e) {
+            console.error('While downloading script.', e);
+            throw e;
+        }
     }
 }
 

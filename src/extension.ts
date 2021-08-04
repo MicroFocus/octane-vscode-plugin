@@ -10,6 +10,8 @@ import { MyRequirementsProvider } from './treeview/requirements-provider';
 import { OctaneWebview } from './details/octane-webview';
 import { AlmOctaneAuthenticationProvider } from './auth/authentication-provider';
 import { WelcomeViewProvider } from './treeview/welcome';
+import { OctaneEntity } from './octane/model/octane-entity';
+import { MyWorkItem } from './treeview/my-work-provider';
 
 
 // this method is called when your extension is activated
@@ -95,6 +97,25 @@ export async function activate(context: vscode.ExtensionContext) {
 		context.subscriptions.push(refreshCommand);
 	}
 
+	{
+		let commitMessageCommand = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.commitMessage', async (e: MyWorkItem) => {
+			await vscode.env.clipboard.writeText(`${e.entity?.subtype ?? e.entity?.type} #${e.id}: `);
+			vscode.window.showInformationMessage('Commit message copied to clipboard.');
+		});
+		context.subscriptions.push(commitMessageCommand);
+	}
+
+	{
+		let downloadTestCommand = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.myTests.download', async (e: MyWorkItem) => {
+			console.info('visual-studio-code-plugin-for-alm-octane.myTests.download called', e);
+			if (e.entity) {
+				const script = await service.downloadScriptForTest(e.entity);
+				await vscode.env.clipboard.writeText(`${script}`);
+				vscode.window.showInformationMessage('Script content copied to clipboard.');
+			}
+		});
+		context.subscriptions.push(downloadTestCommand);
+	}
 
 	{
 		context.subscriptions.push(OctaneWebview.register(context));

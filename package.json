@@ -143,9 +143,36 @@
 					"when": "view == visual-studio-code-plugin-for-alm-octane.myWelcome",
 					"group": "navigation"
 				}
+			],
+			"view/item/context": [
+				{
+					"command": "visual-studio-code-plugin-for-alm-octane.commitMessage",
+					"group": "inline"
+				},
+				{
+					"command": "visual-studio-code-plugin-for-alm-octane.myTests.download",
+					"when": "view == myTests",
+					"group": "inline"
+				}
 			]
 		},
 		"commands": [
+			{
+				"command": "visual-studio-code-plugin-for-alm-octane.myTests.download",
+				"title": "Download test",
+				"icon": {
+					"dark": "media/dark/download.svg",
+					"light": "media/light/download.svg"
+				}
+			},
+			{
+				"command": "visual-studio-code-plugin-for-alm-octane.commitMessage",
+				"title": "Copy commit message",
+				"icon": {
+					"dark": "media/dark/commit.svg",
+					"light": "media/light/commit.svg"
+				}
+			},
 			{
 				"command": "visual-studio-code-plugin-for-alm-octane.myWelcome.refreshEntry",
 				"title": "Refresh MyWelcome",
