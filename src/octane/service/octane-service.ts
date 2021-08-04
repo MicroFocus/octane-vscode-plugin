@@ -257,14 +257,23 @@ export class OctaneService {
         this.octane.update(endPoint, body).execute().then(undefined, console.error);
     }
 
-    public async getFullDataForEntity(entityTypes: string) {
+    public async getFullDataForEntity(entityTypes: string, entityName: string) {
         const endPoint = entityTypeApiEndpoint.get(entityTypes);
         if (!endPoint) {
             return;
         }
-        const result = await this.octane.get(endPoint)
-            .execute();
-        return result;
+        try {
+            const result = await this.octane.get(endPoint)
+                // .query(
+                    // Query.field('entity_name').inComparison([entityName])
+                        // .build())
+                .execute();
+            console.log("--------------------", result);
+            return result ?? undefined;
+        } catch (e) {
+            console.error('While getFullDataForEntity()', e);
+        }
+
     }
 }
 

@@ -40,7 +40,7 @@ export class OctaneWebview {
                 }
                 this.fullData = await OctaneService.getInstance().getDataFromOctaneForTypeAndId(data.type, data.subtype, data.id);
                 console.log("fullData", this.fullData);
-                panel.webview.html = getHtmlForWebview(panel.webview, context, this.fullData, fields);
+                panel.webview.html = await getHtmlForWebview(panel.webview, context, this.fullData, fields);
                 panel.webview.onDidReceiveMessage(m => {
                     // console.log("from js ---- > ", m);
                     if (m.type === 'get') {
@@ -77,7 +77,7 @@ function getDataForSubtype(entity: OctaneEntity | undefined): [string, string] {
     return ['', ''];
 }
 
-function getHtmlForWebview(webview: vscode.Webview, context: any, data: any | OctaneEntity | undefined, fields: any[]): string {
+async function getHtmlForWebview(webview: vscode.Webview, context: any, data: any | OctaneEntity | undefined, fields: any[]): Promise<string> {
     const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(
         context.extensionUri, 'media', 'vscode.css'));
     const myStyle = webview.asWebviewUri(vscode.Uri.joinPath(
@@ -109,7 +109,7 @@ function getHtmlForWebview(webview: vscode.Webview, context: any, data: any | Oc
             </div>
             <div class="element">
                 <div class="information">
-                    ${generateBodyElement(data, fields)}
+                    ${await generateBodyElement(data, fields)}
                 </div>
                 <div class="comments-sidebar">
                     ${generateCommentElement(data, fields)}
@@ -154,7 +154,7 @@ function generateCommentElement(data: any | OctaneEntity | undefined, fields: an
     return html;
 }
 
-function generateBodyElement(data: any | OctaneEntity | undefined, fields: any[]): string {
+async function generateBodyElement(data: any | OctaneEntity | undefined, fields: any[]): Promise<string> {
     let html: string = ``;
     let counter: number = 0;
     const columnCount: number = 2;
@@ -197,14 +197,14 @@ function generateBodyElement(data: any | OctaneEntity | undefined, fields: any[]
                 <br>
                 <hr>
     `;
-    mapFields.forEach(async (field, key) => {
+    for (const [key, field] of mapFields) {
         if (!['description', ...mainFields].includes(key)) {
             if (counter === 0) {
                 html += `<div class="information-container">`;
             }
             if (field.field_type === 'reference') {
                 if (field.field_type_data.multiple) {
-                        html += `
+                    html += `
                         <div class="container">
                             <span>${field.label}</span>
                             <textarea id="${field.label}" rows="2" style="resize: none"}">${getFieldValue(data, field.name)}</textarea>
@@ -220,10 +220,16 @@ function generateBodyElement(data: any | OctaneEntity | undefined, fields: any[]
                         <select class="reference-select">
                     `;
                     html += `<option value="none" selected disabled hidden>${getFieldValue(data, field.name)}</option>`;
-                    // let options = await OctaneService.getInstance().getFullDataForEntity('release');
-                    // options.data.forEach((option: any) => {
-                    //     html += `<option value="${option.name}">${option.name}</option>`;
-                    // });
+
+                    // console.log(field);
+                    if (field.field_type_data.targets[0].type) {
+                        console.log('field.id',field);
+                        let options = await OctaneService.getInstance().getFullDataForEntity(field.field_type_data.targets[0].type, field.entity_name);
+                        console.log(options);
+                        options.data.forEach((option: any) => {
+                            html += `<option value="${option.name}">${option.name}</option>`;
+                        });
+                    }
                     html += `
                         </select>
                     </div>`;
@@ -244,7 +250,7 @@ function generateBodyElement(data: any | OctaneEntity | undefined, fields: any[]
             }
             counter = counter === columnCount ? 0 : counter + 1;
         }
-    });
+    };
     return html;
 }
 
