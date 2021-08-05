@@ -258,7 +258,8 @@ export class OctaneService {
         this.octane.update(endPoint, body).execute().then(undefined, console.error);
     }
 
-    public async getFullDataForEntity(entityTypes: string, entityName: string) {
+    public async getFullDataForEntity(entityTypes: string, field: any) {
+        console.log(entityTypes);
         const endPoint = entityTypeApiEndpoint.get(entityTypes);
         if (!endPoint) {
             return;
@@ -266,10 +267,10 @@ export class OctaneService {
         try {
             const result = await this.octane.get(endPoint)
                 // .query(
-                    // Query.field('entity_name').inComparison([entityName])
-                        // .build())
+                //     Query.field('id').equal(field.field_type_data.targets[0].logical_name)
+                //         .build())
                 .execute();
-            console.log("--------------------", result);
+            console.log(result);
             return result ?? undefined;
         } catch (e) {
             console.error('While getFullDataForEntity()', e);
