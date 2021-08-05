@@ -271,6 +271,11 @@ export class OctaneService {
                             .build())
                     .execute();
                 return result ?? undefined;
+            }
+            if (entityTypes === 'sprint') {
+                const result = await this.octane.get(endPoint)
+                    .execute();
+                return result ?? undefined;
             } else {
                 const result = await this.octane.get(endPoint)
                     .execute();

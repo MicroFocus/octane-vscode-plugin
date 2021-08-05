@@ -209,27 +209,43 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                         <span>${field.label} multiple</span>
                         <select class="reference-select">
                     `;
-                    html += `<option value="${getFieldValue(data, field.name)}">${getFieldValue(data, field.name)}</option>`;
+                    html += `<option value="none" selected disabled hidden>${getFieldValue(data, field.name)}</option>`;
+                    //TO DO: implementation of multiple select
                     html += `
                         </select>
                     </div>`;
                 } else {
-                    html += `
-                    <div class="select-container">
-                        <span>${field.label}</span>
-                        <select class="reference-select">
-                    `;
-                    html += `<option value="none" selected disabled hidden>${getFieldValue(data, field.name)}</option>`;
-                    console.log(field);
-                    if (field.field_type_data.targets[0].type) {
-                        let options = await OctaneService.getInstance().getFullDataForEntity(field.field_type_data.targets[0].type, field);
-                        options.data.forEach((option: any) => {
-                            html += `<option value="${option.name}">${option.name}</option>`;
-                        });
+                    if (field.editable) {
+                        html += `
+                        <div class="select-container">
+                            <span>${field.label}</span>
+                            <select class="reference-select">
+                        `;
+                        html += `<option value="none" selected disabled hidden>${getFieldValue(data, field.name)}</option>`;
+                        if (field.field_type_data.targets[0].type) {
+                            let options = await OctaneService.getInstance().getFullDataForEntity(field.field_type_data.targets[0].type, field);
+                            options.data.forEach((option: any) => {
+                                if (option.type === 'workspace_user') {
+                                    html += `<option value="${option}">${option.full_name}</option>`;
+                                } else {
+                                    html += `<option value="${option}">${option.name}</option>`;
+                                }
+                            });
+                        }
+                        html += `
+                            </select>
+                        </div>`;
+                    } else {
+                        html += `
+                            <div class="container">
+                                <span>${field.label}</span>
+                                <input id="${field.label}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
+                                <script>
+                                    document.getElementById("${field.label}").readOnly = !${field.editable};
+                                </script>
+                            </div>
+                        `;
                     }
-                    html += `
-                        </select>
-                    </div>`;
                 }
             } else {
                 html += `
@@ -259,8 +275,7 @@ function getFieldValue(data: any, fieldName: string): string | any[] {
     if (field['data']) {
         const ref: string[] = [];
         field['data'].forEach((r: any) => {
-            // ref.push(' ' + r.name);
-            ref.push(r);
+            ref.push(' ' + r.name);
         });
         return ref.length ? ref : '-';
     }
