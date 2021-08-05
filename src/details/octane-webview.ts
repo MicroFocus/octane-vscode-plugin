@@ -221,10 +221,8 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                     `;
                     html += `<option value="none" selected disabled hidden>${getFieldValue(data, field.name)}</option>`;
 
-                    let type = getFieldType(data, field.name);
-                    // if (field.field_type_data.targets[0].type) {
-                    if(type && type != '-') {
-                        let options = await OctaneService.getInstance().getFullDataForEntity(type, field);
+                    if (field.field_type_data.targets[0].type) {
+                        let options = await OctaneService.getInstance().getFullDataForEntity(field.field_type_data.targets[0].type, field);
                         options.data.forEach((option: any) => {
                             html += `<option value="${option.name}">${option.name}</option>`;
                         });
@@ -259,7 +257,6 @@ function getFieldValue(data: any, fieldName: string): string | any[] {
         return '-';
     }
     if (field['data']) {
-        // console.log(field);
         const ref: string[] = [];
         field['data'].forEach((r: any) => {
             // ref.push(' ' + r.name);
@@ -268,31 +265,10 @@ function getFieldValue(data: any, fieldName: string): string | any[] {
         return ref.length ? ref : '-';
     }
     if (field['name']) {
-        // console.log(field);
         return field['name'];
     }
     if (field['full_name']) {
-        // console.log(field);
         return field['full_name'];
-    }
-    return field;
-}
-
-function getFieldType(data: any, fieldName: string): string {
-    const field = data[fieldName];
-    if (!field) {
-        return '-';
-    }
-    if (field['data']) {
-        const ref: string[] = [];
-        field['data'].forEach((r: any) => {
-            // ref.push(' ' + r.name);
-            ref.push(r.type);
-        });
-        return ref.length ? ref[0] : '-';
-    }
-    if (field['type']) {
-        return field['type'];
     }
     return field;
 }
