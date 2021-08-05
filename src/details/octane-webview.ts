@@ -205,14 +205,14 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
             if (field.field_type === 'reference') {
                 if (field.field_type_data.multiple) {
                     html += `
-                        <div class="container">
-                            <span>${field.label}</span>
-                            <textarea id="${field.label}" rows="2" style="resize: none"}">${getFieldValue(data, field.name)}</textarea>
-                            <script>
-                                document.getElementById("${field.label}").readOnly = !${field.editable};
-                            </script>
-                        </div>
+                    <div class="select-container">
+                        <span>${field.label} multiple</span>
+                        <select class="reference-select">
                     `;
+                    html += `<option value="${getFieldValue(data, field.name)}">${getFieldValue(data, field.name)}</option>`;
+                    html += `
+                        </select>
+                    </div>`;
                 } else {
                     html += `
                     <div class="select-container">
@@ -220,7 +220,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                         <select class="reference-select">
                     `;
                     html += `<option value="none" selected disabled hidden>${getFieldValue(data, field.name)}</option>`;
-
+                    console.log(field);
                     if (field.field_type_data.targets[0].type) {
                         let options = await OctaneService.getInstance().getFullDataForEntity(field.field_type_data.targets[0].type, field);
                         options.data.forEach((option: any) => {

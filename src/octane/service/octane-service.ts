@@ -264,11 +264,11 @@ export class OctaneService {
             return;
         }
         try {
-            if (field.field_type_data.targets[0].logical_name) {
+            if (entityTypes === 'list_node') {
                 const result = await this.octane.get(endPoint)
                     .query(
-                    Query.field('id').equal(field.field_type_data.targets[0].logical_name)
-                    .build())
+                        Query.field('list_root').equal(Query.field('logical_name').equal(field.field_type_data.targets[0].logical_name))
+                            .build())
                     .execute();
                 return result ?? undefined;
             } else {
