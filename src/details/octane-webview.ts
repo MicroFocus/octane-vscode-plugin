@@ -178,9 +178,13 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                         
                     
         `;
-        for (const [key, field] of mapFields) {
-            html += `           <div class="checkboxDiv"><input type="checkbox"  class="filterCheckbox" name="scales"><span class="filterCheckboxLabel">${field.label}</span></div>`;
+    for (const [key, field] of mapFields) {
+        if (mainFields.includes(field.name)) {
+            html += `           <div class="checkboxDiv"><input checked type="checkbox" class="filterCheckbox" name="${field.label}"><span class="filterCheckboxLabel">${field.label}</span></div>`;
+        } else {
+            html += `           <div class="checkboxDiv"><input type="checkbox" class="filterCheckbox" name="${field.label}"><span class="filterCheckboxLabel">${field.label}</span></div>`;
         }
+    }
     html += `       </div>
                 </div>`;
 
@@ -194,7 +198,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
         const field = mapFields.get(key);
         if (!field) { return; }
         html += `
-                <div class="container">
+                <div class="container" id="container_${field.label}">
                     <span>${field.label}</span>
                     <input id="${field.label}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
                 </div>

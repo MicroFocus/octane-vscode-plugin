@@ -10,6 +10,25 @@
         this.filterOpened = filterFields(this.filterOpened);
     });
 
+    let checkboxes = document.getElementsByClassName("filterCheckbox");
+    for (let checkbox of checkboxes) {
+        checkbox.addEventListener('click', e => {
+            console.log(checkbox.checked, checkbox.name);
+            showFields(checkbox);
+        });
+    }
+
+    function showFields(checkbox) {
+        let element = document.getElementById("container_" + checkbox.name);
+        if (element) {
+            if (!checkbox.checked) {
+                element.style.display = "none";
+            } else {
+                element.style.display = "flex";
+            }
+        }
+    }
+
     // let elements = Object.values(document.getElementsByClassName("selectId"));
     // elements.forEach(element => {
     //     element.addEventListener('click', e => {
