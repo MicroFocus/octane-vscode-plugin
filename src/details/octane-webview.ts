@@ -169,8 +169,20 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                 <hr id="filterhr">
                 <span id="filtertext">Select fields for this entity type</span>
                 <div id="filterContainer">
+                    <div id="filterContainerLeft">
+                        <button id="allId" type="button">All</button>
+                        <button id="noneId" type="button">None</button>
+                        <button id="resetId" type="button">Reset</button>
+                    </div>
+                    <div id="filterContainerRight">
+                        
+                    
         `;
-    html += `   </div>`;
+        for (const [key, field] of mapFields) {
+            html += `           <div class="checkboxDiv"><input type="checkbox"  class="filterCheckbox" name="scales"><span class="filterCheckboxLabel">${field.label}</span></div>`;
+        }
+    html += `       </div>
+                </div>`;
 
     html += `
                 <br>

@@ -19,10 +19,15 @@
 }
 
 #filterContainer {
-    display: flex;
-    flex-direction: row;
+    flex-direction: column;
     flex-wrap: wrap;
     display: none;
+}
+
+#filterContainerRight {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: inherit;
 }
 
 #filtertext {
@@ -35,6 +40,34 @@
 
 #filterbr {
     display: none;
+}
+
+#allId {
+    width: 5rem;
+    background-color: #3c3c3c;
+}
+
+#noneId {
+    width: 5rem;
+    background-color: #3c3c3c;
+}
+
+#resetId {
+    width: 5rem;
+    background-color: #3c3c3c;
+}
+
+.filterCheckbox {
+    width: 1rem;
+    height: 1rem;
+}
+
+.filterCheckboxLabel {
+    margin: .5rem;
+}
+
+.checkboxDiv {
+    width: 10rem;
 }
 
 span {

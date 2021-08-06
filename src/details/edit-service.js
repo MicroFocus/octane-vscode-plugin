@@ -34,10 +34,10 @@
     function filterFields(open) {
         if (!open) {
             document.getElementById("filterId").style.backgroundColor = "#0e639c";
-            document.getElementById("filterContainer").style.visibility = "block";
-            document.getElementById("filtertext").style.display = "block";
-            document.getElementById("filterhr").style.display = "block";
-            document.getElementById("filterbr").style.display = "block";
+            document.getElementById("filterContainer").style.display = "flex";
+            document.getElementById("filtertext").style.display = "flex";
+            document.getElementById("filterhr").style.display = "flex";
+            document.getElementById("filterbr").style.display = "flex";
             open = true;
         } else {
             document.getElementById("filterId").style.backgroundColor = "#3c3c3c";
