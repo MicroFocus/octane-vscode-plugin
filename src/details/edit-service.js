@@ -10,12 +10,52 @@
         this.filterOpened = filterFields(this.filterOpened);
     });
 
+    document.getElementById("allId").addEventListener('click', e => {
+        selectAllFields();
+    });
+
+    document.getElementById("noneId").addEventListener('click', e => {
+        deSelectAllFields();
+    });
+
+    document.getElementById("resetId").addEventListener('click', e => {
+        resetAllFields();
+    });
+
     let checkboxes = document.getElementsByClassName("filterCheckbox");
     for (let checkbox of checkboxes) {
         checkbox.addEventListener('click', e => {
             console.log(checkbox.checked, checkbox.name);
             showFields(checkbox);
         });
+    }
+
+    function selectAllFields() {
+        let checkboxes = document.getElementsByClassName("filterCheckbox");
+        for (let checkbox of checkboxes) {
+            checkbox.checked = true;
+            showFields(checkbox);
+        }
+    }
+
+    function deSelectAllFields() {
+        let checkboxes = document.getElementsByClassName("filterCheckbox");
+        for (let checkbox of checkboxes) {
+            checkbox.checked = false;
+            showFields(checkbox);
+        }
+    }
+
+    function resetAllFields() {
+        let checkboxes = document.getElementsByClassName("filterCheckbox");
+        for (let checkbox of checkboxes) {
+            if (['ID', 'Name', 'Phase', 'Description'].includes(checkbox.name)) {
+                checkbox.checked = true;
+            } else {
+                checkbox.checked = false;
+            }
+            showFields(checkbox);
+        }
     }
 
     function showFields(checkbox) {
