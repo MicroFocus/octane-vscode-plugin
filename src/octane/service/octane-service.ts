@@ -284,7 +284,7 @@ export class OctaneService {
     public async downloadScriptForTest(e: OctaneEntity): Promise<string> {
         try {
             const script = await this.octane.get(Octane.Octane.entityTypes.tests).at(e.id).script().execute();
-            return script;
+            return script.script;
         } catch (e) {
             console.error('While downloading script.', e);
             throw e;

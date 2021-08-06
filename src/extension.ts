@@ -12,6 +12,8 @@ import { AlmOctaneAuthenticationProvider } from './auth/authentication-provider'
 import { WelcomeViewProvider } from './treeview/welcome';
 import { OctaneEntity } from './octane/model/octane-entity';
 import { MyWorkItem } from './treeview/my-work-provider';
+import * as path from 'path';
+import * as fs from 'fs';
 
 
 // this method is called when your extension is activated
@@ -110,8 +112,22 @@ export async function activate(context: vscode.ExtensionContext) {
 			console.info('visual-studio-code-plugin-for-alm-octane.myTests.download called', e);
 			if (e.entity) {
 				const script = await service.downloadScriptForTest(e.entity);
-				await vscode.env.clipboard.writeText(`${script}`);
-				vscode.window.showInformationMessage('Script content copied to clipboard.');
+				if (vscode === undefined || vscode.workspace === undefined || vscode.workspace.workspaceFolders === undefined) {
+					vscode.window.showErrorMessage('No workspace opened. Can not save test script.');
+					return;
+				}
+
+				const newFile = vscode.Uri.parse(path.join(vscode.workspace.workspaceFolders[0].uri.path, `${e.entity.name}_${e.entity.id}.feature`));
+				const fileInfos = await vscode.window.showSaveDialog({ defaultUri: newFile });
+				if (fileInfos) {
+					fs.writeFileSync(fileInfos.path, `${script}`, 'utf8');
+					try {
+						await vscode.workspace.openTextDocument(fileInfos.path);
+					} catch (e) {
+						console.error(e);
+					}
+					vscode.window.showInformationMessage('Script saved.');
+				}
 			}
 		});
 		context.subscriptions.push(downloadTestCommand);
