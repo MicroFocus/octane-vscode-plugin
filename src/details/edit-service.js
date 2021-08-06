@@ -6,6 +6,27 @@
         getData();
     });
 
+    // let elements = Object.values(document.getElementsByClassName("selectId"));
+    // elements.forEach(element => {
+    //     element.addEventListener('click', e => {
+    //         console.log("itt mukodok");
+    //         const expanded = false;
+    //         openCheckboxes(expanded);
+    //     });
+    // });
+
+    // function openCheckboxes(expanded) {
+    //     var checkboxes = document.getElementById("checkboxes");
+    //     if (!expanded) {
+    //         checkboxes.style.display = "block";
+    //         expanded = true;
+    //     } else {
+    //         checkboxes.style.display = "none";
+    //         expanded = false;
+    //     }
+
+    // }
+
     function getData() {
         vscode.postMessage({
             type: 'get',

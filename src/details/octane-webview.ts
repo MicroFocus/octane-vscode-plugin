@@ -104,7 +104,7 @@ async function getHtmlForWebview(webview: vscode.Webview, context: any, data: an
                 </div>
                 <div class="action-container">
                     ${generatePhaseSelectElement(data, fields)}
-                    <script src="${scriptUri}"></script>
+                    
                 </div>
             </div>
             <div class="element">
@@ -115,6 +115,7 @@ async function getHtmlForWebview(webview: vscode.Webview, context: any, data: an
                     ${generateCommentElement(data, fields)}
                 </div>
             </div>
+            <script src="${scriptUri}"></script>
         </body>
 
     `;
@@ -123,7 +124,7 @@ async function getHtmlForWebview(webview: vscode.Webview, context: any, data: an
 function generatePhaseSelectElement(data: any | OctaneEntity | undefined, fields: any[]): string {
     let html: string = ``;
     let transitions: Transition[] = OctaneService.getInstance().getPhaseTransitionForEntity(data.phase.id);
-    html += `<select name="action" class="action" id="selectId">`;
+    html += `<select name="action" class="action">`;
     html += `
             <option>${getFieldValue(data, 'phase')}</option>
         `;
@@ -206,14 +207,38 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                 if (field.field_type_data.multiple) {
                     html += `
                     <div class="select-container">
-                        <span>${field.label} multiple</span>
+                        
+                        <span>${field.label}</span>
                         <select class="reference-select">
                     `;
                     html += `<option value="none" selected disabled hidden>${getFieldValue(data, field.name)}</option>`;
                     //TO DO: implementation of multiple select
+                    // html += `
+                    //     </select>
+                    // `;
+                    // html += `
+                    //     <div id="checkboxes">
+                    // `;
+                    // let mockData = ['alma', 'korte', 'cukor', 'liszt'];
+                    // mockData.forEach(x => {
+                    //     html += `
+                    //         <label for="${x}">
+                    //             <input type="checkbox" id="${x}"/>
+                    //             "${x}"
+                    //         </label>
+                    //     `;
+                    // });
+                    // html += `
+                    //     </div>
+                        
+                    //     </div>
+                    // `;
+                    //--------------------------------------------
                     html += `
                         </select>
-                    </div>`;
+                    </div>
+                    `;
+
                 } else {
                     if (field.editable) {
                         html += `
