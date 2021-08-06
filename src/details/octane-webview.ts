@@ -143,7 +143,7 @@ function generatePhaseSelectElement(data: any | OctaneEntity | undefined, fields
 function generateCommentElement(data: any | OctaneEntity | undefined, fields: any[]): string {
     let html: string = ``;
     html += `   <br>
-                <hr>
+                
                 Comments
                 <div class="information-container">
                     <div class="comments-container">
@@ -159,6 +159,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
     let html: string = ``;
     let counter: number = 0;
     const columnCount: number = 2;
+    let filteredFields: string[] = ['id', 'name', 'phase', 'description'];
     let mainFields: string[] = ['id', 'name', 'phase'];
     let mapFields = new Map<string, any>();
     fields.forEach((field): any => {
@@ -179,7 +180,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                     
         `;
     for (const [key, field] of mapFields) {
-        if (mainFields.includes(field.name)) {
+        if (filteredFields.includes(field.name)) {
             html += `           <div class="checkboxDiv"><input checked type="checkbox" class="filterCheckbox" name="${field.label}"><span class="filterCheckboxLabel">${field.label}</span></div>`;
         } else {
             html += `           <div class="checkboxDiv"><input type="checkbox" class="filterCheckbox" name="${field.label}"><span class="filterCheckboxLabel">${field.label}</span></div>`;
@@ -198,7 +199,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
         const field = mapFields.get(key);
         if (!field) { return; }
         html += `
-                <div class="container" id="container_${field.label}">
+                <div class="main-container" id="container_${field.label}">
                     <span>${field.label}</span>
                     <input id="${field.label}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
                 </div>
@@ -212,7 +213,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                 <hr>
                 Description
                 <div class="information-container">
-                    <div class="container">
+                    <div class="description-container" id="container_Description">
                         <textarea id="Description" class="description" type="text">${stripHtml(getFieldValue(data, 'description').toString()).result}</textarea>
                     </div>
                     <script>
@@ -230,7 +231,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
             if (field.field_type === 'reference') {
                 if (field.field_type_data.multiple) {
                     html += `
-                    <div class="select-container">
+                    <div class="select-container" id="container_${field.label}">
                         
                         <span>${field.label}</span>
                         <select class="reference-select">
@@ -266,7 +267,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                 } else {
                     if (field.editable) {
                         html += `
-                        <div class="select-container">
+                        <div class="select-container" id="container_${field.label}">
                             <span>${field.label}</span>
                             <select class="reference-select">
                         `;
@@ -286,7 +287,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                         </div>`;
                     } else {
                         html += `
-                            <div class="container">
+                            <div class="container" id="container_${field.label}">
                                 <span>${field.label}</span>
                                 <input id="${field.label}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
                                 <script>
@@ -298,7 +299,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                 }
             } else {
                 html += `
-                <div class="container">
+                <div class="container" id="container_${field.label}">
                     <span>${field.label}</span>
                     <input id="${field.label}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
                     <script>

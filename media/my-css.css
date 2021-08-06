@@ -103,6 +103,23 @@ textarea {
     margin: .5rem;
     flex: 1;
     min-width: 200px;
+    display: none;
+}
+
+.main-container {
+    display: flex;
+    flex-direction: column;
+    margin: .5rem;
+    flex: 1;
+    min-width: 200px;
+}
+
+.description-container {
+    display: flex;
+    flex-direction: column;
+    margin: .5rem;
+    flex: 1;
+    min-width: 200px;
 }
 
 .select-container {
@@ -111,6 +128,7 @@ textarea {
     margin: .5rem;
     flex: 1;
     min-width: 200px;
+    display: none;
 }
 
 /* .multi-select-container {
