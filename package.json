@@ -151,7 +151,7 @@
 				},
 				{
 					"command": "visual-studio-code-plugin-for-alm-octane.myTests.download",
-					"when": "view == myTests",
+					"when": "viewItem == 'gherkin_test' || viewItem == 'scenario_test'",
 					"group": "inline"
 				}
 			]

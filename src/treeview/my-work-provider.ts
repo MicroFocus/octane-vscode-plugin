@@ -34,6 +34,7 @@ export abstract class MyWorkProvider implements vscode.TreeDataProvider<MyWorkIt
         item.id = '' + i.id;
         item.entity = i;
         item.iconPath = MyWorkProvider.getIconForEntity(i);
+        item.contextValue = i.subtype ?? i.type;
         return item;
     }
 
