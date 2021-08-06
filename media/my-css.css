@@ -18,6 +18,25 @@
     flex-wrap: wrap;
 }
 
+#filterContainer {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    display: none;
+}
+
+#filtertext {
+    display: none;
+}
+
+#filterhr {
+    display: none;
+}
+
+#filterbr {
+    display: none;
+}
+
 span {
     margin: .5rem;
 }
@@ -161,6 +180,13 @@ hr {
 .refresh {
     margin: 0 0 0 0.5rem;
     width: 5rem;
+    background-color: #3c3c3c;
+}
+
+#filterId {
+    margin: 0 0 0 0.5rem;
+    width: 5rem;
+    background-color: #3c3c3c;
 }
 
 .element {

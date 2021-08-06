@@ -1,9 +1,13 @@
 
 (function () {
     const vscode = acquireVsCodeApi();
-
+    const filterOpened = false;
     document.getElementById("saveId").addEventListener('click', e => {
         getData();
+    });
+
+    document.getElementById("filterId").addEventListener('click', e => {
+        this.filterOpened = filterFields(this.filterOpened);
     });
 
     // let elements = Object.values(document.getElementsByClassName("selectId"));
@@ -26,6 +30,25 @@
     //     }
 
     // }
+
+    function filterFields(open) {
+        if (!open) {
+            document.getElementById("filterId").style.backgroundColor = "#0e639c";
+            document.getElementById("filterContainer").style.visibility = "block";
+            document.getElementById("filtertext").style.display = "block";
+            document.getElementById("filterhr").style.display = "block";
+            document.getElementById("filterbr").style.display = "block";
+            open = true;
+        } else {
+            document.getElementById("filterId").style.backgroundColor = "#3c3c3c";
+            document.getElementById("filterContainer").style.display = "none";
+            document.getElementById("filtertext").style.display = "none";
+            document.getElementById("filterhr").style.display = "none";
+            document.getElementById("filterbr").style.display = "none";
+            open = false;
+        }
+        return open;
+    }
 
     function getData() {
         vscode.postMessage({

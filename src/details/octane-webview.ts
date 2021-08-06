@@ -104,7 +104,6 @@ async function getHtmlForWebview(webview: vscode.Webview, context: any, data: an
                 </div>
                 <div class="action-container">
                     ${generatePhaseSelectElement(data, fields)}
-                    
                 </div>
             </div>
             <div class="element">
@@ -136,7 +135,8 @@ function generatePhaseSelectElement(data: any | OctaneEntity | undefined, fields
     });
     html += `</select>
             <button id="saveId" class="save" type="button">Save</button>
-            <button class="refresh" type="button">Refresh</button>`;
+            <button class="refresh" type="button">Refresh</button>
+            <button id="filterId" type="button">Filter</button>`;
     return html;
 }
 
@@ -164,6 +164,14 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
     fields.forEach((field): any => {
         mapFields.set(field.name, field);
     });
+    html += `
+                <br id="filterbr">
+                <hr id="filterhr">
+                <span id="filtertext">Select fields for this entity type</span>
+                <div id="filterContainer">
+        `;
+    html += `   </div>`;
+
     html += `
                 <br>
                 <hr>
@@ -230,7 +238,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                     // });
                     // html += `
                     //     </div>
-                        
+
                     //     </div>
                     // `;
                     //--------------------------------------------
