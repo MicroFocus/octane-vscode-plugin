@@ -47,10 +47,23 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                             await uri.update('server.workspace', data.workspace, true);
                             await uri.update('user.userName', data.user, true);
                             if (data.browser) {
-                                await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: true });
+                                try {
+                                    await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: true });
+                                } catch (e) {
+                                    vscode.window.showErrorMessage(e.message);
+                                    throw e;
+                                }
                             } else {
-                                await this.authenticationProvider.createManualSession(data.password);
-                                await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: true });
+                                try {
+                                    OctaneService.getInstance().storePasswordForAuthentication(data.password);
+                                    // await this.authenticationProvider.createManualSession(data.password);
+                                    await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: true });
+                                } catch (e) {
+                                    vscode.window.showErrorMessage(e.message);
+                                    throw e;
+                                } finally {
+                                    OctaneService.getInstance().storePasswordForAuthentication(undefined);
+                                }
                             }
                         } catch (e) {
                             console.error('While creating session.', e);

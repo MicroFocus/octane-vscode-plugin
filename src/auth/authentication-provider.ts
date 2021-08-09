@@ -4,6 +4,7 @@ import fetch from 'node-fetch';
 import { retryDecorator } from 'ts-retry-promise';
 import { v4 as uuid } from 'uuid';
 import { OctaneService } from '../octane/service/octane-service';
+import { create } from 'domain';
 
 export const type = 'alm-octane.auth';
 
@@ -56,7 +57,7 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 		return sessionsList;
 	}
 
-	async createManualSession(password: string) {
+	private async createManualSession(password: string):  Promise<AlmOctaneAuthenticationSession> {
 		const uri: string | undefined = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.uri');
 		const space: string | undefined = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.space');
 		const workspace: string | undefined = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.workspace');
@@ -65,22 +66,30 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 		if (uri === undefined || user === undefined) {
 			throw new Error('No authentication possible. Incomplete authentication details. ');
 		}
-		const authTestResult = await OctaneService.getInstance().testAuthentication(uri, space, workspace, user, password, undefined, undefined);
-		if (authTestResult) {
-			const session = {
-				id: uuid(),
-				account: {
-					label: authTestResult,
-					id: user
-				},
-				scopes: ['default'],
-				accessToken: password,
-				cookieName: '',
-				type: AlmOctaneAuthenticationType.userNameAndPassword
-			};
-			await this.storeSession(session);
+		try {
+			const authTestResult = await OctaneService.getInstance().testAuthentication(uri, space, workspace, user, password, undefined, undefined);
+			if (authTestResult) {
+				const session = {
+					id: uuid(),
+					account: {
+						label: authTestResult,
+						id: user
+					},
+					scopes: ['default'],
+					accessToken: password,
+					cookieName: '',
+					type: AlmOctaneAuthenticationType.userNameAndPassword
+				};
+				await this.storeSession(session);
 
-			this.sessionChangeEmitter.fire({ added: [session], removed: [], changed: [] });
+				this.sessionChangeEmitter.fire({ added: [session], removed: [], changed: [] });
+				return session;
+			} else {
+				throw new Error('Authentication failed. Please try again.');
+			}
+		} catch (e) {
+			console.error(e);
+			throw e;
 		}
 	}
 
@@ -92,6 +101,13 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 
 		if (uri === undefined || user === undefined) {
 			throw new Error('No authentication possible. No uri or username provided.');
+		}
+
+		const password = OctaneService.getInstance().getPasswordForAuthentication();
+
+		if (password !== undefined) {
+			const manualSession = this.createManualSession(password);
+			return manualSession;
 		}
 
 		const idResult = await fetch(`${uri}authentication/tokens`, { method: 'POST' });
@@ -137,7 +153,7 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 		console.info(`Stored session!`);
 	}
 
-	private async fetchToken(uri:string, username: string, response: any): Promise<any> {
+	private async fetchToken(uri: string, username: string, response: any): Promise<any> {
 		const tokenResult = await fetch(`${uri}authentication/tokens/${response.id}?userName=${username}`);
 		if (tokenResult.ok) {
 			const tokenResponse = await tokenResult.json();
@@ -152,7 +168,7 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 	async removeSession(sessionId: string): Promise<void> {
 		console.info('Remove session received.', sessionId);
 		await this.keychain.deleteToken();
-		this.sessionChangeEmitter.fire({ added: [], removed: [{id: sessionId, accessToken: '', account: {id: '', label: ''}, scopes: []}], changed: [] });
+		this.sessionChangeEmitter.fire({ added: [], removed: [{ id: sessionId, accessToken: '', account: { id: '', label: '' }, scopes: [] }], changed: [] });
 	}
 
 	private async readSessions(): Promise<AlmOctaneAuthenticationSession[]> {

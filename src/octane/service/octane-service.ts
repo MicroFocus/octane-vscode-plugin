@@ -19,18 +19,20 @@ export class OctaneService {
 
     private octaneMap = new Map<String, any[]>();
 
+    private password?: string;
+
     public async testAuthentication(uri: string, space: string | undefined, workspace: string | undefined, username: string, password: string | undefined, cookieName: string | undefined, cookie: string | undefined): Promise<string | undefined> {
         const octaneInstace = new Octane.Octane({
             server: uri,
             sharedSpace: space,
             workspace: workspace,
             user: username,
-            password: cookie !== undefined ? undefined : password,
+            password: (cookieName === undefined || cookieName === '') ? password : undefined,
             headers: {
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 ALM_OCTANE_TECH_PREVIEW: true,
                 // eslint-disable-next-line @typescript-eslint/naming-convention
-                Cookie: cookie !== undefined ? `${cookieName}=${cookie}` : undefined
+                Cookie: (cookieName === undefined || cookieName === '') ? undefined : `${cookieName}=${cookie}`
             }
         });
         try {
@@ -43,6 +45,14 @@ export class OctaneService {
             console.error('Error while testing auth.', e);
             return;
         }
+    }
+
+    public storePasswordForAuthentication(password: string | undefined) {
+        this.password = password;
+    }
+
+    public getPasswordForAuthentication(): string | undefined {
+        return this.password;
     }
 
     public async initialize() {
