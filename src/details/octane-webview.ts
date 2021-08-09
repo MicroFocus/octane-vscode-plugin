@@ -104,7 +104,6 @@ async function getHtmlForWebview(webview: vscode.Webview, context: any, data: an
                 </div>
                 <div class="action-container">
                     ${generatePhaseSelectElement(data, fields)}
-                    <script src="${scriptUri}"></script>
                 </div>
             </div>
             <div class="element">
@@ -115,6 +114,7 @@ async function getHtmlForWebview(webview: vscode.Webview, context: any, data: an
                     ${generateCommentElement(data, fields)}
                 </div>
             </div>
+            <script src="${scriptUri}"></script>
         </body>
 
     `;
@@ -123,7 +123,7 @@ async function getHtmlForWebview(webview: vscode.Webview, context: any, data: an
 function generatePhaseSelectElement(data: any | OctaneEntity | undefined, fields: any[]): string {
     let html: string = ``;
     let transitions: Transition[] = OctaneService.getInstance().getPhaseTransitionForEntity(data.phase.id);
-    html += `<select name="action" class="action" id="selectId">`;
+    html += `<select name="action" class="action">`;
     html += `
             <option>${getFieldValue(data, 'phase')}</option>
         `;
@@ -135,14 +135,15 @@ function generatePhaseSelectElement(data: any | OctaneEntity | undefined, fields
     });
     html += `</select>
             <button id="saveId" class="save" type="button">Save</button>
-            <button class="refresh" type="button">Refresh</button>`;
+            <button class="refresh" type="button">Refresh</button>
+            <button id="filterId" type="button">Filter</button>`;
     return html;
 }
 
 function generateCommentElement(data: any | OctaneEntity | undefined, fields: any[]): string {
     let html: string = ``;
     html += `   <br>
-                <hr>
+                
                 Comments
                 <div class="information-container">
                     <div class="comments-container">
@@ -158,11 +159,36 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
     let html: string = ``;
     let counter: number = 0;
     const columnCount: number = 2;
+    let filteredFields: string[] = ['id', 'name', 'phase', 'description'];
     let mainFields: string[] = ['id', 'name', 'phase'];
     let mapFields = new Map<string, any>();
     fields.forEach((field): any => {
         mapFields.set(field.name, field);
     });
+    html += `
+                <br id="filterbr">
+                <hr id="filterhr">
+                <span id="filtertext">Select fields for this entity type</span>
+                <div id="filterContainer">
+                    <div id="filterContainerLeft">
+                        <button id="allId" type="button">All</button>
+                        <button id="noneId" type="button">None</button>
+                        <button id="resetId" type="button">Reset</button>
+                    </div>
+                    <div id="filterContainerRight">
+                        
+                    
+        `;
+    for (const [key, field] of mapFields) {
+        if (filteredFields.includes(field.name)) {
+            html += `           <div class="checkboxDiv"><input checked type="checkbox" class="filterCheckbox" name="${field.label}"><span class="filterCheckboxLabel">${field.label}</span></div>`;
+        } else {
+            html += `           <div class="checkboxDiv"><input type="checkbox" class="filterCheckbox" name="${field.label}"><span class="filterCheckboxLabel">${field.label}</span></div>`;
+        }
+    }
+    html += `       </div>
+                </div>`;
+
     html += `
                 <br>
                 <hr>
@@ -173,7 +199,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
         const field = mapFields.get(key);
         if (!field) { return; }
         html += `
-                <div class="container">
+                <div class="main-container" id="container_${field.label}">
                     <span>${field.label}</span>
                     <input id="${field.label}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
                 </div>
@@ -187,7 +213,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                 <hr>
                 Description
                 <div class="information-container">
-                    <div class="container">
+                    <div class="description-container" id="container_Description">
                         <textarea id="Description" class="description" type="text">${stripHtml(getFieldValue(data, 'description').toString()).result}</textarea>
                     </div>
                     <script>
@@ -205,35 +231,75 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
             if (field.field_type === 'reference') {
                 if (field.field_type_data.multiple) {
                     html += `
-                        <div class="container">
-                            <span>${field.label}</span>
-                            <textarea id="${field.label}" rows="2" style="resize: none"}">${getFieldValue(data, field.name)}</textarea>
-                            <script>
-                                document.getElementById("${field.label}").readOnly = !${field.editable};
-                            </script>
-                        </div>
-                    `;
-                } else {
-                    html += `
-                    <div class="select-container">
+                    <div class="select-container" id="container_${field.label}">
+                        
                         <span>${field.label}</span>
                         <select class="reference-select">
                     `;
                     html += `<option value="none" selected disabled hidden>${getFieldValue(data, field.name)}</option>`;
+                    //TO DO: implementation of multiple select
+                    // html += `
+                    //     </select>
+                    // `;
+                    // html += `
+                    //     <div id="checkboxes">
+                    // `;
+                    // let mockData = ['alma', 'korte', 'cukor', 'liszt'];
+                    // mockData.forEach(x => {
+                    //     html += `
+                    //         <label for="${x}">
+                    //             <input type="checkbox" id="${x}"/>
+                    //             "${x}"
+                    //         </label>
+                    //     `;
+                    // });
+                    // html += `
+                    //     </div>
 
-                    if (field.field_type_data.targets[0].type) {
-                        let options = await OctaneService.getInstance().getFullDataForEntity(field.field_type_data.targets[0].type, field);
-                        options.data.forEach((option: any) => {
-                            html += `<option value="${option.name}">${option.name}</option>`;
-                        });
-                    }
+                    //     </div>
+                    // `;
+                    //--------------------------------------------
                     html += `
                         </select>
-                    </div>`;
+                    </div>
+                    `;
+
+                } else {
+                    if (field.editable) {
+                        html += `
+                        <div class="select-container" id="container_${field.label}">
+                            <span>${field.label}</span>
+                            <select class="reference-select">
+                        `;
+                        html += `<option value="none" selected disabled hidden>${getFieldValue(data, field.name)}</option>`;
+                        if (field.field_type_data.targets[0].type) {
+                            let options = await OctaneService.getInstance().getFullDataForEntity(field.field_type_data.targets[0].type, field);
+                            options.data.forEach((option: any) => {
+                                if (option.type === 'workspace_user') {
+                                    html += `<option value="${option}">${option.full_name}</option>`;
+                                } else {
+                                    html += `<option value="${option}">${option.name}</option>`;
+                                }
+                            });
+                        }
+                        html += `
+                            </select>
+                        </div>`;
+                    } else {
+                        html += `
+                            <div class="container" id="container_${field.label}">
+                                <span>${field.label}</span>
+                                <input id="${field.label}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
+                                <script>
+                                    document.getElementById("${field.label}").readOnly = !${field.editable};
+                                </script>
+                            </div>
+                        `;
+                    }
                 }
             } else {
                 html += `
-                <div class="container">
+                <div class="container" id="container_${field.label}">
                     <span>${field.label}</span>
                     <input id="${field.label}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
                     <script>
@@ -259,8 +325,7 @@ function getFieldValue(data: any, fieldName: string): string | any[] {
     if (field['data']) {
         const ref: string[] = [];
         field['data'].forEach((r: any) => {
-            // ref.push(' ' + r.name);
-            ref.push(r);
+            ref.push(' ' + r.name);
         });
         return ref.length ? ref : '-';
     }

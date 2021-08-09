@@ -18,6 +18,58 @@
     flex-wrap: wrap;
 }
 
+#filterContainer {
+    flex-direction: column;
+    flex-wrap: wrap;
+    display: none;
+}
+
+#filterContainerRight {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: inherit;
+}
+
+#filtertext {
+    display: none;
+}
+
+#filterhr {
+    display: none;
+}
+
+#filterbr {
+    display: none;
+}
+
+#allId {
+    width: 5rem;
+    background-color: #3c3c3c;
+}
+
+#noneId {
+    width: 5rem;
+    background-color: #3c3c3c;
+}
+
+#resetId {
+    width: 5rem;
+    background-color: #3c3c3c;
+}
+
+.filterCheckbox {
+    width: 1rem;
+    height: 1rem;
+}
+
+.filterCheckboxLabel {
+    margin: .5rem;
+}
+
+.checkboxDiv {
+    width: 10rem;
+}
+
 span {
     margin: .5rem;
 }
@@ -51,6 +103,23 @@ textarea {
     margin: .5rem;
     flex: 1;
     min-width: 200px;
+    display: none;
+}
+
+.main-container {
+    display: flex;
+    flex-direction: column;
+    margin: .5rem;
+    flex: 1;
+    min-width: 200px;
+}
+
+.description-container {
+    display: flex;
+    flex-direction: column;
+    margin: .5rem;
+    flex: 1;
+    min-width: 200px;
 }
 
 .select-container {
@@ -59,7 +128,33 @@ textarea {
     margin: .5rem;
     flex: 1;
     min-width: 200px;
+    display: none;
 }
+
+/* .multi-select-container {
+    display: flex;
+    flex-direction: column;
+    margin: .5rem;
+    flex: 1;
+    min-width: 200px;
+} */
+
+/* #checkboxes {
+    display: none;
+    border: 1px #dadada solid;
+}
+
+#checkboxes label {
+    display: block;
+}
+
+#checkboxes label:hover {
+    background-color: #1e90ff;
+} */
+
+/* .select-box {
+    position: relative;
+} */
 
 hr {
     width: 100%;
@@ -136,6 +231,13 @@ hr {
 .refresh {
     margin: 0 0 0 0.5rem;
     width: 5rem;
+    background-color: #3c3c3c;
+}
+
+#filterId {
+    margin: 0 0 0 0.5rem;
+    width: 5rem;
+    background-color: #3c3c3c;
 }
 
 .element {
