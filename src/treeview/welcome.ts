@@ -76,6 +76,8 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
 
     getHtmlForWebview(webview: vscode.Webview): string {
 
+        console.info('WelcomeViewProvider.getHtmlForWebview called');
+
         const uri = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.uri');
         const space = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.space');
         const workspace = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.workspace');
@@ -88,6 +90,8 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
 
 
 
+        console.info('WelcomeViewProvider.getHtmlForWebview returning HTML');
+
         return `<!DOCTYPE html>
 			<html lang="en">
 			<head>
@@ -99,28 +103,30 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
 				<title>Welcome to ALM Octane</title>
 			</head>
 			<body>
-                <div class="container">
+                <div class="main-container">
                     <span>URL</span>
                     <input type="text" class="authentication_url" value="${uri}"></input>
                 </div>
-                <div class="container">
+                <div class="main-container">
                     <span>Space</span>
                     <input type="text" class="authentication_space" value="${space}"></input>
                 </div>
-                <div class="container">
+                <div class="main-container">
                     <span>Workspace</span>
                     <input type="text" class="authentication_workspace" value="${workspace}"></input>
                 </div>
-                <div class="container">
+                <div class="main-container">
                     <span>Username</span>
                     <input type="text" class="authentication_username" value="${user}"></input>
                 </div>
-                <div class="container">
+                <div class="main-container">
                     <span>Password</span>
                     <input type="password" class="authentication_password"></input>
                 </div>
-                <div class="container">
+                <div class="main-container">
 				    <button class="attempt_authentication">Authenticate with username and password</button>
+                </div>
+                <div class="main-container">
 				    <button class="attempt_browser_authentication">Authenticate using browser</button>
                 </div>
                 <script src="${scriptUri}"></script>
