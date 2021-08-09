@@ -57,12 +57,7 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 		return sessionsList;
 	}
 
-	private async createManualSession(password: string):  Promise<AlmOctaneAuthenticationSession> {
-		const uri: string | undefined = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.uri');
-		const space: string | undefined = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.space');
-		const workspace: string | undefined = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.workspace');
-		const user: string | undefined = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.user.userName');
-
+	private async createManualSession(uri: string, space: string | undefined, workspace: string | undefined, user: string, password: string): Promise<AlmOctaneAuthenticationSession> {
 		if (uri === undefined || user === undefined) {
 			throw new Error('No authentication possible. Incomplete authentication details. ');
 		}
@@ -80,9 +75,6 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 					cookieName: '',
 					type: AlmOctaneAuthenticationType.userNameAndPassword
 				};
-				await this.storeSession(session);
-
-				this.sessionChangeEmitter.fire({ added: [session], removed: [], changed: [] });
 				return session;
 			} else {
 				throw new Error('Authentication failed. Please try again.');
@@ -103,46 +95,46 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 			throw new Error('No authentication possible. No uri or username provided.');
 		}
 
+		let session: AlmOctaneAuthenticationSession | undefined;
+
 		const password = OctaneService.getInstance().getPasswordForAuthentication();
-
 		if (password !== undefined) {
-			const manualSession = this.createManualSession(password);
-			return manualSession;
-		}
-
-		const idResult = await fetch(`${uri}authentication/tokens`, { method: 'POST' });
-		if (idResult.ok) {
-			const response = await idResult.json();
-			console.info(response);
-			const browserResponse = await vscode.env.openExternal(vscode.Uri.parse(response?.authentication_url));
-			if (browserResponse) {
-				const decoratedFetchToken = retryDecorator(this.fetchToken, { retries: 100, delay: 1000 });
-				const token = await decoratedFetchToken(uri, user, response);
-				console.info('Fetchtoken returned: ', token);
-				const authTestResult = await OctaneService.getInstance().testAuthentication(uri, space, workspace, user, undefined, token.cookie_name, token.access_token);
-				if (authTestResult === undefined) {
-					throw new Error('Authentication failed.');
-				}
-				const session = {
-					id: uuid(),
-					account: {
-						label: authTestResult,
-						id: user
-					},
-					scopes: scopes,
-					accessToken: token.access_token,
-					cookieName: token.cookie_name,
-					type: AlmOctaneAuthenticationType.browser
-				};
-				await this.storeSession(session);
-
-				this.sessionChangeEmitter.fire({ added: [session], removed: [], changed: [] });
-
-				return session;
-			}
-			throw new Error('No authentication possible.');
+			session = await this.createManualSession(uri, space, workspace, user, password);
 		} else {
-			console.error(idResult.statusText);
+			const idResult = await fetch(`${uri}authentication/tokens`, { method: 'POST' });
+			if (idResult.ok) {
+				const response = await idResult.json();
+				console.info(response);
+				const browserResponse = await vscode.env.openExternal(vscode.Uri.parse(response?.authentication_url));
+				if (browserResponse) {
+					const decoratedFetchToken = retryDecorator(this.fetchToken, { retries: 100, delay: 1000 });
+					const token = await decoratedFetchToken(uri, user, response);
+					console.info('Fetchtoken returned: ', token);
+					const authTestResult = await OctaneService.getInstance().testAuthentication(uri, space, workspace, user, undefined, token.cookie_name, token.access_token);
+					if (authTestResult === undefined) {
+						throw new Error('Authentication failed.');
+					}
+					session = {
+						id: uuid(),
+						account: {
+							label: authTestResult,
+							id: user
+						},
+						scopes: scopes,
+						accessToken: token.access_token,
+						cookieName: token.cookie_name,
+						type: AlmOctaneAuthenticationType.browser
+					};
+
+				}
+			} else {
+				console.error(idResult.statusText);
+			}
+		}
+		if (session !== undefined) {
+			await this.storeSession(session);
+			this.sessionChangeEmitter.fire({ added: [session], removed: [], changed: [] });
+			return session;
 		}
 		throw new Error('No authentication possible.');
 	}
