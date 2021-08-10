@@ -47,10 +47,23 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                             await uri.update('server.workspace', data.workspace, true);
                             await uri.update('user.userName', data.user, true);
                             if (data.browser) {
-                                await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: true });
+                                try {
+                                    await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: true });
+                                } catch (e) {
+                                    vscode.window.showErrorMessage(e.message);
+                                    throw e;
+                                }
                             } else {
-                                await this.authenticationProvider.createManualSession(data.password);
-                                await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: true });
+                                try {
+                                    OctaneService.getInstance().storePasswordForAuthentication(data.password);
+                                    // await this.authenticationProvider.createManualSession(data.password);
+                                    await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: true });
+                                } catch (e) {
+                                    vscode.window.showErrorMessage(e.message);
+                                    throw e;
+                                } finally {
+                                    OctaneService.getInstance().storePasswordForAuthentication(undefined);
+                                }
                             }
                         } catch (e) {
                             console.error('While creating session.', e);
@@ -62,6 +75,8 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
     }
 
     getHtmlForWebview(webview: vscode.Webview): string {
+
+        console.info('WelcomeViewProvider.getHtmlForWebview called');
 
         const uri = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.uri');
         const space = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.space');
@@ -75,6 +90,8 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
 
 
 
+        console.info('WelcomeViewProvider.getHtmlForWebview returning HTML');
+
         return `<!DOCTYPE html>
 			<html lang="en">
 			<head>
@@ -86,28 +103,30 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
 				<title>Welcome to ALM Octane</title>
 			</head>
 			<body>
-                <div class="container">
+                <div class="main-container">
                     <span>URL</span>
                     <input type="text" class="authentication_url" value="${uri}"></input>
                 </div>
-                <div class="container">
+                <div class="main-container">
                     <span>Space</span>
                     <input type="text" class="authentication_space" value="${space}"></input>
                 </div>
-                <div class="container">
+                <div class="main-container">
                     <span>Workspace</span>
                     <input type="text" class="authentication_workspace" value="${workspace}"></input>
                 </div>
-                <div class="container">
+                <div class="main-container">
                     <span>Username</span>
                     <input type="text" class="authentication_username" value="${user}"></input>
                 </div>
-                <div class="container">
+                <div class="main-container">
                     <span>Password</span>
                     <input type="password" class="authentication_password"></input>
                 </div>
-                <div class="container">
+                <div class="main-container">
 				    <button class="attempt_authentication">Authenticate with username and password</button>
+                </div>
+                <div class="main-container">
 				    <button class="attempt_browser_authentication">Authenticate using browser</button>
                 </div>
                 <script src="${scriptUri}"></script>

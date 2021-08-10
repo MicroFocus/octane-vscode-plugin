@@ -35,11 +35,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	const session = await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: false });
 
-	// Testing
-	{
-		// await authProvider.logout();
-	}
-
 	vscode.commands.executeCommand('setContext', 'visual-studio-code-plugin-for-alm-octane.hasSession', session ? true : false);
 	await service.initialize();
 
