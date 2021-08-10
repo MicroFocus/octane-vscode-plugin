@@ -100,7 +100,7 @@ textarea {
 .container {
     /* display: flex; */
     flex-direction: column;
-    margin: .5rem;
+    margin: 1.22rem 0.5rem 0 0.5rem;
     flex: 1;
     min-width: 200px;
     display: none;
@@ -250,4 +250,18 @@ hr {
 .element {
     display: flex;
     flex-direction: column;
+}
+
+.select-wrapper input.select-dropdown { 
+    background-color: var(--vscode-input-background) !important;
+    position: initial !important;
+    height: 2rem !important;
+    font-size: unset !important;
+    /* border-bottom: unset !important; */
+    border-color: var(--vscode-dropdown-border) !important;
+    border: 0.5px solid;
+}
+
+.select-wrapper .caret {
+    fill: var(--vscode-input-foreground);
 }

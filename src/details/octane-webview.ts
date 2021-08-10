@@ -291,8 +291,8 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                     } else {
                         html += `
                             <div class="input-field col s6 container" id="container_${field.label.replaceAll(" ", "_")}">
-                                <input style="border-bottom: 1px solid #9e9e9e; background-color: transparent; margin: 2.23rem 0 0 0;" id="${field.label}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
                                 <label class="active" for="${field.label}">${field.label}</label>
+                                <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.label}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
                                 <script>
                                     document.getElementById("${field.label}").readOnly = !${field.editable};
                                 </script>
@@ -303,8 +303,8 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
             } else {
                 html += `
                 <div class="input-field col s6 container" id="container_${field.label.replaceAll(" ", "_")}">
-                    <input style="border-bottom: 1px solid #9e9e9e; background-color: transparent; margin: 2.23rem 0 0 0;" id="${field.label}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
                     <label class="active" for="${field.label}">${field.label}</label>
+                    <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.label}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
                     <script>
                         document.getElementById("${field.label}").readOnly = !${field.editable};
                     </script>
