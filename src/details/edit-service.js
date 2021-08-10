@@ -31,7 +31,7 @@
     let checkboxes = document.getElementsByClassName("filterCheckbox");
     for (let checkbox of checkboxes) {
         checkbox.addEventListener('click', e => {
-            console.log(checkbox.checked, checkbox.name);
+            // console.log(checkbox.checked, checkbox.name);
             showFields(checkbox);
         });
     }
@@ -66,7 +66,7 @@
 
     function showFields(checkbox) {
         let element = document.getElementById("container_" + checkbox.name.replaceAll(" ", "_"));
-        console.log(element);
+        // console.log(element);
         if (element) {
             if (!checkbox.checked) {
                 element.style.display = "none";
@@ -75,27 +75,6 @@
             }
         }
     }
-
-    // let elements = Object.values(document.getElementsByClassName("selectId"));
-    // elements.forEach(element => {
-    //     element.addEventListener('click', e => {
-    //         console.log("itt mukodok");
-    //         const expanded = false;
-    //         openCheckboxes(expanded);
-    //     });
-    // });
-
-    // function openCheckboxes(expanded) {
-    //     var checkboxes = document.getElementById("checkboxes");
-    //     if (!expanded) {
-    //         checkboxes.style.display = "block";
-    //         expanded = true;
-    //     } else {
-    //         checkboxes.style.display = "none";
-    //         expanded = false;
-    //     }
-
-    // }
 
     function filterFields(open) {
         if (!open) {

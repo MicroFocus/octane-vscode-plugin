@@ -93,12 +93,8 @@ async function getHtmlForWebview(webview: vscode.Webview, context: any, data: an
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
             <!-- Compiled and minified JavaScript -->
             <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-
             <link href="${styleVSCodeUri}" rel="stylesheet" />
             <link href="${myStyle}" rel="stylesheet" />
-
-            
-        
         </head>
         <body>
             <div class="top-container">
@@ -213,7 +209,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                 <hr>
                 General
                 <div class="information-container">
-        `;    
+        `;
     mainFields.forEach((key): any => {
         const field = mapFields.get(key);
         if (!field) { return; }
