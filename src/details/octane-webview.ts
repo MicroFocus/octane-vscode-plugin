@@ -135,7 +135,7 @@ function generatePhaseSelectElement(data: any | OctaneEntity | undefined, fields
     transitions.forEach((target: any) => {
         if (!target) { return; }
         html += `
-            <option>${target.targetPhase.name}</option>
+            <option >${target.targetPhase.name}</option>
         `;
     });
     html += `</select>
@@ -164,8 +164,8 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
     let html: string = ``;
     let counter: number = 0;
     const columnCount: number = 2;
-    let filteredFields: string[] = ['id', 'name', 'phase', 'description'];
-    let mainFields: string[] = ['id', 'name', 'phase'];
+    let filteredFields: string[] = ['id', 'name', 'description'];
+    let mainFields: string[] = ['id', 'name'];
     let mapFields = new Map<string, any>();
     fields.forEach((field): any => {
         mapFields.set(field.name, field);
@@ -215,11 +215,11 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
         if (!field) { return; }
         html += `
                 <div class="main-container input-field col s6" id="container_${field.label}">
-                    <input id="${field.label}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
-                    <label>${field.label}</label>
+                    <label class="active">${field.label}</label>
+                    <input id="${field.name}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
                 </div>
                 <script>
-                        document.getElementById("${field.label}").readOnly = !${field.editable};
+                        document.getElementById("${field.name}").readOnly = !${field.editable};
                 </script>
                 `;
     });
@@ -229,10 +229,10 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                 Description
                 <div class="information-container">
                     <div class="description-container" id="container_Description">
-                        <textarea id="Description" class="description" type="text">${stripHtml(getFieldValue(data, 'description').toString()).result}</textarea>
+                        <textarea id="description" class="description" type="text">${stripHtml(getFieldValue(data, 'description').toString()).result}</textarea>
                     </div>
                     <script>
-                        document.getElementById("Description").readOnly = !false;
+                        document.getElementById("description").readOnly = !false;
                     </script>
                 </div>
                 <br>
@@ -268,16 +268,16 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                         html += `
                         <div class="select-container" id="container_${field.label.replaceAll(" ", "_")}">
                             <label>${field.label}</label>
-                            <select class="reference-select">
+                            <select class="reference-select" id="${field.name}">
                         `;
                         html += `<option value="none" selected disabled hidden>${getFieldValue(data, field.name)}</option>`;
                         if (field.field_type_data.targets[0].type) {
                             let options = await OctaneService.getInstance().getFullDataForEntity(field.field_type_data.targets[0].type, field);
                             options.data.forEach((option: any) => {
                                 if (option.type === 'workspace_user') {
-                                    html += `<option value="${option}">${option.full_name}</option>`;
+                                    html += `<option value='${JSON.stringify(option)}'>${option.full_name}</option>`;
                                 } else {
-                                    html += `<option value="${option}">${option.name}</option>`;
+                                    html += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
                                 }
                             });
                         }
@@ -288,9 +288,9 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                         html += `
                             <div class="input-field col s6 container" id="container_${field.label.replaceAll(" ", "_")}">
                                 <label class="active" for="${field.label}">${field.label}</label>
-                                <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.label}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
+                                <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
                                 <script>
-                                    document.getElementById("${field.label}").readOnly = !${field.editable};
+                                    document.getElementById("${field.name}").readOnly = !${field.editable};
                                 </script>
                             </div>
                         `;
@@ -300,9 +300,9 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                 html += `
                 <div class="input-field col s6 container" id="container_${field.label.replaceAll(" ", "_")}">
                     <label class="active" for="${field.label}">${field.label}</label>
-                    <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.label}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
+                    <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
                     <script>
-                        document.getElementById("${field.label}").readOnly = !${field.editable};
+                        document.getElementById("${field.name}").readOnly = !${field.editable};
                     </script>
                 </div>
             `;

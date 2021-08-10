@@ -107,7 +107,7 @@
         const fields = e.data.data.fields;
         const fullData = e.data.data.fullData;
         const updatedData = {};
-        // console.log(fullData);
+        console.log('fullData', fullData);
         if (fields && fullData) {
             let mapFields = new Map();
             // console.log(fields);
@@ -117,19 +117,38 @@
                 .forEach(field => {
                     mapFields.set(field.name, field);
                 });
-            // console.log(mapFields);
+            console.log('mapFields', mapFields);
             updatedData['id'] = fullData['id'];
             mapFields.forEach((field, key) => {
+                let doc = document.getElementById(field.name);
+                if (!doc) {
+                    doc = document.getElementById(field.full_name);
+                }
+                if (doc) {
+                    var val;
+                    if (doc?.value.startsWith("{") && doc?.value.endsWith("}")) {
+                        // console.log(
+                        //     JSON.parse(document.getElementById(field.name)?.value)
+                        // );
+                        val = JSON.parse(document.getElementById(field.name)?.value);
+                    } else {
+                        // console.log(
+                        //     doc?.value
+                        // );
+                        val = document.getElementById(field.name)?.value;
+                    }
 
-                if (fullData[field.name]) {
-                    // updatedData[field.name] = (document.getElementById(field.label))?.value != null ? (document.getElementById(field.label))?.value : '';
-                    updatedData[field.name] = fullData[field.name];
+                    if (val && val !== 'none' && val !== '-') {
+                        if (field.field_type === 'integer') {
+                            updatedData[field.name] = parseFloat(val);
+                        } else {
+                            updatedData[field.name] = val;
+                        }
+                    }
 
                 }
 
             });
-            updatedData['name'] = (document.getElementById('Name'))?.value;
-            // console.log("updatedData", updatedData);
             vscode.postMessage({
                 type: 'update',
                 from: 'edit-service',
