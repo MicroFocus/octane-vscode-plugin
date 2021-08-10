@@ -103,13 +103,13 @@ async function getHtmlForWebview(webview: vscode.Webview, context: any, data: an
         <body>
             <div class="top-container">
                 <div class="icon-container" style="background-color: ${getDataForSubtype(data)[1]}">
-                    <span class="label">${getDataForSubtype(data)[0]}</span>
+                <span class="label">${getDataForSubtype(data)[0]}</span>
                 </div>
                 <div class="name-container">
-                    <h3>${data?.name ?? '-'}</h3>
+                    <h6>${data?.name ?? '-'}</h6>
                 </div>
                 <div class="name-container">
-                    <h3>|  Move to</h3>
+                    <h6>|  Move to</h6>
                 </div>
                 <div class="action-container">
                     ${generatePhaseSelectElement(data, fields)}
@@ -251,8 +251,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                 if (field.field_type_data.multiple) {
                     html += `
                     <div class="select-container" id="container_${field.label.replaceAll(" ", "_")}">
-                        
-                        <span>${field.label}</span>
+                        <label>${field.label}</label>
                         <select class="reference-select" multiple="multiple">
                     `;
                     html += `<option value="none" selected disabled>${getFieldValue(data, field.name)}</option>`;
@@ -264,6 +263,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                     //--------------------------------------------
                     html += `
                         </select>
+                        
                     </div>
                     `;
 
@@ -271,7 +271,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                     if (field.editable) {
                         html += `
                         <div class="select-container" id="container_${field.label.replaceAll(" ", "_")}">
-                            <span>${field.label}</span>
+                            <label>${field.label}</label>
                             <select class="reference-select">
                         `;
                         html += `<option value="none" selected disabled hidden>${getFieldValue(data, field.name)}</option>`;
@@ -291,7 +291,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                     } else {
                         html += `
                             <div class="input-field col s6 container" id="container_${field.label.replaceAll(" ", "_")}">
-                                <input id="${field.label}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
+                                <input style="border-bottom: 1px solid #9e9e9e; background-color: transparent; margin: 2.23rem 0 0 0;" id="${field.label}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
                                 <label class="active" for="${field.label}">${field.label}</label>
                                 <script>
                                     document.getElementById("${field.label}").readOnly = !${field.editable};
@@ -303,7 +303,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
             } else {
                 html += `
                 <div class="input-field col s6 container" id="container_${field.label.replaceAll(" ", "_")}">
-                    <input id="${field.label}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
+                    <input style="border-bottom: 1px solid #9e9e9e; background-color: transparent; margin: 2.23rem 0 0 0;" id="${field.label}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
                     <label class="active" for="${field.label}">${field.label}</label>
                     <script>
                         document.getElementById("${field.label}").readOnly = !${field.editable};

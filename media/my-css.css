@@ -174,7 +174,7 @@ hr {
 }
 
 .name-container {
-    margin: 0.8rem 0 0 0.5rem !important;
+    margin: 1.5rem 0 0 0.5rem !important;
 }
 
 .action-container {
@@ -197,6 +197,7 @@ hr {
     justify-content: center;
     align-items: center;
     place-content: center;
+    margin-top: 2.1rem;
 }
 
 .label {
@@ -226,17 +227,23 @@ hr {
 .save {
     margin: 0 0 0 0.5rem;
     width: 5rem;
+    height: 2rem;
+    margin-top: 1rem;
 }
 
 .refresh {
     margin: 0 0 0 0.5rem;
     width: 5rem;
+    height: 2rem;
+    margin-top: 1rem;
     background-color: #3c3c3c;
 }
 
 #filterId {
     margin: 0 0 0 0.5rem;
     width: 5rem;
+    height: 2rem;
+    margin-top: 1rem;
     background-color: #3c3c3c;
 }
 
