@@ -2,6 +2,12 @@
 (function () {
     const vscode = acquireVsCodeApi();
     const filterOpened = false;
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var elems = document.querySelectorAll('select');
+        var instances = M.FormSelect.init(elems, {});
+    });
+
     document.getElementById("saveId").addEventListener('click', e => {
         getData();
     });
@@ -59,7 +65,8 @@
     }
 
     function showFields(checkbox) {
-        let element = document.getElementById("container_" + checkbox.name);
+        let element = document.getElementById("container_" + checkbox.name.replaceAll(" ", "_"));
+        console.log(element);
         if (element) {
             if (!checkbox.checked) {
                 element.style.display = "none";

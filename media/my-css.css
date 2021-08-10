@@ -98,7 +98,7 @@ textarea {
 }
 
 .container {
-    display: flex;
+    /* display: flex; */
     flex-direction: column;
     margin: .5rem;
     flex: 1;

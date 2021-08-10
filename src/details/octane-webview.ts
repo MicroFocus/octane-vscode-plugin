@@ -88,8 +88,17 @@ async function getHtmlForWebview(webview: vscode.Webview, context: any, data: an
     return `
         <!DOCTYPE html>
         <head>
+
+        <!-- Compiled and minified CSS -->
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+            <!-- Compiled and minified JavaScript -->
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
             <link href="${styleVSCodeUri}" rel="stylesheet" />
             <link href="${myStyle}" rel="stylesheet" />
+
+            
+        
         </head>
         <body>
             <div class="top-container">
@@ -181,9 +190,19 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
         `;
     for (const [key, field] of mapFields) {
         if (filteredFields.includes(field.name)) {
-            html += `           <div class="checkboxDiv"><input checked type="checkbox" class="filterCheckbox" name="${field.label}"><span class="filterCheckboxLabel">${field.label}</span></div>`;
+            html += `           <div class="checkboxDiv">
+                                    <label>
+                                        <input checked type="checkbox" class="filterCheckbox" name="${field.label.replaceAll(" ", "_")}">
+                                        <span class="filterCheckboxLabel">${field.label}</span>    
+                                    </label>
+                                </div>`;
         } else {
-            html += `           <div class="checkboxDiv"><input type="checkbox" class="filterCheckbox" name="${field.label}"><span class="filterCheckboxLabel">${field.label}</span></div>`;
+            html += `           <div class="checkboxDiv">
+                                    <label>
+                                        <input type="checkbox" class="filterCheckbox" name="${field.label.replaceAll(" ", "_")}">
+                                        <span class="filterCheckboxLabel">${field.label}</span>
+                                    </label>
+                                </div>`;
         }
     }
     html += `       </div>
@@ -194,14 +213,14 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                 <hr>
                 General
                 <div class="information-container">
-        `;
+        `;    
     mainFields.forEach((key): any => {
         const field = mapFields.get(key);
         if (!field) { return; }
         html += `
-                <div class="main-container" id="container_${field.label}">
-                    <span>${field.label}</span>
+                <div class="main-container input-field col s6" id="container_${field.label}">
                     <input id="${field.label}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
+                    <label>${field.label}</label>
                 </div>
                 <script>
                         document.getElementById("${field.label}").readOnly = !${field.editable};
@@ -231,33 +250,17 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
             if (field.field_type === 'reference') {
                 if (field.field_type_data.multiple) {
                     html += `
-                    <div class="select-container" id="container_${field.label}">
+                    <div class="select-container" id="container_${field.label.replaceAll(" ", "_")}">
                         
                         <span>${field.label}</span>
-                        <select class="reference-select">
+                        <select class="reference-select" multiple="multiple">
                     `;
-                    html += `<option value="none" selected disabled hidden>${getFieldValue(data, field.name)}</option>`;
+                    html += `<option value="none" selected disabled>${getFieldValue(data, field.name)}</option>`;
                     //TO DO: implementation of multiple select
-                    // html += `
-                    //     </select>
-                    // `;
-                    // html += `
-                    //     <div id="checkboxes">
-                    // `;
-                    // let mockData = ['alma', 'korte', 'cukor', 'liszt'];
-                    // mockData.forEach(x => {
-                    //     html += `
-                    //         <label for="${x}">
-                    //             <input type="checkbox" id="${x}"/>
-                    //             "${x}"
-                    //         </label>
-                    //     `;
-                    // });
-                    // html += `
-                    //     </div>
-
-                    //     </div>
-                    // `;
+                    let mockData = ['alma', 'korte', 'cukor', 'liszt'];
+                    mockData.forEach(x => {
+                        html += `<option value="${x}">${x}</option>`;
+                    });
                     //--------------------------------------------
                     html += `
                         </select>
@@ -267,7 +270,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                 } else {
                     if (field.editable) {
                         html += `
-                        <div class="select-container" id="container_${field.label}">
+                        <div class="select-container" id="container_${field.label.replaceAll(" ", "_")}">
                             <span>${field.label}</span>
                             <select class="reference-select">
                         `;
@@ -287,9 +290,9 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                         </div>`;
                     } else {
                         html += `
-                            <div class="container" id="container_${field.label}">
-                                <span>${field.label}</span>
+                            <div class="input-field col s6 container" id="container_${field.label.replaceAll(" ", "_")}">
                                 <input id="${field.label}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
+                                <label class="active" for="${field.label}">${field.label}</label>
                                 <script>
                                     document.getElementById("${field.label}").readOnly = !${field.editable};
                                 </script>
@@ -299,9 +302,9 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                 }
             } else {
                 html += `
-                <div class="container" id="container_${field.label}">
-                    <span>${field.label}</span>
+                <div class="input-field col s6 container" id="container_${field.label.replaceAll(" ", "_")}">
                     <input id="${field.label}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
+                    <label class="active" for="${field.label}">${field.label}</label>
                     <script>
                         document.getElementById("${field.label}").readOnly = !${field.editable};
                     </script>
