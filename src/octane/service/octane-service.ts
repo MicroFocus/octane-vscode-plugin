@@ -288,13 +288,11 @@ export class OctaneService {
                 return result ?? undefined;
             }
             if (entityTypes === 'sprint' && fullData['release']) {
-                console.log('sprint', entityTypes, field)
                 const result = await this.octane.get(endPoint)
                     .query(
                         Query.field('release').equal(Query.field('id').equal(fullData['release'].id))
                             .build())
                     .execute();
-                console.log('sprint', result);
                 return result ?? undefined;
             } else {
                 const result = await this.octane.get(endPoint)
