@@ -273,7 +273,7 @@ export class OctaneService {
             });
     }
 
-    public async getFullDataForEntity(entityTypes: string, field: any) {
+    public async getFullDataForEntity(entityTypes: string, field: any, fullData: any) {
         const endPoint = entityTypeApiEndpoint.get(entityTypes);
         if (!endPoint) {
             return;
@@ -287,9 +287,14 @@ export class OctaneService {
                     .execute();
                 return result ?? undefined;
             }
-            if (entityTypes === 'sprint') {
+            if (entityTypes === 'sprint' && fullData['release']) {
+                console.log('sprint', entityTypes, field)
                 const result = await this.octane.get(endPoint)
+                    .query(
+                        Query.field('release').equal(Query.field('id').equal(fullData['release'].id))
+                            .build())
                     .execute();
+                console.log('sprint', result);
                 return result ?? undefined;
             } else {
                 const result = await this.octane.get(endPoint)
