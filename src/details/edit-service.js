@@ -120,35 +120,35 @@
             console.log('mapFields', mapFields);
             updatedData['id'] = fullData['id'];
             mapFields.forEach((field, key) => {
-                let doc = document.getElementById(field.name);
-                if (!doc) {
-                    doc = document.getElementById(field.full_name);
-                }
-                if (doc) {
-                    var val;
-                    if (doc?.value.startsWith("{") && doc?.value.endsWith("}")) {
-                        // console.log(
-                        //     JSON.parse(document.getElementById(field.name)?.value)
-                        // );
-                        val = JSON.parse(document.getElementById(field.name)?.value);
-                    } else {
-                        // console.log(
-                        //     doc?.value
-                        // );
-                        val = document.getElementById(field.name)?.value;
+                if (field.name !== 'phase') {
+                    let doc = document.getElementById(field.name);
+                    if (!doc) {
+                        doc = document.getElementById(field.full_name);
                     }
-
-                    if (val && val !== 'none' && val !== '-') {
-                        if (field.field_type === 'integer') {
-                            updatedData[field.name] = parseFloat(val);
+                    if (doc) {
+                        var val;
+                        if (doc?.value.startsWith("{") && doc?.value.endsWith("}")) {
+                            // console.log(
+                            //     JSON.parse(document.getElementById(field.name)?.value)
+                            // );
+                            val = JSON.parse(doc?.value);
                         } else {
-                            updatedData[field.name] = val;
+                            // console.log(
+                            //     doc?.value
+                            // );
+                            val = doc?.value;
+                        }
+                        if (val && val !== 'none' && val !== '-') {
+                            if (field.field_type === 'integer') {
+                                updatedData[field.name] = parseFloat(val);
+                            } else {
+                                updatedData[field.name] = val;
+                            }
                         }
                     }
-
                 }
-
             });
+            
             vscode.postMessage({
                 type: 'update',
                 from: 'edit-service',

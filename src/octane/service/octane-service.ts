@@ -5,7 +5,6 @@ import { OctaneEntity } from '../model/octane-entity';
 import { Transition } from '../model/transition';
 import { Comment } from '../model/comment';
 import { AlmOctaneAuthenticationProvider, AlmOctaneAuthenticationSession, AlmOctaneAuthenticationType } from '../../auth/authentication-provider';
-import { InformationMessageService } from './nformation-message-service';
 
 export class OctaneService {
 
@@ -268,9 +267,9 @@ export class OctaneService {
         let entity = await this.octane.get(endPoint).at(body.id).execute();
         this.octane.update(endPoint, body).execute()
             .then((res: any) => {
-                InformationMessageService.getInstance().onSuccess('Your item changes have been saved.');
+                vscode.window.showInformationMessage('Your item changes have been saved.');
             }, (error: any) => {
-                InformationMessageService.getInstance().onError('We couldn’t save your changes.', error)
+                vscode.window.showErrorMessage('We couldn’t save your changes.' + error);
             });
     }
 
