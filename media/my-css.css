@@ -260,8 +260,18 @@ hr {
     /* border-bottom: unset !important; */
     border-color: var(--vscode-dropdown-border) !important;
     border: 0.5px solid;
+    margin-top: 1rem;
 }
 
 .select-wrapper .caret {
     fill: var(--vscode-input-foreground);
+}
+
+[type="checkbox"]:checked+span:not(.lever):before {
+    border-right: 2px solid var(--vscode-button-background);
+    border-bottom: 2px solid var(--vscode-button-background);
+}
+
+.dropdown-content li>a, .dropdown-content li>span {
+    color: var(--vscode-button-background);
 }
