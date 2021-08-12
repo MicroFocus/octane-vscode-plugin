@@ -262,19 +262,23 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                         <label>${field.label}</label>
                         <select class="reference-select" multiple="multiple">
                     `;
-                    html += `<option value="none" selected disabled>${getFieldValue(data, field.name)}</option>`;
-                    //TO DO: implementation of multiple select
-                    let mockData = ['alma', 'korte', 'cukor', 'liszt'];
-                    mockData.forEach(x => {
-                        html += `<option value="${x}">${x}</option>`;
-                    });
-                    //--------------------------------------------
+                    let selected = getFieldValue(data, field.name);
+                    let options = await OctaneService.getInstance().getFullDataForEntity(field.field_type_data.targets[0].type, field);
+                    console.log("----------->>>", options);
+                    if (options) {
+                        options.data.forEach((option: any) => {
+                            if (selected.includes(option.name)) {
+                                html += `<option selected value='${JSON.stringify(option)}'>${option.name}</option>`;
+                            } else {
+                                html += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
+                            }
+                        });
+                    }
                     html += `
                         </select>
                         
                     </div>
                     `;
-
                 } else {
                     if (field.editable) {
                         html += `
@@ -336,7 +340,7 @@ function getFieldValue(data: any, fieldName: string): string | any[] {
     if (field['data']) {
         const ref: string[] = [];
         field['data'].forEach((r: any) => {
-            ref.push(' ' + r.name);
+            ref.push(r.name);
         });
         return ref.length ? ref : '-';
     }
