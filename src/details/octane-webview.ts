@@ -223,6 +223,18 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                 </script>
                 `;
     });
+    const phaseField = mapFields.get('phase');
+    if (phaseField) {
+        html += `
+                <div class="main-container input-field col s6" id="container_${phaseField.label}">
+                    <label class="active">${phaseField.label}</label>
+                    <input id="${phaseField.name}" type="${phaseField.field_type}" value="${getFieldValue(data, phaseField.name)}">
+                </div>
+                <script>
+                        document.getElementById("${phaseField.name}").readOnly = !false;
+                </script>
+            `;
+    }
     html += `   </div>
                 <br>
                 <hr>
@@ -239,7 +251,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                 <hr>
     `;
     for (const [key, field] of mapFields) {
-        if (!['description', ...mainFields].includes(key)) {
+        if (!['description', 'phase', ...mainFields].includes(key)) {
             if (counter === 0) {
                 html += `<div class="information-container">`;
             }
