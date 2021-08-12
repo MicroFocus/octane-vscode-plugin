@@ -128,14 +128,14 @@ async function getHtmlForWebview(webview: vscode.Webview, context: any, data: an
 function generatePhaseSelectElement(data: any | OctaneEntity | undefined, fields: any[]): string {
     let html: string = ``;
     let transitions: Transition[] = OctaneService.getInstance().getPhaseTransitionForEntity(data.phase.id);
-    html += `<select name="action" class="action">`;
+    html += `<select id="select_phase" name="action" class="action">`;
     html += `
-            <option>${getFieldValue(data, 'phase')}</option>
+            <option value="none">${getFieldValue(data, 'phase')}</option>
         `;
     transitions.forEach((target: any) => {
         if (!target) { return; }
         html += `
-            <option >${target.targetPhase.name}</option>
+            <option value='${JSON.stringify(target.targetPhase)}'>${target.targetPhase.name}</option>
         `;
     });
     html += `</select>
