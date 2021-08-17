@@ -112,7 +112,7 @@
             let mapFields = new Map();
             // console.log(fields);
             fields
-                .filter(f => (!f.field_type_data?.multiple))
+                // .filter(f => (!f.field_type_data?.multiple))
                 .filter(f => (f.editable))
                 .forEach(field => {
                     mapFields.set(field.name, field);

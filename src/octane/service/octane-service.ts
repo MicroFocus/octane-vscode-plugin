@@ -287,6 +287,12 @@ export class OctaneService {
                     .execute();
                 return result ?? undefined;
             }
+            if (entityTypes === 'application_module') {
+                const result = await this.octane.get(endPoint)
+                    .execute();
+                console.log('application_modules', result);
+                return result ?? undefined;
+            }
             if (entityTypes === 'sprint' && fullData['release']) {
                 const result = await this.octane.get(endPoint)
                     .query(

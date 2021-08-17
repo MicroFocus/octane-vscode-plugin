@@ -184,18 +184,20 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                         
                     
         `;
+    console.log(mapFields);
     for (const [key, field] of mapFields) {
+        // console.log('key = ',key, 'field=',field);
         if (filteredFields.includes(field.name)) {
             html += `           <div class="checkboxDiv">
                                     <label>
-                                        <input checked type="checkbox" class="filterCheckbox" name="${field.label.replaceAll(" ", "_")}">
+                                        <input checked type="checkbox" class="filterCheckbox" name='${field.label.replaceAll(" ", "_")}'>
                                         <span class="filterCheckboxLabel">${field.label}</span>    
                                     </label>
                                 </div>`;
         } else {
             html += `           <div class="checkboxDiv">
                                     <label>
-                                        <input type="checkbox" class="filterCheckbox" name="${field.label.replaceAll(" ", "_")}">
+                                        <input type="checkbox" class="filterCheckbox" name='${field.label.replaceAll(" ", "_")}'>
                                         <span class="filterCheckboxLabel">${field.label}</span>
                                     </label>
                                 </div>`;
@@ -203,7 +205,6 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
     }
     html += `       </div>
                 </div>`;
-
     html += `
                 <br>
                 <hr>
@@ -263,12 +264,17 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                         <select class="reference-select" multiple="multiple">
                     `;
                     let selected = getFieldValue(data, field.name);
+                    console.log(selected);
                     let options = await OctaneService.getInstance().getFullDataForEntity(field.field_type_data.targets[0].type, field, data);
+                    // console.log(options);
                     if (options) {
                         options.data.forEach((option: any) => {
+                            // console.log(option, option.name);
                             if (selected.includes(option.name)) {
+                                // console.log("checkced",option.name);
                                 html += `<option selected value='${JSON.stringify(option)}'>${option.name}</option>`;
                             } else {
+                                // console.log(option.name);
                                 html += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
                             }
                         });
