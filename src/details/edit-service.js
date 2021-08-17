@@ -12,6 +12,10 @@
         getData();
     });
 
+    document.getElementById("refresh").addEventListener('click', e => {
+        refreshPanel();
+    });
+
     document.getElementById("filterId").addEventListener('click', e => {
         this.filterOpened = filterFields(this.filterOpened);
     });
@@ -98,6 +102,14 @@
     function getData() {
         vscode.postMessage({
             type: 'get',
+            from: 'edit-service',
+            data: {}
+        });
+    }
+
+    function refreshPanel() {
+        vscode.postMessage({
+            type: 'refresh',
             from: 'edit-service',
             data: {}
         });

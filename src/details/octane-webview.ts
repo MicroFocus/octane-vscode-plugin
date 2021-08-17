@@ -41,7 +41,7 @@ export class OctaneWebview {
                 this.fullData = await OctaneService.getInstance().getDataFromOctaneForTypeAndId(data.type, data.subtype, data.id);
                 console.log("fullData", this.fullData);
                 panel.webview.html = await getHtmlForWebview(panel.webview, context, this.fullData, fields);
-                panel.webview.onDidReceiveMessage(m => {
+                panel.webview.onDidReceiveMessage(async m => {
                     // console.log("from js ---- > ", m);
                     if (m.type === 'get') {
                         panel.webview.postMessage({
@@ -55,6 +55,10 @@ export class OctaneWebview {
                     }
                     if (m.type === 'update') {
                         OctaneService.getInstance().updateEntity(data.type, data.subtype, m.data);
+                    }
+                    if (m.type === 'refresh') {
+                        // panel.dispose();
+                        // panel.webview.html = await getHtmlForWebview(panel.webview, context, this.fullData, fields);
                     }
                 });
             });
@@ -140,7 +144,7 @@ function generatePhaseSelectElement(data: any | OctaneEntity | undefined, fields
     });
     html += `</select>
             <button id="saveId" class="save" type="button">Save</button>
-            <button class="refresh" type="button">Refresh</button>
+            <button id="refresh" type="button">Refresh</button>
             <button id="filterId" type="button">Filter</button>`;
     return html;
 }
@@ -264,7 +268,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                         <select class="reference-select" multiple="multiple">
                     `;
                     let selected = getFieldValue(data, field.name);
-                    console.log(selected);
+                    // console.log(selected);
                     let options = await OctaneService.getInstance().getFullDataForEntity(field.field_type_data.targets[0].type, field, data);
                     // console.log(options);
                     if (options) {

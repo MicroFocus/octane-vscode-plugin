@@ -213,6 +213,7 @@ export class OctaneService {
         if (!this.octaneMap.get(type)) {
             await this.getRemoteFieldsForType(type);
         }
+        // console.log('Application modules: ', this.octaneMap.get(type)?.filter(f => f.name === 'application_modules'));
         return this.octaneMap.get(type);
     }
 
@@ -237,6 +238,7 @@ export class OctaneService {
         const result = await this.octane.get(endPoint)
             .fields(
                 fields.map((f: any) => f.name)
+                // 'application_modules'
             )
             .at(id)
             .execute();
