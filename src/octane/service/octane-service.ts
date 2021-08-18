@@ -238,7 +238,6 @@ export class OctaneService {
         const result = await this.octane.get(endPoint)
             .fields(
                 fields.map((f: any) => f.name)
-                // 'application_modules'
             )
             .at(id)
             .execute();
@@ -276,7 +275,12 @@ export class OctaneService {
     }
 
     public async getFullDataForEntity(entityTypes: string, field: any, fullData: any) {
-        const endPoint = entityTypeApiEndpoint.get(entityTypes);
+        let endPoint;
+        if (entityTypes === 'product_area') {
+            endPoint = entityTypeApiEndpoint.get('application_module');
+        } else {
+            endPoint = entityTypeApiEndpoint.get(entityTypes);
+        }
         if (!endPoint) {
             return;
         }
@@ -289,7 +293,7 @@ export class OctaneService {
                     .execute();
                 return result ?? undefined;
             }
-            if (entityTypes === 'application_module') {
+            if (entityTypes === 'product_area') {
                 const result = await this.octane.get(endPoint)
                     .execute();
                 console.log('application_modules', result);

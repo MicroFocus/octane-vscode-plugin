@@ -265,10 +265,11 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                     html += `
                     <div class="select-container" id="container_${field.label.replaceAll(" ", "_")}">
                         <label>${field.label}</label>
-                        <select class="reference-select" multiple="multiple">
+                        <select class="reference-select" multiple="multiple" id="${field.name}">
                     `;
-                    let selected = getFieldValue(data, field.name);
-                    // console.log(selected);
+                    let selected = getFieldValue(data, fieldNameMap.get(field.name) ?? field.name);
+                    console.log('selected', selected);
+                    // console.log(field);
                     let options = await OctaneService.getInstance().getFullDataForEntity(field.field_type_data.targets[0].type, field, data);
                     // console.log(options);
                     if (options) {
@@ -361,3 +362,7 @@ function getFieldValue(data: any, fieldName: string): string | any[] {
     }
     return field;
 }
+
+const fieldNameMap: Map<String, String> = new Map([
+    ['application_module', 'product_areas']
+]);
