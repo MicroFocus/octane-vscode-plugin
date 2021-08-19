@@ -146,30 +146,47 @@
                         doc = document.getElementById(field.full_name);
                     }
                 }
-                if (doc.options) {
-                    Array.from(doc.selectedOptions).forEach(d => {
+                if (doc) {
+                    if (doc.selectedOptions) {
+                        Array.from(doc.selectedOptions).forEach(d => {
+                            var val;
+                            if (d?.value.startsWith("{") && d?.value.endsWith("}")) {
+                                val = JSON.parse(d?.value);
+                            } else {
+                                val = d?.value;
+                            }
+                            if (val && val !== 'none' && val !== '-') {
+                                if (field.field_type === 'integer') {
+                                    updatedData[fieldNameMap.get(field.name) ?? field.name] = parseFloat(val);
+                                } else {
+                                    if (field.field_type_data?.multiple) {
+                                        data['data'].push({
+                                            'type': val.type,
+                                            'id': val.id,
+                                            'name': val.name
+                                        });
+                                    } else {
+                                        updatedData[fieldNameMap.get(field.name) ?? field.name] = val;
+                                    }
+                                }
+                            }
+                        });
+                    } else {
                         var val;
-                        if (d?.value.startsWith("{") && d?.value.endsWith("}")) {
+                        if (doc?.value.startsWith("{") && doc?.value.endsWith("}")) {
                             val = JSON.parse(d?.value);
                         } else {
-                            val = d?.value;
+                            val = doc?.value;
                         }
                         if (val && val !== 'none' && val !== '-') {
                             if (field.field_type === 'integer') {
                                 updatedData[fieldNameMap.get(field.name) ?? field.name] = parseFloat(val);
                             } else {
-                                if (field.field_type_data?.multiple) {
-                                    data['data'].push({
-                                        'type': val.type,
-                                        'id': val.id,
-                                        'name': val.name
-                                    });
-                                } else {
-                                    updatedData[fieldNameMap.get(field.name) ?? field.name] = val;
-                                }
+                                updatedData[fieldNameMap.get(field.name) ?? field.name] = val;
                             }
                         }
-                    });
+                    }
+
                     if (field.field_type_data?.multiple) {
                         updatedData[fieldNameMap.get(field.name) ?? field.name] = data;
                     }

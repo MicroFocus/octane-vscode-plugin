@@ -42,7 +42,6 @@ export class OctaneWebview {
                 console.log("fullData", this.fullData);
                 panel.webview.html = await getHtmlForWebview(panel.webview, context, this.fullData, fields);
                 panel.webview.onDidReceiveMessage(async m => {
-                    // console.log("from js ---- > ", m);
                     if (m.type === 'get') {
                         panel.webview.postMessage({
                             type: 'post',
@@ -268,18 +267,12 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                         <select class="reference-select" multiple="multiple" id="${field.name}">
                     `;
                     let selected = getFieldValue(data, fieldNameMap.get(field.name) ?? field.name);
-                    console.log('selected', selected);
-                    // console.log(field);
                     let options = await OctaneService.getInstance().getFullDataForEntity(field.field_type_data.targets[0].type, field, data);
-                    // console.log(options);
                     if (options) {
                         options.data.forEach((option: any) => {
-                            // console.log(option, option.name);
                             if (selected.includes(option.name)) {
-                                // console.log("checkced",option.name);
                                 html += `<option selected value='${JSON.stringify(option)}'>${option.name}</option>`;
                             } else {
-                                // console.log(option.name);
                                 html += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
                             }
                         });
