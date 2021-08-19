@@ -11,9 +11,11 @@ import { OctaneWebview } from './details/octane-webview';
 import { AlmOctaneAuthenticationProvider } from './auth/authentication-provider';
 import { WelcomeViewProvider } from './treeview/welcome';
 import { OctaneEntity } from './octane/model/octane-entity';
+import { OctaneQuickPickItem } from './octane/model/octane-quick-pick-item';
 import { MyWorkItem } from './treeview/my-work-provider';
 import * as path from 'path';
 import * as fs from 'fs';
+import { debounce } from "ts-debounce";
 
 
 // this method is called when your extension is activated
@@ -105,7 +107,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	{
 		let downloadTestCommand = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.myTests.download', async (e: MyWorkItem) => {
 			console.info('visual-studio-code-plugin-for-alm-octane.myTests.download called', e);
-			
+
 			if (e.entity) {
 				const script = await service.downloadScriptForTest(e.entity);
 				if (vscode === undefined || vscode.workspace === undefined || vscode.workspace.workspaceFolders === undefined) {
@@ -130,6 +132,39 @@ export async function activate(context: vscode.ExtensionContext) {
 	}
 
 	{
+		context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.quickPick', async () => {
+			const quickPick = vscode.window.createQuickPick();
+			quickPick.items = [];
+			quickPick.onDidChangeSelection(selection => {
+				if (selection[0]) {
+					vscode.window.showInformationMessage(`Selected: ${selection[0].label}`);
+				}
+			});
+
+			let quickPickChangedValue = async function (e: string) {
+				let promises = [];
+				promises.push(OctaneService.getInstance().globalSearchWorkItems('defect', e));
+				promises.push(OctaneService.getInstance().globalSearchWorkItems('story', e));
+				promises.push(OctaneService.getInstance().globalSearchWorkItems('quality_story', e));
+				promises.push(OctaneService.getInstance().globalSearchRequirements(e));
+				promises.push(OctaneService.getInstance().globalSearchTests(e));
+
+				let items: OctaneQuickPickItem[] = [];
+				const results = await Promise.all(promises);
+				results.map(r => items.push(...r.map(e => new OctaneQuickPickItem(e))));
+				console.debug('setting items to', items);
+				quickPick.items = items;
+			};
+			const debouncedFunction = debounce(quickPickChangedValue, 100);
+
+			quickPick.onDidChangeValue(async e => await debouncedFunction(e));
+			quickPick.onDidHide(() => quickPick.dispose());
+			quickPick.show();
+		}));
+
+
+	}
+	{
 		context.subscriptions.push(OctaneWebview.register(context));
 	}
 
@@ -141,6 +176,8 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myRequirements.refreshEntry');
 
 }
+
+
 
 // this method is called when your extension is deactivated
 export function deactivate() { }

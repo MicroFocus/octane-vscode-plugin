@@ -16,6 +16,7 @@ export class OctaneEntity extends BaseEntity {
     public subtype?: string;
     public author?: User;
     public label?: string;
+    public globalTextSearchResult?: string;
 
     constructor(i?: any) {
         super(i);
@@ -29,6 +30,7 @@ export class OctaneEntity extends BaseEntity {
         this.author = i?.author ? new User(i?.author) : undefined;
         this.phase = new BaseEntity(i?.phase);
         this.subtype = i?.subtype ?? '';
+        this.globalTextSearchResult = i?.global_text_search_result ?? '';
         switch (this.subtype) {
             case 'defect':
                 this.label = 'D';

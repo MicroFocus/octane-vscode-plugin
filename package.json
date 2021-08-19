@@ -142,6 +142,10 @@
 					"command": "visual-studio-code-plugin-for-alm-octane.myWelcome.refreshEntry",
 					"when": "view == visual-studio-code-plugin-for-alm-octane.myWelcome",
 					"group": "navigation"
+				},
+				{
+					"command": "visual-studio-code-plugin-for-alm-octane.quickPick",
+					"group": "navigation"
 				}
 			],
 			"view/item/context": [
@@ -228,6 +232,14 @@
 					"light": "resources/light/refresh.svg",
 					"dark": "resources/dark/refresh.svg"
 				}
+			},
+			{
+				"command": "visual-studio-code-plugin-for-alm-octane.quickPick",
+				"title": "Search Issues",
+				"icon": {
+					"light": "resources/light/search.svg",
+					"dark": "resources/dark/search.svg"
+				}
 			}
 		]
 	},
@@ -258,6 +270,7 @@
 		"@microfocus/alm-octane-js-rest-sdk": "^15.0.2-0.1",
 		"node-fetch": "^2.6.1",
 		"string-strip-html": "^8.3.0",
+		"ts-debounce": "^3.0.0",
 		"ts-retry-promise": "^0.6.0"
 	}
 }

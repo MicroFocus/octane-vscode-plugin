@@ -5,6 +5,7 @@ import { OctaneEntity } from '../model/octane-entity';
 import { Transition } from '../model/transition';
 import { Comment } from '../model/comment';
 import { AlmOctaneAuthenticationProvider, AlmOctaneAuthenticationSession, AlmOctaneAuthenticationType } from '../../auth/authentication-provider';
+import fetch, { Headers } from 'node-fetch';
 
 export class OctaneService {
 
@@ -12,14 +13,18 @@ export class OctaneService {
 
     private octane?: any;
 
-    private user?: String;
+    private user?: string;
+    private uri?: string;
+    private space?: string;
+    private workspace?: string;
     private loggedInUserId?: number;
     private transitions?: Transition[];
     private phases = new Map<string, string>();
 
-    private octaneMap = new Map<String, any[]>();
+    private octaneMap = new Map<string, any[]>();
 
     private password?: string;
+    private session?: AlmOctaneAuthenticationSession;
 
     public async testAuthentication(uri: string, space: string | undefined, workspace: string | undefined, username: string, password: string | undefined, cookieName: string | undefined, cookie: string | undefined): Promise<string | undefined> {
         const octaneInstace = new Octane.Octane({
@@ -57,25 +62,25 @@ export class OctaneService {
 
     public async initialize() {
 
-        const uri = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.uri');
-        const space = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.space');
-        const workspace = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.workspace');
+        this.uri = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.uri');
+        this.space = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.space');
+        this.workspace = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.workspace');
         this.user = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.user.userName');
 
-        const session = await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: false }) as AlmOctaneAuthenticationSession;
+        this.session = await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: false }) as AlmOctaneAuthenticationSession;
 
-        if (uri && space && workspace && this.user && session) {
+        if (this.uri && this.space && this.workspace && this.user && this.session) {
             this.octane = new Octane.Octane({
-                server: uri,
-                sharedSpace: space,
-                workspace: workspace,
+                server: this.uri,
+                sharedSpace: this.space,
+                workspace: this.workspace,
                 user: this.user,
-                password: session.type === AlmOctaneAuthenticationType.userNameAndPassword ? session.accessToken : undefined,
+                password: this.session.type === AlmOctaneAuthenticationType.userNameAndPassword ? this.session.accessToken : undefined,
                 headers: {
                     // eslint-disable-next-line @typescript-eslint/naming-convention
                     ALM_OCTANE_TECH_PREVIEW: true,
                     // eslint-disable-next-line @typescript-eslint/naming-convention
-                    Cookie: session.type === AlmOctaneAuthenticationType.browser ? `${session.cookieName}=${session.accessToken}` : undefined
+                    Cookie: this.session.type === AlmOctaneAuthenticationType.browser ? `${this.session.cookieName}=${this.session.accessToken}` : undefined
                 }
             });
             const result: any = await this.octane.get(Octane.Octane.entityTypes.workspaceUsers)
@@ -94,12 +99,52 @@ export class OctaneService {
         }
     }
 
+    private async globalSearch(urlBuilder: any, criteria: string): Promise<OctaneEntity[]> {
+        const uri = `${urlBuilder.build()}&text_search={"type":"global","text":"${criteria}"}`;
+        const result = await this.octane._requestHandler['get'](uri);
+        console.debug('Global search result: ', result);
+        return result.data.map((r: any) => new OctaneEntity(r));;
+    }
+
+    public async globalSearchWorkItems(subtype: string, criteria: string): Promise<OctaneEntity[]> {
+        return this.globalSearch(this.octane.get(Octane.Octane.entityTypes.workItems)
+            .fields('name', 'story_points', 'phase', 'owner{id,name,full_name}',
+                'invested_hours', 'estimated_hours', 'remaining_hours',
+                'detected_by{id,name,full_name}', 'severity', 'author{id,name,full_name}', 'global_text_search_result')
+            .query(
+                Query.field('subtype').equal(subtype).build()
+            )
+            .orderBy('id')
+            .limit(30)._urlBuilder, criteria);
+
+    }
+
+    public async globalSearchRequirements(criteria: string) {
+        return this.globalSearch(this.octane.get(Octane.Octane.entityTypes.requirements)
+            .fields('name', 'phase', 'owner{id,name,full_name}', 'author{id,name,full_name}', 'global_text_search_result')
+            .query(
+                Query.field('subtype').inComparison(['requirement_document']).build()
+            )
+            .orderBy('id')
+            .limit(30)._urlBuilder, criteria);
+    }
+
+    public async globalSearchTests(criteria: string) {
+        return this.globalSearch(this.octane.get(Octane.Octane.entityTypes.tests)
+            .fields('name', 'owner{id,name,full_name}', 'author{id,name,full_name}', 'phase', 'global_text_search_result')
+            .query(
+                Query.field('subtype').inComparison(['test_manual', 'gherkin_test', 'scenario_test']).build()
+            )
+            .orderBy('id')
+            .limit(30)._urlBuilder, criteria);
+    }
+
     public isLoggedIn(): boolean {
         return this.loggedInUserId !== null;
     }
 
-    private async refreshMyWork(subtype: String | String[]): Promise<OctaneEntity[]> {
-        let subtypes: String[] = [];
+    private async refreshMyWork(subtype: string | string[]): Promise<OctaneEntity[]> {
+        let subtypes: string[] = [];
         if (!Array.isArray(subtype)) {
             subtypes.push(subtype);
         } else {
@@ -322,7 +367,7 @@ function setValueForMap(map: any, key: any, value: any) {
 
 
 
-const entityTypeApiEndpoint: Map<String, String> = new Map([
+const entityTypeApiEndpoint: Map<string, string> = new Map([
     ['application_module', Octane.Octane.entityTypes.applicationModules],
     ['attachment', Octane.Octane.entityTypes.applicationModules],
     ['automated_run', Octane.Octane.entityTypes.automatedRuns],
