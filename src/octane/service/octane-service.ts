@@ -190,6 +190,21 @@ export class OctaneService {
         return entities;
     }
 
+    public async getCommentsForEntity(entityId: number): Promise<Comment[] | undefined> {
+        if (!entityId) {
+            return;
+        }
+        const response = await this.octane.get(Octane.Octane.entityTypes.comments)
+            .fields('id', 'author', 'owner_work_item', 'creation_time', 'text')
+            .query(
+                Query.field('owner_work_item').equal(Query.field('id').equal(entityId))
+                    .build()
+            )
+            .execute();
+        let entities = response.data.map((r: any) => new Comment(r));
+        return entities;
+    }
+
     private async getRemoteFieldsForType(type: string) {
         try {
             const result = await this.octane.get(Octane.Octane.entityTypes.fieldsMetadata)

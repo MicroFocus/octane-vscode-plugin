@@ -119,7 +119,7 @@ async function getHtmlForWebview(webview: vscode.Webview, context: any, data: an
                     ${await generateBodyElement(data, fields)}
                 </div>
                 <div class="comments-sidebar">
-                    ${generateCommentElement(data, fields)}
+                    ${await generateCommentElement(data, fields)}
                 </div>
             </div>
             <script src="${scriptUri}"></script>
@@ -148,7 +148,7 @@ function generatePhaseSelectElement(data: any | OctaneEntity | undefined, fields
     return html;
 }
 
-function generateCommentElement(data: any | OctaneEntity | undefined, fields: any[]): string {
+async function generateCommentElement(data: any | OctaneEntity | undefined, fields: any[]): Promise<string> {
     let html: string = ``;
     html += `   <br>
                 
@@ -160,6 +160,18 @@ function generateCommentElement(data: any | OctaneEntity | undefined, fields: an
                     </div>
                 </div>
                 <br>`;
+    let comments = await OctaneService.getInstance().getCommentsForEntity(data.id);
+    console.log("comments", comments);
+    if (comments) {
+        for (const comment of comments) {
+            html += `
+                <div class="information-container">
+                    ${comment.author?.fullName ?? ''}: <input type="text" value="${stripHtml(comment.text).result}">
+                </div>
+            `;
+        }
+    }
+
     return html;
 }
 
