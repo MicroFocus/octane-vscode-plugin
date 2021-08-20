@@ -56,8 +56,8 @@ export class OctaneWebview {
                         OctaneService.getInstance().updateEntity(data.type, data.subtype, m.data);
                     }
                     if (m.type === 'refresh') {
-                        // panel.dispose();
-                        // panel.webview.html = await getHtmlForWebview(panel.webview, context, this.fullData, fields);
+                        this.fullData = await OctaneService.getInstance().getDataFromOctaneForTypeAndId(data.type, data.subtype, data.id);
+                        panel.webview.html = await getHtmlForWebview(panel.webview, context, this.fullData, fields);
                     }
                     if (m.type === 'post-comment') {
                         let commentData = m.data;
