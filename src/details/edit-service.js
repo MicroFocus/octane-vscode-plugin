@@ -37,16 +37,20 @@
     });
 
     function postCommentForEntity() {
+        let message = document.getElementById('comments-text').value;
+        let text = `
+            <html>
+                <body>
+                    ${message ?? ''}
+                </body>
+            </html>
+        `;
         vscode.postMessage({
             type: 'post-comment',
             from: 'edit-service',
             data: {
-                'text': "<html><body>Comment from js</body></html>",
+                'text': text,
                 'owner_work_item': {
-                    'id': '235359',
-                    'type': 'work_item',
-                    'subtype': 'defect',
-                    'name': 'Testing the name change _ 600'
                 }
             }
         });
