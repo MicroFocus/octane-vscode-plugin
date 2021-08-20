@@ -68,6 +68,8 @@ export class OctaneWebview {
                             'name': data.name ?? ''
                         }
                         OctaneService.getInstance().postCommentForEntity(commentData);
+                        this.fullData = await OctaneService.getInstance().getDataFromOctaneForTypeAndId(data.type, data.subtype, data.id);
+                        panel.webview.html = await getHtmlForWebview(panel.webview, context, this.fullData, fields);
                     }
                 });
             });
