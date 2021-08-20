@@ -205,6 +205,19 @@ export class OctaneService {
         return entities;
     }
 
+    public postCommentForEntity(body: Comment | undefined) {
+        if (!body) {
+            return;
+        }
+        const endPoint = entityTypeApiEndpoint.get('comment');
+        this.octane.create(endPoint, body).execute()
+            .then((res: any) => {
+                vscode.window.showInformationMessage('Your comment have been saved.');
+            }, (error: any) => {
+                vscode.window.showErrorMessage('We couldn’t save your comment.' + error);
+            });
+    }
+
     private async getRemoteFieldsForType(type: string) {
         try {
             const result = await this.octane.get(Octane.Octane.entityTypes.fieldsMetadata)

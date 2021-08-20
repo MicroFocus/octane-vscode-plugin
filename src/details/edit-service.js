@@ -32,6 +32,26 @@
         resetAllFields();
     });
 
+    document.getElementById("comments").addEventListener('click', e => {
+        postCommentForEntity();
+    });
+
+    function postCommentForEntity() {
+        vscode.postMessage({
+            type: 'post-comment',
+            from: 'edit-service',
+            data: {
+                'text': "<html><body>Comment from js</body></html>",
+                'owner_work_item': {
+                    'id': '235359',
+                    'type': 'work_item',
+                    'subtype': 'defect',
+                    'name': 'Testing the name change _ 600'
+                }
+            }
+        });
+    }
+
     let checkboxes = document.getElementsByClassName("filterCheckbox");
     for (let checkbox of checkboxes) {
         checkbox.addEventListener('click', e => {

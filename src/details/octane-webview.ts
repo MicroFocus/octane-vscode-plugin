@@ -59,6 +59,9 @@ export class OctaneWebview {
                         // panel.dispose();
                         // panel.webview.html = await getHtmlForWebview(panel.webview, context, this.fullData, fields);
                     }
+                    if (m.type === 'post-comment') {
+                        OctaneService.getInstance().postCommentForEntity(m.data);
+                    }
                 });
             });
     }
@@ -156,7 +159,7 @@ async function generateCommentElement(data: any | OctaneEntity | undefined, fiel
                 <div class="information-container">
                     <div class="comments-container">
                         <input type="text" value="${''}">
-                        <button class="comments" type="button">Comment</button>
+                        <button id="comments" type="button">Comment</button>
                     </div>
                 </div>
                 <br>`;
