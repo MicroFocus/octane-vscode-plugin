@@ -92,7 +92,7 @@ textarea {
     margin-top: 2.5rem;
 }
 
-.comments {
+#comments {
     margin: 0.5rem 0 0 0.5rem !important;
     width: 25%;
 }
@@ -231,7 +231,7 @@ hr {
     margin-top: 1rem;
 }
 
-.refresh {
+#refresh {
     margin: 0 0 0 0.5rem;
     width: 5rem;
     height: 2rem;

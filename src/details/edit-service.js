@@ -12,6 +12,10 @@
         getData();
     });
 
+    document.getElementById("refresh").addEventListener('click', e => {
+        refreshPanel();
+    });
+
     document.getElementById("filterId").addEventListener('click', e => {
         this.filterOpened = filterFields(this.filterOpened);
     });
@@ -27,6 +31,30 @@
     document.getElementById("resetId").addEventListener('click', e => {
         resetAllFields();
     });
+
+    document.getElementById("comments").addEventListener('click', e => {
+        postCommentForEntity();
+    });
+
+    function postCommentForEntity() {
+        let message = document.getElementById('comments-text').value;
+        let text = `
+            <html>
+                <body>
+                    ${message ?? ''}
+                </body>
+            </html>
+        `;
+        vscode.postMessage({
+            type: 'post-comment',
+            from: 'edit-service',
+            data: {
+                'text': text,
+                'owner_work_item': {
+                }
+            }
+        });
+    }
 
     let checkboxes = document.getElementsByClassName("filterCheckbox");
     for (let checkbox of checkboxes) {
@@ -103,51 +131,88 @@
         });
     }
 
+    function refreshPanel() {
+        vscode.postMessage({
+            type: 'refresh',
+            from: 'edit-service',
+            data: {}
+        });
+    }
+
     window.addEventListener('message', e => {
         const fields = e.data.data.fields;
         const fullData = e.data.data.fullData;
         const updatedData = {};
+        const fieldNameMap = new Map([
+            ['application_modules', 'product_areas']
+        ]);
         console.log('fullData', fullData);
         if (fields && fullData) {
             let mapFields = new Map();
             // console.log(fields);
             fields
-                .filter(f => (!f.field_type_data?.multiple))
+                .filter(f => (f.name !== 'author') && (f.name !== 'sprint'))
                 .filter(f => (f.editable))
                 .forEach(field => {
-                    mapFields.set(field.name, field);
+                    mapFields.set(fieldNameMap.get(field.name) ?? field.name, field);
                 });
             console.log('mapFields', mapFields);
             updatedData['id'] = fullData['id'];
             mapFields.forEach((field, key) => {
+                let data = {};
+                data['data'] = [];
                 let doc;
                 if (field.name === 'phase') {
                     doc = document.getElementById('select_phase');
                 } else {
-                    doc = document.getElementById(field.name);
+                    doc = document.getElementById(fieldNameMap.get(field.name) ?? field.name);
                     if (!doc) {
                         doc = document.getElementById(field.full_name);
                     }
                 }
                 if (doc) {
-                    var val;
-                    if (doc?.value.startsWith("{") && doc?.value.endsWith("}")) {
-                        // console.log(
-                        //     JSON.parse(document.getElementById(field.name)?.value)
-                        // );
-                        val = JSON.parse(doc?.value);
+                    if (doc.selectedOptions) {
+                        Array.from(doc.selectedOptions).forEach(d => {
+                            var val;
+                            if (d?.value.startsWith("{") && d?.value.endsWith("}")) {
+                                val = JSON.parse(d?.value);
+                            } else {
+                                val = d?.value;
+                            }
+                            if (val && val !== 'none' && val !== '-') {
+                                if (field.field_type === 'integer') {
+                                    updatedData[fieldNameMap.get(field.name) ?? field.name] = parseFloat(val);
+                                } else {
+                                    if (field.field_type_data?.multiple) {
+                                        data['data'].push({
+                                            'type': val.type,
+                                            'id': val.id,
+                                            'name': val.name
+                                        });
+                                    } else {
+                                        updatedData[fieldNameMap.get(field.name) ?? field.name] = val;
+                                    }
+                                }
+                            }
+                        });
                     } else {
-                        // console.log(
-                        //     doc?.value
-                        // );
-                        val = doc?.value;
-                    }
-                    if (val && val !== 'none' && val !== '-') {
-                        if (field.field_type === 'integer') {
-                            updatedData[field.name] = parseFloat(val);
+                        var val;
+                        if (doc?.value.startsWith("{") && doc?.value.endsWith("}")) {
+                            val = JSON.parse(d?.value);
                         } else {
-                            updatedData[field.name] = val;
+                            val = doc?.value;
                         }
+                        if (val && val !== 'none' && val !== '-') {
+                            if (field.field_type === 'integer') {
+                                updatedData[fieldNameMap.get(field.name) ?? field.name] = parseFloat(val);
+                            } else {
+                                updatedData[fieldNameMap.get(field.name) ?? field.name] = val;
+                            }
+                        }
+                    }
+
+                    if (field.field_type_data?.multiple) {
+                        updatedData[fieldNameMap.get(field.name) ?? field.name] = data;
                     }
                 }
             });

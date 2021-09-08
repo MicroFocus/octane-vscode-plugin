@@ -41,8 +41,7 @@ export class OctaneWebview {
                 this.fullData = await OctaneService.getInstance().getDataFromOctaneForTypeAndId(data.type, data.subtype, data.id);
                 console.log("fullData", this.fullData);
                 panel.webview.html = await getHtmlForWebview(panel.webview, context, this.fullData, fields);
-                panel.webview.onDidReceiveMessage(m => {
-                    // console.log("from js ---- > ", m);
+                panel.webview.onDidReceiveMessage(async m => {
                     if (m.type === 'get') {
                         panel.webview.postMessage({
                             type: 'post',
@@ -55,6 +54,22 @@ export class OctaneWebview {
                     }
                     if (m.type === 'update') {
                         OctaneService.getInstance().updateEntity(data.type, data.subtype, m.data);
+                    }
+                    if (m.type === 'refresh') {
+                        this.fullData = await OctaneService.getInstance().getDataFromOctaneForTypeAndId(data.type, data.subtype, data.id);
+                        panel.webview.html = await getHtmlForWebview(panel.webview, context, this.fullData, fields);
+                    }
+                    if (m.type === 'post-comment') {
+                        let commentData = m.data;
+                        commentData.owner_work_item = {
+                            'id': data.id ?? '',
+                            'type': data.type ?? '',
+                            'subtype': data.subtype ?? '',
+                            'name': data.name ?? ''
+                        }
+                        OctaneService.getInstance().postCommentForEntity(commentData);
+                        this.fullData = await OctaneService.getInstance().getDataFromOctaneForTypeAndId(data.type, data.subtype, data.id);
+                        panel.webview.html = await getHtmlForWebview(panel.webview, context, this.fullData, fields);
                     }
                 });
             });
@@ -116,7 +131,7 @@ async function getHtmlForWebview(webview: vscode.Webview, context: any, data: an
                     ${await generateBodyElement(data, fields)}
                 </div>
                 <div class="comments-sidebar">
-                    ${generateCommentElement(data, fields)}
+                    ${await generateCommentElement(data, fields)}
                 </div>
             </div>
             <script src="${scriptUri}"></script>
@@ -140,23 +155,35 @@ function generatePhaseSelectElement(data: any | OctaneEntity | undefined, fields
     });
     html += `</select>
             <button id="saveId" class="save" type="button">Save</button>
-            <button class="refresh" type="button">Refresh</button>
+            <button id="refresh" type="button">Refresh</button>
             <button id="filterId" type="button">Filter</button>`;
     return html;
 }
 
-function generateCommentElement(data: any | OctaneEntity | undefined, fields: any[]): string {
+async function generateCommentElement(data: any | OctaneEntity | undefined, fields: any[]): Promise<string> {
     let html: string = ``;
     html += `   <br>
                 
                 Comments
                 <div class="information-container">
                     <div class="comments-container">
-                        <input type="text" value="${''}">
-                        <button class="comments" type="button">Comment</button>
+                        <input id="comments-text" type="text">
+                        <button id="comments" type="button">Comment</button>
                     </div>
                 </div>
                 <br>`;
+    let comments = await OctaneService.getInstance().getCommentsForEntity(data.id);
+    console.log("comments", comments);
+    if (comments) {
+        for (const comment of comments) {
+            html += `
+                <div class="information-container">
+                    ${comment.author?.fullName ?? ''}: <input type="text" value="${stripHtml(comment.text).result}">
+                </div>
+            `;
+        }
+    }
+
     return html;
 }
 
@@ -184,18 +211,20 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                         
                     
         `;
+    console.log(mapFields);
     for (const [key, field] of mapFields) {
+        // console.log('key = ',key, 'field=',field);
         if (filteredFields.includes(field.name)) {
             html += `           <div class="checkboxDiv">
                                     <label>
-                                        <input checked type="checkbox" class="filterCheckbox" name="${field.label.replaceAll(" ", "_")}">
+                                        <input checked type="checkbox" class="filterCheckbox" name='${field.label.replaceAll(" ", "_")}'>
                                         <span class="filterCheckboxLabel">${field.label}</span>    
                                     </label>
                                 </div>`;
         } else {
             html += `           <div class="checkboxDiv">
                                     <label>
-                                        <input type="checkbox" class="filterCheckbox" name="${field.label.replaceAll(" ", "_")}">
+                                        <input type="checkbox" class="filterCheckbox" name='${field.label.replaceAll(" ", "_")}'>
                                         <span class="filterCheckboxLabel">${field.label}</span>
                                     </label>
                                 </div>`;
@@ -203,7 +232,6 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
     }
     html += `       </div>
                 </div>`;
-
     html += `
                 <br>
                 <hr>
@@ -260,11 +288,10 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                     html += `
                     <div class="select-container" id="container_${field.label.replaceAll(" ", "_")}">
                         <label>${field.label}</label>
-                        <select class="reference-select" multiple="multiple">
+                        <select class="reference-select" multiple="multiple" id="${field.name}">
                     `;
-                    let selected = getFieldValue(data, field.name);
-                    let options = await OctaneService.getInstance().getFullDataForEntity(field.field_type_data.targets[0].type, field);
-                    console.log("----------->>>", options);
+                    let selected = getFieldValue(data, fieldNameMap.get(field.name) ?? field.name);
+                    let options = await OctaneService.getInstance().getFullDataForEntity(field.field_type_data.targets[0].type, field, data);
                     if (options) {
                         options.data.forEach((option: any) => {
                             if (selected.includes(option.name)) {
@@ -288,7 +315,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                         `;
                         html += `<option value="none" selected disabled hidden>${getFieldValue(data, field.name)}</option>`;
                         if (field.field_type_data.targets[0].type) {
-                            let options = await OctaneService.getInstance().getFullDataForEntity(field.field_type_data.targets[0].type, field);
+                            let options = await OctaneService.getInstance().getFullDataForEntity(field.field_type_data.targets[0].type, field, data);
                             options.data.forEach((option: any) => {
                                 if (option.type === 'workspace_user') {
                                     html += `<option value='${JSON.stringify(option)}'>${option.full_name}</option>`;
@@ -352,3 +379,7 @@ function getFieldValue(data: any, fieldName: string): string | any[] {
     }
     return field;
 }
+
+const fieldNameMap: Map<String, String> = new Map([
+    ['application_module', 'product_areas']
+]);

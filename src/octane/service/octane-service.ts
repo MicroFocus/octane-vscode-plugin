@@ -241,6 +241,34 @@ export class OctaneService {
         return entities;
     }
 
+    public async getCommentsForEntity(entityId: number): Promise<Comment[] | undefined> {
+        if (!entityId) {
+            return;
+        }
+        const response = await this.octane.get(Octane.Octane.entityTypes.comments)
+            .fields('id', 'author', 'owner_work_item', 'creation_time', 'text')
+            .query(
+                Query.field('owner_work_item').equal(Query.field('id').equal(entityId))
+                    .build()
+            )
+            .execute();
+        let entities = response.data.map((r: any) => new Comment(r));
+        return entities;
+    }
+
+    public postCommentForEntity(body: Comment | undefined) {
+        if (!body) {
+            return;
+        }
+        const endPoint = entityTypeApiEndpoint.get('comment');
+        this.octane.create(endPoint, body).execute()
+            .then((res: any) => {
+                vscode.window.showInformationMessage('Your comment have been saved.');
+            }, (error: any) => {
+                vscode.window.showErrorMessage('We couldn’t save your comment.' + error);
+            });
+    }
+
     private async getRemoteFieldsForType(type: string) {
         try {
             const result = await this.octane.get(Octane.Octane.entityTypes.fieldsMetadata)
@@ -264,6 +292,7 @@ export class OctaneService {
         if (!this.octaneMap.get(type)) {
             await this.getRemoteFieldsForType(type);
         }
+        // console.log('Application modules: ', this.octaneMap.get(type)?.filter(f => f.name === 'application_modules'));
         return this.octaneMap.get(type);
     }
 
@@ -324,8 +353,13 @@ export class OctaneService {
             });
     }
 
-    public async getFullDataForEntity(entityTypes: string, field: any) {
-        const endPoint = entityTypeApiEndpoint.get(entityTypes);
+    public async getFullDataForEntity(entityTypes: string, field: any, fullData: any) {
+        let endPoint;
+        if (entityTypes === 'product_area') {
+            endPoint = entityTypeApiEndpoint.get('application_module');
+        } else {
+            endPoint = entityTypeApiEndpoint.get(entityTypes);
+        }
         if (!endPoint) {
             return;
         }
@@ -338,8 +372,17 @@ export class OctaneService {
                     .execute();
                 return result ?? undefined;
             }
-            if (entityTypes === 'sprint') {
+            if (entityTypes === 'product_area') {
                 const result = await this.octane.get(endPoint)
+                    .execute();
+                console.log('application_modules', result);
+                return result ?? undefined;
+            }
+            if (entityTypes === 'sprint' && fullData['release']) {
+                const result = await this.octane.get(endPoint)
+                    .query(
+                        Query.field('release').equal(Query.field('id').equal(fullData['release'].id))
+                            .build())
                     .execute();
                 return result ?? undefined;
             } else {
