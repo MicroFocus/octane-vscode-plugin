@@ -144,14 +144,14 @@ export async function activate(context: vscode.ExtensionContext) {
 			let quickPickChangedValue = async function (e: string) {
 				let promises = [];
 				promises.push(OctaneService.getInstance().globalSearchWorkItems('defect', e));
-				promises.push(OctaneService.getInstance().globalSearchWorkItems('story', e));
-				promises.push(OctaneService.getInstance().globalSearchWorkItems('quality_story', e));
-				promises.push(OctaneService.getInstance().globalSearchRequirements(e));
-				promises.push(OctaneService.getInstance().globalSearchTests(e));
+				// promises.push(OctaneService.getInstance().globalSearchWorkItems('story', e));
+				// promises.push(OctaneService.getInstance().globalSearchWorkItems('quality_story', e));
+				// promises.push(OctaneService.getInstance().globalSearchRequirements(e));
+				// promises.push(OctaneService.getInstance().globalSearchTests(e));
 
 				let items: OctaneQuickPickItem[] = [];
 				const results = await Promise.all(promises);
-				results.map(r => items.push(...r.map(e => new OctaneQuickPickItem(e))));
+				results.map(r => items.push(...r.map((e: OctaneEntity) => new OctaneQuickPickItem(e))));
 				console.debug('setting items to', items);
 				quickPick.items = items;
 			};
