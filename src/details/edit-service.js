@@ -98,10 +98,23 @@
         if (element) {
             if (!checkbox.checked) {
                 element.style.display = "none";
+                setFilterSelection(checkbox, "false");
             } else {
                 element.style.display = "flex";
+                setFilterSelection(checkbox, "true");
             }
         }
+    }
+
+    function setFilterSelection(checkbox, message) {
+        vscode.postMessage({
+            type: 'saveToMemento',
+            from: 'edit-service',
+            data: {
+                filterName: checkbox.name,
+                message: message
+            }
+        });
     }
 
     function filterFields(open) {

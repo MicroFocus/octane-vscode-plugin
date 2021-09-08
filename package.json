@@ -21,7 +21,8 @@
 		"onCommand:visual-studio-code-plugin-for-alm-octane.myMentions.refreshEntry",
 		"onCommand:visual-studio-code-plugin-for-alm-octane.myRequirements.refreshEntry",
 		"onView:visual-studio-code-plugin-for-alm-octane-explorer",
-		"onCommand:visual-studio-code-plugin-for-alm-octane.details"
+		"onCommand:visual-studio-code-plugin-for-alm-octane.details",
+		"onCommand:visual-studio-code-plugin-for-alm-octane.setFilterSelection"
 	],
 	"main": "./out/extension.js",
 	"contributes": {

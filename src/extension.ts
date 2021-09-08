@@ -19,6 +19,39 @@ import * as fs from 'fs';
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
+
+	{
+		let setFilterSelection = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.setFilterSelection', async (data) => {
+			if (data.filterName) {
+				await context.workspaceState.update(data.filterName, data);
+			}
+			// console.log(data.filterName, data);
+			// let memento: any = context.workspaceState.get(data.filterName, 'unsaved');
+			// console.log(memento.filterName);
+			// vscode.window.showInformationMessage(`Memento: ${memento.filterName}`);
+		});
+		context.subscriptions.push(setFilterSelection);
+	}
+
+	{
+		let getFilterSelection = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.getFilterSelection', (key) => {
+			if (key) {
+				let value: any = context.workspaceState.get(key);
+				if (value) {
+					return value.message;
+				}
+			}
+			return false;
+		});
+		context.subscriptions.push(getFilterSelection);
+	}
+
+	// let memento = context.workspaceState.get('test', 'unsaved');
+	// vscode.window.showInformationMessage(`Memento: ${memento}`);
+	// await context.workspaceState.update('test', 'saved');
+	// memento = context.workspaceState.get('test', 'unsaved');
+	// vscode.window.showInformationMessage(`Memento: ${memento}`);
+
 	const authProvider = new AlmOctaneAuthenticationProvider(context);
 	context.subscriptions.push(authProvider);
 
@@ -105,7 +138,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	{
 		let downloadTestCommand = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.myTests.download', async (e: MyWorkItem) => {
 			console.info('visual-studio-code-plugin-for-alm-octane.myTests.download called', e);
-			
+
 			if (e.entity) {
 				const script = await service.downloadScriptForTest(e.entity);
 				if (vscode === undefined || vscode.workspace === undefined || vscode.workspace.workspaceFolders === undefined) {

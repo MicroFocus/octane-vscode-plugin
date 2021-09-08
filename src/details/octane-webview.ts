@@ -71,6 +71,9 @@ export class OctaneWebview {
                         this.fullData = await OctaneService.getInstance().getDataFromOctaneForTypeAndId(data.type, data.subtype, data.id);
                         panel.webview.html = await getHtmlForWebview(panel.webview, context, this.fullData, fields);
                     }
+                    if (m.type === 'saveToMemento') {
+                        vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFilterSelection', m.data);
+                    }
                 });
             });
     }
@@ -187,11 +190,20 @@ async function generateCommentElement(data: any | OctaneEntity | undefined, fiel
     return html;
 }
 
+async function isSelectedField(fieldName: string) {
+    if (fieldName) {
+        let resFilterSelection = await vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.getFilterSelection', fieldName);
+        console.log("resFilterSelection = ", resFilterSelection);
+        return resFilterSelection;
+    }
+    return false;
+}
+
 async function generateBodyElement(data: any | OctaneEntity | undefined, fields: any[]): Promise<string> {
     let html: string = ``;
     let counter: number = 0;
     const columnCount: number = 2;
-    let filteredFields: string[] = ['id', 'name', 'description'];
+    let filteredFields: string[] = [];
     let mainFields: string[] = ['id', 'name'];
     let mapFields = new Map<string, any>();
     fields.forEach((field): any => {
@@ -211,9 +223,17 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                         
                     
         `;
-    console.log(mapFields);
+    ['ID', 'Name', 'Description'].forEach(f => {
+        vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFilterSelection', JSON.parse(`{"filterName": "${f}", "message": "true"}`));
+    });
     for (const [key, field] of mapFields) {
         // console.log('key = ',key, 'field=',field);
+        if (await isSelectedField(field.label.replaceAll(" ", "_"))) {
+            filteredFields = filteredFields.concat(field.name);
+        } else {
+            filteredFields = filteredFields.filter(f => f !== field.name);
+        }
+        console.log(filteredFields);
         if (filteredFields.includes(field.name)) {
             html += `           <div class="checkboxDiv">
                                     <label>
