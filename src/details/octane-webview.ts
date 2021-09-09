@@ -5,7 +5,27 @@ import { Transition } from "../octane/model/transition";
 import { OctaneEntity } from "../octane/model/octane-entity";
 import { stripHtml } from 'string-strip-html';
 
-export class OctaneWebview {
+export class OctaneWebview implements vscode.WebviewPanel {
+
+    viewType!: string;
+    title!: string;
+    iconPath?: vscode.Uri | { light: vscode.Uri; dark: vscode.Uri; } | undefined;
+    webview!: vscode.Webview;
+    options!: vscode.WebviewPanelOptions;
+    viewColumn?: vscode.ViewColumn | undefined;
+    active!: boolean;
+    visible!: boolean;
+
+    private _onDidChangeViewState: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
+    onDidChangeViewState: vscode.Event<any> = this._onDidChangeViewState.event;
+
+    onDidDispose!: vscode.Event<void>;
+    reveal(viewColumn?: vscode.ViewColumn, preserveFocus?: boolean): void {
+        throw new Error('Method not implemented.');
+    }
+    dispose() {
+        throw new Error('Method not implemented.');
+    }
 
     public static myWorkScheme = 'alm-octane-entity';
 
@@ -15,6 +35,10 @@ export class OctaneWebview {
         protected octaneService: OctaneService
     ) {
         this.octaneService = OctaneService.getInstance();
+    }
+
+    public refresh(): any {
+        this._onDidChangeViewState.fire(undefined);
     }
 
     public static register(context: vscode.ExtensionContext) {
@@ -72,6 +96,7 @@ export class OctaneWebview {
                         panel.webview.html = await getHtmlForWebview(panel.webview, context, this.fullData, fields);
                     }
                     if (m.type === 'saveToMemento') {
+                        vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.refreshWebviewPanel');
                         vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFilterSelection', m.data);
                     }
                 });

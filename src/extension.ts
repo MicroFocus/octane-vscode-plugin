@@ -20,6 +20,18 @@ import * as fs from 'fs';
 // your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
 
+	const service = OctaneService.getInstance();
+	const authProvider = new AlmOctaneAuthenticationProvider(context);
+	context.subscriptions.push(authProvider);
+
+	{
+		const myOctaneWebview = new OctaneWebview(service);
+		let refreshWebviewPanel = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.refreshWebviewPanel', () => {
+			myOctaneWebview.refresh();
+		});
+		context.subscriptions.push(refreshWebviewPanel); 
+	}
+
 	{
 		let setFilterSelection = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.setFilterSelection', async (data) => {
 			if (data.filterName) {
@@ -41,11 +53,6 @@ export async function activate(context: vscode.ExtensionContext) {
 		});
 		context.subscriptions.push(getFilterSelection);
 	}
-
-	const authProvider = new AlmOctaneAuthenticationProvider(context);
-	context.subscriptions.push(authProvider);
-
-	const service = OctaneService.getInstance();
 
 	vscode.authentication.onDidChangeSessions(async e => {
 		console.info('Received session change', e);
