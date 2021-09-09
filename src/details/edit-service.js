@@ -98,10 +98,10 @@
         if (element) {
             if (!checkbox.checked) {
                 element.style.display = "none";
-                setFilterSelection(checkbox, "false");
+                setFilterSelection(checkbox, false);
             } else {
                 element.style.display = "flex";
-                setFilterSelection(checkbox, "true");
+                setFilterSelection(checkbox, true);
             }
         }
     }

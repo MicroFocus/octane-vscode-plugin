@@ -193,7 +193,6 @@ async function generateCommentElement(data: any | OctaneEntity | undefined, fiel
 async function isSelectedField(fieldName: string) {
     if (fieldName) {
         let resFilterSelection = await vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.getFilterSelection', fieldName);
-        console.log("resFilterSelection = ", resFilterSelection);
         return resFilterSelection;
     }
     return false;
@@ -223,9 +222,9 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                         
                     
         `;
-    ['ID', 'Name', 'Description'].forEach(f => {
-        vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFilterSelection', JSON.parse(`{"filterName": "${f}", "message": "true"}`));
-    });
+    // ['ID', 'Name', 'Description'].forEach(f => {
+    //     vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFilterSelection', JSON.parse(`{"filterName": "${f}", "message": "true"}`));
+    // });
     for (const [key, field] of mapFields) {
         // console.log('key = ',key, 'field=',field);
         if (await isSelectedField(field.label.replaceAll(" ", "_"))) {
