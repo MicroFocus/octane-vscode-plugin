@@ -222,9 +222,6 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                         
                     
         `;
-    // ['ID', 'Name', 'Description'].forEach(f => {
-    //     vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFilterSelection', JSON.parse(`{"filterName": "${f}", "message": "true"}`));
-    // });
     for (const [key, field] of mapFields) {
         // console.log('key = ',key, 'field=',field);
         if (await isSelectedField(field.label.replaceAll(" ", "_"))) {
