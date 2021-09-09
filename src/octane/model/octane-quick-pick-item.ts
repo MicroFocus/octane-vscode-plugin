@@ -7,10 +7,13 @@ export class OctaneQuickPickItem implements QuickPickItem {
 
     private entity: OctaneEntity;
     public label: string;
+    public detail?: string;
+    public alwaysShow: boolean = true;
    
-    constructor(i: OctaneEntity) {
+    constructor(i: OctaneEntity, searchString: string) {
         this.entity = i;
         this.label = `${i.id} ${i.name} ${i.globalTextSearchResult}`;
+        // this.detail = `${searchString}`;
     }
 
 

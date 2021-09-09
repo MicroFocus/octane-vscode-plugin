@@ -107,8 +107,7 @@ export class OctaneService {
             .query(
                 Query.field('subtype').equal(subtype).build()
             )
-            // .limit(`5&text_search={"type":"global","text":"${criteria}"}`)
-            .limit(5)
+            .limit(`30&text_search={"type":"global","text":"${criteria}"}`)
             .execute();
         console.log('Global search response', response);
         let entities = response.data.map((r: any) => new OctaneEntity(r));
