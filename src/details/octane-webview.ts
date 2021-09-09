@@ -374,7 +374,6 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
             counter = counter === columnCount ? 0 : counter + 1;
         }
         if (filteredFields.includes(field.name)) {
-            console.log("===============", field.name);
             html += `
                 <script>
                     document.getElementById("container_${field.label.replaceAll(" ", "_")}").style.display = "flex";
