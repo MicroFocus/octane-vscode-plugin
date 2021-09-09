@@ -164,82 +164,52 @@
 			{
 				"command": "visual-studio-code-plugin-for-alm-octane.myTests.download",
 				"title": "Download test",
-				"icon": {
-					"dark": "media/dark/download.svg",
-					"light": "media/light/download.svg"
-				}
+				"icon": "$(notebook-move-down)"
 			},
 			{
 				"command": "visual-studio-code-plugin-for-alm-octane.commitMessage",
 				"title": "Copy commit message",
-				"icon": {
-					"dark": "media/dark/commit.svg",
-					"light": "media/light/commit.svg"
-				}
+				"icon": "$(git-commit)"
 			},
 			{
 				"command": "visual-studio-code-plugin-for-alm-octane.myWelcome.refreshEntry",
 				"title": "Refresh MyWelcome",
-				"icon": {
-					"light": "resources/light/refresh.svg",
-					"dark": "resources/dark/refresh.svg"
-				}
+				"icon": "$(extensions-refresh)"
 			},
 			{
 				"command": "visual-studio-code-plugin-for-alm-octane.myBacklog.refreshEntry",
 				"title": "Refresh MyBacklog",
-				"icon": {
-					"light": "resources/light/refresh.svg",
-					"dark": "resources/dark/refresh.svg"
-				}
+				"icon": "$(extensions-refresh)"
 			},
 			{
 				"command": "visual-studio-code-plugin-for-alm-octane.myTests.refreshEntry",
 				"title": "Refresh MyStories",
-				"icon": {
-					"light": "resources/light/refresh.svg",
-					"dark": "resources/dark/refresh.svg"
-				}
+				"icon": "$(extensions-refresh)"
 			},
 			{
 				"command": "visual-studio-code-plugin-for-alm-octane.myFeatures.refreshEntry",
 				"title": "Refresh MyFeatures",
-				"icon": {
-					"light": "resources/light/refresh.svg",
-					"dark": "resources/dark/refresh.svg"
-				}
+				"icon": "$(extensions-refresh)"
 			},
 			{
 				"command": "visual-studio-code-plugin-for-alm-octane.myMentions.refreshEntry",
 				"title": "Refresh MyMentions",
-				"icon": {
-					"light": "resources/light/refresh.svg",
-					"dark": "resources/dark/refresh.svg"
-				}
+				"icon": "$(extensions-refresh)"
 			},
 			{
 				"command": "visual-studio-code-plugin-for-alm-octane.myRequirements.refreshEntry",
 				"title": "Refresh MyRequirements",
-				"icon": {
-					"light": "resources/light/refresh.svg",
-					"dark": "resources/dark/refresh.svg"
-				}
+				"icon": "$(extensions-refresh)"
 			},
 			{
 				"command": "visual-studio-code-plugin-for-alm-octane.details",
 				"title": "Details",
-				"icon": {
-					"light": "resources/light/refresh.svg",
-					"dark": "resources/dark/refresh.svg"
-				}
+				"icon": "$(extensions-refresh)"
 			},
 			{
 				"command": "visual-studio-code-plugin-for-alm-octane.quickPick",
 				"title": "Search Issues",
-				"icon": {
-					"light": "resources/light/search.svg",
-					"dark": "resources/dark/search.svg"
-				}
+				"icon": "$(search-view-icon)"
 			}
 		]
 	},
