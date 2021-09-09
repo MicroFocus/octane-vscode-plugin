@@ -135,9 +135,13 @@ export async function activate(context: vscode.ExtensionContext) {
 		context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.quickPick', async () => {
 			const quickPick = vscode.window.createQuickPick();
 			quickPick.items = [];
-			quickPick.onDidChangeSelection(selection => {
+			quickPick.onDidChangeSelection(async selection => {
 				if (selection[0]) {
-					vscode.window.showInformationMessage(`Selected: ${selection[0].label}`);
+					try {
+						await vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.details', selection[0]);
+					} catch (e) {
+						console.error(e);
+					}
 				}
 			});
 

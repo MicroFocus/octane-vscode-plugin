@@ -4,6 +4,7 @@ import { OctaneService } from '../octane/service/octane-service';
 import { Transition } from "../octane/model/transition";
 import { OctaneEntity } from "../octane/model/octane-entity";
 import { stripHtml } from 'string-strip-html';
+import { OctaneEntityHolder } from '../octane/model/octane-entity-holder';
 
 export class OctaneWebview {
 
@@ -19,7 +20,7 @@ export class OctaneWebview {
 
     public static register(context: vscode.ExtensionContext) {
         return vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.details',
-            async (node: MyWorkItem) => {
+            async (node: OctaneEntityHolder) => {
                 const data = node.entity;
                 if (!data || !data.subtype) {
                     return;
@@ -66,7 +67,7 @@ export class OctaneWebview {
                             'type': data.type ?? '',
                             'subtype': data.subtype ?? '',
                             'name': data.name ?? ''
-                        }
+                        };
                         OctaneService.getInstance().postCommentForEntity(commentData);
                         this.fullData = await OctaneService.getInstance().getDataFromOctaneForTypeAndId(data.type, data.subtype, data.id);
                         panel.webview.html = await getHtmlForWebview(panel.webview, context, this.fullData, fields);

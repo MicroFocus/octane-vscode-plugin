@@ -1,11 +1,11 @@
-import { User } from './user';
 import { OctaneEntity } from './octane-entity';
+import { OctaneEntityHolder } from './octane-entity-holder';
 import { QuickPickItem } from 'vscode';
 
 
-export class OctaneQuickPickItem implements QuickPickItem {
+export class OctaneQuickPickItem implements QuickPickItem, OctaneEntityHolder {
 
-    private entity: OctaneEntity;
+    public entity: OctaneEntity;
     public label: string;
     public detail?: string;
     public alwaysShow: boolean = true;

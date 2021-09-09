@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { OctaneService } from '../octane/service/octane-service';
 import { Comment } from "../octane/model/comment";
 import { OctaneEntity } from "../octane/model/octane-entity";
+import { OctaneEntityHolder } from '../octane/model/octane-entity-holder';
 
 export abstract class MyWorkProvider implements vscode.TreeDataProvider<MyWorkItem> {
 
@@ -71,7 +72,7 @@ export abstract class MyWorkProvider implements vscode.TreeDataProvider<MyWorkIt
     }
 }
 
-export class MyWorkItem extends vscode.TreeItem {
+export class MyWorkItem extends vscode.TreeItem implements OctaneEntityHolder {
 
     public entity?: OctaneEntity;
 
