@@ -28,10 +28,10 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	{
 		const myOctaneWebview = new OctaneWebview(service);
-		let refreshWebviewPanel = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.refreshWebviewPanel', () => {
-			myOctaneWebview.refresh();
-		});
-		context.subscriptions.push(refreshWebviewPanel); 
+		// let refreshWebviewPanel = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.refreshWebviewPanel', () => {
+		// 	myOctaneWebview.refresh();
+		// });
+		// context.subscriptions.push(refreshWebviewPanel); 
 	}
 
 	{

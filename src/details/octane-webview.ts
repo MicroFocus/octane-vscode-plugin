@@ -6,31 +6,14 @@ import { OctaneEntity } from "../octane/model/octane-entity";
 import { stripHtml } from 'string-strip-html';
 import { OctaneEntityHolder } from '../octane/model/octane-entity-holder';
 
-export class OctaneWebview implements vscode.WebviewPanel {
-
-    viewType!: string;
-    title!: string;
-    iconPath?: vscode.Uri | { light: vscode.Uri; dark: vscode.Uri; } | undefined;
-    webview!: vscode.Webview;
-    options!: vscode.WebviewPanelOptions;
-    viewColumn?: vscode.ViewColumn | undefined;
-    active!: boolean;
-    visible!: boolean;
-
-    private _onDidChangeViewState: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
-    onDidChangeViewState: vscode.Event<any> = this._onDidChangeViewState.event;
-
-    onDidDispose!: vscode.Event<void>;
-    reveal(viewColumn?: vscode.ViewColumn, preserveFocus?: boolean): void {
-        throw new Error('Method not implemented.');
-    }
-    dispose() {
-        throw new Error('Method not implemented.');
-    }
+export class OctaneWebview {
 
     public static myWorkScheme = 'alm-octane-entity';
 
     public static fullData: any;
+
+    static emitter = new vscode.EventEmitter<string>();
+    static onDidFilterChange: vscode.Event<string> = OctaneWebview.emitter.event;
 
     constructor(
         protected octaneService: OctaneService
@@ -38,17 +21,15 @@ export class OctaneWebview implements vscode.WebviewPanel {
         this.octaneService = OctaneService.getInstance();
     }
 
-    public refresh(): any {
-        this._onDidChangeViewState.fire(undefined);
-    }
-
     public static register(context: vscode.ExtensionContext) {
+        let self = this;
         return vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.details',
             async (node: OctaneEntityHolder) => {
                 const data = node.entity;
                 if (!data || !data.subtype) {
                     return;
                 }
+
 
                 const panel = vscode.window.createWebviewPanel(
                     'myEditor',
@@ -66,6 +47,8 @@ export class OctaneWebview implements vscode.WebviewPanel {
                 this.fullData = await OctaneService.getInstance().getDataFromOctaneForTypeAndId(data.type, data.subtype, data.id);
                 console.log("fullData", this.fullData);
                 panel.webview.html = await getHtmlForWebview(panel.webview, context, this.fullData, fields);
+                let eventhandler = self.onDidFilterChange(async e => panel.webview.html = await getHtmlForWebview(panel.webview, context, this.fullData, fields));
+                panel.onDidDispose(e => eventhandler.dispose());
                 panel.webview.onDidReceiveMessage(async m => {
                     if (m.type === 'get') {
                         panel.webview.postMessage({
@@ -97,7 +80,8 @@ export class OctaneWebview implements vscode.WebviewPanel {
                         panel.webview.html = await getHtmlForWebview(panel.webview, context, this.fullData, fields);
                     }
                     if (m.type === 'saveToMemento') {
-                        vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.refreshWebviewPanel');
+                        self.emitter.fire('test');
+                        // vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.refreshWebviewPanel');
                         vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFilterSelection', m.data);
                     }
                 });
