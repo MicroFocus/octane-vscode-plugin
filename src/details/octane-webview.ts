@@ -6,7 +6,27 @@ import { OctaneEntity } from "../octane/model/octane-entity";
 import { stripHtml } from 'string-strip-html';
 import { OctaneEntityHolder } from '../octane/model/octane-entity-holder';
 
-export class OctaneWebview {
+export class OctaneWebview implements vscode.WebviewPanel {
+
+    viewType!: string;
+    title!: string;
+    iconPath?: vscode.Uri | { light: vscode.Uri; dark: vscode.Uri; } | undefined;
+    webview!: vscode.Webview;
+    options!: vscode.WebviewPanelOptions;
+    viewColumn?: vscode.ViewColumn | undefined;
+    active!: boolean;
+    visible!: boolean;
+
+    private _onDidChangeViewState: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
+    onDidChangeViewState: vscode.Event<any> = this._onDidChangeViewState.event;
+
+    onDidDispose!: vscode.Event<void>;
+    reveal(viewColumn?: vscode.ViewColumn, preserveFocus?: boolean): void {
+        throw new Error('Method not implemented.');
+    }
+    dispose() {
+        throw new Error('Method not implemented.');
+    }
 
     public static myWorkScheme = 'alm-octane-entity';
 
@@ -16,6 +36,10 @@ export class OctaneWebview {
         protected octaneService: OctaneService
     ) {
         this.octaneService = OctaneService.getInstance();
+    }
+
+    public refresh(): any {
+        this._onDidChangeViewState.fire(undefined);
     }
 
     public static register(context: vscode.ExtensionContext) {
@@ -72,6 +96,10 @@ export class OctaneWebview {
                         this.fullData = await OctaneService.getInstance().getDataFromOctaneForTypeAndId(data.type, data.subtype, data.id);
                         panel.webview.html = await getHtmlForWebview(panel.webview, context, this.fullData, fields);
                     }
+                    if (m.type === 'saveToMemento') {
+                        vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.refreshWebviewPanel');
+                        vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFilterSelection', m.data);
+                    }
                 });
             });
     }
@@ -89,6 +117,7 @@ function getDataForSubtype(entity: OctaneEntity | undefined): [string, string] {
         if (entity?.subtype === 'auto_test') { return ["AT", "#9b1e83"]; }
         if (entity?.subtype === 'gherkin_test') { return ["GT", "#00a989"]; }
         if (entity?.subtype === 'test_suite') { return ["TS", "#271782"]; }
+        if (entity?.subtype === 'requirement_document') { return ["RD", "#0b8eac"]; }
     }
     return ['', ''];
 }
@@ -188,11 +217,19 @@ async function generateCommentElement(data: any | OctaneEntity | undefined, fiel
     return html;
 }
 
+async function isSelectedField(fieldName: string) {
+    if (fieldName) {
+        let resFilterSelection = await vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.getFilterSelection', fieldName);
+        return resFilterSelection;
+    }
+    return false;
+}
+
 async function generateBodyElement(data: any | OctaneEntity | undefined, fields: any[]): Promise<string> {
     let html: string = ``;
     let counter: number = 0;
     const columnCount: number = 2;
-    let filteredFields: string[] = ['id', 'name', 'description'];
+    let filteredFields: string[] = [];
     let mainFields: string[] = ['id', 'name'];
     let mapFields = new Map<string, any>();
     fields.forEach((field): any => {
@@ -212,9 +249,16 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                         
                     
         `;
-    console.log(mapFields);
+    // ['ID', 'Name', 'Description'].forEach(f => {
+    //     vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFilterSelection', JSON.parse(`{"filterName": "${f}", "message": true}`));
+    // });
     for (const [key, field] of mapFields) {
         // console.log('key = ',key, 'field=',field);
+        if (await isSelectedField(field.label.replaceAll(" ", "_"))) {
+            filteredFields = filteredFields.concat(field.name);
+        } else {
+            filteredFields = filteredFields.filter(f => f !== field.name);
+        }
         if (filteredFields.includes(field.name)) {
             html += `           <div class="checkboxDiv">
                                     <label>
@@ -239,7 +283,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                 General
                 <div class="information-container">
         `;
-    mainFields.forEach((key): any => {
+    mainFields.forEach(async (key): Promise<any> => {
         const field = mapFields.get(key);
         if (!field) { return; }
         html += `
@@ -251,18 +295,32 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                         document.getElementById("${field.name}").readOnly = !${field.editable};
                 </script>
                 `;
+        if (!await isSelectedField(field.label.replaceAll(" ", "_"))) {
+            html += `
+                    <script>
+                        document.getElementById("container_${field.label.replaceAll(" ", "_")}").style.display = "none";
+                    </script>
+                `;
+        }
     });
     const phaseField = mapFields.get('phase');
     if (phaseField) {
         html += `
-                <div class="main-container input-field col s6" id="container_${phaseField.label}">
-                    <label class="active">${phaseField.label}</label>
-                    <input id="${phaseField.name}" type="${phaseField.field_type}" value="${getFieldValue(data, phaseField.name)}">
-                </div>
-                <script>
-                        document.getElementById("${phaseField.name}").readOnly = !false;
-                </script>
-            `;
+            <div class="main-container input-field col s6" id="container_${phaseField.label}">
+                <label class="active">${phaseField.label}</label>
+                <input id="${phaseField.name}" type="${phaseField.field_type}" value="${getFieldValue(data, phaseField.name)}">
+            </div>
+            <script>
+                    document.getElementById("${phaseField.name}").readOnly = !false;
+            </script>
+        `;
+    }
+    if (!await isSelectedField(phaseField.label.replaceAll(" ", "_"))) {
+        html += `
+            <script>
+                document.getElementById("container_${phaseField.label.replaceAll(" ", "_")}").style.display = "none";
+            </script>
+        `;
     }
     html += `   </div>
                 <br>
@@ -279,6 +337,13 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                 <br>
                 <hr>
     `;
+    if (!await isSelectedField("Description")) {
+        html += `
+            <script>
+                document.getElementById("container_Description").style.display = "none";
+            </script>
+        `;
+    }
     for (const [key, field] of mapFields) {
         if (!['description', 'phase', ...mainFields].includes(key)) {
             if (counter === 0) {
@@ -356,7 +421,14 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
             }
             counter = counter === columnCount ? 0 : counter + 1;
         }
-    };
+        if (filteredFields.includes(field.name)) {
+            html += `
+                <script>
+                    document.getElementById("container_${field.label.replaceAll(" ", "_")}").style.display = "flex";
+                </script>
+            `;
+        }
+    }
     return html;
 }
 
