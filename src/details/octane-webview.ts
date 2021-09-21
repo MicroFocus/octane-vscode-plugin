@@ -112,7 +112,7 @@ async function getHtmlForWebview(webview: vscode.Webview, context: any, data: an
     const myStyle = webview.asWebviewUri(vscode.Uri.joinPath(
         context.extensionUri, 'media', 'my-css.css'));
     const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(
-        context.extensionUri, 'src/details', 'edit-service.js'));
+        context.extensionUri, 'media', 'edit-service.js'));
 
     return `
         <!DOCTYPE html>
