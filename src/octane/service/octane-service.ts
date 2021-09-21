@@ -40,10 +40,11 @@ export class OctaneService {
         });
         try {
             const result: any = await octaneInstace.get(Octane.Octane.entityTypes.workspaceUsers)
+                .fields('id', 'name', 'full_name')
                 .query(Query.field('name').equal(username).build())
                 .execute();
-            console.info('Successful auth test.');
-            return result.data[0].full_name;
+            console.info('Successful auth test.', result.data);
+            return result.data[0].full_name ? result.data[0].full_name : username;
         } catch (e) {
             console.error('Error while testing auth.', e);
             return;
