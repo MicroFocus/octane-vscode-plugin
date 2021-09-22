@@ -70,6 +70,16 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                         }
                         break;
                     }
+                case 'testConnection':
+                    {
+                        const authTestResult = await OctaneService.getInstance().testAuthentication(data.uri, data.space, data.workspace, data.user, data.password, undefined, undefined);
+                        console.log(authTestResult);
+                        webviewView.webview.postMessage({
+                            type: 'testConnectionResponse',
+                            authTestResult: authTestResult ? true : false
+                        });
+                        break;
+                    }
             }
         });
     }
@@ -131,11 +141,14 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                     <input type="password" class="authentication_password"></input>
                 </div>
                 <hr>
+                <div class="main-container" style="flex-direction: row;">
+				    <button class="test_authentication_connection" style="margin: 0rem 0.5rem 0rem 0rem">Test connection</button>
+                    <button class="clear_settings">Clear settings</button>
+                </div>
+                <span id="test_authentication_connection_successful" style="display: none"></span>
+                <hr>
                 <div class="main-container">
 				    <button class="attempt_authentication">Authenticate</button>
-                </div>
-                <div class="main-container">
-				    <button class="clear_settings">Clear settings</button>
                 </div>
                 <script src="${scriptUri}"></script>
 			</body>
