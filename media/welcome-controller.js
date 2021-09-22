@@ -14,6 +14,10 @@
         attemptAuthentication(true);
     });
 
+    document.querySelector('.clear_settings').addEventListener('click', () => {
+        clearSettings();
+    });
+
     function attemptAuthentication(browser) {
         var uri = document.querySelector('.authentication_url')['value'];
         var user = document.querySelector('.authentication_username')['value'];
@@ -26,4 +30,13 @@
             vscode.postMessage({ type: 'attemptAuthentication', uri: uri, user: user, password: pwd, space: space, workspace: workspace });
         }
     }
+
+    function clearSettings() {
+        document.querySelector('.authentication_url')['value'] = '';
+        document.querySelector('.authentication_username')['value'] = '';
+        document.querySelector('.authentication_password')['value'] = '';
+        document.querySelector('.authentication_space')['value'] = '';
+        document.querySelector('.authentication_workspace')['value'] = '';
+    }
+
 }());

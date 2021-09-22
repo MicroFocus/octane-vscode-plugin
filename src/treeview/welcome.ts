@@ -129,6 +129,9 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                 <div class="main-container">
 				    <button class="attempt_browser_authentication">Authenticate using browser</button>
                 </div>
+                <div class="main-container">
+				    <button class="clear_settings">Clear settings</button>
+                </div>
                 <script src="${scriptUri}"></script>
 			</body>
 			</html>`;
