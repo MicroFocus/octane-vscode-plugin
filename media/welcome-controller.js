@@ -14,6 +14,20 @@
         clearSettings();
     });
 
+    document.querySelector('.attempt_browser_authentication_radio').addEventListener('click', () => {
+        var element = document.getElementById('authentication_password_id');
+        if(element) {
+            element.style.display = "none";
+        }
+    });
+
+    document.querySelector('.attempt_authentication_radio').addEventListener('click', () => {
+        var element = document.getElementById('authentication_password_id');
+        if(element) {
+            element.style.display = "flex";
+        }
+    });
+
     function authWithBrowser() {
         return document.querySelector('.attempt_browser_authentication_radio')['checked'];   
     }

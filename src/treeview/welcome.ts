@@ -115,20 +115,22 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                     <span>Workspace</span>
                     <input type="text" class="authentication_workspace" value="${workspace}"></input>
                 </div>
+                <hr>
                 <div class="main-container" style="flex-direction: row; align-items: center;">
 				    <input style="width: unset" class="attempt_authentication_radio" type="radio" name="auth" checked></input> <label style="margin-top: 0.5rem;">Authenticate with username and password</label>
+                </div>
+                <div class="main-container" style="flex-direction: row; align-items: center;">
+				    <input style="width: unset" class="attempt_browser_authentication_radio" type="radio" name="auth"></input> <label style="margin-top: 0.5rem;">Authenticate using browser</label>
                 </div>
                 <div class="main-container">
                     <span>Username</span>
                     <input type="text" class="authentication_username" value="${user}"></input>
                 </div>
-                <div class="main-container">
+                <div class="main-container" id="authentication_password_id">
                     <span>Password</span>
                     <input type="password" class="authentication_password"></input>
                 </div>
-                <div class="main-container" style="flex-direction: row; align-items: center;">
-				    <input style="width: unset" class="attempt_browser_authentication_radio" type="radio" name="auth"></input> <label style="margin-top: 0.5rem;">Authenticate using browser</label>
-                </div>
+                <hr>
                 <div class="main-container">
 				    <button class="attempt_authentication">Authenticate</button>
                 </div>
