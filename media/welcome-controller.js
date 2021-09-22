@@ -7,16 +7,16 @@
     const vscode = acquireVsCodeApi();
 
     document.querySelector('.attempt_authentication').addEventListener('click', () => {
-        attemptAuthentication();
-    });
-
-    document.querySelector('.attempt_browser_authentication').addEventListener('click', () => {
-        attemptAuthentication(true);
+        attemptAuthentication(authWithBrowser());
     });
 
     document.querySelector('.clear_settings').addEventListener('click', () => {
         clearSettings();
     });
+
+    function authWithBrowser() {
+        return document.querySelector('.attempt_browser_authentication_radio')['checked'];   
+    }
 
     function attemptAuthentication(browser) {
         var uri = document.querySelector('.authentication_url')['value'];
