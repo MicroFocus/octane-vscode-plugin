@@ -15,7 +15,7 @@
     });
 
     document.querySelector('.test_authentication_connection').addEventListener('click', () => {
-        testConnection();
+        testConnection(authWithBrowser());
     });
 
     document.querySelector('.attempt_browser_authentication_radio').addEventListener('click', () => {
@@ -32,7 +32,10 @@
         }
     });
 
-    function testConnection() {
+    /**
+     * @param {boolean} browser
+     */
+    function testConnection(browser) {
         var element = document.getElementById('test_authentication_connection_successful');
         if (element) {
             var uri = document.querySelector('.authentication_url')['value'];
@@ -40,7 +43,7 @@
             var space = document.querySelector('.authentication_space')['value'];
             var workspace = document.querySelector('.authentication_workspace')['value'];
             var pwd = document.querySelector('.authentication_password')['value'];
-            vscode.postMessage({ type: 'testConnection', uri: uri, user: user, space: space, workspace: workspace, password: pwd });
+            vscode.postMessage({ type: 'testConnection', browser: browser, uri: uri, user: user, space: space, workspace: workspace, password: authWithBrowser() ? undefined : pwd });
         }
     }
 

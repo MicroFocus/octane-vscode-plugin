@@ -72,8 +72,12 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                     }
                 case 'testConnection':
                     {
-                        const authTestResult = await OctaneService.getInstance().testAuthentication(data.uri, data.space, data.workspace, data.user, data.password, undefined, undefined);
-                        console.log(authTestResult);
+                        var authTestResult;
+                        if (data.browser) {
+                            authTestResult = await OctaneService.getInstance().testConnectionOnBrowserAuthentication(data.uri);
+                        } else {
+                            authTestResult = await OctaneService.getInstance().testAuthentication(data.uri, data.space, data.workspace, data.user, data.password, undefined, undefined);
+                        }
                         webviewView.webview.postMessage({
                             type: 'testConnectionResponse',
                             authTestResult: authTestResult ? true : false
