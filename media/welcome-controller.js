@@ -6,6 +6,11 @@
     // @ts-ignore
     const vscode = acquireVsCodeApi();
 
+    document.querySelector('.authentication_url').addEventListener('keyup', () => {
+        let url = document.getElementById('authentication_url_id')['value'];
+        vscode.postMessage({ type: 'changeInURL', url: url});
+    });
+    
     document.querySelector('.attempt_authentication').addEventListener('click', () => {
         attemptAuthentication(authWithBrowser());
     });

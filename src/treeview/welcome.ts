@@ -49,7 +49,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                             if (data.browser) {
                                 try {
                                     await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: true });
-                                } catch (e) {
+                                } catch (e: any) {
                                     vscode.window.showErrorMessage(e.message);
                                     throw e;
                                 }
@@ -58,7 +58,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                                     OctaneService.getInstance().storePasswordForAuthentication(data.password);
                                     // await this.authenticationProvider.createManualSession(data.password);
                                     await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: true });
-                                } catch (e) {
+                                } catch (e: any) {
                                     vscode.window.showErrorMessage(e.message);
                                     throw e;
                                 } finally {
@@ -82,6 +82,14 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                             type: 'testConnectionResponse',
                             authTestResult: authTestResult ? true : false
                         });
+                        break;
+                    }
+                case 'changeInURL':
+                    {
+                        let url: string = data.url;
+                        let regExp = url.match(/\?p=(\d+\/\d+)$/);
+                        let space = regExp !== null ? regExp[1].split('/')[0] : '';
+                        let workspace = regExp !== null ? regExp[1].split('/')[1] : '';
                         break;
                     }
             }
@@ -122,15 +130,15 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
 			<body>
                 <div class="main-container">
                     <span>URL</span>
-                    <input type="text" class="authentication_url" value="${uri}"></input>
+                    <input type="text" id="authentication_url_id" class="authentication_url" value="${uri}"></input>
                 </div>
                 <div class="main-container">
                     <span>Space</span>
-                    <input type="text" class="authentication_space" value="${space}"></input>
+                    <input type="text" disabled style="opacity: 0.6" class="authentication_space" value="${space}"></input>
                 </div>
                 <div class="main-container">
                     <span>Workspace</span>
-                    <input type="text" class="authentication_workspace" value="${workspace}"></input>
+                    <input type="text" disabled style="opacity: 0.6" class="authentication_workspace" value="${workspace}"></input>
                 </div>
                 <hr>
                 <div class="main-container" style="flex-direction: row; align-items: center;">
