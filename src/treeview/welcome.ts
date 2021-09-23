@@ -70,6 +70,20 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                         }
                         break;
                     }
+                case 'testConnection':
+                    {
+                        var authTestResult;
+                        if (data.browser) {
+                            authTestResult = await OctaneService.getInstance().testConnectionOnBrowserAuthentication(data.uri);
+                        } else {
+                            authTestResult = await OctaneService.getInstance().testAuthentication(data.uri, data.space, data.workspace, data.user, data.password, undefined, undefined);
+                        }
+                        webviewView.webview.postMessage({
+                            type: 'testConnectionResponse',
+                            authTestResult: authTestResult ? true : false
+                        });
+                        break;
+                    }
             }
         });
     }
@@ -115,19 +129,30 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                     <span>Workspace</span>
                     <input type="text" class="authentication_workspace" value="${workspace}"></input>
                 </div>
+                <hr>
+                <div class="main-container" style="flex-direction: row; align-items: center;">
+				    <input style="width: unset" class="attempt_authentication_radio" type="radio" name="auth" checked></input> <label style="margin-top: 0.5rem;">Authenticate with username and password</label>
+                </div>
+                <div class="main-container" style="flex-direction: row; align-items: center;">
+				    <input style="width: unset" class="attempt_browser_authentication_radio" type="radio" name="auth"></input> <label style="margin-top: 0.5rem;">Authenticate using browser</label>
+                </div>
                 <div class="main-container">
                     <span>Username</span>
                     <input type="text" class="authentication_username" value="${user}"></input>
                 </div>
-                <div class="main-container">
+                <div class="main-container" id="authentication_password_id">
                     <span>Password</span>
                     <input type="password" class="authentication_password"></input>
                 </div>
-                <div class="main-container">
-				    <button class="attempt_authentication">Authenticate with username and password</button>
+                <hr>
+                <div class="main-container" style="flex-direction: row;">
+				    <button class="test_authentication_connection" style="margin: 0rem 0.5rem 0rem 0rem">Test connection</button>
+                    <button class="clear_settings">Clear settings</button>
                 </div>
+                <span id="test_authentication_connection_successful" style="display: none"></span>
+                <hr>
                 <div class="main-container">
-				    <button class="attempt_browser_authentication">Authenticate using browser</button>
+				    <button class="attempt_authentication">Authenticate</button>
                 </div>
                 <script src="${scriptUri}"></script>
 			</body>

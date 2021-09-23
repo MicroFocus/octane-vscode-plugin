@@ -5,6 +5,7 @@ import { OctaneEntity } from '../model/octane-entity';
 import { Transition } from '../model/transition';
 import { Comment } from '../model/comment';
 import { AlmOctaneAuthenticationProvider, AlmOctaneAuthenticationSession, AlmOctaneAuthenticationType } from '../../auth/authentication-provider';
+import fetch from 'node-fetch';
 export class OctaneService {
 
     private static _instance: OctaneService;
@@ -23,6 +24,15 @@ export class OctaneService {
 
     private password?: string;
     private session?: AlmOctaneAuthenticationSession;
+
+    public async testConnectionOnBrowserAuthentication(uri: string) {
+        try {
+            const fetchResult = await fetch(`${uri}authentication/tokens`, { method: 'POST' });
+            return fetchResult ? true : false;
+        } catch (e) {
+            return false;
+        }
+    }
 
     public async testAuthentication(uri: string, space: string | undefined, workspace: string | undefined, username: string, password: string | undefined, cookieName: string | undefined, cookie: string | undefined): Promise<string | undefined> {
         const octaneInstace = new Octane.Octane({
