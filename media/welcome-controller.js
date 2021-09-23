@@ -39,6 +39,9 @@
         var element = document.getElementById('test_authentication_connection_successful');
         if (element) {
             var uri = document.querySelector('.authentication_url')['value'];
+            if (uri && uri !== undefined) {
+                uri = uri.endsWith('/') ? uri : uri + '/';
+            }
             var user = document.querySelector('.authentication_username')['value'];
             var space = document.querySelector('.authentication_space')['value'];
             var workspace = document.querySelector('.authentication_workspace')['value'];
@@ -76,6 +79,9 @@
 
     function attemptAuthentication(browser) {
         var uri = document.querySelector('.authentication_url')['value'];
+        if (uri && uri !== undefined) {
+            uri = uri.endsWith('/') ? uri : uri + '/';
+        }
         var user = document.querySelector('.authentication_username')['value'];
         var pwd = document.querySelector('.authentication_password')['value'];
         var space = document.querySelector('.authentication_space')['value'];

@@ -92,7 +92,10 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
 
         console.info('WelcomeViewProvider.getHtmlForWebview called');
 
-        const uri = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.uri');
+        let uri: string | undefined = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.uri');
+        if (uri && uri !== undefined) {
+            uri = uri.endsWith('/') ? uri : uri + '/';
+        }
         const space = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.space');
         const workspace = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.workspace');
         const user = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.user.userName');
