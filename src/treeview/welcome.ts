@@ -97,7 +97,9 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                             });
                         } else {
                             webviewView.webview.postMessage({
-                                type: 'correctURLFormat'
+                                type: 'correctURLFormat',
+                                space: space,
+                                workspace: workspace
                             });
                         }
                         break;

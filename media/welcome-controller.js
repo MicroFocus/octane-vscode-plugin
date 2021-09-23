@@ -91,6 +91,8 @@
                     var element = document.getElementById('authentication_url_successful');
                     if (element) {
                         element.style.display = "none";
+                        document.querySelector('.authentication_space')['value'] = data.space;
+                        document.querySelector('.authentication_workspace')['value'] = data.workspace;
                     }
                     break;
                 }
