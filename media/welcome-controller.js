@@ -8,9 +8,9 @@
 
     document.querySelector('.authentication_url').addEventListener('keyup', () => {
         let url = document.getElementById('authentication_url_id')['value'];
-        vscode.postMessage({ type: 'changeInURL', url: url});
+        vscode.postMessage({ type: 'changeInURL', url: url });
     });
-    
+
     document.querySelector('.attempt_authentication').addEventListener('click', () => {
         attemptAuthentication(authWithBrowser());
     });
@@ -72,6 +72,25 @@
                             element.style.display = "flex";
                             element.style.color = "#FF0000";
                         }
+                    }
+                    break;
+                }
+
+            case 'incorrectURLFormat':
+                {
+                    var element = document.getElementById('authentication_url_successful');
+                    if (element) {
+                        element.textContent = data.message;
+                        element.style.display = "flex";
+                        element.style.color = "#FF0000";
+                    }
+                    break;
+                }
+            case 'correctURLFormat':
+                {
+                    var element = document.getElementById('authentication_url_successful');
+                    if (element) {
+                        element.style.display = "none";
                     }
                     break;
                 }

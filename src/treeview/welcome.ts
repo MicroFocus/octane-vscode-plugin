@@ -88,8 +88,18 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                     {
                         let url: string = data.url;
                         let regExp = url.match(/\?p=(\d+\/\d+)$/);
-                        let space = regExp !== null ? regExp[1].split('/')[0] : '';
-                        let workspace = regExp !== null ? regExp[1].split('/')[1] : '';
+                        let space = regExp !== null ? regExp[1].split('/')[0] : null;
+                        let workspace = regExp !== null ? regExp[1].split('/')[1] : null;
+                        if (space === null || workspace === null) {
+                            webviewView.webview.postMessage({
+                                type: 'incorrectURLFormat',
+                                message: "Could not get sharedspace/workspace ids from URL \n Example: (http|https)://{serverurl[:port]}/?p={sharedspaceid}/{workspaceid}"
+                            });
+                        } else {
+                            webviewView.webview.postMessage({
+                                type: 'correctURLFormat'
+                            });
+                        }
                         break;
                     }
             }
@@ -131,6 +141,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                 <div class="main-container">
                     <span>URL</span>
                     <input type="text" id="authentication_url_id" class="authentication_url" value="${uri}"></input>
+                    <span id="authentication_url_successful" style="display: none"></span>
                 </div>
                 <div class="main-container">
                     <span>Space</span>
