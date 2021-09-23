@@ -101,7 +101,7 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 		if (password !== undefined) {
 			session = await this.createManualSession(uri, space, workspace, user, password);
 		} else {
-			const idResult = await fetch(`${uri}authentication/tokens`, { method: 'POST' });
+			const idResult = await fetch(`${uri.endsWith('/') ? uri : uri + '/'}authentication/tokens`, { method: 'POST' });
 			if (idResult.ok) {
 				const response = await idResult.json();
 				console.info(response);
