@@ -71,7 +71,14 @@ export class OctaneService {
 
     public async initialize() {
 
-        this.uri = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.uri');
+        
+        this.uri= vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.uri');
+        if(this.uri !== undefined) {
+            let regExp = this.uri.match(/\?p=(\d+\/\d+)/);
+            if(regExp) {
+                this.uri = this.uri.split(regExp[0])[0];
+            }
+        }
         this.space = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.space');
         this.workspace = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.workspace');
         this.user = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.user.userName');
