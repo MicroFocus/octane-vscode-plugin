@@ -2,6 +2,7 @@ import { User } from './user';
 import { BaseEntity } from './base-entity';
 
 
+
 export class OctaneEntity extends BaseEntity {
 
     public storyPoints?: string;

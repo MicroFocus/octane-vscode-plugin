@@ -1,7 +1,7 @@
 import { OctaneEntity } from './octane-entity';
 import { OctaneEntityHolder } from './octane-entity-holder';
 import { QuickPickItem } from 'vscode';
-
+import { stripHtml } from 'string-strip-html';
 
 export class OctaneQuickPickItem implements QuickPickItem, OctaneEntityHolder {
 
@@ -12,8 +12,11 @@ export class OctaneQuickPickItem implements QuickPickItem, OctaneEntityHolder {
    
     constructor(i: OctaneEntity, searchString: string) {
         this.entity = i;
-        this.label = `${i.id} ${i.name} ${i.globalTextSearchResult}`;
-        // this.detail = `${searchString}`;
+        this.label = `${i.id} ${i.name}`;
+        if (i.globalTextSearchResult) {
+            this.detail = `${stripHtml(i.globalTextSearchResult).result}`;
+            // this.detail = `${i.globalTextSearchResult}`;
+        }
     }
 
 

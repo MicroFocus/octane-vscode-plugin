@@ -77,11 +77,11 @@ export class OctaneService {
 
     public async initialize() {
 
-        
-        this.uri= vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.uri');
-        if(this.uri !== undefined) {
+
+        this.uri = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.uri');
+        if (this.uri !== undefined) {
             let regExp = this.uri.match(/\?p=(\d+\/\d+)/);
-            if(regExp) {
+            if (regExp) {
                 this.uri = this.uri.split(regExp[0])[0];
             }
         }
@@ -101,6 +101,8 @@ export class OctaneService {
                 headers: {
                     // eslint-disable-next-line @typescript-eslint/naming-convention
                     ALM_OCTANE_TECH_PREVIEW: true,
+                    // eslint-disable-next-line @typescript-eslint/naming-convention
+                    HPECLIENTTYPE: 'OCTANE_IDE_PLUGIN',
                     // eslint-disable-next-line @typescript-eslint/naming-convention
                     Cookie: this.session.type === AlmOctaneAuthenticationType.browser ? `${this.session.cookieName}=${this.session.accessToken}` : undefined
                 }
@@ -144,7 +146,13 @@ export class OctaneService {
                     )
                     .execute();
 
-                let entities = responseWithFields.data.map((r: any) => new OctaneEntity(r));
+                let entities = responseWithFields.data.map((r: any) => {
+                    let gsr = response.data.find((re: { id: any; }) => re.id === r.id);
+                    r.global_text_search_result = gsr?.global_text_search_result.description;
+                    let oe = new OctaneEntity(r);
+                    console.log('Extended oe', oe);
+                    return oe;
+                });
                 console.log('Global search results: ', entities);
                 return entities;
             }
@@ -175,7 +183,13 @@ export class OctaneService {
                     )
                     .execute();
 
-                let entities = responseWithFields.data.map((r: any) => new OctaneEntity(r));
+                let entities = responseWithFields.data.map((r: any) => {
+                    let gsr = response.data.find((re: { id: any; }) => re.id === r.id);
+                    r.global_text_search_result = gsr?.global_text_search_result.description;
+                    let oe = new OctaneEntity(r);
+                    console.log('Extended oe', oe);
+                    return oe;
+                });
                 console.log('Global search results: ', entities);
                 return entities;
             }
@@ -206,7 +220,13 @@ export class OctaneService {
                     )
                     .execute();
 
-                let entities = responseWithFields.data.map((r: any) => new OctaneEntity(r));
+                let entities = responseWithFields.data.map((r: any) => {
+                    let gsr = response.data.find((re: { id: any; }) => re.id === r.id);
+                    r.global_text_search_result = gsr?.global_text_search_result.description;
+                    let oe = new OctaneEntity(r);
+                    console.log('Extended oe', oe);
+                    return oe;
+                });
                 console.log('Global search results: ', entities);
                 return entities;
             }
