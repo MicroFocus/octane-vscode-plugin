@@ -87,7 +87,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                 case 'changeInURL':
                     {
                         let url: string = data.url;
-                        let regExp = url.match(/\?p=(\d+\/\d+)$/);
+                        let regExp = url.match(/\?p=(\d+\/\d+)\/?$/);
                         let space = regExp !== null ? regExp[1].split('/')[0] : null;
                         let workspace = regExp !== null ? regExp[1].split('/')[1] : null;
                         if (space === null || workspace === null) {
