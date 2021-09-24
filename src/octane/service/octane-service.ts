@@ -496,6 +496,58 @@ export class OctaneService {
             throw e;
         }
     }
+
+    public async addToMyWork(e: OctaneEntity): Promise<void> {
+        try {
+            if (!this.loggedInUserId) {
+                return;
+            }
+            // let type = e.subtype ? e.subtype : e.type;
+            let type = e.type;
+            let entityModel: any =  {
+                origin: 1,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                entity_type: `${type}`, // "test"
+                reason: null,
+                user: {
+                    type: 'workspace_user',
+                    id: +this.loggedInUserId
+                },
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                is_new: true,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                // `my_follow_items_${e.subtype ? e.subtype : e.type}`: {
+                //     type: 'work_item',
+                //     id: `236023`
+                // }
+                // "my_follow_items_test": {
+                //     "type": "test",
+                //     "id": "10002"
+                // }
+            };
+            entityModel[`my_follow_items_${type}`] = {
+                type: `${type}`,
+                id: +e.id
+            };
+
+            let body = {
+                data : [
+                    entityModel
+                ]
+            };
+            
+            console.log(JSON.stringify(body));
+            this.octane.create(Octane.Octane.entityTypes.userItems, body).execute()
+                .then((res: any) => {
+                    vscode.window.showInformationMessage('Your item changes have been saved.');
+                }, (error: any) => {
+                    vscode.window.showErrorMessage('We couldn’t save your changes.' + error);
+                });
+        } catch (e) {
+            console.error('While adding to MyWork.', e);
+            throw e;
+        }
+    }
 }
 
 function setValueForMap(map: any, key: any, value: any) {

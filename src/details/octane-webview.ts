@@ -84,6 +84,9 @@ export class OctaneWebview {
                         // vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.refreshWebviewPanel');
                         vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFilterSelection', m.data);
                     }
+                    if (m.type = 'add-to-mywork') {
+                        await OctaneService.getInstance().addToMyWork(data);
+                    }
                 });
             });
     }
@@ -170,6 +173,7 @@ function generatePhaseSelectElement(data: any | OctaneEntity | undefined, fields
     html += `</select>
             <button id="saveId" class="save" type="button">Save</button>
             <button id="refresh" type="button">Refresh</button>
+            <button id="addToMyWork" type="button">Add to MyWork</button>
             <button id="filterId" type="button">Filter</button>`;
     return html;
 }
