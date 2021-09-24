@@ -49,7 +49,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                             if (data.browser) {
                                 try {
                                     await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: true });
-                                } catch (e) {
+                                } catch (e: any) {
                                     vscode.window.showErrorMessage(e.message);
                                     throw e;
                                 }
@@ -58,7 +58,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                                     OctaneService.getInstance().storePasswordForAuthentication(data.password);
                                     // await this.authenticationProvider.createManualSession(data.password);
                                     await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: true });
-                                } catch (e) {
+                                } catch (e: any) {
                                     vscode.window.showErrorMessage(e.message);
                                     throw e;
                                 } finally {
@@ -84,6 +84,26 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                         });
                         break;
                     }
+                case 'changeInURL':
+                    {
+                        let url: string = data.url;
+                        let regExp = url.match(/\?p=(\d+\/\d+)\/?$/);
+                        let space = regExp !== null ? regExp[1].split('/')[0] : null;
+                        let workspace = regExp !== null ? regExp[1].split('/')[1] : null;
+                        if (space === null || workspace === null) {
+                            webviewView.webview.postMessage({
+                                type: 'incorrectURLFormat',
+                                message: "Could not get sharedspace/workspace ids from URL \n Example: (http|https)://{serverurl[:port]}/?p={sharedspaceid}/{workspaceid}"
+                            });
+                        } else {
+                            webviewView.webview.postMessage({
+                                type: 'correctURLFormat',
+                                space: space,
+                                workspace: workspace
+                            });
+                        }
+                        break;
+                    }
             }
         });
     }
@@ -92,7 +112,10 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
 
         console.info('WelcomeViewProvider.getHtmlForWebview called');
 
-        const uri = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.uri');
+        let uri: string | undefined = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.uri');
+        if (uri && uri !== undefined) {
+            uri = uri.endsWith('/') ? uri : uri + '/';
+        }
         const space = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.space');
         const workspace = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.workspace');
         const user = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.user.userName');
@@ -119,15 +142,16 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
 			<body>
                 <div class="main-container">
                     <span>URL</span>
-                    <input type="text" class="authentication_url" value="${uri}"></input>
+                    <input type="text" id="authentication_url_id" class="authentication_url" value="${uri}"></input>
+                    <span id="authentication_url_successful" style="display: none"></span>
                 </div>
                 <div class="main-container">
                     <span>Space</span>
-                    <input type="text" class="authentication_space" value="${space}"></input>
+                    <input type="text" disabled style="opacity: 0.6" class="authentication_space" value="${space}"></input>
                 </div>
                 <div class="main-container">
                     <span>Workspace</span>
-                    <input type="text" class="authentication_workspace" value="${workspace}"></input>
+                    <input type="text" disabled style="opacity: 0.6" class="authentication_workspace" value="${workspace}"></input>
                 </div>
                 <hr>
                 <div class="main-container" style="flex-direction: row; align-items: center;">

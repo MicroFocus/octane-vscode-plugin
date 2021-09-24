@@ -6,6 +6,11 @@
     // @ts-ignore
     const vscode = acquireVsCodeApi();
 
+    document.querySelector('.authentication_url').addEventListener('keyup', () => {
+        let url = document.getElementById('authentication_url_id')['value'];
+        vscode.postMessage({ type: 'changeInURL', url: url });
+    });
+
     document.querySelector('.attempt_authentication').addEventListener('click', () => {
         attemptAuthentication(authWithBrowser());
     });
@@ -39,6 +44,9 @@
         var element = document.getElementById('test_authentication_connection_successful');
         if (element) {
             var uri = document.querySelector('.authentication_url')['value'];
+            if (uri && uri !== undefined) {
+                uri = uri.endsWith('/') ? uri : uri + '/';
+            }
             var user = document.querySelector('.authentication_username')['value'];
             var space = document.querySelector('.authentication_space')['value'];
             var workspace = document.querySelector('.authentication_workspace')['value'];
@@ -67,6 +75,27 @@
                     }
                     break;
                 }
+
+            case 'incorrectURLFormat':
+                {
+                    var element = document.getElementById('authentication_url_successful');
+                    if (element) {
+                        element.textContent = data.message;
+                        element.style.display = "flex";
+                        element.style.color = "#FF0000";
+                    }
+                    break;
+                }
+            case 'correctURLFormat':
+                {
+                    var element = document.getElementById('authentication_url_successful');
+                    if (element) {
+                        element.style.display = "none";
+                        document.querySelector('.authentication_space')['value'] = data.space;
+                        document.querySelector('.authentication_workspace')['value'] = data.workspace;
+                    }
+                    break;
+                }
         }
     });
 
@@ -76,6 +105,9 @@
 
     function attemptAuthentication(browser) {
         var uri = document.querySelector('.authentication_url')['value'];
+        if (uri && uri !== undefined) {
+            uri = uri.endsWith('/') ? uri : uri + '/';
+        }
         var user = document.querySelector('.authentication_username')['value'];
         var pwd = document.querySelector('.authentication_password')['value'];
         var space = document.querySelector('.authentication_space')['value'];
