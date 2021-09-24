@@ -54,6 +54,7 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 
 		const sessionsList = await this.readSessions();
 		console.info('Returning sessions: ', sessionsList);
+		await vscode.commands.executeCommand('setContext', 'visual-studio-code-plugin-for-alm-octane.hasSession', sessionsList?.length > 0);
 		return sessionsList;
 	}
 

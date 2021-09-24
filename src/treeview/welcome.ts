@@ -17,6 +17,12 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
         console.info('attemptAuthentication called.');
     }
 
+    public refresh() {
+        if (this.view) {
+            this.view.webview.html = this.getHtmlForWebview(this.view.webview);
+        }
+    }
+
     public resolveWebviewView(
         webviewView: vscode.WebviewView,
         context: vscode.WebviewViewResolveContext,

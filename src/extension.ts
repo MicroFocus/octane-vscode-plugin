@@ -17,9 +17,6 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { debounce } from "ts-debounce";
 
-
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
 
 	const service = OctaneService.getInstance();
@@ -28,10 +25,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	{
 		const myOctaneWebview = new OctaneWebview(service);
-		// let refreshWebviewPanel = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.refreshWebviewPanel', () => {
-		// 	myOctaneWebview.refresh();
-		// });
-		// context.subscriptions.push(refreshWebviewPanel); 
 	}
 
 	{
@@ -60,19 +53,16 @@ export async function activate(context: vscode.ExtensionContext) {
 		console.info('Received session change', e);
 		if (e.provider && e.provider.id === AlmOctaneAuthenticationProvider.type) {
 			await service.initialize();
-			const iSession = await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: false });
-			await vscode.commands.executeCommand('setContext', 'visual-studio-code-plugin-for-alm-octane.hasSession', iSession ? true : false);
+			await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: false });
 		}
 	});
 
-	const session = await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: false });
-
-	vscode.commands.executeCommand('setContext', 'visual-studio-code-plugin-for-alm-octane.hasSession', session ? true : false);
 	await service.initialize();
 
 	const welcomeViewProvider = new WelcomeViewProvider(context.extensionUri, authProvider);
 	context.subscriptions.push(vscode.window.registerWebviewViewProvider('visual-studio-code-plugin-for-alm-octane.myWelcome', welcomeViewProvider));
 	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.myWelcome.refreshEntry', () => {
+		welcomeViewProvider.refresh();
 	}));
 
 
@@ -202,12 +192,25 @@ export async function activate(context: vscode.ExtensionContext) {
 		context.subscriptions.push(OctaneWebview.register(context));
 	}
 
+	context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(async e => {
+		if (e.affectsConfiguration('visual-studio-code-plugin-for-alm-octane')) {
+			await service.initialize();
+			// await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: false });
+			vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myBacklog.refreshEntry');
+			vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myTests.refreshEntry');
+			vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myMentions.refreshEntry');
+			vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myFeatures.refreshEntry');
+			vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myRequirements.refreshEntry');
+			vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myWelcome.refreshEntry');
+		}
+	}));
 
 	vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myBacklog.refreshEntry');
 	vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myTests.refreshEntry');
 	vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myMentions.refreshEntry');
 	vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myFeatures.refreshEntry');
 	vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myRequirements.refreshEntry');
+	vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myWelcome.refreshEntry');
 
 }
 
