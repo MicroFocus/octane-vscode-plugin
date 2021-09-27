@@ -14,6 +14,7 @@ import { OctaneEntity } from './octane/model/octane-entity';
 import { OctaneQuickPickItem } from './octane/model/octane-quick-pick-item';
 import { MyWorkItem } from './treeview/my-work-provider';
 import { MyTasksProvider } from './treeview/tasks-provider';
+import { MyTestRunsProvider } from './treeview/test-runs-provider';
 import * as path from 'path';
 import * as fs from 'fs';
 import { debounce } from "ts-debounce";
@@ -74,6 +75,9 @@ export async function activate(context: vscode.ExtensionContext) {
 	const myTestsProvider = new MyTestsProvider(service);
 	vscode.window.registerTreeDataProvider('myTests', myTestsProvider);
 
+	const myTestRunsProvider = new MyTestRunsProvider(service);
+	vscode.window.registerTreeDataProvider('myTestRuns', myTestRunsProvider);
+
 	const myFeaturesProvider = new MyFeatureProvider(service);
 	vscode.window.registerTreeDataProvider('myFeatures', myFeaturesProvider);
 
@@ -94,6 +98,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myRequirements.refreshEntry');
 		vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myWelcome.refreshEntry');
 		vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myTasks.refreshEntry');
+		vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myTestRuns.refreshEntry');
 	}));
 	{
 		let refreshCommand = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.myBacklog.refreshEntry', () => {
@@ -132,6 +137,10 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.myTasks.refreshEntry', () => {
 		myTasksProvider.refresh();
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.myTestRuns.refreshEntry', () => {
+		myTestRunsProvider.refresh();
 	}));
 
 	{

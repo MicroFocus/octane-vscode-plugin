@@ -22,6 +22,7 @@
 		"onCommand:visual-studio-code-plugin-for-alm-octane.myFeatures.refreshEntry",
 		"onCommand:visual-studio-code-plugin-for-alm-octane.myMentions.refreshEntry",
 		"onCommand:visual-studio-code-plugin-for-alm-octane.myRequirements.refreshEntry",
+		"onCommand:visual-studio-code-plugin-for-alm-octane.myTasks.refreshEntry",
 		"onCommand:visual-studio-code-plugin-for-alm-octane.quickPick",
 		"onView:visual-studio-code-plugin-for-alm-octane-explorer",
 		"onCommand:visual-studio-code-plugin-for-alm-octane.details",
@@ -97,6 +98,12 @@
 					"when": "visual-studio-code-plugin-for-alm-octane.hasSession"
 				},
 				{
+					"id": "myTestRuns",
+					"name": "Test Runs",
+					"icon": "media/favicon.png",
+					"when": "visual-studio-code-plugin-for-alm-octane.hasSession"
+				},
+				{
 					"id": "myFeatures",
 					"name": "Features",
 					"icon": "media/favicon.png",
@@ -132,6 +139,11 @@
 				{
 					"command": "visual-studio-code-plugin-for-alm-octane.myTests.refreshEntry",
 					"when": "view == myTests",
+					"group": "navigation"
+				},
+				{
+					"command": "visual-studio-code-plugin-for-alm-octane.myTestRuns.refreshEntry",
+					"when": "view == myTestRuns",
 					"group": "navigation"
 				},
 				{
@@ -205,6 +217,11 @@
 			{
 				"command": "visual-studio-code-plugin-for-alm-octane.myTests.refreshEntry",
 				"title": "Refresh MyStories",
+				"icon": "$(extensions-refresh)"
+			},
+			{
+				"command": "visual-studio-code-plugin-for-alm-octane.myTestRuns.refreshEntry",
+				"title": "Refresh MyTestRuns",
 				"icon": "$(extensions-refresh)"
 			},
 			{
