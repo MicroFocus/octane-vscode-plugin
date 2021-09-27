@@ -25,8 +25,7 @@ export class OctaneService {
     private password?: string;
     private session?: AlmOctaneAuthenticationSession;
 
-    public isWorkspaceIdCorrect(id: any): boolean {
-
+    public isWorkspaceIdCorrect(workspace: string): boolean {
         return false;
     }
 
@@ -39,7 +38,7 @@ export class OctaneService {
         }
     }
 
-    public async testAuthentication(uri: string, space: string | undefined, workspace: string | undefined, username: string, password: string | undefined, cookieName: string | undefined, cookie: string | undefined): Promise<string | undefined> {
+    public async testAuthentication(uri: string, space: string | undefined, workspace: string | undefined, username: string, password: string | undefined, cookieName: string | undefined, cookie: string | undefined): Promise<string | undefined | any> {
         if (uri !== undefined) {
             let regExp = uri.match(/\?p=(\d+\/\d+)/);
             if (regExp) {
@@ -66,9 +65,9 @@ export class OctaneService {
                 .execute();
             console.info('Successful auth test.', result.data);
             return result.data[0].full_name ? result.data[0].full_name : username;
-        } catch (e) {
+        } catch (e: any) {
             console.error('Error while testing auth.', e);
-            return;
+            return e;
         }
     }
 
