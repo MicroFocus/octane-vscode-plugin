@@ -84,7 +84,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                     }
                 case 'testConnection':
                     {
-                        var authTestResult;
+                        var authTestResult: any;
                         if (data.uri !== undefined) {
                             let regExp = data.uri.match(/\?p=(\d+\/\d+)/);
                             if (regExp) {
@@ -93,13 +93,35 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                         }
                         if (data.browser) {
                             authTestResult = await OctaneService.getInstance().testConnectionOnBrowserAuthentication(data.uri);
+                            webviewView.webview.postMessage({
+                                type: 'workspaceIdDoesExist',
+                            });
+                            webviewView.webview.postMessage({
+                                type: 'testConnectionResponse',
+                                authTestResult: authTestResult ? true : false
+                            });
                         } else {
                             authTestResult = await OctaneService.getInstance().testAuthentication(data.uri, data.space, data.workspace, data.user, data.password, undefined, undefined);
+                            if(authTestResult.statusCode) {
+                                webviewView.webview.postMessage({
+                                    type: 'workspaceIdDoesNotExist',
+                                    message: authTestResult.response.body.description_translated
+                                });
+                                webviewView.webview.postMessage({
+                                    type: 'testConnectionResponse',
+                                    authTestResult: false
+                                });
+                            } else {
+                                webviewView.webview.postMessage({
+                                    type: 'workspaceIdDoesExist',
+                                });
+                                webviewView.webview.postMessage({
+                                    type: 'testConnectionResponse',
+                                    authTestResult: true
+                                });
+                            }
                         }
-                        webviewView.webview.postMessage({
-                            type: 'testConnectionResponse',
-                            authTestResult: authTestResult ? true : false
-                        });
+                        
                         break;
                     }
                 case 'changeInURL':
@@ -192,6 +214,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                     <button class="clear_settings">Clear settings</button>
                 </div>
                 <span id="test_authentication_connection_successful" style="display: none"></span>
+                <span id="authentication_workspace_unsuccessful" style="display: none"></span>
                 <hr>
                 <div class="main-container">
 				    <button class="attempt_authentication">Authenticate</button>

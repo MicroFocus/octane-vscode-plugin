@@ -96,6 +96,24 @@
                     }
                     break;
                 }
+            case 'workspaceIdDoesNotExist':
+                {
+                    var element = document.getElementById('authentication_workspace_unsuccessful');
+                    if (element) {
+                        element.style.display = "flex";
+                        element.textContent = data.message;
+                        element.style.color = "#FF0000";
+                    }
+                    break;
+                }
+            case 'workspaceIdDoesExist':
+                {
+                    var element = document.getElementById('authentication_workspace_unsuccessful');
+                    if (element) {
+                        element.style.display = "none";
+                    }
+                    break;
+                }
         }
     });
 

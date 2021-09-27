@@ -34,7 +34,7 @@ export class OctaneService {
         }
     }
 
-    public async testAuthentication(uri: string, space: string | undefined, workspace: string | undefined, username: string, password: string | undefined, cookieName: string | undefined, cookie: string | undefined): Promise<string | undefined> {
+    public async testAuthentication(uri: string, space: string | undefined, workspace: string | undefined, username: string, password: string | undefined, cookieName: string | undefined, cookie: string | undefined): Promise<string | undefined | any> {
         const octaneInstace = new Octane.Octane({
             server: uri,
             sharedSpace: space,
@@ -55,9 +55,9 @@ export class OctaneService {
                 .execute();
             console.info('Successful auth test.', result.data);
             return result.data[0].full_name ? result.data[0].full_name : username;
-        } catch (e) {
+        } catch (e: any) {
             console.error('Error while testing auth.', e);
-            return;
+            return e;
         }
     }
 
