@@ -88,6 +88,16 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                             type: 'testConnectionResponse',
                             authTestResult: authTestResult ? true : false
                         });
+                        if(OctaneService.getInstance().isWorkspaceIdCorrect(data.workspace)) {
+                            webviewView.webview.postMessage({
+                                type: 'workspaceIdDoesExist',
+                            });
+                        } else {
+                            webviewView.webview.postMessage({
+                                type: 'workspaceIdDoesNotExist',
+                                message: "workspaceId does not exist!"
+                            });
+                        }
                         break;
                     }
                 case 'changeInURL':
@@ -158,6 +168,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                 <div class="main-container">
                     <span>Workspace</span>
                     <input type="text" disabled style="opacity: 0.6" class="authentication_workspace" value="${workspace}"></input>
+                    <span id="authentication_workspace_unsuccessful" style="display: none"></span>
                 </div>
                 <hr>
                 <div class="main-container" style="flex-direction: row; align-items: center;">
