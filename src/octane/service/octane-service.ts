@@ -333,6 +333,19 @@ export class OctaneService {
         return entities;
     }
 
+    public async getMyTasks(): Promise<OctaneEntity[]> {
+        const response = await this.octane.get(Octane.Octane.entityTypes.tasks)
+            .fields('id', 'name', 'author{id,name,full_name}', 'owner{id,name,full_name}', 'phase')
+            .query(
+                Query.field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
+                    .build()
+            )
+            .execute();
+        let entities = response.data.map((r: any) => new OctaneEntity(r));
+        console.log(entities);
+        return entities;
+    }
+
     public async getCommentsForEntity(entityId: number): Promise<Comment[] | undefined> {
         if (!entityId) {
             return;

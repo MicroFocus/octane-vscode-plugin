@@ -16,6 +16,7 @@
 	],
 	"activationEvents": [
 		"*",
+		"onCommand:visual-studio-code-plugin-for-alm-octane.refreshAll",
 		"onCommand:visual-studio-code-plugin-for-alm-octane.myBacklog.refreshEntry",
 		"onCommand:visual-studio-code-plugin-for-alm-octane.myTests.refreshEntry",
 		"onCommand:visual-studio-code-plugin-for-alm-octane.myFeatures.refreshEntry",
@@ -112,6 +113,12 @@
 					"name": "Requirements",
 					"icon": "media/favicon.png",
 					"when": "visual-studio-code-plugin-for-alm-octane.hasSession"
+				},
+				{
+					"id": "myTasks",
+					"name": "Tasks",
+					"icon": "media/favicon.png",
+					"when": "visual-studio-code-plugin-for-alm-octane.hasSession"
 				}
 			]
 		},
@@ -140,6 +147,11 @@
 				{
 					"command": "visual-studio-code-plugin-for-alm-octane.myRequirements.refreshEntry",
 					"when": "view == myRequirements",
+					"group": "navigation"
+				},
+				{
+					"command": "visual-studio-code-plugin-for-alm-octane.myTasks.refreshEntry",
+					"when": "view == myTasks",
 					"group": "navigation"
 				},
 				{
@@ -176,6 +188,11 @@
 				"icon": "$(git-commit)"
 			},
 			{
+				"command": "visual-studio-code-plugin-for-alm-octane.refreshAll",
+				"title": "Refresh All Views",
+				"icon": "$(extensions-refresh)"
+			},
+			{
 				"command": "visual-studio-code-plugin-for-alm-octane.myWelcome.refreshEntry",
 				"title": "Refresh MyWelcome",
 				"icon": "$(extensions-refresh)"
@@ -203,6 +220,11 @@
 			{
 				"command": "visual-studio-code-plugin-for-alm-octane.myRequirements.refreshEntry",
 				"title": "Refresh MyRequirements",
+				"icon": "$(extensions-refresh)"
+			},
+			{
+				"command": "visual-studio-code-plugin-for-alm-octane.myTasks.refreshEntry",
+				"title": "Refresh MyTasks",
 				"icon": "$(extensions-refresh)"
 			},
 			{
