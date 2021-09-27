@@ -515,29 +515,13 @@ export class OctaneService {
                 },
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 is_new: true,
-                // eslint-disable-next-line @typescript-eslint/naming-convention
-                // `my_follow_items_${e.subtype ? e.subtype : e.type}`: {
-                //     type: 'work_item',
-                //     id: `236023`
-                // }
-                // "my_follow_items_test": {
-                //     "type": "test",
-                //     "id": "10002"
-                // }
             };
             entityModel[`my_follow_items_${type}`] = {
                 type: `${type}`,
                 id: +e.id
             };
 
-            let body = {
-                data : [
-                    entityModel
-                ]
-            };
-            
-            console.log(JSON.stringify(body));
-            this.octane.create(Octane.Octane.entityTypes.userItems, body).execute()
+            this.octane.create(Octane.Octane.entityTypes.userItems, entityModel).execute()
                 .then((res: any) => {
                     vscode.window.showInformationMessage('Your item changes have been saved.');
                 }, (error: any) => {
