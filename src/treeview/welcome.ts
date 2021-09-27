@@ -17,13 +17,13 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
         console.info('attemptAuthentication called.');
     }
 
-    public refresh() {
+    public async refresh() {
         if (this.view) {
-            this.view.webview.html = this.getHtmlForWebview(this.view.webview);
+            this.view.webview.html = await this.getHtmlForWebview(this.view.webview);
         }
     }
 
-    public resolveWebviewView(
+    public async resolveWebviewView(
         webviewView: vscode.WebviewView,
         context: vscode.WebviewViewResolveContext,
         token: vscode.CancellationToken,
@@ -40,7 +40,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
             ]
         };
 
-        webviewView.webview.html = this.getHtmlForWebview(webviewView.webview);
+        webviewView.webview.html = await this.getHtmlForWebview(webviewView.webview);
 
         webviewView.webview.onDidReceiveMessage(async data => {
             switch (data.type) {
@@ -48,7 +48,13 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                     {
                         try {
                             const uri = vscode.workspace.getConfiguration('visual-studio-code-plugin-for-alm-octane');
-                            await uri.update('server.uri', data.uri, true);
+                            //save url to memento
+                            vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.saveLoginURL', data.uri);
+                            let regExp = data.uri.match(/\?p=(\d+\/\d+)/);
+                            if (regExp) {
+                                data.uri = data.uri.split(regExp[0])[0];
+                            }
+                            await uri.update('server.uri', data.uri.endsWith('/') ? data.uri : data.uri + '/', true);
                             await uri.update('server.space', data.space, true);
                             await uri.update('server.workspace', data.workspace, true);
                             await uri.update('user.userName', data.user, true);
@@ -79,6 +85,12 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                 case 'testConnection':
                     {
                         var authTestResult;
+                        if (data.uri !== undefined) {
+                            let regExp = data.uri.match(/\?p=(\d+\/\d+)/);
+                            if (regExp) {
+                                data.uri = data.uri.split(regExp[0])[0];
+                            }
+                        }
                         if (data.browser) {
                             authTestResult = await OctaneService.getInstance().testConnectionOnBrowserAuthentication(data.uri);
                         } else {
@@ -114,13 +126,13 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
         });
     }
 
-    getHtmlForWebview(webview: vscode.Webview): string {
+    async getHtmlForWebview(webview: vscode.Webview): Promise<string> {
 
         console.info('WelcomeViewProvider.getHtmlForWebview called');
 
-        let uri: string | undefined = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.uri');
-        if (uri && uri !== undefined) {
-            uri = uri.endsWith('/') ? uri : uri + '/';
+        let uri: string | undefined = await vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.getLoginURL');
+        if(!uri) {
+            uri = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.uri');
         }
         const space = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.space');
         const workspace = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.workspace');

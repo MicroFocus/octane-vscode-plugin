@@ -35,12 +35,6 @@ export class OctaneService {
     }
 
     public async testAuthentication(uri: string, space: string | undefined, workspace: string | undefined, username: string, password: string | undefined, cookieName: string | undefined, cookie: string | undefined): Promise<string | undefined> {
-        if (uri !== undefined) {
-            let regExp = uri.match(/\?p=(\d+\/\d+)/);
-            if (regExp) {
-                uri = uri.split(regExp[0])[0];
-            }
-        }
         const octaneInstace = new Octane.Octane({
             server: uri,
             sharedSpace: space,
