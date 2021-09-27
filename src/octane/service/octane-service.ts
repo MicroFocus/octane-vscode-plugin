@@ -25,10 +25,6 @@ export class OctaneService {
     private password?: string;
     private session?: AlmOctaneAuthenticationSession;
 
-    public isWorkspaceIdCorrect(workspace: string): boolean {
-        return false;
-    }
-
     public async testConnectionOnBrowserAuthentication(uri: string) {
         try {
             const fetchResult = await fetch(`${uri}authentication/tokens`, { method: 'POST' });
