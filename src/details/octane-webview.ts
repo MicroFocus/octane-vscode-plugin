@@ -26,10 +26,14 @@ export class OctaneWebview {
         return vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.details',
             async (node: OctaneEntityHolder) => {
                 const data = node.entity;
-                if (!data || !data.subtype) {
+                if (!data) {
                     return;
                 }
-
+               
+                const typeForBuild = data.subtype === '' ? data.type : data.subtype;
+                if (!typeForBuild) {
+                    return;
+                }
 
                 const panel = vscode.window.createWebviewPanel(
                     'myEditor',
@@ -40,7 +44,7 @@ export class OctaneWebview {
                     }
                 );
                 panel.iconPath = MyWorkProvider.getIconForEntity(data);
-                const fields = await OctaneService.getInstance().getFieldsForType(data.subtype);
+                const fields = await OctaneService.getInstance().getFieldsForType(typeForBuild);
                 if (!fields) {
                     return;
                 }
@@ -86,12 +90,7 @@ export class OctaneWebview {
                     }
                     if (m.type = 'add-to-mywork') {
                         await OctaneService.getInstance().addToMyWork(data);
-                        vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myBacklog.refreshEntry');
-                        vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myTests.refreshEntry');
-                        vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myMentions.refreshEntry');
-                        vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myFeatures.refreshEntry');
-                        vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myRequirements.refreshEntry');
-                        vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myWelcome.refreshEntry');
+                        vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.refreshAll');
                     }
                 });
             });
@@ -100,6 +99,9 @@ export class OctaneWebview {
 }
 
 function getDataForSubtype(entity: OctaneEntity | undefined): [string, string] {
+    if (entity?.type === 'task') { 
+        return ['T', '#1668c1'];
+    }
     if (entity?.subtype) {
         if (entity?.subtype === 'defect') { return ["D", "#b21646"]; }
         if (entity?.subtype === 'story') { return ["US", "#ffb000"]; }

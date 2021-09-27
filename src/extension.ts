@@ -13,9 +13,12 @@ import { WelcomeViewProvider } from './treeview/welcome';
 import { OctaneEntity } from './octane/model/octane-entity';
 import { OctaneQuickPickItem } from './octane/model/octane-quick-pick-item';
 import { MyWorkItem } from './treeview/my-work-provider';
+import { MyTasksProvider } from './treeview/tasks-provider';
+import { MyTestRunsProvider } from './treeview/test-runs-provider';
 import * as path from 'path';
 import * as fs from 'fs';
 import { debounce } from "ts-debounce";
+import { STATUS_CODES } from 'http';
 
 export async function activate(context: vscode.ExtensionContext) {
 
@@ -72,6 +75,9 @@ export async function activate(context: vscode.ExtensionContext) {
 	const myTestsProvider = new MyTestsProvider(service);
 	vscode.window.registerTreeDataProvider('myTests', myTestsProvider);
 
+	const myTestRunsProvider = new MyTestRunsProvider(service);
+	vscode.window.registerTreeDataProvider('myTestRuns', myTestRunsProvider);
+
 	const myFeaturesProvider = new MyFeatureProvider(service);
 	vscode.window.registerTreeDataProvider('myFeatures', myFeaturesProvider);
 
@@ -81,6 +87,19 @@ export async function activate(context: vscode.ExtensionContext) {
 	const myRequirementsProvider = new MyRequirementsProvider(service);
 	vscode.window.registerTreeDataProvider('myRequirements', myRequirementsProvider);
 
+	const myTasksProvider = new MyTasksProvider(service);
+	vscode.window.registerTreeDataProvider('myTasks', myTasksProvider);
+
+	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.refreshAll', () => {
+		vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myBacklog.refreshEntry');
+		vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myTests.refreshEntry');
+		vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myMentions.refreshEntry');
+		vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myFeatures.refreshEntry');
+		vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myRequirements.refreshEntry');
+		vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myWelcome.refreshEntry');
+		vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myTasks.refreshEntry');
+		vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myTestRuns.refreshEntry');
+	}));
 	{
 		let refreshCommand = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.myBacklog.refreshEntry', () => {
 			myBacklogProvider.refresh();
@@ -115,6 +134,14 @@ export async function activate(context: vscode.ExtensionContext) {
 		});
 		context.subscriptions.push(refreshCommand);
 	}
+
+	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.myTasks.refreshEntry', () => {
+		myTasksProvider.refresh();
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.myTestRuns.refreshEntry', () => {
+		myTestRunsProvider.refresh();
+	}));
 
 	{
 		let commitMessageCommand = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.commitMessage', async (e: MyWorkItem) => {
@@ -197,21 +224,11 @@ export async function activate(context: vscode.ExtensionContext) {
 		if (e.affectsConfiguration('visual-studio-code-plugin-for-alm-octane')) {
 			await service.initialize();
 			// await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: false });
-			vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myBacklog.refreshEntry');
-			vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myTests.refreshEntry');
-			vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myMentions.refreshEntry');
-			vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myFeatures.refreshEntry');
-			vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myRequirements.refreshEntry');
-			vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myWelcome.refreshEntry');
+			vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.refreshAll');
 		}
 	}));
 
-	vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myBacklog.refreshEntry');
-	vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myTests.refreshEntry');
-	vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myMentions.refreshEntry');
-	vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myFeatures.refreshEntry');
-	vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myRequirements.refreshEntry');
-	vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myWelcome.refreshEntry');
+	vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.refreshAll');
 
 }
 
