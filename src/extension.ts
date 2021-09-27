@@ -183,6 +183,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 			quickPick.onDidChangeValue(async e => await debouncedFunction(e));
 			quickPick.onDidHide(() => quickPick.dispose());
+			// quickPick.buttons = [{ iconPath: new vscode.ThemeIcon('request-changes') }];
 			quickPick.show();
 		}));
 

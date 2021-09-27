@@ -37,6 +37,10 @@
         postCommentForEntity();
     });
 
+    document.getElementById("addToMyWork").addEventListener('click', e => {
+        addToMyWork();
+    });
+
     function postCommentForEntity() {
         let message = document.getElementById('comments-text').value;
         let text = `
@@ -54,6 +58,14 @@
                 'owner_work_item': {
                 }
             }
+        });
+    }
+
+    function addToMyWork() {
+        vscode.postMessage({
+            type: 'add-to-mywork',
+            from: 'edit-service',
+            data: {}
         });
     }
 

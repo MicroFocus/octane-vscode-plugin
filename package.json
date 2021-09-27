@@ -144,6 +144,7 @@
 				},
 				{
 					"command": "visual-studio-code-plugin-for-alm-octane.myWelcome.refreshEntry",
+					"when": "view == visual-studio-code-plugin-for-alm-octane.myWelcome",
 					"group": "navigation"
 				},
 				{
