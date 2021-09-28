@@ -37,6 +37,17 @@
 				"id": "alm-octane"
 			}
 		],
+		"customEditors": [
+			{
+				"viewType": "visual-studio-code-plugin-for-alm-octane.octane",
+				"displayName": "MyEditor",
+				"selector": [
+					{
+						"filenamePattern": "*octane*"
+					}
+				]
+			}
+		],
 		"configuration": [
 			{
 				"title": "Visual Studio Code plugin for ALM Octane",
@@ -172,6 +183,10 @@
 					"group": "navigation"
 				},
 				{
+					"command": "visual-studio-code-plugin-for-alm-octane.test",
+					"group": "navigation"
+				},
+				{
 					"command": "visual-studio-code-plugin-for-alm-octane.quickPick",
 					"group": "navigation"
 				}
@@ -189,6 +204,11 @@
 			]
 		},
 		"commands": [
+			{
+				"command": "visual-studio-code-plugin-for-alm-octane.test",
+				"title": "Test",
+				"icon": "$(notebook-move-down)"
+			},
 			{
 				"command": "visual-studio-code-plugin-for-alm-octane.myTests.download",
 				"title": "Download test",
