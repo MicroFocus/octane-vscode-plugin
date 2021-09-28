@@ -25,8 +25,8 @@
 		"onView:visual-studio-code-plugin-for-alm-octane-explorer",
 		"onCommand:visual-studio-code-plugin-for-alm-octane.details",
 		"onCommand:visual-studio-code-plugin-for-alm-octane.setFilterSelection",
-		"onCommand:visual-studio-code-plugin-for-alm-octane.getLoginURL",
-		"onCommand:visual-studio-code-plugin-for-alm-octane.saveLoginURL",
+		"onCommand:visual-studio-code-plugin-for-alm-octane.getLoginData",
+		"onCommand:visual-studio-code-plugin-for-alm-octane.saveLoginData",
 		"visual-studio-code-plugin-for-alm-octane.refreshWebviewPanel"
 	],
 	"main": "./out/extension.js",
