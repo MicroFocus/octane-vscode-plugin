@@ -60,6 +60,12 @@ export class OctaneEntity extends BaseEntity {
             case 'test_suite':
                 this.label = 'TS';
                 break;
+            case 'run_manual':
+                this.label = 'MR';
+                break;
+            case 'run_suite':
+                this.label = 'SR';
+                break;
         }
     }
 

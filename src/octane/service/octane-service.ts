@@ -314,6 +314,20 @@ export class OctaneService {
         return entities;
     }
 
+    public async getMyTestRuns(): Promise<OctaneEntity[]> {
+        const response = await this.octane.get(Octane.Octane.entityTypes.runs)
+            .fields('name', 'author{id,name,full_name}', 'run_by{full_name}')
+            .query(
+                Query.field('subtype').inComparison(['run_manual', 'run_suite']).and()
+                    .field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
+                    .build()
+            )
+            .execute();
+        let entities = response.data.map((r: any) => new OctaneEntity(r));
+        console.log(entities);
+        return entities;
+    }
+
     public async getMyMentions(): Promise<OctaneEntity[]> {
         const response = await this.octane.get(Octane.Octane.entityTypes.comments)
             .fields('text', 'owner_work_item', 'author{id,name,full_name}')
@@ -323,6 +337,19 @@ export class OctaneService {
             )
             .execute();
         let entities = response.data.map((r: any) => new Comment(r));
+        console.log(entities);
+        return entities;
+    }
+
+    public async getMyTasks(): Promise<OctaneEntity[]> {
+        const response = await this.octane.get(Octane.Octane.entityTypes.tasks)
+            .fields('id', 'name', 'author{id,name,full_name}', 'owner{id,name,full_name}', 'phase')
+            .query(
+                Query.field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
+                    .build()
+            )
+            .execute();
+        let entities = response.data.map((r: any) => new OctaneEntity(r));
         console.log(entities);
         return entities;
     }

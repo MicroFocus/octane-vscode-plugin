@@ -49,6 +49,9 @@ export abstract class MyWorkProvider implements vscode.TreeDataProvider<MyWorkIt
         if (entity?.type === 'comment') {
             return vscode.Uri.file(`${__filename}/../../../media/treeIcons/M.svg`);
         }
+        if (entity?.type === 'task') {
+            return vscode.Uri.file(`${__filename}/../../../media/treeIcons/T.svg`);
+        }
         return vscode.Uri.file('');
     }
 
