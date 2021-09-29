@@ -179,12 +179,12 @@ function generatePhaseSelectElement(data: any | OctaneEntity | undefined, fields
                 <option value='${JSON.stringify(target.targetPhase)}'>${target.targetPhase.name}</option>
             `;
         });
-        html += `</select>
+    }
+    html += `</select>
                 <button id="saveId" class="save" type="button">Save</button>
                 <button id="refresh" type="button">Refresh</button>
                 <button id="addToMyWork" type="button">Add to MyWork</button>
                 <button id="filterId" type="button">Filter</button>`;
-    }
     return html;
 }
 
