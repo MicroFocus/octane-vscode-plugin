@@ -17,13 +17,13 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
         console.info('attemptAuthentication called.');
     }
 
-    public refresh() {
+    public async refresh() {
         if (this.view) {
-            this.view.webview.html = this.getHtmlForWebview(this.view.webview);
+            this.view.webview.html = await this.getHtmlForWebview(this.view.webview);
         }
     }
 
-    public resolveWebviewView(
+    public async resolveWebviewView(
         webviewView: vscode.WebviewView,
         context: vscode.WebviewViewResolveContext,
         token: vscode.CancellationToken,
@@ -40,7 +40,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
             ]
         };
 
-        webviewView.webview.html = this.getHtmlForWebview(webviewView.webview);
+        webviewView.webview.html = await this.getHtmlForWebview(webviewView.webview);
 
         webviewView.webview.onDidReceiveMessage(async data => {
             switch (data.type) {
@@ -48,7 +48,16 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                     {
                         try {
                             const uri = vscode.workspace.getConfiguration('visual-studio-code-plugin-for-alm-octane');
-                            await uri.update('server.uri', data.uri, true);
+                            //save url to memento
+                            vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.saveLoginData',
+                                JSON.parse(
+                                    `{"url": "${data.uri}", "authTypeBrowser": ${data.browser}}`
+                                ));
+                            let regExp = data.uri.match(/\?p=(\d+\/\d+)/);
+                            if (regExp) {
+                                data.uri = data.uri.split(regExp[0])[0];
+                            }
+                            await uri.update('server.uri', data.uri.endsWith('/') ? data.uri : data.uri + '/', true);
                             await uri.update('server.space', data.space, true);
                             await uri.update('server.workspace', data.workspace, true);
                             await uri.update('user.userName', data.user, true);
@@ -79,6 +88,12 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                 case 'testConnection':
                     {
                         var authTestResult: any;
+                        if (data.uri !== undefined) {
+                            let regExp = data.uri.match(/\?p=(\d+\/\d+)/);
+                            if (regExp) {
+                                data.uri = data.uri.split(regExp[0])[0];
+                            }
+                        }
                         if (data.browser) {
                             authTestResult = await OctaneService.getInstance().testConnectionOnBrowserAuthentication(data.uri);
                             webviewView.webview.postMessage({
@@ -90,7 +105,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                             });
                         } else {
                             authTestResult = await OctaneService.getInstance().testAuthentication(data.uri, data.space, data.workspace, data.user, data.password, undefined, undefined);
-                            if(authTestResult.statusCode) {
+                            if (authTestResult.statusCode) {
                                 webviewView.webview.postMessage({
                                     type: 'workspaceIdDoesNotExist',
                                     message: authTestResult.response.body.description_translated
@@ -109,7 +124,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                                 });
                             }
                         }
-                        
+
                         break;
                     }
                 case 'changeInURL':
@@ -136,14 +151,13 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
         });
     }
 
-    getHtmlForWebview(webview: vscode.Webview): string {
+    async getHtmlForWebview(webview: vscode.Webview): Promise<string> {
 
         console.info('WelcomeViewProvider.getHtmlForWebview called');
 
-        let uri: string | undefined = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.uri');
-        if (uri && uri !== undefined) {
-            uri = uri.endsWith('/') ? uri : uri + '/';
-        }
+        let loginData: any | undefined = await vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.getLoginData');
+        const uri: string | undefined = loginData?.url ?? vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.uri');
+        let isBrowserAuth: boolean = loginData?.authTypeBrowser ?? false;
         const space = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.space');
         const workspace = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.workspace');
         const user = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.user.userName');
@@ -183,11 +197,15 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                 </div>
                 <hr>
                 <div class="main-container" style="flex-direction: row; align-items: center;">
-				    <input style="width: unset" class="attempt_authentication_radio" type="radio" name="auth" checked></input> <label style="margin-top: 0.5rem;">Authenticate with username and password</label>
+				    <input style="width: unset" id="attempt_authentication_radio_id" class="attempt_authentication_radio" type="radio" name="auth"></input> <label style="margin-top: 0.5rem;">Authenticate with username and password</label>
                 </div>
                 <div class="main-container" style="flex-direction: row; align-items: center;">
-				    <input style="width: unset" class="attempt_browser_authentication_radio" type="radio" name="auth"></input> <label style="margin-top: 0.5rem;">Authenticate using browser</label>
+				    <input style="width: unset" id="attempt_browser_authentication_radio_id" class="attempt_browser_authentication_radio" type="radio" name="auth"></input> <label style="margin-top: 0.5rem;">Authenticate using browser</label>
                 </div>
+                <script>
+                    document.getElementById("attempt_authentication_radio_id").checked = ${!isBrowserAuth};
+                    document.getElementById("attempt_browser_authentication_radio_id").checked = ${isBrowserAuth};
+                </script>
                 <div class="main-container">
                     <span>Username</span>
                     <input type="text" class="authentication_username" value="${user}"></input>
@@ -195,6 +213,9 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                 <div class="main-container" id="authentication_password_id">
                     <span>Password</span>
                     <input type="password" class="authentication_password"></input>
+                    <script>
+                        document.getElementById("authentication_password_id").style.display = ${isBrowserAuth} === true ? "none" : "flex";
+                    </script>
                 </div>
                 <hr>
                 <div class="main-container" style="flex-direction: row;">
