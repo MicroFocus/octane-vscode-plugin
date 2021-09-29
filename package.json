@@ -183,10 +183,6 @@
 					"group": "navigation"
 				},
 				{
-					"command": "visual-studio-code-plugin-for-alm-octane.test",
-					"group": "navigation"
-				},
-				{
 					"command": "visual-studio-code-plugin-for-alm-octane.quickPick",
 					"group": "navigation"
 				}

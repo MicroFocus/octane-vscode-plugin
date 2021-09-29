@@ -4,6 +4,7 @@ import { MyWorkProvider } from '../treeview/my-work-provider';
 import { OctaneEntity } from '../octane/model/octane-entity';
 import { Transition } from '../octane/model/transition';
 import { stripHtml } from 'string-strip-html';
+import * as path from 'path';
 
 class OctaneEntityDocument implements vscode.CustomDocument {
 
@@ -42,7 +43,6 @@ class OctaneEntityDocument implements vscode.CustomDocument {
     }
 
     dispose(): void {
-        throw new Error('Method not implemented.');
     }
 
 }
@@ -52,10 +52,6 @@ export class OctaneEntityEditorProvider implements vscode.CustomEditorProvider<O
     public static readonly viewType = 'visual-studio-code-plugin-for-alm-octane.octane';
 
     public static register(context: vscode.ExtensionContext): vscode.Disposable {
-
-        context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.test', () => {
-            vscode.commands.executeCommand('vscode.openWith', vscode.Uri.parse('file:///octane/requirement//10002'), OctaneEntityEditorProvider.viewType);
-        }));
 
 		return vscode.window.registerCustomEditorProvider(
 			OctaneEntityEditorProvider.viewType,
@@ -104,7 +100,10 @@ export class OctaneEntityEditorProvider implements vscode.CustomEditorProvider<O
         webviewPanel.webview.options = {
 			enableScripts: true,
 		};
-        webviewPanel.iconPath = MyWorkProvider.getIconForEntity(document.entity);
+        // webviewPanel.iconPath = vscode.Uri.joinPath(this.context.extensionUri, `media/treeIcons/${getDataForSubtype(document.entity)[0]}.svg`);
+        webviewPanel.iconPath = vscode.Uri.file(path.join(this.context.extensionPath, `media/treeIcons/${getDataForSubtype(document.entity)[0]}.svg`));
+        webviewPanel.title = 'Testing title';
+        console.info('icon: ', webviewPanel.iconPath.toString());
         try {
             let self = this;
 
