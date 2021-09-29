@@ -29,7 +29,7 @@ export class OctaneWebview {
                 if (!data) {
                     return;
                 }
-               
+
                 const typeForBuild = data.subtype === '' ? data.type : data.subtype;
                 if (!typeForBuild) {
                     return;
@@ -99,7 +99,7 @@ export class OctaneWebview {
 }
 
 function getDataForSubtype(entity: OctaneEntity | undefined): [string, string] {
-    if (entity?.type === 'task') { 
+    if (entity?.type === 'task') {
         return ['T', '#1668c1'];
     }
     if (entity?.subtype) {
@@ -167,22 +167,24 @@ async function getHtmlForWebview(webview: vscode.Webview, context: any, data: an
 
 function generatePhaseSelectElement(data: any | OctaneEntity | undefined, fields: any[]): string {
     let html: string = ``;
-    let transitions: Transition[] = OctaneService.getInstance().getPhaseTransitionForEntity(data.phase.id);
-    html += `<select id="select_phase" name="action" class="action">`;
-    html += `
-            <option value="none">${getFieldValue(data, 'phase')}</option>
-        `;
-    transitions.forEach((target: any) => {
-        if (!target) { return; }
+    if (data.phase) {
+        let transitions: Transition[] = OctaneService.getInstance().getPhaseTransitionForEntity(data.phase.id);
+        html += `<select id="select_phase" name="action" class="action">`;
         html += `
-            <option value='${JSON.stringify(target.targetPhase)}'>${target.targetPhase.name}</option>
-        `;
-    });
-    html += `</select>
-            <button id="saveId" class="save" type="button">Save</button>
-            <button id="refresh" type="button">Refresh</button>
-            <button id="addToMyWork" type="button">Add to MyWork</button>
-            <button id="filterId" type="button">Filter</button>`;
+                <option value="none">${getFieldValue(data, 'phase')}</option>
+            `;
+        transitions.forEach((target: any) => {
+            if (!target) { return; }
+            html += `
+                <option value='${JSON.stringify(target.targetPhase)}'>${target.targetPhase.name}</option>
+            `;
+        });
+        html += `</select>
+                <button id="saveId" class="save" type="button">Save</button>
+                <button id="refresh" type="button">Refresh</button>
+                <button id="addToMyWork" type="button">Add to MyWork</button>
+                <button id="filterId" type="button">Filter</button>`;
+    }
     return html;
 }
 
@@ -310,14 +312,15 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                     document.getElementById("${phaseField.name}").readOnly = !false;
             </script>
         `;
+        if (!await isSelectedField(phaseField.label.replaceAll(" ", "_"))) {
+            html += `
+                <script>
+                    document.getElementById("container_${phaseField.label.replaceAll(" ", "_")}").style.display = "none";
+                </script>
+            `;
+        }
     }
-    if (!await isSelectedField(phaseField.label.replaceAll(" ", "_"))) {
-        html += `
-            <script>
-                document.getElementById("container_${phaseField.label.replaceAll(" ", "_")}").style.display = "none";
-            </script>
-        `;
-    }
+
     html += `   </div>
                 <br>
                 <hr>
@@ -378,13 +381,17 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                         html += `<option value="none" selected disabled hidden>${getFieldValue(data, field.name)}</option>`;
                         if (field.field_type_data.targets[0].type) {
                             let options = await OctaneService.getInstance().getFullDataForEntity(field.field_type_data.targets[0].type, field, data);
-                            options.data.forEach((option: any) => {
-                                if (option.type === 'workspace_user') {
-                                    html += `<option value='${JSON.stringify(option)}'>${option.full_name}</option>`;
-                                } else {
-                                    html += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
-                                }
-                            });
+                            if (options) {
+                                options.data.forEach((option: any) => {
+                                    if (option) {
+                                        if (option.type === 'workspace_user') {
+                                            html += `<option value='${JSON.stringify(option)}'>${option.full_name}</option>`;
+                                        } else {
+                                            html += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
+                                        }
+                                    }
+                                });
+                            }
                         }
                         html += `
                             </select>
