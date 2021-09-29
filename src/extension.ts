@@ -31,6 +31,25 @@ export async function activate(context: vscode.ExtensionContext) {
 	}
 
 	{
+		let saveLoginData = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.saveLoginData', async (loginData) => {
+			if (loginData) {
+				await context.workspaceState.update('loginData', loginData);
+			}
+		});
+		context.subscriptions.push(saveLoginData);
+	}
+
+	{
+		let getLoginData = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.getLoginData', () => {
+			let value: any = context.workspaceState.get('loginData');
+			if (value) {
+				return value;
+			}
+		});
+		context.subscriptions.push(getLoginData);
+	}
+
+	{
 		let setFilterSelection = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.setFilterSelection', async (data) => {
 			if (data.filterName) {
 				await context.workspaceState.update(data.filterName, data);

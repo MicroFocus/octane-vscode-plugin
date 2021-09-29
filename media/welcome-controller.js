@@ -133,7 +133,7 @@
         if (browser) {
             vscode.postMessage({ type: 'attemptAuthentication', uri: uri, user: user, browser: true, space: space, workspace: workspace });
         } else {
-            vscode.postMessage({ type: 'attemptAuthentication', uri: uri, user: user, password: pwd, space: space, workspace: workspace });
+            vscode.postMessage({ type: 'attemptAuthentication', uri: uri, user: user, browser: false, password: pwd, space: space, workspace: workspace });
         }
     }
 
