@@ -113,6 +113,7 @@ function getDataForSubtype(entity: OctaneEntity | undefined): [string, string] {
         if (entity?.subtype === 'gherkin_test') { return ["GT", "#00a989"]; }
         if (entity?.subtype === 'test_suite') { return ["TS", "#271782"]; }
         if (entity?.subtype === 'requirement_document') { return ["RD", "#0b8eac"]; }
+        if (entity?.subtype === 'run_suite') { return ["SR", "#5414ac"]; }
     }
     return ['', ''];
 }
