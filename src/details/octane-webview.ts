@@ -99,9 +99,8 @@ export class OctaneWebview {
 }
 
 function getDataForSubtype(entity: OctaneEntity | undefined): [string, string] {
-    if (entity?.type === 'task') {
-        return ['T', '#1668c1'];
-    }
+    if (entity?.type === 'task') {return ['T', '#1668c1'];}
+    if (entity?.type === 'comment') {return ['C', '#ffff56'];}
     if (entity?.subtype) {
         if (entity?.subtype === 'defect') { return ["D", "#b21646"]; }
         if (entity?.subtype === 'story') { return ["US", "#ffb000"]; }

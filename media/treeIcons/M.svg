@@ -3,8 +3,8 @@
 
  <g>
   <title>Layer 1</title>
-  <ellipse fill="#fff" stroke="#000" cx="404.59902" cy="309.5" id="svg_1" rx="135.5" ry="135.5"/>
-  <ellipse fill="#6c7b7f" cx="68.1142" cy="66.92857" id="svg_3" rx="68" ry="68" stroke="#000" stroke-width="0"/>
-  <text fill="#000000" x="60.91404" y="84.67627" id="svg_6" stroke-width="0" font-size="24" font-family="Noto Sans JP" text-anchor="start" xml:space="preserve" stroke="#000" transform="matrix(2.39076 0 0 2.39076 -103.764 -116.132)" font-weight="bold">M</text>
+  <ellipse ry="135.5" rx="135.5" id="svg_1" cy="309.5" cx="404.59902" stroke="#000" fill="#fff"/>
+  <ellipse stroke-width="0" stroke="#000" ry="68" rx="68" id="svg_3" cy="66.47402" cx="68.1142" fill="#ffff56"/>
+  <text font-weight="bold" transform="matrix(2.39076 0 0 2.39076 -103.764 -116.132)" stroke="#000" xml:space="preserve" text-anchor="start" font-family="Noto Sans JP" font-size="24" stroke-width="0" id="svg_6" y="85.6269" x="63.00542" fill="#000000">C</text>
  </g>
 </svg>
