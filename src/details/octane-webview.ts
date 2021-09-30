@@ -142,6 +142,9 @@ async function getHtmlForWebview(webview: vscode.Webview, context: any, data: an
                 <span class="label">${getDataForSubtype(data)[0]}</span>
                 </div>
                 <div class="name-container">
+                    <h6>${data?.id ?? '-'}</h6>
+                </div>
+                <div class="name-container">
                     <h6>${data?.name ?? '-'}</h6>
                 </div>
                 <div class="name-container">
@@ -228,10 +231,12 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
     let counter: number = 0;
     const columnCount: number = 2;
     let filteredFields: string[] = [];
-    let mainFields: string[] = ['id', 'name'];
+    let mainFields: string[] = ['name'];
     let mapFields = new Map<string, any>();
     fields.forEach((field): any => {
-        mapFields.set(field.name, field);
+        if(field.name !== 'id') {
+            mapFields.set(field.name, field);
+        }
     });
     html += `
                 <br id="filterbr">
