@@ -30,7 +30,7 @@ class OctaneEntityDocument implements vscode.CustomDocument {
 
     public readonly uri: vscode.Uri;
     public readonly fields: any;
-    public readonly entity: any;
+    public entity: any;
 
     private constructor(
         uri: vscode.Uri,
@@ -114,10 +114,10 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                 if (m.type === 'update') {
                     OctaneService.getInstance().updateEntity(document.entity.type, document.entity.subtype, m.data);
                 }
-                // if (m.type === 'refresh') {
-                //     this.fullData = await OctaneService.getInstance().getDataFromOctaneForTypeAndId(data.type, data.subtype, data.id);
-                //     panel.webview.html = await getHtmlForWebview(panel.webview, context, this.fullData, fields);
-                // }
+                if (m.type === 'refresh') {
+                    document.entity = await OctaneService.getInstance().getDataFromOctaneForTypeAndId(document.entity.type, document.entity.subtype, document.entity.id);
+                    webviewPanel.webview.html = await this.getHtmlForWebview(webviewPanel.webview, this.context, document.entity, document.fields);
+                }
                 if (m.type === 'post-comment') {
                     let commentData = m.data;
                     commentData.owner_work_item = {
