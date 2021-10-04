@@ -75,19 +75,6 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
     static emitter = new vscode.EventEmitter<string>();
     static onDidFilterChange: vscode.Event<string> = OctaneEntityEditorProvider.emitter.event;
 
-    saveCustomDocument(document: OctaneEntityDocument, cancellation: vscode.CancellationToken): Thenable<void> {
-        throw new Error('Method not implemented.');
-    }
-    saveCustomDocumentAs(document: OctaneEntityDocument, destination: vscode.Uri, cancellation: vscode.CancellationToken): Thenable<void> {
-        throw new Error('Method not implemented.');
-    }
-    revertCustomDocument(document: OctaneEntityDocument, cancellation: vscode.CancellationToken): Thenable<void> {
-        throw new Error('Method not implemented.');
-    }
-    backupCustomDocument(document: OctaneEntityDocument, context: vscode.CustomDocumentBackupContext, cancellation: vscode.CancellationToken): Thenable<vscode.CustomDocumentBackup> {
-        throw new Error('Method not implemented.');
-    }
-
     async openCustomDocument(uri: vscode.Uri, openContext: vscode.CustomDocumentOpenContext, token: vscode.CancellationToken): Promise<OctaneEntityDocument> {
         console.info('openCustomDocument called', uri, openContext);
         const document: OctaneEntityDocument = await OctaneEntityDocument.create(uri);
@@ -230,17 +217,19 @@ function getDataForSubtype(entity: OctaneEntity | undefined): [string, string] {
 
 function generatePhaseSelectElement(data: any | OctaneEntity | undefined, fields: any[]): string {
     let html: string = ``;
-    let transitions: Transition[] = OctaneService.getInstance().getPhaseTransitionForEntity(data.phase.id);
-    html += `<select id="select_phase" name="action" class="action">`;
-    html += `
+    if (data.phase) {
+        let transitions: Transition[] = OctaneService.getInstance().getPhaseTransitionForEntity(data.phase.id);
+        html += `<select id="select_phase" name="action" class="action">`;
+        html += `
             <option value="none">${getFieldValue(data, 'phase')}</option>
         `;
-    transitions.forEach((target: any) => {
-        if (!target) { return; }
-        html += `
+        transitions.forEach((target: any) => {
+            if (!target) { return; }
+            html += `
             <option value='${JSON.stringify(target.targetPhase)}'>${target.targetPhase.name}</option>
         `;
-    });
+        });
+    }
     html += `</select>
             <button id="saveId" class="save" type="button">Save</button>
             <button id="refresh" type="button">Refresh</button>
@@ -441,13 +430,17 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                         html += `<option value="none" selected disabled hidden>${getFieldValue(data, field.name)}</option>`;
                         if (field.field_type_data.targets[0].type) {
                             let options = await OctaneService.getInstance().getFullDataForEntity(field.field_type_data.targets[0].type, field, data);
-                            options.data.forEach((option: any) => {
-                                if (option.type === 'workspace_user') {
-                                    html += `<option value='${JSON.stringify(option)}'>${option.full_name}</option>`;
-                                } else {
-                                    html += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
-                                }
-                            });
+                            if (options) {
+                                options.data.forEach((option: any) => {
+                                    if (option) {
+                                        if (option.type === 'workspace_user') {
+                                            html += `<option value='${JSON.stringify(option)}'>${option.full_name}</option>`;
+                                        } else {
+                                            html += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
+                                        }
+                                    }
+                                });
+                            }
                         }
                         html += `
                             </select>
