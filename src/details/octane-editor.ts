@@ -47,26 +47,26 @@ class OctaneEntityDocument implements vscode.CustomDocument {
 
 }
 
-export class OctaneEntityEditorProvider implements vscode.CustomEditorProvider<OctaneEntityDocument> {
+export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorProvider<OctaneEntityDocument> {
 
     public static readonly viewType = 'visual-studio-code-plugin-for-alm-octane.octane';
 
     public static register(context: vscode.ExtensionContext): vscode.Disposable {
 
-		return vscode.window.registerCustomEditorProvider(
-			OctaneEntityEditorProvider.viewType,
-			new OctaneEntityEditorProvider(context),
-			{
-				webviewOptions: {
-					retainContextWhenHidden: false,
-				},
-				supportsMultipleEditorsPerDocument: false
-			});
-	}
+        return vscode.window.registerCustomEditorProvider(
+            OctaneEntityEditorProvider.viewType,
+            new OctaneEntityEditorProvider(context),
+            {
+                webviewOptions: {
+                    retainContextWhenHidden: false,
+                },
+                supportsMultipleEditorsPerDocument: false
+            });
+    }
 
     constructor(
-		private readonly context: vscode.ExtensionContext
-	) { 
+        private readonly context: vscode.ExtensionContext
+    ) {
         this.onDidChangeCustomDocument = new vscode.EventEmitter<vscode.CustomDocumentEditEvent<OctaneEntityDocument>>().event;
     }
 
@@ -89,21 +89,23 @@ export class OctaneEntityEditorProvider implements vscode.CustomEditorProvider<O
     }
 
     async openCustomDocument(uri: vscode.Uri, openContext: vscode.CustomDocumentOpenContext, token: vscode.CancellationToken): Promise<OctaneEntityDocument> {
-       console.info('openCustomDocument called', uri, openContext);
-       const document: OctaneEntityDocument = await OctaneEntityDocument.create(uri);
-       return document;
+        console.info('openCustomDocument called', uri, openContext);
+        const document: OctaneEntityDocument = await OctaneEntityDocument.create(uri);
+        return document;
     }
 
     async resolveCustomEditor(document: OctaneEntityDocument, webviewPanel: vscode.WebviewPanel, token: vscode.CancellationToken): Promise<void> {
         console.info('resolveCustomEditor called', document, webviewPanel);
 
-        webviewPanel.webview.options = {
-			enableScripts: true,
-		};
         // webviewPanel.iconPath = vscode.Uri.joinPath(this.context.extensionUri, `media/treeIcons/${getDataForSubtype(document.entity)[0]}.svg`);
         webviewPanel.iconPath = vscode.Uri.file(path.join(this.context.extensionPath, `media/treeIcons/${getDataForSubtype(document.entity)[0]}.svg`));
         webviewPanel.title = 'Testing title';
         console.info('icon: ', webviewPanel.iconPath.toString());
+
+        webviewPanel.webview.options = {
+            enableScripts: true,
+        };
+
         try {
             let self = this;
 
@@ -112,47 +114,47 @@ export class OctaneEntityEditorProvider implements vscode.CustomEditorProvider<O
             let eventhandler = OctaneEntityEditorProvider.onDidFilterChange(async e => webviewPanel.webview.html = await self.getHtmlForWebview(webviewPanel.webview, self.context, document.entity, document.fields));
             webviewPanel.onDidDispose(e => eventhandler.dispose());
             webviewPanel.webview.onDidReceiveMessage(async m => {
-                    if (m.type === 'get') {
-                        webviewPanel.webview.postMessage({
-                            type: 'post',
-                            from: 'webview',
-                            data: {
-                                fields: document.fields,
-                                fullData: document.entity
-                            }
-                        });
-                    }
-                    if (m.type === 'update') {
-                        OctaneService.getInstance().updateEntity(document.entity.type, document.entity.subtype, m.data);
-                    }
-                    // if (m.type === 'refresh') {
-                    //     this.fullData = await OctaneService.getInstance().getDataFromOctaneForTypeAndId(data.type, data.subtype, data.id);
-                    //     panel.webview.html = await getHtmlForWebview(panel.webview, context, this.fullData, fields);
-                    // }
-                    if (m.type === 'post-comment') {
-                        let commentData = m.data;
-                        commentData.owner_work_item = {
-                            'id': document.entity.id ?? '',
-                            'type': document.entity.type ?? '',
-                            'subtype': document.entity.subtype ?? '',
-                            'name': document.entity.name ?? ''
-                        };
-                        OctaneService.getInstance().postCommentForEntity(commentData);
-                        // this.fullData = await OctaneService.getInstance().getDataFromOctaneForTypeAndId(data.type, data.subtype, data.id);
-                        webviewPanel.webview.html = await self.getHtmlForWebview(webviewPanel.webview, self.context, document.entity, document.fields);
-                    }
-                    if (m.type === 'saveToMemento') {
-                        OctaneEntityEditorProvider.emitter.fire('test');
-                        // vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.refreshWebviewPanel');
-                        vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFilterSelection', m.data);
-                    }
-                    if (m.type = 'add-to-mywork') {
-                        await OctaneService.getInstance().addToMyWork(document.entity);
-                        vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.refreshAll');
-                    }
-                });
+                if (m.type === 'get') {
+                    webviewPanel.webview.postMessage({
+                        type: 'post',
+                        from: 'webview',
+                        data: {
+                            fields: document.fields,
+                            fullData: document.entity
+                        }
+                    });
+                }
+                if (m.type === 'update') {
+                    OctaneService.getInstance().updateEntity(document.entity.type, document.entity.subtype, m.data);
+                }
+                // if (m.type === 'refresh') {
+                //     this.fullData = await OctaneService.getInstance().getDataFromOctaneForTypeAndId(data.type, data.subtype, data.id);
+                //     panel.webview.html = await getHtmlForWebview(panel.webview, context, this.fullData, fields);
+                // }
+                if (m.type === 'post-comment') {
+                    let commentData = m.data;
+                    commentData.owner_work_item = {
+                        'id': document.entity.id ?? '',
+                        'type': document.entity.type ?? '',
+                        'subtype': document.entity.subtype ?? '',
+                        'name': document.entity.name ?? ''
+                    };
+                    OctaneService.getInstance().postCommentForEntity(commentData);
+                    // this.fullData = await OctaneService.getInstance().getDataFromOctaneForTypeAndId(data.type, data.subtype, data.id);
+                    webviewPanel.webview.html = await self.getHtmlForWebview(webviewPanel.webview, self.context, document.entity, document.fields);
+                }
+                if (m.type === 'saveToMemento') {
+                    OctaneEntityEditorProvider.emitter.fire('test');
+                    // vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.refreshWebviewPanel');
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFilterSelection', m.data);
+                }
+                if (m.type = 'add-to-mywork') {
+                    await OctaneService.getInstance().addToMyWork(document.entity);
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.refreshAll');
+                }
+            });
 
-        } catch(e) {
+        } catch (e) {
             console.error(e);
             throw e;
         }
@@ -165,7 +167,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomEditorProvider<O
             context.extensionUri, 'media', 'my-css.css'));
         const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(
             context.extensionUri, 'media', 'edit-service.js'));
-    
+
         return `
             <!DOCTYPE html>
             <head>
@@ -208,7 +210,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomEditorProvider<O
 }
 
 function getDataForSubtype(entity: OctaneEntity | undefined): [string, string] {
-    if (entity?.type === 'task') { 
+    if (entity?.type === 'task') {
         return ['T', '#1668c1'];
     }
     if (entity?.subtype) {
