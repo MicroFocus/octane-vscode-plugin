@@ -174,7 +174,6 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                     <div class="name-container">
                         <h6>${data?.name ?? '-'}</h6>
                     </div>
-                    
                     <div class="action-container">
                         ${generatePhaseSelectElement(data, fields)}
                     </div>
@@ -286,6 +285,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
     fields.forEach((field): any => {
         mapFields.set(field.name, field);
     });
+    mapFields = new Map([...mapFields].sort((a, b) => String(a[0]).localeCompare(b[0])));
     html += `
                 <br id="filterbr">
                 <hr id="filterhr">
