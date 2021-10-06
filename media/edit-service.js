@@ -96,7 +96,7 @@
     function resetAllFields() {
         let checkboxes = document.getElementsByClassName("filterCheckbox");
         for (let checkbox of checkboxes) {
-            if (['ID', 'Name', 'Phase', 'Description'].includes(checkbox.name)) {
+            if (['Name', 'Phase', 'Description'].includes(checkbox.name)) {
                 checkbox.checked = true;
             } else {
                 checkbox.checked = false;

@@ -104,7 +104,11 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                                 authTestResult: authTestResult ? true : false
                             });
                         } else {
-                            authTestResult = await OctaneService.getInstance().testAuthentication(data.uri, data.space, data.workspace, data.user, data.password, undefined, undefined);
+                            try {
+                                authTestResult = await OctaneService.getInstance().testAuthentication(data.uri, data.space, data.workspace, data.user, data.password, undefined, undefined);
+                            } catch(e: any) {
+                                authTestResult = e;
+                            }
                             if (authTestResult.statusCode) {
                                 webviewView.webview.postMessage({
                                     type: 'workspaceIdDoesNotExist',

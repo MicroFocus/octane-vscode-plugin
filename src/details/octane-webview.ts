@@ -99,9 +99,8 @@ export class OctaneWebview {
 }
 
 function getDataForSubtype(entity: OctaneEntity | undefined): [string, string] {
-    if (entity?.type === 'task') {
-        return ['T', '#1668c1'];
-    }
+    if (entity?.type === 'task') {return ['T', '#1668c1'];}
+    if (entity?.type === 'comment') {return ['C', '#ffff56'];}
     if (entity?.subtype) {
         if (entity?.subtype === 'defect') { return ["D", "#b21646"]; }
         if (entity?.subtype === 'story') { return ["US", "#ffb000"]; }
@@ -113,6 +112,7 @@ function getDataForSubtype(entity: OctaneEntity | undefined): [string, string] {
         if (entity?.subtype === 'gherkin_test') { return ["GT", "#00a989"]; }
         if (entity?.subtype === 'test_suite') { return ["TS", "#271782"]; }
         if (entity?.subtype === 'requirement_document') { return ["RD", "#0b8eac"]; }
+        if (entity?.subtype === 'run_suite') { return ["SR", "#5414ac"]; }
     }
     return ['', ''];
 }
@@ -142,10 +142,16 @@ async function getHtmlForWebview(webview: vscode.Webview, context: any, data: an
                 <span class="label">${getDataForSubtype(data)[0]}</span>
                 </div>
                 <div class="name-container">
+                    <h6>${data?.id ?? '-'}</h6>
+                </div>
+                <div class="name-container">
                     <h6>${data?.name ?? '-'}</h6>
                 </div>
                 <div class="name-container">
-                    <h6>|  Move to</h6>
+                    Current phase: ${getFieldValue(data.phase, 'name')}
+                </div>
+                <div class="name-container">
+                    <h6> |  Move to</h6>
                 </div>
                 <div class="action-container">
                     ${generatePhaseSelectElement(data, fields)}
@@ -228,10 +234,12 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
     let counter: number = 0;
     const columnCount: number = 2;
     let filteredFields: string[] = [];
-    let mainFields: string[] = ['id', 'name'];
+    let mainFields: string[] = ['name'];
     let mapFields = new Map<string, any>();
     fields.forEach((field): any => {
-        mapFields.set(field.name, field);
+        if(field.name !== 'id') {
+            mapFields.set(field.name, field);
+        }
     });
     html += `
                 <br id="filterbr">
