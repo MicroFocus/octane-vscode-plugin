@@ -174,9 +174,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                     <div class="name-container">
                         <h6>${data?.name ?? '-'}</h6>
                     </div>
-                    <div class="name-container">
-                        <h6>|  Move to</h6>
-                    </div>
+                    
                     <div class="action-container">
                         ${generatePhaseSelectElement(data, fields)}
                     </div>
@@ -217,6 +215,11 @@ function getDataForSubtype(entity: OctaneEntity | undefined): [string, string] {
 
 function generatePhaseSelectElement(data: any | OctaneEntity | undefined, fields: any[]): string {
     let html: string = ``;
+    html += `
+            <div>
+                <h6 style="margin:1.3rem 0.5rem 0rem 0rem">Current phase: ${getFieldValue(data.phase, 'name')} |  Move to </h6>
+            </div>
+    `;
     if (data.phase) {
         let transitions: Transition[] = OctaneService.getInstance().getPhaseTransitionForEntity(data.phase.id);
         html += `<select id="select_phase" name="action" class="action">`;
