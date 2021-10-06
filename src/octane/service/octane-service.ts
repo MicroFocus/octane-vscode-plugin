@@ -199,7 +199,7 @@ export class OctaneService {
             const response = await this.octane.get(Octane.Octane.entityTypes.tests)
                 .fields('name', 'owner{id,name,full_name}', 'author{id,name,full_name}', 'phase', 'global_text_search_result')
                 .query(
-                    Query.field('subtype').inComparison(['test_manual', 'gherkin_test', 'scenario_test']).build()
+                    Query.field('subtype').inComparison([ 'test_manual','test_suite','gherkin_test','test_automated','scenario_test']).build()
                 )
                 .orderBy('id')
                 .limit(`5&text_search={"type":"global","text":"${criteria}"}`)
@@ -209,7 +209,7 @@ export class OctaneService {
                 let responseWithFields = await this.octane.get(Octane.Octane.entityTypes.tests)
                     .fields('name', 'owner{id,name,full_name}', 'author{id,name,full_name}', 'phase')
                     .query(
-                        Query.field('subtype').inComparison(['test_manual', 'gherkin_test', 'scenario_test'])
+                        Query.field('subtype').inComparison([ 'test_manual','test_suite','gherkin_test','test_automated','scenario_test'])
                             .and().field('id').inComparison(response.data.map((r: any) => r.id)).build()
                     )
                     .execute();
@@ -552,6 +552,10 @@ export class OctaneService {
             console.error('While adding to MyWork.', e);
             throw e;
         }
+    }
+
+    public getBrowserUri(entity: any): vscode.Uri {
+        return vscode.Uri.parse(`${this.uri}ui/?p=${this.space}%2F${this.workspace}#/entity-navigation?entityType=${entity.type}&id=${entity.id}`);
     }
 }
 

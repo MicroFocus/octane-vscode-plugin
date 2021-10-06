@@ -3,6 +3,7 @@ import { OctaneService } from '../octane/service/octane-service';
 import { Comment } from "../octane/model/comment";
 import { OctaneEntity } from "../octane/model/octane-entity";
 import { OctaneEntityHolder } from '../octane/model/octane-entity-holder';
+import { OctaneEntityEditorProvider } from '../details/octane-editor';
 
 export abstract class MyWorkProvider implements vscode.TreeDataProvider<MyWorkItem> {
 
@@ -36,6 +37,7 @@ export abstract class MyWorkProvider implements vscode.TreeDataProvider<MyWorkIt
         item.entity = i;
         item.iconPath = MyWorkProvider.getIconForEntity(i);
         item.contextValue = i.subtype ?? i.type;
+        item.command = { command: 'vscode.openWith', title: 'Details', arguments: [vscode.Uri.parse(`file:///octane/${i.type}/${i.subtype}/${i.id}`), OctaneEntityEditorProvider.viewType] };
         return item;
     }
 
@@ -89,8 +91,8 @@ export class MyWorkItem extends vscode.TreeItem implements OctaneEntityHolder {
         public readonly label: vscode.TreeItemLabel
     ) {
         super(label, vscode.TreeItemCollapsibleState.None);
-        this.command = { command: 'visual-studio-code-plugin-for-alm-octane.details', title: 'Details', arguments: [this] };
     }
+
 }
 
 export class MyWorkItemLabel implements vscode.TreeItemLabel {
