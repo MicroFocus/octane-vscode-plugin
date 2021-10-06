@@ -148,7 +148,10 @@ async function getHtmlForWebview(webview: vscode.Webview, context: any, data: an
                     <h6>${data?.name ?? '-'}</h6>
                 </div>
                 <div class="name-container">
-                    <h6>|  Move to</h6>
+                    Current phase: ${getFieldValue(data.phase, 'name')}
+                </div>
+                <div class="name-container">
+                    <h6> |  Move to</h6>
                 </div>
                 <div class="action-container">
                     ${generatePhaseSelectElement(data, fields)}
