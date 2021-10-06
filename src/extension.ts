@@ -207,7 +207,11 @@ export async function activate(context: vscode.ExtensionContext) {
 			quickPick.onDidChangeSelection(async selection => {
 				if (selection[0] && selection[0] instanceof OctaneQuickPickItem) {
 					try {
-						await vscode.commands.executeCommand('vscode.openWith', vscode.Uri.parse(`file:///octane/${selection[0].entity.type}/${selection[0].entity.subtype}/${selection[0].entity.id}`), OctaneEntityEditorProvider.viewType);
+						if (selection[0].entity.type && entitiesToOpenExternally.includes(selection[0].entity.type)) {
+							await vscode.env.openExternal(service.getBrowserUri(selection[0].entity));
+						} else {
+							await vscode.commands.executeCommand('vscode.openWith', vscode.Uri.parse(`file:///octane/${selection[0].entity.type}/${selection[0].entity.subtype}/${selection[0].entity.id}`), OctaneEntityEditorProvider.viewType);
+						}
 					} catch (e) {
 						console.error(e);
 					}
@@ -219,6 +223,7 @@ export async function activate(context: vscode.ExtensionContext) {
 				promises.push(OctaneService.getInstance().globalSearchWorkItems('defect', e));
 				promises.push(OctaneService.getInstance().globalSearchWorkItems('story', e));
 				promises.push(OctaneService.getInstance().globalSearchWorkItems('quality_story', e));
+				promises.push(OctaneService.getInstance().globalSearchWorkItems('epic', e));
 				promises.push(OctaneService.getInstance().globalSearchRequirements(e));
 				promises.push(OctaneService.getInstance().globalSearchTests(e));
 
@@ -252,6 +257,11 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.refreshAll');
 
+	const entitiesToOpenExternally = [
+		'epic',
+		'test_suite',
+		'test_automated'
+	];
 }
 
 
