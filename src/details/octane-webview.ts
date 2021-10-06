@@ -113,6 +113,7 @@ function getDataForSubtype(entity: OctaneEntity | undefined): [string, string] {
         if (entity?.subtype === 'gherkin_test') { return ["GT", "#00a989"]; }
         if (entity?.subtype === 'test_suite') { return ["TS", "#271782"]; }
         if (entity?.subtype === 'requirement_document') { return ["RD", "#0b8eac"]; }
+        if (entity?.subtype === 'run_suite') { return ["SR", "#5414ac"]; }
     }
     return ['', ''];
 }
@@ -140,6 +141,9 @@ async function getHtmlForWebview(webview: vscode.Webview, context: any, data: an
             <div class="top-container">
                 <div class="icon-container" style="background-color: ${getDataForSubtype(data)[1]}">
                 <span class="label">${getDataForSubtype(data)[0]}</span>
+                </div>
+                <div class="name-container">
+                    <h6>${data?.id ?? '-'}</h6>
                 </div>
                 <div class="name-container">
                     <h6>${data?.name ?? '-'}</h6>
@@ -228,10 +232,12 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
     let counter: number = 0;
     const columnCount: number = 2;
     let filteredFields: string[] = [];
-    let mainFields: string[] = ['id', 'name'];
+    let mainFields: string[] = ['name'];
     let mapFields = new Map<string, any>();
     fields.forEach((field): any => {
-        mapFields.set(field.name, field);
+        if(field.name !== 'id') {
+            mapFields.set(field.name, field);
+        }
     });
     html += `
                 <br id="filterbr">
