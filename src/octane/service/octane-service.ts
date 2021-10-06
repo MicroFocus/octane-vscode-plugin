@@ -57,7 +57,7 @@ export class OctaneService {
             return result.data[0].full_name ? result.data[0].full_name : username;
         } catch (e: any) {
             console.error('Error while testing auth.', e);
-            return e;
+            throw e;
         }
     }
 
