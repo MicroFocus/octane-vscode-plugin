@@ -209,12 +209,13 @@ export async function activate(context: vscode.ExtensionContext) {
 			const quickPick = vscode.window.createQuickPick();
 			quickPick.items = [];
 			quickPick.onDidChangeSelection(async selection => {
-				if (selection[0] && selection[0] instanceof OctaneQuickPickItem) {
+				let item: OctaneQuickPickItem = selection[0] as OctaneQuickPickItem;
+				if (item) {
 					try {
-						if (selection[0].entity.type && entitiesToOpenExternally.includes(selection[0].entity.type)) {
-							await vscode.env.openExternal(service.getBrowserUri(selection[0].entity));
+						if (item.entity.type && entitiesToOpenExternally.includes(item.entity.type)) {
+							await vscode.env.openExternal(service.getBrowserUri(item.entity));
 						} else {
-							await vscode.commands.executeCommand('vscode.openWith', vscode.Uri.parse(`file:///octane/${selection[0].entity.type}/${selection[0].entity.subtype}/${selection[0].entity.id}`), OctaneEntityEditorProvider.viewType);
+							await vscode.commands.executeCommand('vscode.openWith', vscode.Uri.parse(`file:///octane/${item.entity.type}/${item.entity.subtype}/${item.entity.id}`), OctaneEntityEditorProvider.viewType);
 						}
 					} catch (e) {
 						console.error(e);
