@@ -173,6 +173,10 @@ export async function activate(context: vscode.ExtensionContext) {
 		context.subscriptions.push(commitMessageCommand);
 	}
 
+	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.openInBrowser', async (e: MyWorkItem) => {
+		await vscode.env.openExternal(service.getBrowserUri(e.entity));
+	}));
+
 	{
 		let downloadTestCommand = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.myTests.download', async (e: MyWorkItem) => {
 			console.info('visual-studio-code-plugin-for-alm-octane.myTests.download called', e);

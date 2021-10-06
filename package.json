@@ -198,6 +198,10 @@
 					"command": "visual-studio-code-plugin-for-alm-octane.myTests.download",
 					"when": "viewItem == 'gherkin_test' || viewItem == 'scenario_test'",
 					"group": "inline"
+				},
+				{
+					"command": "visual-studio-code-plugin-for-alm-octane.openInBrowser",
+					"group": "inline"
 				}
 			]
 		},
@@ -206,6 +210,11 @@
 				"command": "visual-studio-code-plugin-for-alm-octane.test",
 				"title": "Test",
 				"icon": "$(notebook-move-down)"
+			},
+			{
+				"command": "visual-studio-code-plugin-for-alm-octane.openInBrowser",
+				"title": "Open in browser",
+				"icon": "$(ports-open-browser-icon)"
 			},
 			{
 				"command": "visual-studio-code-plugin-for-alm-octane.myTests.download",
