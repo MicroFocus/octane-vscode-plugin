@@ -175,7 +175,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                         <h6>${data?.name ?? '-'}</h6>
                     </div>
                     <div class="action-container">
-                        ${generatePhaseSelectElement(data, fields)}
+                        ${await generatePhaseSelectElement(data, fields)}
                     </div>
                 </div>
                 <div class="element">
@@ -212,7 +212,7 @@ function getDataForSubtype(entity: OctaneEntity | undefined): [string, string] {
     return ['', ''];
 }
 
-function generatePhaseSelectElement(data: any | OctaneEntity | undefined, fields: any[]): string {
+async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, fields: any[]): Promise<string> {
     let html: string = ``;
     if (data.phase) {
         html += `
@@ -239,6 +239,36 @@ function generatePhaseSelectElement(data: any | OctaneEntity | undefined, fields
             <button id="refresh" type="button">Refresh</button>
             <button id="addToMyWork" type="button">Add to MyWork</button>
             <button id="filterId" type="button">Filter</button>`;
+
+    let filteredFields: string[] = [];
+    let mapFields = new Map<string, any>();
+    fields.forEach((field): any => {
+        mapFields.set(field.name, field);
+    });
+    mapFields = new Map([...mapFields].sort((a, b) => String(a[0]).localeCompare(b[0])));
+    html += `
+            <div style="margin: 0 0 0 0.5rem; width: 20rem;" id="container_filter_multiselect">
+                <select class="reference-select" multiple="multiple" id="filter_multiselect">
+            `;
+    for (const [key, field] of mapFields) {
+        if (field) {
+            if (await isSelectedField(field.label.replaceAll(" ", "_"))) {
+                filteredFields = filteredFields.concat(field.name);
+            } else {
+                filteredFields = filteredFields.filter(f => f !== field.name);
+            }
+            if (filteredFields.includes(field.name)) {
+                html += `<option selected value='${JSON.stringify(field)}'>${field.label}</option>`;
+            } else {
+                html += `<option value='${JSON.stringify(field)}'>${field.label}</option>`;
+            }
+        }
+    }
+    html += `
+                        </select>
+                        
+                    </div>
+                    `;
     return html;
 }
 
