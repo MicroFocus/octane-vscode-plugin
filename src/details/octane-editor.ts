@@ -214,11 +214,13 @@ function getDataForSubtype(entity: OctaneEntity | undefined): [string, string] {
 
 function generatePhaseSelectElement(data: any | OctaneEntity | undefined, fields: any[]): string {
     let html: string = ``;
-    html += `
+    if (data.phase) {
+        html += `
             <div>
                 <h6 style="margin:1.3rem 0.5rem 0rem 0rem">Current phase: ${getFieldValue(data.phase, 'name')} |  Move to </h6>
             </div>
-    `;
+        `;
+    }
     if (data.phase) {
         let transitions: Transition[] = OctaneService.getInstance().getPhaseTransitionForEntity(data.phase.id);
         html += `<select id="select_phase" name="action" class="action">`;
@@ -305,25 +307,27 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
     // });
     for (const [key, field] of mapFields) {
         // console.log('key = ',key, 'field=',field);
-        if (await isSelectedField(field.label.replaceAll(" ", "_"))) {
-            filteredFields = filteredFields.concat(field.name);
-        } else {
-            filteredFields = filteredFields.filter(f => f !== field.name);
-        }
-        if (filteredFields.includes(field.name)) {
-            html += `           <div class="checkboxDiv">
-                                    <label>
-                                        <input checked type="checkbox" class="filterCheckbox" name='${field.label.replaceAll(" ", "_")}'>
-                                        <span class="filterCheckboxLabel">${field.label}</span>    
-                                    </label>
-                                </div>`;
-        } else {
-            html += `           <div class="checkboxDiv">
-                                    <label>
-                                        <input type="checkbox" class="filterCheckbox" name='${field.label.replaceAll(" ", "_")}'>
-                                        <span class="filterCheckboxLabel">${field.label}</span>
-                                    </label>
-                                </div>`;
+        if (field) {
+            if (await isSelectedField(field.label.replaceAll(" ", "_"))) {
+                filteredFields = filteredFields.concat(field.name);
+            } else {
+                filteredFields = filteredFields.filter(f => f !== field.name);
+            }
+            if (filteredFields.includes(field.name)) {
+                html += `           <div class="checkboxDiv">
+                                        <label>
+                                            <input checked type="checkbox" class="filterCheckbox" name='${field.label.replaceAll(" ", "_")}'>
+                                            <span class="filterCheckboxLabel">${field.label}</span>    
+                                        </label>
+                                    </div>`;
+            } else {
+                html += `           <div class="checkboxDiv">
+                                        <label>
+                                            <input type="checkbox" class="filterCheckbox" name='${field.label.replaceAll(" ", "_")}'>
+                                            <span class="filterCheckboxLabel">${field.label}</span>
+                                        </label>
+                                    </div>`;
+            }
         }
     }
     html += `       </div>
@@ -365,14 +369,15 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                     document.getElementById("${phaseField.name}").readOnly = !false;
             </script>
         `;
+        if (!await isSelectedField(phaseField.label.replaceAll(" ", "_"))) {
+            html += `
+                <script>
+                    document.getElementById("container_${phaseField.label.replaceAll(" ", "_")}").style.display = "none";
+                </script>
+            `;
+        }
     }
-    if (!await isSelectedField(phaseField.label.replaceAll(" ", "_"))) {
-        html += `
-            <script>
-                document.getElementById("container_${phaseField.label.replaceAll(" ", "_")}").style.display = "none";
-            </script>
-        `;
-    }
+
     html += `   </div>
                 <br>
                 <hr>
@@ -396,60 +401,61 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
         `;
     }
     for (const [key, field] of mapFields) {
-        if (!['description', 'phase', ...mainFields].includes(key)) {
-            if (counter === 0) {
-                html += `<div class="information-container">`;
-            }
-            if (field.field_type === 'reference') {
-                if (field.field_type_data.multiple) {
-                    html += `
+        if (field) {
+            if (!['description', 'phase', ...mainFields].includes(key)) {
+                if (counter === 0) {
+                    html += `<div class="information-container">`;
+                }
+                if (field.field_type === 'reference') {
+                    if (field.field_type_data.multiple) {
+                        html += `
                     <div class="select-container" id="container_${field.label.replaceAll(" ", "_")}">
                         <label>${field.label}</label>
                         <select class="reference-select" multiple="multiple" id="${field.name}">
                     `;
-                    let selected = getFieldValue(data, fieldNameMap.get(field.name) ?? field.name);
-                    let options = await OctaneService.getInstance().getFullDataForEntity(field.field_type_data.targets[0].type, field, data);
-                    if (options) {
-                        options.data.forEach((option: any) => {
-                            if (selected.includes(option.name)) {
-                                html += `<option selected value='${JSON.stringify(option)}'>${option.name}</option>`;
-                            } else {
-                                html += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
-                            }
-                        });
-                    }
-                    html += `
+                        let selected = getFieldValue(data, fieldNameMap.get(field.name) ?? field.name);
+                        let options = await OctaneService.getInstance().getFullDataForEntity(field.field_type_data.targets[0].type, field, data);
+                        if (options) {
+                            options.data.forEach((option: any) => {
+                                if (selected.includes(option.name)) {
+                                    html += `<option selected value='${JSON.stringify(option)}'>${option.name}</option>`;
+                                } else {
+                                    html += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
+                                }
+                            });
+                        }
+                        html += `
                         </select>
                         
                     </div>
                     `;
-                } else {
-                    if (field.editable) {
-                        html += `
+                    } else {
+                        if (field.editable) {
+                            html += `
                         <div class="select-container" id="container_${field.label.replaceAll(" ", "_")}">
                             <label>${field.label}</label>
                             <select class="reference-select" id="${field.name}">
                         `;
-                        html += `<option value="none" selected disabled hidden>${getFieldValue(data, field.name)}</option>`;
-                        if (field.field_type_data.targets[0].type) {
-                            let options = await OctaneService.getInstance().getFullDataForEntity(field.field_type_data.targets[0].type, field, data);
-                            if (options) {
-                                options.data.forEach((option: any) => {
-                                    if (option) {
-                                        if (option.type === 'workspace_user') {
-                                            html += `<option value='${JSON.stringify(option)}'>${option.full_name}</option>`;
-                                        } else {
-                                            html += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
+                            html += `<option value="none" selected disabled hidden>${getFieldValue(data, field.name)}</option>`;
+                            if (field.field_type_data.targets[0].type) {
+                                let options = await OctaneService.getInstance().getFullDataForEntity(field.field_type_data.targets[0].type, field, data);
+                                if (options) {
+                                    options.data.forEach((option: any) => {
+                                        if (option) {
+                                            if (option.type === 'workspace_user') {
+                                                html += `<option value='${JSON.stringify(option)}'>${option.full_name}</option>`;
+                                            } else {
+                                                html += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
+                                            }
                                         }
-                                    }
-                                });
+                                    });
+                                }
                             }
-                        }
-                        html += `
+                            html += `
                             </select>
                         </div>`;
-                    } else {
-                        html += `
+                        } else {
+                            html += `
                             <div class="input-field col s6 container" id="container_${field.label.replaceAll(" ", "_")}">
                                 <label class="active" for="${field.label}">${field.label}</label>
                                 <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border); margin-top: 1.55rem;" id="${field.name}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
@@ -458,10 +464,10 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                                 </script>
                             </div>
                         `;
+                        }
                     }
-                }
-            } else {
-                html += `
+                } else {
+                    html += `
                 <div class="input-field col s6 container" id="container_${field.label.replaceAll(" ", "_")}">
                     <label class="active" for="${field.label}">${field.label}</label>
                     <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border); margin-top: 1.55rem;" id="${field.name}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
@@ -470,18 +476,19 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                     </script>
                 </div>
             `;
+                }
+                if (counter === columnCount) {
+                    html += `</div>`;
+                }
+                counter = counter === columnCount ? 0 : counter + 1;
             }
-            if (counter === columnCount) {
-                html += `</div>`;
-            }
-            counter = counter === columnCount ? 0 : counter + 1;
-        }
-        if (filteredFields.includes(field.name)) {
-            html += `
+            if (filteredFields.includes(field.name)) {
+                html += `
                 <script>
                     document.getElementById("container_${field.label.replaceAll(" ", "_")}").style.display = "flex";
                 </script>
             `;
+            }
         }
     }
     return html;
