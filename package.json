@@ -205,6 +205,9 @@
 				},
 				{
 					"command": "visual-studio-code-plugin-for-alm-octane.openInBrowser"
+				},
+				{
+					"command": "visual-studio-code-plugin-for-alm-octane.dismissItem"
 				}
 			]
 		},
@@ -213,6 +216,11 @@
 				"command": "visual-studio-code-plugin-for-alm-octane.test",
 				"title": "Test",
 				"icon": "$(notebook-move-down)"
+			},
+			{
+				"command": "visual-studio-code-plugin-for-alm-octane.dismissItem",
+				"title": "Dismiss",
+				"icon": "$(remove-close)"
 			},
 			{
 				"command": "visual-studio-code-plugin-for-alm-octane.openActiveItem",

@@ -11,7 +11,7 @@ export class OctaneService {
     private static _instance: OctaneService;
 
     private octane?: any;
-    
+
     private user?: string;
     private uri?: string;
     private space?: string;
@@ -199,7 +199,7 @@ export class OctaneService {
             const response = await this.octane.get(Octane.Octane.entityTypes.tests)
                 .fields('name', 'owner{id,name,full_name}', 'author{id,name,full_name}', 'phase', 'global_text_search_result')
                 .query(
-                    Query.field('subtype').inComparison([ 'test_manual','test_suite','gherkin_test','test_automated','scenario_test']).build()
+                    Query.field('subtype').inComparison(['test_manual', 'test_suite', 'gherkin_test', 'test_automated', 'scenario_test']).build()
                 )
                 .orderBy('id')
                 .limit(`5&text_search={"type":"global","text":"${criteria}"}`)
@@ -209,7 +209,7 @@ export class OctaneService {
                 let responseWithFields = await this.octane.get(Octane.Octane.entityTypes.tests)
                     .fields('name', 'owner{id,name,full_name}', 'author{id,name,full_name}', 'phase')
                     .query(
-                        Query.field('subtype').inComparison([ 'test_manual','test_suite','gherkin_test','test_automated','scenario_test'])
+                        Query.field('subtype').inComparison(['test_manual', 'test_suite', 'gherkin_test', 'test_automated', 'scenario_test'])
                             .and().field('id').inComparison(response.data.map((r: any) => r.id)).build()
                     )
                     .execute();
@@ -525,7 +525,7 @@ export class OctaneService {
             }
             // let type = e.subtype ? e.subtype : e.type;
             let type = e.type;
-            let entityModel: any =  {
+            let entityModel: any = {
                 origin: 1,
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 entity_type: `${type}`, // "test"
@@ -550,6 +550,54 @@ export class OctaneService {
                 });
         } catch (e) {
             console.error('While adding to MyWork.', e);
+            throw e;
+        }
+    }
+
+    public async dismissFromMyWork(e: OctaneEntity): Promise<void> {
+        try {
+            if (!this.loggedInUserId) {
+                return;
+            }
+            let type = e.type;
+            if (e.type === 'requirement') {
+                await this.octane.delete(Octane.Octane.entityTypes.userItems)
+                    .query(
+                        Query.field('my_follow_items_requirement')
+                            .equal(Query.field('user_item').equal(
+                                Query.field('user').equal(Query.field('id').equal(this.loggedInUserId))
+                                    .and()
+                                    .field('subtype').equal(e.subtype)
+                            ))
+                            .and()
+                            .field('user').equal(Query.field('id').equal(this.loggedInUserId))
+                            .and()
+                            .field('entity_type').equal(type)
+                            .build()
+                    )
+                    .execute()
+                    .then((res: any) => {
+                        vscode.window.showInformationMessage('Item dismissed.');
+                    }, (error: any) => {
+                        vscode.window.showErrorMessage('Item dismissal failed.' + error);
+                    });
+            } else {
+                await this.octane.delete(Octane.Octane.entityTypes.userItems)
+                    .query(Query.field('my_follow_items_work_item').equal(Query.field('id').equal(e.id))
+                        .and()
+                        .field('user').equal(Query.field('id').equal(this.loggedInUserId))
+                        .and()
+                        .field('entity_type').equal(type)
+                        .build())
+                    .execute()
+                    .then((res: any) => {
+                        vscode.window.showInformationMessage('Item dismissed.');
+                    }, (error: any) => {
+                        vscode.window.showErrorMessage('Item dismissal failed.' + error);
+                    });
+            }
+        } catch (e) {
+            console.error('While dismissing entity from MyWork.', e);
             throw e;
         }
     }
