@@ -191,17 +191,20 @@
 			],
 			"view/item/context": [
 				{
-					"command": "visual-studio-code-plugin-for-alm-octane.commitMessage",
-					"group": "inline"
+					"command": "visual-studio-code-plugin-for-alm-octane.details"
+				},
+				{
+					"command": "visual-studio-code-plugin-for-alm-octane.startWork"
+				},
+				{
+					"command": "visual-studio-code-plugin-for-alm-octane.commitMessage"
 				},
 				{
 					"command": "visual-studio-code-plugin-for-alm-octane.myTests.download",
-					"when": "viewItem == 'gherkin_test' || viewItem == 'scenario_test'",
-					"group": "inline"
+					"when": "viewItem == 'gherkin_test' || viewItem == 'scenario_test'"
 				},
 				{
-					"command": "visual-studio-code-plugin-for-alm-octane.openInBrowser",
-					"group": "inline"
+					"command": "visual-studio-code-plugin-for-alm-octane.openInBrowser"
 				}
 			]
 		},
@@ -210,6 +213,16 @@
 				"command": "visual-studio-code-plugin-for-alm-octane.test",
 				"title": "Test",
 				"icon": "$(notebook-move-down)"
+			},
+			{
+				"command": "visual-studio-code-plugin-for-alm-octane.openActiveItem",
+				"title": "Open Active Item",
+				"icon": "$(open-preview)"
+			},
+			{
+				"command": "visual-studio-code-plugin-for-alm-octane.startWork",
+				"title": "Start Work",
+				"icon": "$(timeline-pin)"
 			},
 			{
 				"command": "visual-studio-code-plugin-for-alm-octane.openInBrowser",
@@ -274,7 +287,7 @@
 			{
 				"command": "visual-studio-code-plugin-for-alm-octane.details",
 				"title": "Details",
-				"icon": "$(extensions-refresh)"
+				"icon": "$(open-preview)"
 			},
 			{
 				"command": "visual-studio-code-plugin-for-alm-octane.quickPick",

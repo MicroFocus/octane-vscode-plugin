@@ -37,7 +37,7 @@ export abstract class MyWorkProvider implements vscode.TreeDataProvider<MyWorkIt
         item.entity = i;
         item.iconPath = MyWorkProvider.getIconForEntity(i);
         item.contextValue = i.subtype ?? i.type;
-        item.command = { command: 'vscode.openWith', title: 'Details', arguments: [vscode.Uri.parse(`file:///octane/${i.type}/${i.subtype}/${i.id}`), OctaneEntityEditorProvider.viewType] };
+        item.command = { command: 'vscode.openWith', title: 'Details', arguments: [vscode.Uri.parse(`octane:///octane/${i.type}/${i.subtype}/${i.id}`), OctaneEntityEditorProvider.viewType] };
         return item;
     }
 

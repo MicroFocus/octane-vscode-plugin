@@ -11,7 +11,7 @@ export class OctaneService {
     private static _instance: OctaneService;
 
     private octane?: any;
-
+    
     private user?: string;
     private uri?: string;
     private space?: string;
