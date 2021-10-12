@@ -69,6 +69,9 @@
         });
     }
 
+    let filterOption = document.getElementsByClassName("filter_option");
+    console.log(filterOption);
+
     let checkboxes = document.getElementsByClassName("filterCheckbox");
     for (let checkbox of checkboxes) {
         checkbox.addEventListener('click', e => {

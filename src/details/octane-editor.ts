@@ -251,6 +251,7 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
                 <select class="reference-select" multiple="multiple" id="filter_multiselect">
             `;
     for (const [key, field] of mapFields) {
+
         if (field) {
             if (await isSelectedField(field.label.replaceAll(" ", "_"))) {
                 filteredFields = filteredFields.concat(field.name);
@@ -258,9 +259,9 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
                 filteredFields = filteredFields.filter(f => f !== field.name);
             }
             if (filteredFields.includes(field.name)) {
-                html += `<option selected value='${JSON.stringify(field)}'>${field.label}</option>`;
+                html += `<option class="filter_option" selected value='${JSON.stringify(field)}'>${field.label}</option>`;
             } else {
-                html += `<option value='${JSON.stringify(field)}'>${field.label}</option>`;
+                html += `<option class="filter_option" value='${JSON.stringify(field)}'>${field.label}</option>`;
             }
         }
     }
@@ -443,6 +444,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                         <label>${field.label}</label>
                         <select class="reference-select" multiple="multiple" id="${field.name}">
                     `;
+
                         let selected = getFieldValue(data, fieldNameMap.get(field.name) ?? field.name);
                         let options = await OctaneService.getInstance().getFullDataForEntity(field.field_type_data.targets[0].type, field, data);
                         if (options) {
