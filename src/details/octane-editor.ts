@@ -84,10 +84,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
     async resolveCustomEditor(document: OctaneEntityDocument, webviewPanel: vscode.WebviewPanel, token: vscode.CancellationToken): Promise<void> {
         console.info('resolveCustomEditor called', document, webviewPanel);
 
-        // webviewPanel.iconPath = vscode.Uri.joinPath(this.context.extensionUri, `media/treeIcons/${getDataForSubtype(document.entity)[0]}.svg`);
         webviewPanel.iconPath = vscode.Uri.file(path.join(this.context.extensionPath, `media/treeIcons/${getDataForSubtype(document.entity)[0]}.svg`));
-        webviewPanel.title = 'Testing title';
-        console.info('icon: ', webviewPanel.iconPath.toString());
 
         webviewPanel.webview.options = {
             enableScripts: true,
