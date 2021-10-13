@@ -560,21 +560,11 @@ export class OctaneService {
                 return;
             }
             let type = e.type;
-            if (e.type === 'requirement') {
-                await this.octane.delete(Octane.Octane.entityTypes.userItems)
-                    .query(
-                        Query.field('my_follow_items_requirement')
-                            .equal(Query.field('user_item').equal(
-                                Query.field('user').equal(Query.field('id').equal(this.loggedInUserId))
-                                    .and()
-                                    .field('subtype').equal(e.subtype)
-                            ))
-                            .and()
-                            .field('user').equal(Query.field('id').equal(this.loggedInUserId))
-                            .and()
-                            .field('entity_type').equal(type)
-                            .build()
-                    )
+            if (e.type === 'comment') {
+                let entityModel: any = {
+                    id: `${e.id}`
+                };
+                await this.octane.update(Octane.Octane.entityTypes.comments, entityModel).at(`${e.id}/dismiss`)
                     .execute()
                     .then((res: any) => {
                         vscode.window.showInformationMessage('Item dismissed.');
@@ -582,8 +572,24 @@ export class OctaneService {
                         vscode.window.showErrorMessage('Item dismissal failed.' + error);
                     });
             } else {
+                let field = 'my_follow_items_work_item';
+                switch (e.type) {
+                    case 'task':
+                        field = 'my_follow_items_task';
+                        break;
+                    case 'run':
+                        field = 'my_follow_items_run';
+                        break;
+                    case 'test':
+                        field = 'my_follow_items_test';
+                        break;
+                    case 'requirement':
+                        field = 'my_follow_items_requirement';
+                        break;
+                }
+
                 await this.octane.delete(Octane.Octane.entityTypes.userItems)
-                    .query(Query.field('my_follow_items_work_item').equal(Query.field('id').equal(e.id))
+                    .query(Query.field(field).equal(Query.field('id').equal(e.id))
                         .and()
                         .field('user').equal(Query.field('id').equal(this.loggedInUserId))
                         .and()
