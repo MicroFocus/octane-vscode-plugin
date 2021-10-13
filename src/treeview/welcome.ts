@@ -187,7 +187,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
 			</head>
 			<body>
                 <div class="main-container">
-                    <span>URL</span>
+                    <span>Server URL</span>
                     <input type="text" id="authentication_url_id" class="authentication_url" value="${uri}"></input>
                     <span id="authentication_url_successful" style="display: none"></span>
                 </div>
