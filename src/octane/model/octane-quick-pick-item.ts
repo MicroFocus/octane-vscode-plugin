@@ -5,19 +5,23 @@ import { stripHtml } from 'string-strip-html';
 
 export class OctaneQuickPickItem implements QuickPickItem, OctaneEntityHolder {
 
-    public entity: OctaneEntity;
+    public entity: OctaneEntity | undefined;
     public label: string;
     public detail?: string;
     public alwaysShow: boolean = true;
-   
-    constructor(i: OctaneEntity, searchString: string) {
+    public searchString?: string;
+
+    constructor(i: OctaneEntity | undefined, label: string) {
         this.entity = i;
-        this.label = `${i.id} ${i.name}`;
-        if (i.globalTextSearchResult) {
+        if (i) {
+            this.label = `${i.id} ${i.name}`;
+        } else {
+            this.label = `$(search-refresh) ${label}`;
+            this.searchString = label;
+        }
+        if (i && i.globalTextSearchResult) {
             this.detail = `${stripHtml(i.globalTextSearchResult).result}`;
-            // this.detail = `${i.globalTextSearchResult}`;
         }
     }
-
 
 }
