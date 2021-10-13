@@ -183,10 +183,6 @@
 					"command": "visual-studio-code-plugin-for-alm-octane.myWelcome.refreshEntry",
 					"when": "view == visual-studio-code-plugin-for-alm-octane.myWelcome",
 					"group": "navigation"
-				},
-				{
-					"command": "visual-studio-code-plugin-for-alm-octane.quickPick",
-					"group": "navigation"
 				}
 			],
 			"view/item/context": [
@@ -209,6 +205,12 @@
 				{
 					"command": "visual-studio-code-plugin-for-alm-octane.dismissItem",
 					"when": "viewItem != 'comment'"
+				}
+			],
+			"editor/title": [
+				{
+					"command": "visual-studio-code-plugin-for-alm-octane.quickPick",
+					"group": "navigation"
 				}
 			]
 		},
