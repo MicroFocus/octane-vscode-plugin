@@ -1,4 +1,4 @@
-import { MyWorkProvider } from "./my-work-provider";
+import { MyWorkProvider, MyWorkItem } from "./my-work-provider";
 import { OctaneEntity } from "../octane/model/octane-entity";
 
 export class MyMentionsProvider extends MyWorkProvider {
@@ -8,4 +8,9 @@ export class MyMentionsProvider extends MyWorkProvider {
         return result;
     }
 
+    getMyWorkItem(i: OctaneEntity): MyWorkItem {
+        const item = super.getMyWorkItem(i);
+        item.contextValue = 'comment';
+        return item;
+    }
 }

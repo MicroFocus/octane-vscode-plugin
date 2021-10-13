@@ -288,6 +288,13 @@ export async function activate(context: vscode.ExtensionContext) {
 	}));
 	
 
+	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.dismissItem', async(e: MyWorkItem) =>{
+		if (e.entity) {
+			await service.dismissFromMyWork(e.entity);
+			vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.refreshAll');
+		}
+	}));
+
 	vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.refreshAll');
 
 	const entitiesToOpenExternally = [
