@@ -207,7 +207,8 @@
 					"command": "visual-studio-code-plugin-for-alm-octane.openInBrowser"
 				},
 				{
-					"command": "visual-studio-code-plugin-for-alm-octane.dismissItem"
+					"command": "visual-studio-code-plugin-for-alm-octane.dismissItem",
+					"when": "viewItem != 'comment'"
 				}
 			]
 		},
