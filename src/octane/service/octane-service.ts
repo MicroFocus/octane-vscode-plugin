@@ -54,7 +54,7 @@ export class OctaneService {
                 .query(Query.field('name').equal(username).build())
                 .execute();
             console.info('Successful auth test.', result.data);
-            return result.data[0].full_name ? result.data[0].full_name : username;
+            return result.data ? (result.data[0].full_name ? result.data[0].full_name : username) : username;
         } catch (e: any) {
             console.error('Error while testing auth.', e);
             throw e;
