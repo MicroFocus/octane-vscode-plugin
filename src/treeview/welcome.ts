@@ -203,14 +203,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                 <div class="main-container" style="flex-direction: row; align-items: center;">
 				    <input style="width: unset" id="attempt_authentication_radio_id" class="attempt_authentication_radio" type="radio" name="auth"></input> <label style="margin-top: 0.5rem;">Authenticate with username and password</label>
                 </div>
-                <div class="main-container" style="flex-direction: row; align-items: center;">
-				    <input style="width: unset" id="attempt_browser_authentication_radio_id" class="attempt_browser_authentication_radio" type="radio" name="auth"></input> <label style="margin-top: 0.5rem;">Authenticate using browser</label>
-                </div>
-                <script>
-                    document.getElementById("attempt_authentication_radio_id").checked = ${!isBrowserAuth};
-                    document.getElementById("attempt_browser_authentication_radio_id").checked = ${isBrowserAuth};
-                </script>
-                <div class="main-container">
+                <div class="main-container" id="authentication_username_id">
                     <span>Username</span>
                     <input type="text" class="authentication_username" value="${user}"></input>
                 </div>
@@ -221,6 +214,13 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                         document.getElementById("authentication_password_id").style.display = ${isBrowserAuth} === true ? "none" : "flex";
                     </script>
                 </div>
+                <div class="main-container" style="flex-direction: row; align-items: center;">
+				    <input style="width: unset" id="attempt_browser_authentication_radio_id" class="attempt_browser_authentication_radio" type="radio" name="auth"></input> <label style="margin-top: 0.5rem;">Authenticate using browser</label>
+                </div>
+                <script>
+                    document.getElementById("attempt_authentication_radio_id").checked = ${!isBrowserAuth};
+                    document.getElementById("attempt_browser_authentication_radio_id").checked = ${isBrowserAuth};
+                </script>
                 <hr>
                 <div class="main-container" style="flex-direction: row;">
 				    <button class="test_authentication_connection" style="margin: 0rem 0.5rem 0rem 0rem">Test connection</button>
