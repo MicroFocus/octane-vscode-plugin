@@ -3,7 +3,7 @@
 	"displayName": "Visual Studio Code plugin for ALM Octane",
 	"publisher": "MicroFocus",
 	"description": "With the ALM Octane Visual Studio Code plugin, you can do your ALM Octane work (on stories, defects, tasks, and so on) directly within the Visual Studio Code development framework.",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"engines": {
 		"vscode": "^1.56.0"
 	},
