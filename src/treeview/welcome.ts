@@ -202,6 +202,14 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                 <hr>
                 <div class="main-container" style="flex-direction: row; align-items: center;">
 				    <input style="width: unset" id="attempt_authentication_radio_id" class="attempt_authentication_radio" type="radio" name="auth"></input> <label style="margin-top: 0.5rem;">Authenticate with username and password</label>
+                    <span 
+                        title="Log into ALM Octane directly with your user name and password, in non-SSO environments. This method saves your login credentials between sessions, so you do not have to re-enter them." 
+                        style="margin: 0.5rem 0rem 0rem 0.5rem; cursor: pointer;"> ?</span>
+                    <script>
+                        $(document).ready(function() {
+                            $('[data-toggle="tooltip"]').tooltip();
+                        });
+                    </script>
                 </div>
                 <div class="main-container" id="authentication_username_id">
                     <span>Username</span>
@@ -227,6 +235,14 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                 </div>
                 <div class="main-container" style="flex-direction: row; align-items: center;">
 				    <input style="width: unset" id="attempt_browser_authentication_radio_id" class="attempt_browser_authentication_radio" type="radio" name="auth"></input> <label style="margin-top: 0.5rem;">Authenticate using browser</label>
+                    <span 
+                        title="Log into ALM Octane using a browser. You can use this method for non-SSO, SSO, and federated environments. Your login credentials are not saved between sessions, so you will have to re-enter them each time." 
+                        style="margin: 0.5rem 0rem 0rem 0.5rem; cursor: pointer;"> ?</span>
+                    <script>
+                        $(document).ready(function() {
+                            $('[data-toggle="tooltip"]').tooltip();
+                        });
+                    </script>
                 </div>
                 <script>
                     document.getElementById("attempt_authentication_radio_id").checked = ${!isBrowserAuth};
