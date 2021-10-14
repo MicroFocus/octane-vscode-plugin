@@ -106,7 +106,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                         } else {
                             try {
                                 authTestResult = await OctaneService.getInstance().testAuthentication(data.uri, data.space, data.workspace, data.user, data.password, undefined, undefined);
-                            } catch(e: any) {
+                            } catch (e: any) {
                                 authTestResult = e;
                             }
                             if (authTestResult.statusCode) {
@@ -210,8 +210,19 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                 <div class="main-container" id="authentication_password_id">
                     <span>Password</span>
                     <input type="password" class="authentication_password"></input>
-                    <script>
-                        document.getElementById("authentication_password_id").style.display = ${isBrowserAuth} === true ? "none" : "flex";
+                    <script type="text/javascript">
+                        if(${isBrowserAuth} === true) {
+                            document.getElementById("authentication_password_id").style.opacity = "0.6";
+                            document.getElementById("authentication_username_id").style.opacity = "0.6";
+                            document.getElementsByClassName('authentication_username')[0].setAttribute("disabled", "disabled");
+                            document.getElementsByClassName('authentication_password')[0].setAttribute("disabled", "disabled");
+                        } else {
+                            document.getElementById("authentication_password_id").style.opacity = "100";
+                            document.getElementById("authentication_username_id").style.opacity = "100";
+                            document.getElementsByClassName('authentication_username')[0].removeAttribute("disabled");
+                            document.getElementsByClassName('authentication_password')[0].removeAttribute("disabled");
+                        }
+                    
                     </script>
                 </div>
                 <div class="main-container" style="flex-direction: row; align-items: center;">
