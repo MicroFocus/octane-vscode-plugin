@@ -70,7 +70,18 @@
     }
 
     let filterOption = document.getElementsByClassName("filter_option");
+    document.getElementsByClassName("reference-select")[0].addEventListener('click', e => {
+        console.log("cccccc");
+    });
+    for (let option of filterOption) {
+        console.log("option", option);
+        option.addEventListener('change', e => {
+            console.log("cccccc");
+            showFields(option);
+        });
+    }
     console.log(filterOption);
+
 
     let checkboxes = document.getElementsByClassName("filterCheckbox");
     for (let checkbox of checkboxes) {
