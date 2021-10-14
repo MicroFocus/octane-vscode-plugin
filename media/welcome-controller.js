@@ -143,6 +143,18 @@
         document.querySelector('.authentication_password')['value'] = '';
         document.querySelector('.authentication_space')['value'] = '';
         document.querySelector('.authentication_workspace')['value'] = '';
+        var element = document.getElementById('authentication_workspace_unsuccessful');
+        if (element) {
+            element.style.display = "none";
+        }
+        var element = document.getElementById('authentication_url_successful');
+        if (element) {
+            element.style.display = "none";
+        }
+        var element = document.getElementById('test_authentication_connection_successful');
+        if (element) {
+            element.style.display = "none";
+        }
     }
 
 }());
