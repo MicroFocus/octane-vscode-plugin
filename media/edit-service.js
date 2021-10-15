@@ -70,17 +70,25 @@
     }
 
     let filterOption = document.getElementsByClassName("filter_option");
-    document.getElementsByClassName("reference-select")[0].addEventListener('click', e => {
-        console.log("cccccc");
+    document.getElementsByClassName("reference-select")[0].addEventListener('change', e => {
+        let selected = document.getElementsByClassName("reference-select")[0];
+        if (selected && selected.selectedOptions) {
+            console.log(selected.selectedOptions);
+            for (let option of selected.selectedOptions) {
+                showFields(option);
+            }
+        }
+
+
     });
-    for (let option of filterOption) {
-        console.log("option", option);
-        option.addEventListener('change', e => {
-            console.log("cccccc");
-            showFields(option);
-        });
-    }
-    console.log(filterOption);
+    // for (let option of filterOption) {
+    //     // console.log("option", option);
+    //     option.addEventListener('click', e => {
+    //         console.log("cccccc");
+    //         showFields(option);
+    //     });
+    // }
+    // console.log(filterOption);
 
 
     let checkboxes = document.getElementsByClassName("filterCheckbox");
@@ -120,10 +128,11 @@
     }
 
     function showFields(checkbox) {
-        let element = document.getElementById("container_" + checkbox.name.replaceAll(" ", "_"));
+        let element = document.getElementById("container_" + checkbox.label.replaceAll(" ", "_"));
         // console.log(element);
         if (element) {
-            if (!checkbox.checked) {
+            console.log(checkbox.selected);
+            if (!checkbox.selected) {
                 element.style.display = "none";
                 setFilterSelection(checkbox, false);
             } else {
@@ -138,7 +147,7 @@
             type: 'saveToMemento',
             from: 'edit-service',
             data: {
-                filterName: checkbox.name,
+                filterName: checkbox.label,
                 message: message
             }
         });
