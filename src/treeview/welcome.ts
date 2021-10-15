@@ -106,7 +106,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                         } else {
                             try {
                                 authTestResult = await OctaneService.getInstance().testAuthentication(data.uri, data.space, data.workspace, data.user, data.password, undefined, undefined);
-                            } catch(e: any) {
+                            } catch (e: any) {
                                 authTestResult = e;
                             }
                             if (authTestResult.statusCode) {
@@ -187,7 +187,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
 			</head>
 			<body>
                 <div class="main-container">
-                    <span>URL</span>
+                    <span>Server URL</span>
                     <input type="text" id="authentication_url_id" class="authentication_url" value="${uri}"></input>
                     <span id="authentication_url_successful" style="display: none"></span>
                 </div>
@@ -202,25 +202,52 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                 <hr>
                 <div class="main-container" style="flex-direction: row; align-items: center;">
 				    <input style="width: unset" id="attempt_authentication_radio_id" class="attempt_authentication_radio" type="radio" name="auth"></input> <label style="margin-top: 0.5rem;">Authenticate with username and password</label>
+                    <span 
+                        title="Log into ALM Octane directly with your user name and password, in non-SSO environments. This method saves your login credentials between sessions, so you do not have to re-enter them." 
+                        style="margin: 0.5rem 0rem 0rem 0.5rem; cursor: pointer;"> ?</span>
+                    <script>
+                        $(document).ready(function() {
+                            $('[data-toggle="tooltip"]').tooltip();
+                        });
+                    </script>
                 </div>
-                <div class="main-container" style="flex-direction: row; align-items: center;">
-				    <input style="width: unset" id="attempt_browser_authentication_radio_id" class="attempt_browser_authentication_radio" type="radio" name="auth"></input> <label style="margin-top: 0.5rem;">Authenticate using browser</label>
-                </div>
-                <script>
-                    document.getElementById("attempt_authentication_radio_id").checked = ${!isBrowserAuth};
-                    document.getElementById("attempt_browser_authentication_radio_id").checked = ${isBrowserAuth};
-                </script>
-                <div class="main-container">
+                <div class="main-container" id="authentication_username_id">
                     <span>Username</span>
                     <input type="text" class="authentication_username" value="${user}"></input>
                 </div>
                 <div class="main-container" id="authentication_password_id">
                     <span>Password</span>
                     <input type="password" class="authentication_password"></input>
-                    <script>
-                        document.getElementById("authentication_password_id").style.display = ${isBrowserAuth} === true ? "none" : "flex";
+                    <script type="text/javascript">
+                        if(${isBrowserAuth} === true) {
+                            document.getElementById("authentication_password_id").style.opacity = "0.6";
+                            document.getElementById("authentication_username_id").style.opacity = "0.6";
+                            document.getElementsByClassName('authentication_username')[0].setAttribute("disabled", "disabled");
+                            document.getElementsByClassName('authentication_password')[0].setAttribute("disabled", "disabled");
+                        } else {
+                            document.getElementById("authentication_password_id").style.opacity = "100";
+                            document.getElementById("authentication_username_id").style.opacity = "100";
+                            document.getElementsByClassName('authentication_username')[0].removeAttribute("disabled");
+                            document.getElementsByClassName('authentication_password')[0].removeAttribute("disabled");
+                        }
+                    
                     </script>
                 </div>
+                <div class="main-container" style="flex-direction: row; align-items: center;">
+				    <input style="width: unset" id="attempt_browser_authentication_radio_id" class="attempt_browser_authentication_radio" type="radio" name="auth"></input> <label style="margin-top: 0.5rem;">Authenticate using browser</label>
+                    <span 
+                        title="Log into ALM Octane using a browser. You can use this method for non-SSO, SSO, and federated environments. Your login credentials are not saved between sessions, so you will have to re-enter them each time." 
+                        style="margin: 0.5rem 0rem 0rem 0.5rem; cursor: pointer;"> ?</span>
+                    <script>
+                        $(document).ready(function() {
+                            $('[data-toggle="tooltip"]').tooltip();
+                        });
+                    </script>
+                </div>
+                <script>
+                    document.getElementById("attempt_authentication_radio_id").checked = ${!isBrowserAuth};
+                    document.getElementById("attempt_browser_authentication_radio_id").checked = ${isBrowserAuth};
+                </script>
                 <hr>
                 <div class="main-container" style="flex-direction: row;">
 				    <button class="test_authentication_connection" style="margin: 0rem 0.5rem 0rem 0rem">Test connection</button>

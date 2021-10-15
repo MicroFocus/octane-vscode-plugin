@@ -196,14 +196,24 @@ export async function activate(context: vscode.ExtensionContext) {
 		});
 		context.subscriptions.push(downloadTestCommand);
 	}
-
 	{
 		context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.quickPick', async () => {
 			const quickPick = vscode.window.createQuickPick();
 			quickPick.items = [];
+			let history: OctaneQuickPickItem[] = context.workspaceState.get('visual-studio-code-plugin-for-alm-octane.quickPick.history', []);
+			console.info('history: ', history);
+			quickPick.items = history;
 			quickPick.onDidChangeSelection(async selection => {
+				if (quickPick.value && history.find(e => e.searchString === quickPick.value) === undefined) {
+					history = [new OctaneQuickPickItem(undefined, quickPick.value)].concat(history).slice(0, 5);
+					context.workspaceState.update('visual-studio-code-plugin-for-alm-octane.quickPick.history', history);
+				}
 				let item: OctaneQuickPickItem = selection[0] as OctaneQuickPickItem;
 				if (item) {
+					if (item.entity === undefined) {
+						quickPick.value = item.searchString ?? item.label;
+						return;
+					}
 					try {
 						if (item.entity.type && entitiesToOpenExternally.includes(item.entity.type)) {
 							await vscode.env.openExternal(service.getBrowserUri(item.entity));
@@ -287,6 +297,13 @@ export async function activate(context: vscode.ExtensionContext) {
 		clearActiveItemStatusBarItem.hide();
 	}));
 	
+
+	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.dismissItem', async(e: MyWorkItem) =>{
+		if (e.entity) {
+			await service.dismissFromMyWork(e.entity);
+			vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.refreshAll');
+		}
+	}));
 
 	vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.refreshAll');
 

@@ -24,16 +24,46 @@
     });
 
     document.querySelector('.attempt_browser_authentication_radio').addEventListener('click', () => {
+        var element = document.getElementById('authentication_username_id');
+        if (element) {
+            element.style.opacity = "0.6";
+            element.setAttribute("disabled", "disabled");
+        }
+        var username = document.getElementsByClassName('authentication_username')[0];
+        if (username) {
+            username.setAttribute("disabled", "disabled");
+        }
+
         var element = document.getElementById('authentication_password_id');
         if (element) {
-            element.style.display = "none";
+            element.style.opacity = "0.6";
+            element.setAttribute("disabled", "disabled");
+        }
+        var input = document.getElementsByClassName('authentication_password')[0];
+        if (input) {
+            input.setAttribute("disabled", "disabled");
         }
     });
 
     document.querySelector('.attempt_authentication_radio').addEventListener('click', () => {
+        var element = document.getElementById('authentication_username_id');
+        if (element) {
+            element.style.opacity = "100";
+            element.setAttribute("disabled", "disabled");
+        }
+        var username = document.getElementsByClassName('authentication_username')[0];
+        if (username) {
+            username.removeAttribute("disabled");
+        }
+        
         var element = document.getElementById('authentication_password_id');
         if (element) {
             element.style.display = "flex";
+            element.style.opacity = "100";
+        }
+        var input = document.getElementsByClassName('authentication_password')[0];
+        if (input) {
+            input.removeAttribute("disabled");
         }
     });
 
@@ -143,6 +173,18 @@
         document.querySelector('.authentication_password')['value'] = '';
         document.querySelector('.authentication_space')['value'] = '';
         document.querySelector('.authentication_workspace')['value'] = '';
+        var element = document.getElementById('authentication_workspace_unsuccessful');
+        if (element) {
+            element.style.display = "none";
+        }
+        var element = document.getElementById('authentication_url_successful');
+        if (element) {
+            element.style.display = "none";
+        }
+        var element = document.getElementById('test_authentication_connection_successful');
+        if (element) {
+            element.style.display = "none";
+        }
     }
 
 }());
