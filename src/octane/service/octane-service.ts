@@ -253,6 +253,7 @@ export class OctaneService {
                     .field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
                     .build()
             )
+            .orderBy('creation_time')
             .execute();
         let entities = response.data.map((r: any) => new OctaneEntity(r));
         console.log(entities);
@@ -278,6 +279,7 @@ export class OctaneService {
                     .field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
                     .build()
             )
+            .orderBy('creation_time')
             .execute();
         console.log(response);
 
@@ -310,6 +312,7 @@ export class OctaneService {
                     .field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
                     .build()
             )
+            .orderBy('creation_time')
             .execute();
         let entities = response.data.map((r: any) => new OctaneEntity(r));
         console.log(entities);
@@ -324,6 +327,7 @@ export class OctaneService {
                     .field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
                     .build()
             )
+            .orderBy('creation_time')
             .execute();
         let entities = response.data.map((r: any) => new OctaneEntity(r));
         console.log(entities);
@@ -337,6 +341,7 @@ export class OctaneService {
                 Query.field('mention_user').equal(Query.field('id').equal(this.loggedInUserId))
                     .build()
             )
+            .orderBy('creation_time')
             .execute();
         let entities = response.data.map((r: any) => new Comment(r));
         console.log(entities);
@@ -350,6 +355,7 @@ export class OctaneService {
                 Query.field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
                     .build()
             )
+            .orderBy('creation_time')
             .execute();
         let entities = response.data.map((r: any) => new OctaneEntity(r));
         console.log(entities);
