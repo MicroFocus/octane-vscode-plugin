@@ -73,9 +73,14 @@
     document.getElementsByClassName("reference-select")[0].addEventListener('change', e => {
         let selected = document.getElementsByClassName("reference-select")[0];
         if (selected && selected.selectedOptions) {
-            console.log(selected.selectedOptions);
-            for (let option of selected.selectedOptions) {
-                showFields(option);
+            console.log(selected);
+            for (let option of selected) {
+                if(option.selected) {
+                    showFields(option, true);
+                }
+                else {
+                    showFields(option, false);
+                }
             }
         }
 
@@ -127,12 +132,12 @@
         }
     }
 
-    function showFields(checkbox) {
+    function showFields(checkbox, t) {
         let element = document.getElementById("container_" + checkbox.label.replaceAll(" ", "_"));
         // console.log(element);
         if (element) {
-            console.log(checkbox.selected);
-            if (!checkbox.selected) {
+            console.log(checkbox);
+            if (!t) {
                 element.style.display = "none";
                 setFilterSelection(checkbox, false);
             } else {
