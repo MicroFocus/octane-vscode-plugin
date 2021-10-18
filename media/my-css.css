@@ -226,14 +226,14 @@ hr {
 
 .save {
     margin: 0 0 0 0.5rem;
-    width: 5rem;
+    width: 2rem;
     height: 2rem;
     margin-top: 1rem;
 }
 
 #refresh, #addToMyWork, #filterId {
     margin: 0 0 0 0.5rem;
-    width: 8rem;
+    width: 2rem;
     height: 2rem;
     margin-top: 1rem;
     background-color: #3c3c3c;
