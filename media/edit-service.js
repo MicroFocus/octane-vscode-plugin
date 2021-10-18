@@ -9,6 +9,10 @@
         var instances = M.FormSelect.init(elems, {});
     });
 
+    document.getElementById("commentsId").addEventListener('click', e => {
+        getComments();
+    });
+
     document.getElementById("saveId").addEventListener('click', e => {
         getData();
     });
@@ -40,6 +44,22 @@
     document.getElementById("addToMyWork").addEventListener('click', e => {
         addToMyWork();
     });
+
+    function getComments() {
+        let comments = document.getElementById("comments-element-id");
+        let main = document.getElementById("element-id");
+        if(comments) {
+            if(comments.style.display === "none") {
+                comments.style.display = "flex";
+                comments.style.width = "30vw";
+                main.style.width = "70vw";
+            } else {
+                comments.style.display = "none";
+                comments.style.width = "0vw";
+                main.style.width = "100vw";
+            }
+        }
+    }
 
     function postCommentForEntity() {
         let message = document.getElementById('comments-text').value;

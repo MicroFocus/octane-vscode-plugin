@@ -231,7 +231,7 @@ hr {
     margin-top: 1rem;
 }
 
-#refresh, #addToMyWork, #filterId {
+#refresh, #addToMyWork, #filterId, #commentsId {
     margin: 0 0 0 0.5rem;
     width: 2rem;
     height: 2rem;
@@ -239,9 +239,21 @@ hr {
     background-color: #3c3c3c;
 }
 
+.main-element {
+    display: flex;
+    flex-direction: row;
+}
+
+.comments-element {
+    display: flex;
+    flex-direction: column;
+    width: 30vw;
+}
+
 .element {
     display: flex;
     flex-direction: column;
+    width: 70vw;
 }
 
 .select-wrapper input.select-dropdown { 
