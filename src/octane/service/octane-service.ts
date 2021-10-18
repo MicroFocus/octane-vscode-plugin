@@ -5,7 +5,7 @@ import { OctaneEntity } from '../model/octane-entity';
 import { Transition } from '../model/transition';
 import { Comment } from '../model/comment';
 import { AlmOctaneAuthenticationProvider, AlmOctaneAuthenticationSession, AlmOctaneAuthenticationType } from '../../auth/authentication-provider';
-import fetch, { Headers } from 'node-fetch';
+import fetch, { Headers, RequestInit } from 'node-fetch';
 export class OctaneService {
 
     private static _instance: OctaneService;
@@ -574,30 +574,31 @@ export class OctaneService {
                     var myHeaders = new Headers();
                     myHeaders.append('ALM_OCTANE_TECH_PREVIEW', 'true');
                     myHeaders.append('HPECLIENTTYPE', 'OCTANE_IDE_PLUGIN');
-                    if (this.session.cookieName) {
-                        myHeaders.append(`${this.session.cookieName}`, `${this.session.accessToken}`);
-                        // Cookie: this.session.type === AlmOctaneAuthenticationType.browser ? `${this.session.cookieName}=` : undefined
+                    if (this.session.type === AlmOctaneAuthenticationType.browser) {
+                        myHeaders.append('Cookie', `${this.session.cookieName}=${this.session.accessToken}`);
+                    } else {
+                        myHeaders.set('Authorization', 'Basic ' + Buffer.from(this.user + ":" + this.session.accessToken).toString('base64')); 
                     }
                     myHeaders.append('Content-Type', 'application/json');
 
-                    let entityModel: any = {
+                    let entityModel: string = JSON.stringify({
                         id: `${e.id}`
-                    };
+                    });
                     // var raw = JSON.stringify({
                     //   "id": "263042"
                     // });
 
-                    // var requestOptions = {
-                    //   method: 'PUT',
-                    //   headers: myHeaders,
-                    //   body: raw,
-                    //   redirect: 'follow'
-                    // };
+                    var requestOptions: RequestInit = {
+                      method: 'PUT',
+                      headers: myHeaders,
+                      body: entityModel,
+                      redirect: 'follow'
+                    };
 
-                    // fetch("https://internal.almoctane.com/internal-api/shared_spaces/61004/workspaces/5001/comments/263042/dismiss", requestOptions)
-                    //   .then(response => response.text())
-                    //   .then(result => console.log(result))
-                    //   .catch(error => console.log('error', error));
+                    await fetch(`${this.uri}internal-api/shared_spaces/${this.space}/workspaces/${this.workspace}/comments/${e.id}/dismiss`, requestOptions)
+                      .then(response => response.text())
+                      .then(result => console.log(result))
+                      .catch(error => console.log('error', error));
 
 
                     // await this.octane.update(Octane.Octane.entityTypes.comments, entityModel).at(`${e.id}/dismiss`)
