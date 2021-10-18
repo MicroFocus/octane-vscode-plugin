@@ -56,6 +56,9 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                             let regExp = data.uri.match(/\?p=(\d+\/\d+)/);
                             if (regExp) {
                                 data.uri = data.uri.split(regExp[0])[0];
+                                if(data.uri) {
+                                    data.uri = data.uri.split('ui')[0];
+                                }
                             }
                             await uri.update('server.uri', data.uri.endsWith('/') ? data.uri : data.uri + '/', true);
                             await uri.update('server.space', data.space, true);
@@ -134,7 +137,9 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                 case 'changeInURL':
                     {
                         let url: string = data.url;
-                        let regExp = url.match(/\?p=(\d+\/\d+)\/?$/);
+                        // let regExp = url.match(/\?p=(\d+\/\d+)\/?$/);
+                        // new regexp:  \?p=(\d+\/?(%?\d?[A-Za-z]?)\d+)\/?#?
+                        let regExp = url.match(/\?p=(\d+\/\d+)\/?#?/);
                         let space = regExp !== null ? regExp[1].split('/')[0] : null;
                         let workspace = regExp !== null ? regExp[1].split('/')[1] : null;
                         if (space === null || workspace === null) {
