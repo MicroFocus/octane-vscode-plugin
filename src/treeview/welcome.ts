@@ -109,10 +109,10 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                             } catch (e: any) {
                                 authTestResult = e;
                             }
-                            if (authTestResult.statusCode) {
+                            if (authTestResult.error) {
                                 webviewView.webview.postMessage({
                                     type: 'workspaceIdDoesNotExist',
-                                    message: authTestResult.response.body.description_translated
+                                    message: authTestResult?.response?.body?.description_translated ?? 'Invalid URI/Space/Workspace'
                                 });
                                 webviewView.webview.postMessage({
                                     type: 'testConnectionResponse',
