@@ -584,9 +584,6 @@ export class OctaneService {
                     let entityModel: string = JSON.stringify({
                         id: `${e.id}`
                     });
-                    // var raw = JSON.stringify({
-                    //   "id": "263042"
-                    // });
 
                     var requestOptions: RequestInit = {
                       method: 'PUT',
