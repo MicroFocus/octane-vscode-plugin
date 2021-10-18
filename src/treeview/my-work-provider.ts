@@ -107,6 +107,7 @@ export class MyWorkItemLabel implements vscode.TreeItemLabel {
             this.label = item.id + ' ' + item.name;
             // this.highlights = [[0, item.id.length]];
         }
+        this.highlights = [[0, item.id.length]];
     }
 
 }
