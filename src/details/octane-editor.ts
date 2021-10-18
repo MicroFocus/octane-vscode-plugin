@@ -182,7 +182,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                         </div>
                     </div>
                     <div id="comments-element-id" class="comments-element">
-                        <div class="comments-sidebar">
+                        <div id="comments-sidebar-id" class="comments-sidebar">
                             ${await generateCommentElement(data, fields)}
                         </div>
                     </div>
