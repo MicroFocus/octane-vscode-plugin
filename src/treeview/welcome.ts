@@ -92,9 +92,12 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                     {
                         var authTestResult: any;
                         if (data.uri !== undefined) {
-                            let regExp = data.uri.match(/\?p=(\d+\/\d+)/);
+                            let regExp = data.uri.match(/\?p=(\d+\/\d+)/) ?? data.uri.match(/(\/?%\d*[A-Za-z]*)/);
                             if (regExp) {
                                 data.uri = data.uri.split(regExp[0])[0];
+                                if (data.uri) {
+                                    data.uri = data.uri.split('ui')[0];
+                                }
                             }
                         }
                         if (data.browser) {
