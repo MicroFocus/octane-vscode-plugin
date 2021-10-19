@@ -81,7 +81,7 @@
 			}
 		],
 		"viewsContainers": {
-			"activitybar": [
+			"panel": [
 				{
 					"id": "visual-studio-code-plugin-for-alm-octane-explorer",
 					"title": "My Work - ALM Octane",
