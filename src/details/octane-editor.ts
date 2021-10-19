@@ -224,8 +224,11 @@ function generatePhaseSelectElement(data: any | OctaneEntity | undefined, fields
     if (data.phase) {
         let transitions: Transition[] = OctaneService.getInstance().getPhaseTransitionForEntity(data.phase.id);
         html += `<select id="select_phase" name="action" class="action">`;
+        // html += `
+        //     <option value="none">${getFieldValue(data, 'phase')}</option>
+        // `;
         html += `
-            <option value="none">${getFieldValue(data, 'phase')}</option>
+            <option value="none"></option>
         `;
         transitions.forEach((target: any) => {
             if (!target) { return; }
