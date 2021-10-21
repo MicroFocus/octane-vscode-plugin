@@ -10,6 +10,7 @@ import { MyRequirementsProvider } from './treeview/requirements-provider';
 import { OctaneEntityEditorProvider } from './details/octane-editor';
 import { AlmOctaneAuthenticationProvider } from './auth/authentication-provider';
 import { WelcomeViewProvider } from './treeview/welcome';
+import { SearchProvider } from './treeview/search-provider';
 import { OctaneEntity } from './octane/model/octane-entity';
 import { OctaneQuickPickItem } from './octane/model/octane-quick-pick-item';
 import { MyWorkItem } from './treeview/my-work-provider';
@@ -105,6 +106,9 @@ export async function activate(context: vscode.ExtensionContext) {
 	const myTasksProvider = new MyTasksProvider(service);
 	vscode.window.registerTreeDataProvider('myTasks', myTasksProvider);
 
+	const mySearchProvider = new SearchProvider(context);
+	vscode.window.registerTreeDataProvider('visual-studio-code-plugin-for-alm-octane.mySearch', mySearchProvider);
+
 	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.refreshAll', () => {
 		vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myBacklog.refreshEntry');
 		vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myTests.refreshEntry');
@@ -197,12 +201,12 @@ export async function activate(context: vscode.ExtensionContext) {
 		context.subscriptions.push(downloadTestCommand);
 	}
 	{
-		context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.quickPick', async () => {
+		context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.quickPick', async (value: OctaneQuickPickItem) => {
 			const quickPick = vscode.window.createQuickPick();
 			quickPick.items = [];
 			let history: OctaneQuickPickItem[] = context.workspaceState.get('visual-studio-code-plugin-for-alm-octane.quickPick.history', []);
 			console.info('history: ', history);
-			quickPick.items = history;
+
 			quickPick.onDidChangeSelection(async selection => {
 				if (quickPick.value && history.find(e => e.searchString === quickPick.value) === undefined) {
 					history = [new OctaneQuickPickItem(undefined, quickPick.value)].concat(history).slice(0, 5);
@@ -225,6 +229,14 @@ export async function activate(context: vscode.ExtensionContext) {
 					}
 				}
 			});
+
+			if (value) {
+				// quickPick.items = [value];
+				// quickPick.selectedItems = [value];
+				quickPick.value = value.searchString ?? '';
+			} else {
+				quickPick.items = history;
+			}
 
 			let quickPickChangedValue = async function (e: string) {
 				let promises = [];

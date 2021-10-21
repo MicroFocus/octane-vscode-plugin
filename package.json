@@ -45,7 +45,7 @@
 				"displayName": "MyEditor",
 				"selector": [
 					{
-						"filenamePattern": "*octane*"
+						"filenamePattern": "octane://*/octane/*"
 					}
 				]
 			}
@@ -81,7 +81,7 @@
 			}
 		],
 		"viewsContainers": {
-			"panel": [
+			"activitybar": [
 				{
 					"id": "visual-studio-code-plugin-for-alm-octane-explorer",
 					"title": "My Work - ALM Octane",
@@ -97,6 +97,13 @@
 					"icon": "media/favicon.png",
 					"type": "webview",
 					"when": "!visual-studio-code-plugin-for-alm-octane.hasSession"
+				},
+				{
+					"id": "visual-studio-code-plugin-for-alm-octane.mySearch",
+					"name": "Search for entities",
+					"icon": "$(search-view-icon)",
+					"when": "visual-studio-code-plugin-for-alm-octane.hasSession",
+					"visibility": "collapsed"
 				},
 				{
 					"id": "myBacklog",
@@ -186,7 +193,7 @@
 				},
 				{
 					"command": "visual-studio-code-plugin-for-alm-octane.quickPick",
-					"when": "panelFocus && activePanel == 'visual-studio-code-plugin-for-alm-octane-explorer'",
+					"when": "view == visual-studio-code-plugin-for-alm-octane.mySearch",
 					"group": "navigation"
 				}
 			],
@@ -209,12 +216,6 @@
 				},
 				{
 					"command": "visual-studio-code-plugin-for-alm-octane.dismissItem"
-				}
-			],
-			"editor/title": [
-				{
-					"command": "visual-studio-code-plugin-for-alm-octane.quickPick",
-					"group": "navigation"
 				}
 			]
 		},
