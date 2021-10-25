@@ -5,7 +5,7 @@ import { OctaneEntity } from '../model/octane-entity';
 import { Transition } from '../model/transition';
 import { Comment } from '../model/comment';
 import { AlmOctaneAuthenticationProvider, AlmOctaneAuthenticationSession, AlmOctaneAuthenticationType } from '../../auth/authentication-provider';
-import fetch from 'node-fetch';
+import fetch, { Headers, RequestInit } from 'node-fetch';
 export class OctaneService {
 
     private static _instance: OctaneService;
@@ -44,6 +44,8 @@ export class OctaneService {
             headers: {
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 ALM_OCTANE_TECH_PREVIEW: true,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                HPECLIENTTYPE: 'OCTANE_IDE_PLUGIN',
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 Cookie: (cookieName === undefined || cookieName === '') ? undefined : `${cookieName}=${cookie}`
             }
@@ -567,16 +569,43 @@ export class OctaneService {
             }
             let type = e.type;
             if (e.type === 'comment') {
-                let entityModel: any = {
-                    id: `${e.id}`
-                };
-                await this.octane.update(Octane.Octane.entityTypes.comments, entityModel).at(`${e.id}/dismiss`)
-                    .execute()
-                    .then((res: any) => {
-                        vscode.window.showInformationMessage('Item dismissed.');
-                    }, (error: any) => {
-                        vscode.window.showErrorMessage('Item dismissal failed.' + error);
+
+                if (this.uri && this.space && this.workspace && this.user && this.session) {
+                    var myHeaders = new Headers();
+                    myHeaders.append('ALM_OCTANE_TECH_PREVIEW', 'true');
+                    myHeaders.append('HPECLIENTTYPE', 'OCTANE_IDE_PLUGIN');
+                    if (this.session.type === AlmOctaneAuthenticationType.browser) {
+                        myHeaders.append('Cookie', `${this.session.cookieName}=${this.session.accessToken}`);
+                    } else {
+                        myHeaders.set('Authorization', 'Basic ' + Buffer.from(this.user + ":" + this.session.accessToken).toString('base64')); 
+                    }
+                    myHeaders.append('Content-Type', 'application/json');
+
+                    let entityModel: string = JSON.stringify({
+                        id: `${e.id}`
                     });
+
+                    var requestOptions: RequestInit = {
+                      method: 'PUT',
+                      headers: myHeaders,
+                      body: entityModel,
+                      redirect: 'follow'
+                    };
+
+                    await fetch(`${this.uri}internal-api/shared_spaces/${this.space}/workspaces/${this.workspace}/comments/${e.id}/dismiss`, requestOptions)
+                      .then(response => response.text())
+                      .then(result => console.log(result))
+                      .catch(error => console.log('error', error));
+
+
+                    // await this.octane.update(Octane.Octane.entityTypes.comments, entityModel).at(`${e.id}/dismiss`)
+                    //     .execute()
+                    //     .then((res: any) => {
+                    //         vscode.window.showInformationMessage('Item dismissed.');
+                    //     }, (error: any) => {
+                    //         vscode.window.showErrorMessage('Item dismissal failed.' + error);
+                    //     });
+                }
             } else {
                 let field = 'my_follow_items_work_item';
                 switch (e.type) {

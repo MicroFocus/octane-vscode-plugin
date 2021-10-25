@@ -166,7 +166,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
             <body>
                 <div class="top-container">
                     <div class="icon-container" style="background-color: ${getDataForSubtype(data)[1]}">
-                    <span class="label">${getDataForSubtype(data)[0]}</span>
+                        <span class="label">${getDataForSubtype(data)[0]}</span>
                     </div>
                     <div class="name-container">
                         <h6>${data?.name ?? '-'}</h6>
@@ -175,14 +175,19 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                         ${await generatePhaseSelectElement(data, fields)}
                     </div>
                 </div>
-                <div class="element">
-                    <div class="information">
-                        ${await generateBodyElement(data, fields)}
+                <div class="main-element">
+                    <div id="element-id" class="element">
+                        <div class="information">
+                            ${await generateBodyElement(data, fields)}
+                        </div>
                     </div>
-                    <div class="comments-sidebar">
-                        ${await generateCommentElement(data, fields)}
+                    <div id="comments-element-id" class="comments-element">
+                        <div id="comments-sidebar-id" class="comments-sidebar">
+                            ${await generateCommentElement(data, fields)}
+                        </div>
                     </div>
                 </div>
+                
                 <script src="${scriptUri}"></script>
             </body>
     
@@ -221,8 +226,11 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
     if (data.phase) {
         let transitions: Transition[] = OctaneService.getInstance().getPhaseTransitionForEntity(data.phase.id);
         html += `<select id="select_phase" name="action" class="action">`;
+        // html += `
+        //     <option value="none">${getFieldValue(data, 'phase')}</option>
+        // `;
         html += `
-            <option value="none">${getFieldValue(data, 'phase')}</option>
+            <option value="none"></option>
         `;
         transitions.forEach((target: any) => {
             if (!target) { return; }
@@ -232,10 +240,27 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
         });
     }
     html += `</select>
-            <button id="saveId" class="save" type="button">Save</button>
-            <button id="refresh" type="button">Refresh</button>
-            <button id="addToMyWork" type="button">Add to MyWork</button>
-            <button id="filterId" type="button">Filter</button>`;
+                <button title="Save" id="saveId" class="save" type="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm2 16H5V5h11.17L19 7.83V19zm-7-7c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zM6 6h9v4H6z"/></svg>
+                </button>
+                <button title="Refresh" id="refresh" type="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+                </button>
+                <button title="Add to MyWork" id="addToMyWork" type="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                </button>
+                <button title="Filter fields" id="filterId" type="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><g><path d="M0,0h24 M24,24H0" fill="none"/><path d="M7,6h10l-5.01,6.3L7,6z M4.25,5.61C6.27,8.2,10,13,10,13v6c0,0.55,0.45,1,1,1h2c0.55,0,1-0.45,1-1v-6 c0,0,3.72-4.8,5.74-7.39C20.25,4.95,19.78,4,18.95,4H5.04C4.21,4,3.74,4.95,4.25,5.61z"/><path d="M0,0h24v24H0V0z" fill="none"/></g></svg>
+                </button>
+                <button title="Comments" id="commentsId" type="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M15 4v7H5.17l-.59.59-.58.58V4h11m1-2H3c-.55 0-1 .45-1 1v14l4-4h10c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1zm5 4h-2v9H6v2c0 .55.45 1 1 1h11l4 4V7c0-.55-.45-1-1-1z"/></svg>
+                </button>
+                <script>
+                            $(document).ready(function() {
+                                $('[data-toggle="tooltip"]').tooltip();
+                            });
+                </script>
+            `;
 
     let filteredFields: string[] = [];
     let mapFields = new Map<string, any>();
@@ -520,6 +545,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
             }
         }
     }
+    html += `</div>`;
     return html;
 }
 

@@ -3,7 +3,7 @@
 	"displayName": "Visual Studio Code plugin for ALM Octane",
 	"publisher": "MicroFocus",
 	"description": "With the ALM Octane Visual Studio Code plugin, you can do your ALM Octane work (on stories, defects, tasks, and so on) directly within the Visual Studio Code development framework.",
-	"version": "0.0.5",
+	"version": "0.0.6",
 	"engines": {
 		"vscode": "^1.56.0"
 	},
@@ -45,7 +45,7 @@
 				"displayName": "MyEditor",
 				"selector": [
 					{
-						"filenamePattern": "*octane*"
+						"filenamePattern": "octane://*/octane/*"
 					}
 				]
 			}
@@ -97,6 +97,13 @@
 					"icon": "media/favicon.png",
 					"type": "webview",
 					"when": "!visual-studio-code-plugin-for-alm-octane.hasSession"
+				},
+				{
+					"id": "visual-studio-code-plugin-for-alm-octane.mySearch",
+					"name": "Search for entities",
+					"icon": "$(search-view-icon)",
+					"when": "visual-studio-code-plugin-for-alm-octane.hasSession",
+					"visibility": "collapsed"
 				},
 				{
 					"id": "myBacklog",
@@ -183,6 +190,11 @@
 					"command": "visual-studio-code-plugin-for-alm-octane.myWelcome.refreshEntry",
 					"when": "view == visual-studio-code-plugin-for-alm-octane.myWelcome",
 					"group": "navigation"
+				},
+				{
+					"command": "visual-studio-code-plugin-for-alm-octane.quickPick",
+					"when": "view == visual-studio-code-plugin-for-alm-octane.mySearch",
+					"group": "navigation"
 				}
 			],
 			"view/item/context": [
@@ -203,14 +215,7 @@
 					"command": "visual-studio-code-plugin-for-alm-octane.openInBrowser"
 				},
 				{
-					"command": "visual-studio-code-plugin-for-alm-octane.dismissItem",
-					"when": "viewItem != 'comment'"
-				}
-			],
-			"editor/title": [
-				{
-					"command": "visual-studio-code-plugin-for-alm-octane.quickPick",
-					"group": "navigation"
+					"command": "visual-studio-code-plugin-for-alm-octane.dismissItem"
 				}
 			]
 		},
