@@ -7,6 +7,9 @@
 	"engines": {
 		"vscode": "^1.56.0"
 	},
+	"repository": {
+		"url": "https://github.com/MicroFocus/octane-vscode-plugin.git"
+	},
 	"extensionKind": [
 		"ui",
 		"workspace"
