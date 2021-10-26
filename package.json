@@ -312,6 +312,11 @@
 				"command": "visual-studio-code-plugin-for-alm-octane.quickPick",
 				"title": "Octane - Search Issues",
 				"icon": "$(search-view-icon)"
+			},
+			{
+				"command": "visual-studio-code-plugin-for-alm-octane.mySearch.refreshEntry",
+				"title": "Search refresh",
+				"icon": "$(search-view-icon)"
 			}
 		]
 	},

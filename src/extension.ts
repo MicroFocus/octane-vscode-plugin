@@ -218,7 +218,8 @@ export async function activate(context: vscode.ExtensionContext) {
 			quickPick.onDidChangeSelection(async selection => {
 				if (quickPick.value && history.find(e => e.searchString === quickPick.value) === undefined) {
 					history = [new OctaneQuickPickItem(undefined, quickPick.value)].concat(history).slice(0, 5);
-					context.workspaceState.update('visual-studio-code-plugin-for-alm-octane.quickPick.history', history);
+					await context.workspaceState.update('visual-studio-code-plugin-for-alm-octane.quickPick.history', history);
+					vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.mySearch.refreshEntry');
 				}
 				let item: OctaneQuickPickItem = selection[0] as OctaneQuickPickItem;
 				if (item) {
