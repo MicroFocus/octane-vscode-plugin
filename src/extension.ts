@@ -19,6 +19,7 @@ import { MyTestRunsProvider } from './treeview/test-runs-provider';
 import * as path from 'path';
 import * as fs from 'fs';
 import { debounce } from "ts-debounce";
+import { TextEncoder } from 'util';
 
 export async function activate(context: vscode.ExtensionContext) {
 
@@ -180,7 +181,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 			if (e.entity) {
 				const script = await service.downloadScriptForTest(e.entity);
-				if (vscode === undefined || vscode.workspace === undefined || vscode.workspace.workspaceFolders === undefined) {
+				if (vscode === undefined || vscode.workspace === undefined || vscode.workspace.workspaceFolders === undefined || vscode.workspace.workspaceFolders[0] === undefined) {
 					vscode.window.showErrorMessage('No workspace opened. Can not save test script.');
 					return;
 				}
@@ -188,13 +189,20 @@ export async function activate(context: vscode.ExtensionContext) {
 				const newFile = vscode.Uri.parse(path.join(vscode.workspace.workspaceFolders[0].uri.path, `${e.entity.name}_${e.entity.id}.feature`));
 				const fileInfos = await vscode.window.showSaveDialog({ defaultUri: newFile });
 				if (fileInfos) {
-					fs.writeFileSync(fileInfos.path, `${script}`, 'utf8');
 					try {
-						await vscode.workspace.openTextDocument(fileInfos.path);
-					} catch (e) {
-						console.error(e);
+						await vscode.workspace.fs.writeFile(vscode.Uri.file(fileInfos.path), new TextEncoder().encode(`${script}`));
+						try {
+							console.log(`Script saved to: ${fileInfos.path}`);
+							await vscode.commands.executeCommand('vscode.open', vscode.Uri.file(fileInfos.path));
+						} catch (e) {
+							console.error(e);
+						}
+						vscode.window.showInformationMessage('Script saved.');	
+					} catch (error) {
+						console.error('While saving script: ', e);
+						vscode.window.showErrorMessage('Access error occurred while saving script.');
 					}
-					vscode.window.showInformationMessage('Script saved.');
+					
 				}
 			}
 		});
