@@ -1,13 +1,16 @@
 import * as vscode from 'vscode';
+import { getLogger} from 'log4js';
 
 export class Keychain {
+	private logger = getLogger('vs');
+
 	constructor(private context: vscode.ExtensionContext, private serviceId: string) { }
 	async setToken(token: string): Promise<void> {
 		try {
 			return await this.context.secrets.store(this.serviceId, token);
-		} catch (e) {
+		} catch (e: any) {
 			// Ignore
-			console.error(`Setting token failed: ${e}`);
+			this.logger.error(`Setting token failed: ${e}`);
 			await vscode.window.showErrorMessage("Writing login information to the keychain failed with error '{0}'.", e.message);
 		}
 	}
@@ -16,12 +19,12 @@ export class Keychain {
 		try {
 			const secret = await this.context.secrets.get(this.serviceId);
 			if (secret && secret !== '[]') {
-				console.info('Token acquired from secret storage.');
+				this.logger.info('Token acquired from secret storage.');
 			}
 			return secret;
 		} catch (e) {
 			// Ignore
-			console.error(`Getting token failed: ${e}`);
+			this.logger.error(`Getting token failed: ${e}`);
 			return Promise.resolve(undefined);
 		}
 	}
@@ -31,7 +34,7 @@ export class Keychain {
 			return await this.context.secrets.delete(this.serviceId);
 		} catch (e) {
 			// Ignore
-			console.error(`Deleting token failed: ${e}`);
+			this.logger.error(`Deleting token failed: ${e}`);
 			return Promise.resolve(undefined);
 		}
 	}

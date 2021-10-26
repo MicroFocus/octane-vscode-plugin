@@ -18,11 +18,19 @@ import { MyTasksProvider } from './treeview/tasks-provider';
 import { MyTestRunsProvider } from './treeview/test-runs-provider';
 import * as path from 'path';
 import * as fs from 'fs';
-import { debounce } from "ts-debounce";
+import { debounce } from 'ts-debounce';
 import { TextEncoder } from 'util';
+import { configure, getLogger} from 'log4js';
 
 export async function activate(context: vscode.ExtensionContext) {
 
+	configure({
+	  appenders: { vs: { type: 'file', filename: `${context.logUri.path}/vs.log` } },
+	  categories: { default: { appenders: ['vs'], level: 'debug' } }
+	});
+	
+	const logger = getLogger('vs');
+	
 	const service = OctaneService.getInstance();
 	const authProvider = new AlmOctaneAuthenticationProvider(context);
 	context.subscriptions.push(authProvider);
@@ -70,7 +78,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	await service.initialize();
 
 	vscode.authentication.onDidChangeSessions(async e => {
-		console.info('Received session change', e);
+		logger.info('Received session change', e);
 		if (e.provider && e.provider.id === AlmOctaneAuthenticationProvider.type) {
 			await service.initialize();
 			await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: false });
@@ -177,7 +185,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	{
 		let downloadTestCommand = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.myTests.download', async (e: MyWorkItem) => {
-			console.info('visual-studio-code-plugin-for-alm-octane.myTests.download called', e);
+			logger.info('visual-studio-code-plugin-for-alm-octane.myTests.download called', e);
 
 			if (e.entity) {
 				const script = await service.downloadScriptForTest(e.entity);
@@ -192,14 +200,14 @@ export async function activate(context: vscode.ExtensionContext) {
 					try {
 						await vscode.workspace.fs.writeFile(vscode.Uri.file(fileInfos.path), new TextEncoder().encode(`${script}`));
 						try {
-							console.log(`Script saved to: ${fileInfos.path}`);
+							logger.log(`Script saved to: ${fileInfos.path}`);
 							await vscode.commands.executeCommand('vscode.open', vscode.Uri.file(fileInfos.path));
 						} catch (e) {
-							console.error(e);
+							logger.error(e);
 						}
 						vscode.window.showInformationMessage('Script saved.');	
 					} catch (error) {
-						console.error('While saving script: ', e);
+						logger.error('While saving script: ', e);
 						vscode.window.showErrorMessage('Access error occurred while saving script.');
 					}
 					
@@ -213,7 +221,7 @@ export async function activate(context: vscode.ExtensionContext) {
 			const quickPick = vscode.window.createQuickPick();
 			quickPick.items = [];
 			let history: OctaneQuickPickItem[] = context.workspaceState.get('visual-studio-code-plugin-for-alm-octane.quickPick.history', []);
-			console.info('history: ', history);
+			logger.info('history: ', history);
 
 			quickPick.onDidChangeSelection(async selection => {
 				if (quickPick.value && history.find(e => e.searchString === quickPick.value) === undefined) {
@@ -234,7 +242,7 @@ export async function activate(context: vscode.ExtensionContext) {
 							await vscode.commands.executeCommand('vscode.openWith', vscode.Uri.parse(`octane:///octane/${item.entity.type}/${item.entity.subtype}/${item.entity.id}`), OctaneEntityEditorProvider.viewType);
 						}
 					} catch (e) {
-						console.error(e);
+						logger.error(e);
 					}
 				}
 			});
@@ -259,7 +267,7 @@ export async function activate(context: vscode.ExtensionContext) {
 				let items: OctaneQuickPickItem[] = [];
 				const results = await Promise.all(promises);
 				results.map(r => items.push(...r.map((oe: OctaneEntity) => new OctaneQuickPickItem(oe, e))));
-				console.debug('setting items to', items);
+				logger.debug('setting items to', items);
 				quickPick.items = items;
 			};
 			const debouncedFunction = debounce(quickPickChangedValue, 100);

@@ -351,6 +351,7 @@
 	},
 	"dependencies": {
 		"@microfocus/alm-octane-js-rest-sdk": "^15.0.2-0.1",
+		"log4js": "^6.3.0",
 		"node-fetch": "^2.6.1",
 		"string-strip-html": "^8.3.0",
 		"ts-debounce": "^3.0.0",
