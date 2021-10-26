@@ -271,6 +271,7 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
     html += `
             <div style="margin: 0 0 0 0.5rem; width: 20rem;" id="container_filter_multiselect">
                 <select class="reference-select" multiple="multiple" id="filter_multiselect">
+                <option value="" disabled>Filter</option>
             `;
     for (const [key, field] of mapFields) {
 

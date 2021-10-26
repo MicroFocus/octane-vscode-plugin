@@ -92,23 +92,30 @@
         });
     }
 
-    let filterOption = document.getElementsByClassName("filter_option");
-    document.getElementsByClassName("reference-select")[0].addEventListener('change', e => {
-        let selected = document.getElementsByClassName("reference-select")[0];
-        if (selected && selected.selectedOptions) {
-            console.log(selected);
-            for (let option of selected) {
-                if(option.selected) {
-                    showFields(option, true);
-                }
-                else {
-                    showFields(option, false);
-                }
-            }
-        }
-
-
+    document.getElementById("filter_multiselect").addEventListener('close', e => {
+        console.log("closed ---- ");
     });
+    document.getElementById("container_filter_multiselect").addEventListener('auxclick', e => {
+        console.log("closed ---- ");
+    });
+    
+    // document.getElementsByClassName("reference-select")[0].addEventListener('close', e => {
+        // console.log("closed ---- ");
+        // let selected = document.getElementsByClassName("reference-select")[0];
+        // if (selected && selected.selectedOptions) {
+        //     console.log(selected);
+        //     for (let option of selected) {
+        //         if(option.selected) {
+        //             showFields(option, true);
+        //         }
+        //         else {
+        //             showFields(option, false);
+        //         }
+        //     }
+        // }
+    // });
+
+
     // for (let option of filterOption) {
     //     // console.log("option", option);
     //     option.addEventListener('click', e => {
