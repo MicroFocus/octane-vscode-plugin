@@ -66,6 +66,33 @@ export async function activate(context: vscode.ExtensionContext) {
 		});
 		context.subscriptions.push(getFilterSelection);
 	}
+
+	{
+		let setFields = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.setFields', async (data) => {
+			if (data.fields) {
+				console.log(data);
+				await context.workspaceState.update('visibleFields',
+					JSON.stringify(data)
+				);
+			}
+		});
+		context.subscriptions.push(setFields);
+	}
+
+	{
+		let getFields = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.getFields', () => {
+			let value: any = context.workspaceState.get('visibleFields');
+			if (value) {
+				value = JSON.parse(value);
+				if(value && value.fields) {
+					return value.fields;
+				}
+			}``
+			return;
+		});
+		context.subscriptions.push(getFields);
+	}
+
 	await service.initialize();
 
 	vscode.authentication.onDidChangeSessions(async e => {
@@ -291,7 +318,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	entityStatusBarItem.command = 'visual-studio-code-plugin-for-alm-octane.openActiveItem';
 	entityStatusBarItem.show();
 	context.subscriptions.push(entityStatusBarItem);
-	
+
 	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.startWork', async (e: MyWorkItem) => {
 		myActiveItem = e;
 		entityStatusBarItem.text = `$(clock) ${e.entity?.label} ${e.id}`;
@@ -308,9 +335,9 @@ export async function activate(context: vscode.ExtensionContext) {
 		entityStatusBarItem.text = `$(clock) No Active Item`;
 		clearActiveItemStatusBarItem.hide();
 	}));
-	
 
-	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.dismissItem', async(e: MyWorkItem) =>{
+
+	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.dismissItem', async (e: MyWorkItem) => {
 		if (e.entity) {
 			await service.dismissFromMyWork(e.entity);
 			vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.refreshAll');

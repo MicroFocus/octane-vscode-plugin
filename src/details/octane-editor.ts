@@ -127,10 +127,15 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                     // this.fullData = await OctaneService.getInstance().getDataFromOctaneForTypeAndId(data.type, data.subtype, data.id);
                     webviewPanel.webview.html = await self.getHtmlForWebview(webviewPanel.webview, self.context, document.entity, document.fields);
                 }
+                // if (m.type === 'saveToMemento') {
+                //     OctaneEntityEditorProvider.emitter.fire('test');
+                //     // vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.refreshWebviewPanel');
+                //     vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFilterSelection', m.data);
+                // }
                 if (m.type === 'saveToMemento') {
                     OctaneEntityEditorProvider.emitter.fire('test');
                     // vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.refreshWebviewPanel');
-                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFilterSelection', m.data);
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', m.data);
                 }
                 if (m.type = 'add-to-mywork') {
                     await OctaneService.getInstance().addToMyWork(document.entity);
@@ -325,8 +330,11 @@ async function generateCommentElement(data: any | OctaneEntity | undefined, fiel
 
 async function isSelectedField(fieldName: string) {
     if (fieldName) {
-        let resFilterSelection = await vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.getFilterSelection', fieldName);
-        return resFilterSelection;
+        // let resFilterSelection = await vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.getFilterSelection', fieldName);
+        let resFilterSelection: string[] | undefined = await vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.getFields');
+        if(resFilterSelection && resFilterSelection.includes(fieldName)) {
+            return true;
+        }
     }
     return false;
 }
