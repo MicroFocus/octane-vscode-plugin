@@ -21,22 +21,6 @@
         refreshPanel();
     });
 
-    // document.getElementById("filterId").addEventListener('click', e => {
-    //     this.filterOpened = filterFields(this.filterOpened);
-    // });
-
-    // document.getElementById("allId").addEventListener('click', e => {
-    //     selectAllFields();
-    // });
-
-    // document.getElementById("noneId").addEventListener('click', e => {
-    //     deSelectAllFields();
-    // });
-
-    // document.getElementById("resetId").addEventListener('click', e => {
-    //     resetAllFields();
-    // });
-
     document.getElementById("comments").addEventListener('click', e => {
         postCommentForEntity();
     });
@@ -124,78 +108,6 @@
             }
         });
     }
-
-    // let checkboxes = document.getElementsByClassName("filterCheckbox");
-    // for (let checkbox of checkboxes) {
-    //     checkbox.addEventListener('click', e => {
-    //         // console.log(checkbox.checked, checkbox.name);
-    //         showFields(checkbox);
-    //     });
-    // }
-
-    // function selectAllFields() {
-    //     let checkboxes = document.getElementsByClassName("filterCheckbox");
-    //     for (let checkbox of checkboxes) {
-    //         checkbox.checked = true;
-    //         showFields(checkbox);
-    //     }
-    // }
-
-    // function deSelectAllFields() {
-    //     let checkboxes = document.getElementsByClassName("filterCheckbox");
-    //     for (let checkbox of checkboxes) {
-    //         checkbox.checked = false;
-    //         showFields(checkbox);
-    //     }
-    // }
-
-    // function resetAllFields() {
-    //     let checkboxes = document.getElementsByClassName("filterCheckbox");
-    //     for (let checkbox of checkboxes) {
-    //         if (['Name', 'Phase', 'Description'].includes(checkbox.name)) {
-    //             checkbox.checked = true;
-    //         } else {
-    //             checkbox.checked = false;
-    //         }
-    //         showFields(checkbox);
-    //     }
-    // }
-
-    // function showFields(checkbox, t) {
-    //     let element = document.getElementById("container_" + checkbox.label.replaceAll(" ", "_"));
-    //     // console.log(element);
-    //     if (element) {
-    //         console.log(checkbox);
-    //         if (!t) {
-    //             element.style.display = "none";
-    //             setFilterSelection(checkbox, false);
-    //         } else {
-    //             element.style.display = "flex";
-    //             setFilterSelection(checkbox, true);
-    //         }
-    //     }
-    // }
-
-
-
-    // function filterFields(open) {
-    //     if (!open) {
-    //         document.getElementById("filterId").style.backgroundColor = "#0e639c";
-    //         document.getElementById("filterContainer").style.display = "flex";
-    //         document.getElementById("filtertext").style.display = "flex";
-    //         document.getElementById("filterhr").style.display = "flex";
-    //         document.getElementById("filterbr").style.display = "flex";
-    //         open = true;
-    //     } else {
-    //         document.getElementById("filterId").style.backgroundColor = "#3c3c3c";
-    //         document.getElementById("filterContainer").style.display = "none";
-    //         document.getElementById("filtertext").style.display = "none";
-    //         document.getElementById("filterhr").style.display = "none";
-    //         document.getElementById("filterbr").style.display = "none";
-    //         open = false;
-    //     }
-    //     return open;
-    // }
 
     function getData() {
         vscode.postMessage({

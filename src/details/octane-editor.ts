@@ -133,9 +133,9 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                 //     vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFilterSelection', m.data);
                 // }
                 if (m.type === 'saveToMemento') {
-                    OctaneEntityEditorProvider.emitter.fire('test');
                     // vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.refreshWebviewPanel');
                     vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', m.data);
+                    OctaneEntityEditorProvider.emitter.fire('test');
                 }
                 if (m.type = 'add-to-mywork') {
                     await OctaneService.getInstance().addToMyWork(document.entity);
@@ -157,6 +157,8 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
         const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(
             context.extensionUri, 'media', 'edit-service.js'));
 
+        const activeFields = await getSavedFields();
+
         return `
             <!DOCTYPE html>
             <head>
@@ -177,13 +179,13 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                         <h6>${data?.name ?? '-'}</h6>
                     </div>
                     <div class="action-container">
-                        ${await generatePhaseSelectElement(data, fields)}
+                        ${await generatePhaseSelectElement(data, fields, activeFields)}
                     </div>
                 </div>
                 <div class="main-element">
                     <div id="element-id" class="element">
                         <div class="information">
-                            ${await generateBodyElement(data, fields)}
+                            ${await generateBodyElement(data, fields, activeFields)}
                         </div>
                     </div>
                     <div id="comments-element-id" class="comments-element">
@@ -219,7 +221,7 @@ function getDataForSubtype(entity: OctaneEntity | undefined): [string, string] {
     return ['', ''];
 }
 
-async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, fields: any[]): Promise<string> {
+async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, fields: any[], activeFields: string[] | undefined): Promise<string> {
     let html: string = ``;
     if (data.phase) {
         html += `
@@ -281,7 +283,7 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
     for (const [key, field] of mapFields) {
 
         if (field) {
-            if (await isSelectedField(field.label.replaceAll(" ", "_"))) {
+            if (await isSelectedField(field.label.replaceAll(" ", "_"), activeFields)) {
                 filteredFields = filteredFields.concat(field.name);
             } else {
                 filteredFields = filteredFields.filter(f => f !== field.name);
@@ -328,18 +330,22 @@ async function generateCommentElement(data: any | OctaneEntity | undefined, fiel
     return html;
 }
 
-async function isSelectedField(fieldName: string) {
+async function getSavedFields() {
+    let res: string[] | undefined = await vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.getFields');
+    return res;
+}
+
+async function isSelectedField(fieldName: string, activeFields: string[] | undefined) {
     if (fieldName) {
         // let resFilterSelection = await vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.getFilterSelection', fieldName);
-        let resFilterSelection: string[] | undefined = await vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.getFields');
-        if(resFilterSelection && resFilterSelection.includes(fieldName)) {
+        if(activeFields && activeFields.includes(fieldName)) {
             return true;
         }
     }
     return false;
 }
 
-async function generateBodyElement(data: any | OctaneEntity | undefined, fields: any[]): Promise<string> {
+async function generateBodyElement(data: any | OctaneEntity | undefined, fields: any[], activeFields: string[] | undefined): Promise<string> {
     let html: string = ``;
     let counter: number = 0;
     const columnCount: number = 2;
@@ -370,7 +376,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
     for (const [key, field] of mapFields) {
         // console.log('key = ',key, 'field=',field);
         if (field) {
-            if (await isSelectedField(field.label.replaceAll(" ", "_"))) {
+            if (await isSelectedField(field.label.replaceAll(" ", "_"), activeFields)) {
                 filteredFields = filteredFields.concat(field.name);
             } else {
                 filteredFields = filteredFields.filter(f => f !== field.name);
@@ -412,7 +418,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                         document.getElementById("${field.name}").readOnly = !${field.editable};
                 </script>
                 `;
-        if (!await isSelectedField(field.label.replaceAll(" ", "_"))) {
+        if (!await isSelectedField(field.label.replaceAll(" ", "_"), activeFields)) {
             html += `
                     <script>
                         document.getElementById("container_${field.label.replaceAll(" ", "_")}").style.display = "none";
@@ -431,7 +437,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                     document.getElementById("${phaseField.name}").readOnly = !false;
             </script>
         `;
-        if (!await isSelectedField(phaseField.label.replaceAll(" ", "_"))) {
+        if (!await isSelectedField(phaseField.label.replaceAll(" ", "_"), activeFields)) {
             html += `
                 <script>
                     document.getElementById("container_${phaseField.label.replaceAll(" ", "_")}").style.display = "none";
@@ -455,7 +461,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                 <br>
                 <hr>
     `;
-    if (!await isSelectedField("Description")) {
+    if (!await isSelectedField("Description", activeFields)) {
         html += `
             <script>
                 document.getElementById("container_Description").style.display = "none";
