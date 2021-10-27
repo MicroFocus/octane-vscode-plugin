@@ -7,7 +7,9 @@ export class SearchProvider implements vscode.TreeDataProvider<vscode.TreeItem> 
     readonly onDidChangeTreeData: vscode.Event<any> = this._onDidChangeTreeData.event;
 
     constructor(private context: vscode.ExtensionContext) {
-        
+		context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.mySearch.refreshEntry', () => {
+			this.refresh();
+		}));
     }
 
     getTreeItem(element: vscode.TreeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
