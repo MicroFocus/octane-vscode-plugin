@@ -57,7 +57,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	{
 		let setFields = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.setFields', async (data) => {
 			if (data.fields) {
-				console.log(data);
+				logger.debug(data);
 				await context.workspaceState.update('visibleFields',
 					JSON.stringify(data)
 				);
