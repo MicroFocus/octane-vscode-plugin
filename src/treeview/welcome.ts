@@ -60,7 +60,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                                     data.uri = data.uri.split('ui')[0];
                                 }
                             }
-                            await uri.update('server.uri', data.uri.endsWith('/') ? data.uri : data.uri + '/', true);
+                            await uri.update('server.url', data.uri.endsWith('/') ? data.uri : data.uri + '/', true);
                             await uri.update('server.space', data.space, true);
                             await uri.update('server.workspace', data.workspace, true);
                             await uri.update('user.userName', data.user, true);
@@ -171,7 +171,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
         console.info('WelcomeViewProvider.getHtmlForWebview called');
 
         let loginData: any | undefined = await vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.getLoginData');
-        const uri: string | undefined = loginData?.url ?? vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.uri');
+        const uri: string | undefined = loginData?.url ?? vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.url');
         let isBrowserAuth: boolean = loginData?.authTypeBrowser ?? false;
         const space = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.space');
         const workspace = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.workspace');
