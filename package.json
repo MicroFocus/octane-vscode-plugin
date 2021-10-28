@@ -59,7 +59,7 @@
 				"properties": {
 					"visual-studio-code-plugin-for-alm-octane.server.uri": {
 						"type": "string",
-						"description": "Server URI",
+						"description": "Server URL",
 						"format": "uri",
 						"scope": "window"
 					},
