@@ -32,7 +32,9 @@
 		"onCommand:visual-studio-code-plugin-for-alm-octane.setFilterSelection",
 		"onCommand:visual-studio-code-plugin-for-alm-octane.getLoginData",
 		"onCommand:visual-studio-code-plugin-for-alm-octane.saveLoginData",
-		"visual-studio-code-plugin-for-alm-octane.refreshWebviewPanel"
+		"visual-studio-code-plugin-for-alm-octane.refreshWebviewPanel",
+		"onCommand:visual-studio-code-plugin-for-alm-octane.setFields",
+		"onCommand:visual-studio-code-plugin-for-alm-octane.getFields"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
