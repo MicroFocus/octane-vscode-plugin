@@ -274,7 +274,7 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
     let filteredFields: string[] = [];
     let mapFields = new Map<string, any>();
     fields.forEach((field): any => {
-        if(field.name != "id") {
+        if(field.name !== "id") {
             mapFields.set(field.name, field);
         }
     });
@@ -357,7 +357,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
     let mainFields: string[] = ['name'];
     let mapFields = new Map<string, any>();
     fields.forEach((field): any => {
-        if(field.name != "id") {
+        if(field.name !== "id") {
             mapFields.set(field.name, field);
         }
     });
