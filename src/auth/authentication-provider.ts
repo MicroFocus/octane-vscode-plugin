@@ -5,6 +5,7 @@ import { retryDecorator } from 'ts-retry-promise';
 import { v4 as uuid } from 'uuid';
 import { OctaneService } from '../octane/service/octane-service';
 import { create } from 'domain';
+import { getLogger} from 'log4js';
 
 export const type = 'alm-octane.auth';
 
@@ -25,6 +26,8 @@ export class AlmOctaneAuthenticationSession implements vscode.AuthenticationSess
 }
 
 export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationProvider, vscode.Disposable {
+
+	private logger = getLogger('vs');
 
 	public static readonly type = 'alm-octane.auth';
 
@@ -50,10 +53,10 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 	}
 
 	async getSessions(scopes?: string[]): Promise<AlmOctaneAuthenticationSession[]> {
-		console.info(`Getting sessions for ${scopes?.join(',') || 'all scopes'}...`);
+		this.logger.info(`Getting sessions for ${scopes?.join(',') || 'all scopes'}...`);
 
 		const sessionsList = await this.readSessions();
-		console.info('Returning sessions: ', sessionsList);
+		this.logger.info('Returning sessions: ', sessionsList);
 		await vscode.commands.executeCommand('setContext', 'visual-studio-code-plugin-for-alm-octane.hasSession', sessionsList?.length > 0);
 		return sessionsList;
 	}
@@ -81,7 +84,7 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 				throw new Error('Authentication failed. Please try again.');
 			}
 		} catch (e) {
-			console.error(e);
+			this.logger.error(e);
 			throw e;
 		}
 	}
@@ -102,12 +105,12 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 			const idResult = await fetch(`${uri.endsWith('/') ? uri : uri + '/'}authentication/tokens`, { method: 'POST' });
 			if (idResult.ok) {
 				const response = await idResult.json();
-				console.info(response);
+				this.logger.info(response);
 				const browserResponse = await vscode.env.openExternal(vscode.Uri.parse(response?.authentication_url));
 				if (browserResponse) {
 					const decoratedFetchToken = retryDecorator(this.fetchToken, { retries: 100, delay: 1000 });
 					const token = await decoratedFetchToken(uri, user, response);
-					console.info('Fetchtoken returned: ', token);
+					this.logger.info('Fetchtoken returned: ', token);
 					const authTestResult = await OctaneService.getInstance().testAuthentication(uri, space, workspace, user, undefined, token.cookie_name, token.access_token);
 					if (authTestResult === undefined) {
 						throw new Error('Authentication failed.');
@@ -126,7 +129,7 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 
 				}
 			} else {
-				console.error(idResult.statusText);
+				this.logger.error(idResult.statusText);
 			}
 		}
 		if (session !== undefined) {
@@ -138,25 +141,25 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 	}
 
 	public async storeSession(session: AlmOctaneAuthenticationSession): Promise<void> {
-		console.info(`Storing session...`);
+		this.logger.info(`Storing session...`);
 		await this.keychain.setToken(JSON.stringify(session));
-		console.info(`Stored session!`);
+		this.logger.info(`Stored session!`);
 	}
 
 	private async fetchToken(uri: string, username: string, response: any): Promise<any> {
 		const tokenResult = await fetch(`${uri}authentication/tokens/${response.id}?userName=${username}`);
 		if (tokenResult.ok) {
 			const tokenResponse = await tokenResult.json();
-			console.info(tokenResponse);
+			this.logger.info(tokenResponse);
 			return tokenResponse;
 		} else {
-			console.error(tokenResult.statusText);
+			this.logger.error(tokenResult.statusText);
 			throw new Error(tokenResult.statusText);
 		}
 	}
 
 	async removeSession(sessionId: string): Promise<void> {
-		console.info('Remove session received.', sessionId);
+		this.logger.info('Remove session received.', sessionId);
 		await this.keychain.deleteToken();
 		this.sessionChangeEmitter.fire({ added: [], removed: [{ id: sessionId, accessToken: '', account: { id: '', label: '' }, scopes: [] }], changed: [] });
 	}
@@ -168,7 +171,7 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 			if (!storedSessions) {
 				return [];
 			}
-			console.info('Stored sessions:', storedSessions);
+			this.logger.info('Stored sessions:', storedSessions);
 
 			try {
 				sessionData = JSON.parse(storedSessions);
@@ -200,7 +203,7 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 
 			return [sessionData];
 		} catch (e) {
-			console.error(`Error reading token: ${e}`);
+			this.logger.error(`Error reading token: ${e}`);
 			return [];
 		}
 	}

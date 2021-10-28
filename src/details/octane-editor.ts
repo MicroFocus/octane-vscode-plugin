@@ -5,8 +5,11 @@ import { OctaneEntity } from '../octane/model/octane-entity';
 import { Transition } from '../octane/model/transition';
 import { stripHtml } from 'string-strip-html';
 import * as path from 'path';
+import { getLogger} from 'log4js';
 
 class OctaneEntityDocument implements vscode.CustomDocument {
+
+    private logger = getLogger('vs');
 
     static async create(
         uri: vscode.Uri
@@ -49,6 +52,8 @@ class OctaneEntityDocument implements vscode.CustomDocument {
 
 export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorProvider<OctaneEntityDocument> {
 
+    private logger = getLogger('vs');
+
     public static readonly viewType = 'visual-studio-code-plugin-for-alm-octane.octane';
 
     public static register(context: vscode.ExtensionContext): vscode.Disposable {
@@ -76,13 +81,13 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
     static onDidFilterChange: vscode.Event<string> = OctaneEntityEditorProvider.emitter.event;
 
     async openCustomDocument(uri: vscode.Uri, openContext: vscode.CustomDocumentOpenContext, token: vscode.CancellationToken): Promise<OctaneEntityDocument> {
-        console.info('openCustomDocument called', uri, openContext);
+        this.logger.info('openCustomDocument called', uri, openContext);
         const document: OctaneEntityDocument = await OctaneEntityDocument.create(uri);
         return document;
     }
 
     async resolveCustomEditor(document: OctaneEntityDocument, webviewPanel: vscode.WebviewPanel, token: vscode.CancellationToken): Promise<void> {
-        console.info('resolveCustomEditor called', document, webviewPanel);
+        this.logger.info('resolveCustomEditor called', document, webviewPanel);
 
         webviewPanel.iconPath = vscode.Uri.file(path.join(this.context.extensionPath, `media/treeIcons/${getDataForSubtype(document.entity)[0]}.svg`));
 
@@ -144,7 +149,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
             });
 
         } catch (e) {
-            console.error(e);
+            this.logger.error(e);
             throw e;
         }
     }
@@ -269,7 +274,7 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
     let filteredFields: string[] = [];
     let mapFields = new Map<string, any>();
     fields.forEach((field): any => {
-        if(field.name != "id") {
+        if(field.name !== "id") {
             mapFields.set(field.name, field);
         }
     });
@@ -315,7 +320,7 @@ async function generateCommentElement(data: any | OctaneEntity | undefined, fiel
                 </div>
                 <br>`;
     let comments = await OctaneService.getInstance().getCommentsForEntity(data.id);
-    console.log("comments", comments);
+    getLogger('vs').info("comments", comments);
     if (comments) {
         for (const comment of comments) {
             html += `
@@ -352,7 +357,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
     let mainFields: string[] = ['name'];
     let mapFields = new Map<string, any>();
     fields.forEach((field): any => {
-        if(field.name != "id") {
+        if(field.name !== "id") {
             mapFields.set(field.name, field);
         }
     });
@@ -375,7 +380,6 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
     //     vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFilterSelection', JSON.parse(`{"filterName": "${f}", "message": true}`));
     // });
     for (const [key, field] of mapFields) {
-        // console.log('key = ',key, 'field=',field);
         if (field) {
             if (await isSelectedField(field.label.replaceAll(" ", "_"), activeFields)) {
                 filteredFields = filteredFields.concat(field.name);

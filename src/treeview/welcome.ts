@@ -2,19 +2,22 @@ import * as vscode from 'vscode';
 import { AlmOctaneAuthenticationProvider, AlmOctaneAuthenticationType } from '../auth/authentication-provider';
 import { OctaneService } from '../octane/service/octane-service';
 import { v4 as uuid } from 'uuid';
+import { getLogger} from 'log4js';
 
 export class WelcomeViewProvider implements vscode.WebviewViewProvider {
+
+    private logger = getLogger('vs');
 
     public static readonly viewType = 'visual-studio-code-plugin-for-alm-octane.myWelcome';
 
     private view?: vscode.WebviewView;
 
     constructor(private readonly extensionUri: vscode.Uri, private readonly authenticationProvider: AlmOctaneAuthenticationProvider) {
-        console.info('WelcomeViewProvider constructed');
+        this.logger.info('WelcomeViewProvider constructed');
     }
 
     public attemptAuthentication() {
-        console.info('attemptAuthentication called.');
+        this.logger.info('attemptAuthentication called.');
     }
 
     public async refresh() {
@@ -28,7 +31,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
         context: vscode.WebviewViewResolveContext,
         token: vscode.CancellationToken,
     ) {
-        console.info('WelcomeViewProvider.resolveWebviewView called');
+        this.logger.info('WelcomeViewProvider.resolveWebviewView called');
         this.view = webviewView;
 
         webviewView.webview.options = {
@@ -84,7 +87,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                                 }
                             }
                         } catch (e) {
-                            console.error('While creating session.', e);
+                            this.logger.error('While creating session.', e);
                         }
                         break;
                     }
@@ -168,7 +171,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
 
     async getHtmlForWebview(webview: vscode.Webview): Promise<string> {
 
-        console.info('WelcomeViewProvider.getHtmlForWebview called');
+        this.logger.info('WelcomeViewProvider.getHtmlForWebview called');
 
         let loginData: any | undefined = await vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.getLoginData');
         const uri: string | undefined = loginData?.url ?? vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.uri');
@@ -184,7 +187,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
 
 
 
-        console.info('WelcomeViewProvider.getHtmlForWebview returning HTML');
+        this.logger.info('WelcomeViewProvider.getHtmlForWebview returning HTML');
 
         return `<!DOCTYPE html>
 			<html lang="en">
