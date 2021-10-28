@@ -226,7 +226,7 @@ hr {
     margin-top: 1rem;
 }
 
-#refresh, #addToMyWork, #filterId, #commentsId {
+#refresh, #addToMyWork, #filterId, #commentsId, #openInBrowser {
     margin: 0 0 0 0.5rem;
     width: 2rem;
     height: 2rem;
