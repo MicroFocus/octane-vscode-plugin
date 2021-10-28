@@ -176,7 +176,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                         <span class="label">${getDataForSubtype(data)[0]}</span>
                     </div>
                     <div class="name-container">
-                        <h6>${data?.name ?? '-'}</h6>
+                        <h6>${data?.id ?? ''} | ${data?.name ?? ''}</h6>
                     </div>
                     <div class="action-container">
                         ${await generatePhaseSelectElement(data, fields, activeFields)}
@@ -269,7 +269,9 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
     let filteredFields: string[] = [];
     let mapFields = new Map<string, any>();
     fields.forEach((field): any => {
-        mapFields.set(field.name, field);
+        if(field.name != "id") {
+            mapFields.set(field.name, field);
+        }
     });
     mapFields = new Map([...mapFields].sort((a, b) => String(a[0]).localeCompare(b[0])));
     html += `
@@ -347,10 +349,12 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
     let counter: number = 0;
     const columnCount: number = 2;
     let filteredFields: string[] = [];
-    let mainFields: string[] = ['id', 'name'];
+    let mainFields: string[] = ['name'];
     let mapFields = new Map<string, any>();
     fields.forEach((field): any => {
-        mapFields.set(field.name, field);
+        if(field.name != "id") {
+            mapFields.set(field.name, field);
+        }
     });
     mapFields = new Map([...mapFields].sort((a, b) => String(a[0]).localeCompare(b[0])));
     html += `
