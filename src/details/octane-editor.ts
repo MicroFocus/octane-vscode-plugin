@@ -127,10 +127,15 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                     // this.fullData = await OctaneService.getInstance().getDataFromOctaneForTypeAndId(data.type, data.subtype, data.id);
                     webviewPanel.webview.html = await self.getHtmlForWebview(webviewPanel.webview, self.context, document.entity, document.fields);
                 }
+                // if (m.type === 'saveToMemento') {
+                //     OctaneEntityEditorProvider.emitter.fire('test');
+                //     // vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.refreshWebviewPanel');
+                //     vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFilterSelection', m.data);
+                // }
                 if (m.type === 'saveToMemento') {
-                    OctaneEntityEditorProvider.emitter.fire('test');
                     // vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.refreshWebviewPanel');
-                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFilterSelection', m.data);
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', m.data);
+                    OctaneEntityEditorProvider.emitter.fire('test');
                 }
                 if (m.type = 'add-to-mywork') {
                     await OctaneService.getInstance().addToMyWork(document.entity);
@@ -152,6 +157,8 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
         const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(
             context.extensionUri, 'media', 'edit-service.js'));
 
+        const activeFields = await getSavedFields();
+
         return `
             <!DOCTYPE html>
             <head>
@@ -172,13 +179,13 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                         <h6>${data?.id ?? ''} | ${data?.name ?? ''}</h6>
                     </div>
                     <div class="action-container">
-                        ${generatePhaseSelectElement(data, fields)}
+                        ${await generatePhaseSelectElement(data, fields, activeFields)}
                     </div>
                 </div>
                 <div class="main-element">
                     <div id="element-id" class="element">
                         <div class="information">
-                            ${await generateBodyElement(data, fields)}
+                            ${await generateBodyElement(data, fields, activeFields)}
                         </div>
                     </div>
                     <div id="comments-element-id" class="comments-element">
@@ -214,13 +221,15 @@ function getDataForSubtype(entity: OctaneEntity | undefined): [string, string] {
     return ['', ''];
 }
 
-function generatePhaseSelectElement(data: any | OctaneEntity | undefined, fields: any[]): string {
+async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, fields: any[], activeFields: string[] | undefined): Promise<string> {
     let html: string = ``;
-    html += `
+    if (data.phase) {
+        html += `
             <div>
                 <h6 style="margin:1.3rem 0.5rem 0rem 0rem">Current phase: ${getFieldValue(data.phase, 'name')} |  Move to </h6>
             </div>
-    `;
+        `;
+    }
     if (data.phase) {
         let transitions: Transition[] = OctaneService.getInstance().getPhaseTransitionForEntity(data.phase.id);
         html += `<select id="select_phase" name="action" class="action">`;
@@ -238,28 +247,56 @@ function generatePhaseSelectElement(data: any | OctaneEntity | undefined, fields
         });
     }
     html += `</select>
-            <button title="Save" id="saveId" class="save" type="button">
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm2 16H5V5h11.17L19 7.83V19zm-7-7c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zM6 6h9v4H6z"/></svg>
-            </button>
-            <button title="Refresh" id="refresh" type="button">
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
-            </button>
-            <button title="Add to MyWork" id="addToMyWork" type="button">
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-            </button>
-            <button title="Filter fields" id="filterId" type="button">
-                <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><g><path d="M0,0h24 M24,24H0" fill="none"/><path d="M7,6h10l-5.01,6.3L7,6z M4.25,5.61C6.27,8.2,10,13,10,13v6c0,0.55,0.45,1,1,1h2c0.55,0,1-0.45,1-1v-6 c0,0,3.72-4.8,5.74-7.39C20.25,4.95,19.78,4,18.95,4H5.04C4.21,4,3.74,4.95,4.25,5.61z"/><path d="M0,0h24v24H0V0z" fill="none"/></g></svg>
-            </button>
-            <button title="Comments" id="commentsId" type="button">
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M15 4v7H5.17l-.59.59-.58.58V4h11m1-2H3c-.55 0-1 .45-1 1v14l4-4h10c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1zm5 4h-2v9H6v2c0 .55.45 1 1 1h11l4 4V7c0-.55-.45-1-1-1z"/></svg>
-            </button>
-            <script>
-                        $(document).ready(function() {
-                            $('[data-toggle="tooltip"]').tooltip();
-                        });
-            </script>
+                <button title="Save" id="saveId" class="save" type="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm2 16H5V5h11.17L19 7.83V19zm-7-7c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zM6 6h9v4H6z"/></svg>
+                </button>
+                <button title="Refresh" id="refresh" type="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+                </button>
+                <button title="Add to MyWork" id="addToMyWork" type="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                </button>
+                <button title="Comments" id="commentsId" type="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M15 4v7H5.17l-.59.59-.58.58V4h11m1-2H3c-.55 0-1 .45-1 1v14l4-4h10c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1zm5 4h-2v9H6v2c0 .55.45 1 1 1h11l4 4V7c0-.55-.45-1-1-1z"/></svg>
+                </button>
+                <script>
+                            $(document).ready(function() {
+                                $('[data-toggle="tooltip"]').tooltip();
+                            });
+                </script>
             `;
-            
+
+    let filteredFields: string[] = [];
+    let mapFields = new Map<string, any>();
+    fields.forEach((field): any => {
+        mapFields.set(field.name, field);
+    });
+    mapFields = new Map([...mapFields].sort((a, b) => String(a[0]).localeCompare(b[0])));
+    html += `
+            <div style="margin: 0 0 0 0.5rem; width: 20rem;" id="container_filter_multiselect">
+                <select class="reference-select" multiple="multiple" id="filter_multiselect">
+                <option value="" disabled>Filter</option>
+            `;
+    for (const [key, field] of mapFields) {
+
+        if (field) {
+            if (await isSelectedField(field.label.replaceAll(" ", "_"), activeFields)) {
+                filteredFields = filteredFields.concat(field.name);
+            } else {
+                filteredFields = filteredFields.filter(f => f !== field.name);
+            }
+            if (filteredFields.includes(field.name)) {
+                html += `<option class="filter_option" selected value='${JSON.stringify(field)}'>${field.label}</option>`;
+            } else {
+                html += `<option class="filter_option" value='${JSON.stringify(field)}'>${field.label}</option>`;
+            }
+        }
+    }
+    html += `
+                        </select>
+                        
+                    </div>
+                    `;
     return html;
 }
 
@@ -290,15 +327,22 @@ async function generateCommentElement(data: any | OctaneEntity | undefined, fiel
     return html;
 }
 
-async function isSelectedField(fieldName: string) {
+async function getSavedFields() {
+    let res: string[] | undefined = await vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.getFields');
+    return res;
+}
+
+async function isSelectedField(fieldName: string, activeFields: string[] | undefined) {
     if (fieldName) {
-        let resFilterSelection = await vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.getFilterSelection', fieldName);
-        return resFilterSelection;
+        // let resFilterSelection = await vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.getFilterSelection', fieldName);
+        if(activeFields && activeFields.includes(fieldName)) {
+            return true;
+        }
     }
     return false;
 }
 
-async function generateBodyElement(data: any | OctaneEntity | undefined, fields: any[]): Promise<string> {
+async function generateBodyElement(data: any | OctaneEntity | undefined, fields: any[], activeFields: string[] | undefined): Promise<string> {
     let html: string = ``;
     let counter: number = 0;
     const columnCount: number = 2;
@@ -328,25 +372,27 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
     // });
     for (const [key, field] of mapFields) {
         // console.log('key = ',key, 'field=',field);
-        if (await isSelectedField(field.label.replaceAll(" ", "_"))) {
-            filteredFields = filteredFields.concat(field.name);
-        } else {
-            filteredFields = filteredFields.filter(f => f !== field.name);
-        }
-        if (filteredFields.includes(field.name)) {
-            html += `           <div class="checkboxDiv">
-                                    <label>
-                                        <input checked type="checkbox" class="filterCheckbox" name='${field.label.replaceAll(" ", "_")}'>
-                                        <span class="filterCheckboxLabel">${field.label}</span>    
-                                    </label>
-                                </div>`;
-        } else {
-            html += `           <div class="checkboxDiv">
-                                    <label>
-                                        <input type="checkbox" class="filterCheckbox" name='${field.label.replaceAll(" ", "_")}'>
-                                        <span class="filterCheckboxLabel">${field.label}</span>
-                                    </label>
-                                </div>`;
+        if (field) {
+            if (await isSelectedField(field.label.replaceAll(" ", "_"), activeFields)) {
+                filteredFields = filteredFields.concat(field.name);
+            } else {
+                filteredFields = filteredFields.filter(f => f !== field.name);
+            }
+            if (filteredFields.includes(field.name)) {
+                html += `           <div class="checkboxDiv">
+                                        <label>
+                                            <input checked type="checkbox" class="filterCheckbox" name='${field.label.replaceAll(" ", "_")}'>
+                                            <span class="filterCheckboxLabel">${field.label}</span>    
+                                        </label>
+                                    </div>`;
+            } else {
+                html += `           <div class="checkboxDiv">
+                                        <label>
+                                            <input type="checkbox" class="filterCheckbox" name='${field.label.replaceAll(" ", "_")}'>
+                                            <span class="filterCheckboxLabel">${field.label}</span>
+                                        </label>
+                                    </div>`;
+            }
         }
     }
     html += `       </div>
@@ -369,7 +415,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                         document.getElementById("${field.name}").readOnly = !${field.editable};
                 </script>
                 `;
-        if (!await isSelectedField(field.label.replaceAll(" ", "_"))) {
+        if (!await isSelectedField(field.label.replaceAll(" ", "_"), activeFields)) {
             html += `
                     <script>
                         document.getElementById("container_${field.label.replaceAll(" ", "_")}").style.display = "none";
@@ -388,15 +434,16 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                     document.getElementById("${phaseField.name}").readOnly = !false;
             </script>
         `;
+        if (!await isSelectedField(phaseField.label.replaceAll(" ", "_"), activeFields)) {
+            html += `
+                <script>
+                    document.getElementById("container_${phaseField.label.replaceAll(" ", "_")}").style.display = "none";
+                </script>
+            `;
+        }
     }
-    if (!await isSelectedField(phaseField.label.replaceAll(" ", "_"))) {
-        html += `
-            <script>
-                document.getElementById("container_${phaseField.label.replaceAll(" ", "_")}").style.display = "none";
-            </script>
-        `;
-    }
-    html += `   </div> 
+
+    html += `   </div>
                 <br>
                 <hr>
                 Description
@@ -411,7 +458,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                 <br>
                 <hr>
     `;
-    if (!await isSelectedField("Description")) {
+    if (!await isSelectedField("Description", activeFields)) {
         html += `
             <script>
                 document.getElementById("container_Description").style.display = "none";
@@ -419,60 +466,62 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
         `;
     }
     for (const [key, field] of mapFields) {
-        if (!['description', 'phase', ...mainFields].includes(key)) {
-            if (counter === 0) {
-                html += `<div class="information-container">`;
-            }
-            if (field.field_type === 'reference') {
-                if (field.field_type_data.multiple) {
-                    html += `
+        if (field) {
+            if (!['description', 'phase', ...mainFields].includes(key)) {
+                if (counter === 0) {
+                    html += `<div class="information-container">`;
+                }
+                if (field.field_type === 'reference') {
+                    if (field.field_type_data.multiple) {
+                        html += `
                     <div class="select-container" id="container_${field.label.replaceAll(" ", "_")}">
                         <label>${field.label}</label>
                         <select class="reference-select" multiple="multiple" id="${field.name}">
                     `;
-                    let selected = getFieldValue(data, fieldNameMap.get(field.name) ?? field.name);
-                    let options = await OctaneService.getInstance().getFullDataForEntity(field.field_type_data.targets[0].type, field, data);
-                    if (options) {
-                        options.data.forEach((option: any) => {
-                            if (selected.includes(option.name)) {
-                                html += `<option selected value='${JSON.stringify(option)}'>${option.name}</option>`;
-                            } else {
-                                html += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
-                            }
-                        });
-                    }
-                    html += `
+
+                        let selected = getFieldValue(data, fieldNameMap.get(field.name) ?? field.name);
+                        let options = await OctaneService.getInstance().getFullDataForEntity(field.field_type_data.targets[0].type, field, data);
+                        if (options) {
+                            options.data.forEach((option: any) => {
+                                if (selected.includes(option.name)) {
+                                    html += `<option selected value='${JSON.stringify(option)}'>${option.name}</option>`;
+                                } else {
+                                    html += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
+                                }
+                            });
+                        }
+                        html += `
                         </select>
                         
                     </div>
                     `;
-                } else {
-                    if (field.editable) {
-                        html += `
+                    } else {
+                        if (field.editable) {
+                            html += `
                         <div class="select-container" id="container_${field.label.replaceAll(" ", "_")}">
                             <label>${field.label}</label>
                             <select class="reference-select" id="${field.name}">
                         `;
-                        html += `<option value="none" selected disabled hidden>${getFieldValue(data, field.name)}</option>`;
-                        if (field.field_type_data.targets[0].type) {
-                            let options = await OctaneService.getInstance().getFullDataForEntity(field.field_type_data.targets[0].type, field, data);
-                            if (options) {
-                                options.data.forEach((option: any) => {
-                                    if (option) {
-                                        if (option.type === 'workspace_user') {
-                                            html += `<option value='${JSON.stringify(option)}'>${option.full_name}</option>`;
-                                        } else {
-                                            html += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
+                            html += `<option value="none" selected disabled hidden>${getFieldValue(data, field.name)}</option>`;
+                            if (field.field_type_data.targets[0].type) {
+                                let options = await OctaneService.getInstance().getFullDataForEntity(field.field_type_data.targets[0].type, field, data);
+                                if (options) {
+                                    options.data.forEach((option: any) => {
+                                        if (option) {
+                                            if (option.type === 'workspace_user') {
+                                                html += `<option value='${JSON.stringify(option)}'>${option.full_name}</option>`;
+                                            } else {
+                                                html += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
+                                            }
                                         }
-                                    }
-                                });
+                                    });
+                                }
                             }
-                        }
-                        html += `
+                            html += `
                             </select>
                         </div>`;
-                    } else {
-                        html += `
+                        } else {
+                            html += `
                             <div class="input-field col s6 container" id="container_${field.label.replaceAll(" ", "_")}">
                                 <label class="active" for="${field.label}">${field.label}</label>
                                 <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border); margin-top: 1.55rem;" id="${field.name}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
@@ -481,10 +530,10 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                                 </script>
                             </div>
                         `;
+                        }
                     }
-                }
-            } else {
-                html += `
+                } else {
+                    html += `
                 <div class="input-field col s6 container" id="container_${field.label.replaceAll(" ", "_")}">
                     <label class="active" for="${field.label}">${field.label}</label>
                     <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border); margin-top: 1.55rem;" id="${field.name}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
@@ -493,18 +542,19 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                     </script>
                 </div>
             `;
+                }
+                if (counter === columnCount) {
+                    html += `</div>`;
+                }
+                counter = counter === columnCount ? 0 : counter + 1;
             }
-            if (counter === columnCount) {
-                html += `</div>`;
-            }
-            counter = counter === columnCount ? 0 : counter + 1;
-        }
-        if (filteredFields.includes(field.name)) {
-            html += `
+            if (filteredFields.includes(field.name)) {
+                html += `
                 <script>
                     document.getElementById("container_${field.label.replaceAll(" ", "_")}").style.display = "flex";
                 </script>
             `;
+            }
         }
     }
     html += `</div>`;

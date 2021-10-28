@@ -47,26 +47,31 @@ export async function activate(context: vscode.ExtensionContext) {
 	}
 
 	{
-		let setFilterSelection = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.setFilterSelection', async (data) => {
-			if (data.filterName) {
-				await context.workspaceState.update(data.filterName, data);
+		let setFields = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.setFields', async (data) => {
+			if (data.fields) {
+				console.log(data);
+				await context.workspaceState.update('visibleFields',
+					JSON.stringify(data)
+				);
 			}
 		});
-		context.subscriptions.push(setFilterSelection);
+		context.subscriptions.push(setFields);
 	}
 
 	{
-		let getFilterSelection = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.getFilterSelection', (key) => {
-			if (key) {
-				let value: any = context.workspaceState.get(key);
-				if (value) {
-					return value.message;
+		let getFields = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.getFields', () => {
+			let value: any = context.workspaceState.get('visibleFields');
+			if (value) {
+				value = JSON.parse(value);
+				if(value && value.fields) {
+					return value.fields;
 				}
 			}
-			return false;
+			return;
 		});
-		context.subscriptions.push(getFilterSelection);
+		context.subscriptions.push(getFields);
 	}
+
 	await service.initialize();
 
 	vscode.authentication.onDidChangeSessions(async e => {
@@ -300,7 +305,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	entityStatusBarItem.command = 'visual-studio-code-plugin-for-alm-octane.openActiveItem';
 	entityStatusBarItem.show();
 	context.subscriptions.push(entityStatusBarItem);
-	
+
 	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.startWork', async (e: MyWorkItem) => {
 		myActiveItem = e;
 		entityStatusBarItem.text = `$(clock) ${e.entity?.label} ${e.id}`;
@@ -317,9 +322,9 @@ export async function activate(context: vscode.ExtensionContext) {
 		entityStatusBarItem.text = `$(clock) No Active Item`;
 		clearActiveItemStatusBarItem.hide();
 	}));
-	
 
-	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.dismissItem', async(e: MyWorkItem) =>{
+
+	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.dismissItem', async (e: MyWorkItem) => {
 		if (e.entity) {
 			await service.dismissFromMyWork(e.entity);
 			vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.refreshAll');
