@@ -557,7 +557,8 @@ export class OctaneService {
                 .then((res: any) => {
                     vscode.window.showInformationMessage('Your item changes have been saved.');
                 }, (error: any) => {
-                    vscode.window.showErrorMessage('We couldn’t save your changes.' + error);
+                    this.logger.error('While adding to MyWork.', e);
+                    vscode.window.showErrorMessage('We couldn’t save your changes.');
                 });
         } catch (e) {
             this.logger.error('While adding to MyWork.', e);

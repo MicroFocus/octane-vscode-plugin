@@ -207,7 +207,8 @@
 					"command": "visual-studio-code-plugin-for-alm-octane.details"
 				},
 				{
-					"command": "visual-studio-code-plugin-for-alm-octane.startWork"
+					"command": "visual-studio-code-plugin-for-alm-octane.startWork",
+					"when": "viewItem == 'task' || viewItem == 'story' || viewItem == 'defect' || viewItem == 'quality_story'"
 				},
 				{
 					"command": "visual-studio-code-plugin-for-alm-octane.commitMessage"
