@@ -56,7 +56,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                                 JSON.parse(
                                     `{"url": "${data.uri}", "authTypeBrowser": ${data.browser}}`
                                 ));
-                            let regExp = data.uri.match(/\?p=(\d+\/\d+)/) ?? data.uri.match(/(\/?%\d*[A-Za-z]*)/);
+                            let regExp = data.uri.match(/\?p=(\d+\/\d+)/) ?? data.uri.match(/(\/?%\d*[A-Za-z]*)/) ?? data.uri.match(/\/ui/);
                             if (regExp) {
                                 data.uri = data.uri.split(regExp[0])[0];
                                 if (data.uri) {
@@ -95,7 +95,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                     {
                         var authTestResult: any;
                         if (data.uri !== undefined) {
-                            let regExp = data.uri.match(/\?p=(\d+\/\d+)/) ?? data.uri.match(/(\/?%\d*[A-Za-z]*)/);
+                            let regExp = data.uri.match(/\?p=(\d+\/\d+)/) ?? data.uri.match(/(\/?%\d*[A-Za-z]*)/) ?? data.uri.match(/\/ui/);
                             if (regExp) {
                                 data.uri = data.uri.split(regExp[0])[0];
                                 if (data.uri) {
@@ -150,6 +150,11 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                             let altRegExp = url.match(/\?p=((\d+)(\/?%?\d*[A-Za-z]*)(\d+))\/?#?/);
                             space = altRegExp !== null ? altRegExp[2] : null;
                             workspace = altRegExp !== null ? altRegExp[4] : null;
+                        }
+                        if(space === null || workspace === null) {
+                            let altRegExp = url.match(/\?[A-Za-z]*&?p=((\d+)(\/?%?\d*[A-Za-z]*)(\d+))\/?#?/);
+                            space = altRegExp !== null ? altRegExp[1].split('/')[0] : null;
+                            workspace = altRegExp !== null ? altRegExp[1].split('/')[1] : null;
                         }
                         if (space === null || workspace === null) {
                             webviewView.webview.postMessage({
