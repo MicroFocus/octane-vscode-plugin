@@ -138,9 +138,11 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                 //     vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFilterSelection', m.data);
                 // }
                 if (m.type === 'saveToMemento') {
-                    if (document.entity && document.entity.subtype) {
-                        vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', m.data, document.entity.subtype ?? document.entity.type);
-                        OctaneEntityEditorProvider.emitter.fire('test');
+                    if (document.entity) {
+                        if ((document.entity.subtype && document.entity.subtype !== "") || (document.entity.type && document.entity.type !== "")) {
+                            vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', m.data, document.entity.subtype ?? document.entity.type);
+                            OctaneEntityEditorProvider.emitter.fire('test');
+                        }
                     }
                 }
                 if (m.type = 'add-to-mywork') {
@@ -277,7 +279,7 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
     let filteredFields: string[] = [];
     let mapFields = new Map<string, any>();
     fields.forEach((field): any => {
-        if(field.name !== "id") {
+        if (field.name !== "id") {
             mapFields.set(field.label, field);
         }
     });
