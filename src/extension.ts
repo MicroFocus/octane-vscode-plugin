@@ -20,12 +20,29 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { debounce } from 'ts-debounce';
 import { TextEncoder } from 'util';
-import { configure, getLogger } from 'log4js';
+import { configure, getLogger, Appender } from 'log4js';
+import { OctaneEntityHolder } from './octane/model/octane-entity-holder';
 
 export async function activate(context: vscode.ExtensionContext) {
 
+	let logAppender: Appender = {
+		type: 'dateFile',
+		filename: `${context.logUri.path}/vs.log`,
+		compress: true,
+		alwaysIncludePattern: true
+	};
+	try {
+		fs.accessSync(context.logUri.path, fs.constants.W_OK);
+		console.info('Log dir is writeable.');
+	} catch (error) {
+		console.warn('Log dir is not writeable.');
+		logAppender = {
+			type: 'console'
+		};
+	}
+
 	configure({
-		appenders: { vs: { type: 'file', filename: `${context.logUri.path}/vs.log` } },
+		appenders: { vs: logAppender },
 		categories: { default: { appenders: ['vs'], level: 'debug' } }
 	});
 
@@ -186,7 +203,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		context.subscriptions.push(commitMessageCommand);
 	}
 
-	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.openInBrowser', async (e: MyWorkItem) => {
+	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.openInBrowser', async (e: OctaneEntityHolder) => {
 		await vscode.env.openExternal(service.getBrowserUri(e.entity));
 	}));
 
@@ -201,7 +218,14 @@ export async function activate(context: vscode.ExtensionContext) {
 					return;
 				}
 
-				const newFile = vscode.Uri.parse(path.join(vscode.workspace.workspaceFolders[0].uri.path, `${e.entity.name}_${e.entity.id}.feature`));
+				let newFile = vscode.Uri.parse(path.join(vscode.workspace.workspaceFolders[0].uri.path, `${e.entity.name}_${e.entity.id}.feature`));
+				try {
+					fs.accessSync(vscode.workspace.workspaceFolders[0].uri.path, fs.constants.W_OK);
+				} catch (error) {
+					logger.error('workspace folder is not writabel', error);
+					newFile = vscode.Uri.parse(`file://${e.entity.name}_${e.entity.id}.feature`);
+				}
+				
 				const fileInfos = await vscode.window.showSaveDialog({ defaultUri: newFile });
 				if (fileInfos) {
 					try {
