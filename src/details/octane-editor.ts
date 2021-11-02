@@ -139,9 +139,14 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                 // }
                 if (m.type === 'saveToMemento') {
                     if (document.entity) {
-                        if ((document.entity.subtype && document.entity.subtype !== "") || (document.entity.type && document.entity.type !== "")) {
-                            vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', m.data, document.entity.subtype ?? document.entity.type);
+                        if (document.entity.subtype !== null && document.entity.subtype !== undefined && document.entity.subtype !== "") {
+                            vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', m.data, document.entity.subtype);
                             OctaneEntityEditorProvider.emitter.fire('test');
+                        } else {
+                            if (document.entity.type !== null && document.entity.type !== undefined) {
+                                vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', m.data, document.entity.type);
+                                OctaneEntityEditorProvider.emitter.fire('test');
+                            }
                         }
                     }
                 }
@@ -167,10 +172,14 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
 
 
         var activeFields: string[] | undefined = [];
-        if ((data.subtype && data.subtype !== "") || (data.type && data.type !== "")) {
-            activeFields = await getSavedFields(data.subtype ?? data.type);
+        if (data.subtype !== null && data.subtype !== undefined && data.subtype !== "") {
+            activeFields = await getSavedFields(data.subtype);
+        } else {
+            if (data.type !== null && data.type !== undefined) {
+                activeFields = await getSavedFields(data.type);
+            }
         }
-        
+
         return `
             <!DOCTYPE html>
             <head>
