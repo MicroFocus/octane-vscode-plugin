@@ -139,7 +139,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                 // }
                 if (m.type === 'saveToMemento') {
                     if (document.entity && document.entity.subtype) {
-                        vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', m.data, document.entity.subtype);
+                        vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', m.data, document.entity.subtype ?? document.entity.type);
                         OctaneEntityEditorProvider.emitter.fire('test');
                     }
                 }
@@ -164,7 +164,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
             context.extensionUri, 'media', 'edit-service.js'));
 
 
-        const activeFields = await getSavedFields(data.subtype);
+        const activeFields = await getSavedFields(data.subtype ?? data.type);
 
 
         return `
