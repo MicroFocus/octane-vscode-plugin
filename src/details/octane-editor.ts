@@ -5,7 +5,7 @@ import { OctaneEntity } from '../octane/model/octane-entity';
 import { Transition } from '../octane/model/transition';
 import { stripHtml } from 'string-strip-html';
 import * as path from 'path';
-import { getLogger} from 'log4js';
+import { getLogger } from 'log4js';
 
 class OctaneEntityDocument implements vscode.CustomDocument {
 
@@ -138,9 +138,17 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                 //     vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFilterSelection', m.data);
                 // }
                 if (m.type === 'saveToMemento') {
-                    // vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.refreshWebviewPanel');
-                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', m.data);
-                    OctaneEntityEditorProvider.emitter.fire('test');
+                    if (document.entity) {
+                        if (document.entity.subtype !== null && document.entity.subtype !== undefined && document.entity.subtype !== "") {
+                            vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', m.data, document.entity.subtype);
+                            OctaneEntityEditorProvider.emitter.fire('test');
+                        } else {
+                            if (document.entity.type !== null && document.entity.type !== undefined) {
+                                vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', m.data, document.entity.type);
+                                OctaneEntityEditorProvider.emitter.fire('test');
+                            }
+                        }
+                    }
                 }
                 if (m.type === 'add-to-mywork') {
                     await OctaneService.getInstance().addToMyWork(document.entity);
@@ -165,7 +173,15 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
         const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(
             context.extensionUri, 'media', 'edit-service.js'));
 
-        const activeFields = await getSavedFields();
+
+        var activeFields: string[] | undefined = [];
+        if (data.subtype !== null && data.subtype !== undefined && data.subtype !== "") {
+            activeFields = await getSavedFields(data.subtype);
+        } else {
+            if (data.type !== null && data.type !== undefined) {
+                activeFields = await getSavedFields(data.type);
+            }
+        }
 
         return `
             <!DOCTYPE html>
@@ -277,7 +293,7 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
     let filteredFields: string[] = [];
     let mapFields = new Map<string, any>();
     fields.forEach((field): any => {
-        if(field.name !== "id") {
+        if (field.name !== "id") {
             mapFields.set(field.label, field);
         }
     });
@@ -340,15 +356,15 @@ async function generateCommentElement(data: any | OctaneEntity | undefined, fiel
     return html;
 }
 
-async function getSavedFields() {
-    let res: string[] | undefined = await vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.getFields');
+async function getSavedFields(entityType: string) {
+    let res: string[] | undefined = await vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.getFields', entityType);
     return res;
 }
 
 async function isSelectedField(fieldName: string, activeFields: string[] | undefined) {
     if (fieldName) {
         // let resFilterSelection = await vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.getFilterSelection', fieldName);
-        if(activeFields && activeFields.includes(fieldName)) {
+        if (activeFields && activeFields.includes(fieldName)) {
             return true;
         }
     }
@@ -363,7 +379,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
     let mainFields: string[] = ['name'];
     let mapFields = new Map<string, any>();
     fields.forEach((field): any => {
-        if(field.name !== "id") {
+        if (field.name !== "id") {
             mapFields.set(field.name, field);
         }
     });

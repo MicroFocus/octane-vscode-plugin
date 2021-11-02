@@ -72,10 +72,10 @@ export async function activate(context: vscode.ExtensionContext) {
 	}
 
 	{
-		let setFields = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.setFields', async (data) => {
+		let setFields = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.setFields', async (data, entityType) => {
 			if (data.fields) {
 				logger.debug(data);
-				await context.workspaceState.update('visibleFields',
+				await context.workspaceState.update(`visibleFields-${entityType}`,
 					JSON.stringify(data)
 				);
 			}
@@ -84,12 +84,14 @@ export async function activate(context: vscode.ExtensionContext) {
 	}
 
 	{
-		let getFields = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.getFields', () => {
-			let value: any = context.workspaceState.get('visibleFields');
-			if (value) {
-				value = JSON.parse(value);
-				if (value && value.fields) {
-					return value.fields;
+		let getFields = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.getFields', (entityType) => {
+			if (entityType) {
+				let value: any = context.workspaceState.get(`visibleFields-${entityType}`);
+				if (value) {
+					value = JSON.parse(value);
+					if (value && value.fields) {
+						return value.fields;
+					}
 				}
 			}
 			return;

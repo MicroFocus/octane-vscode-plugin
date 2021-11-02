@@ -116,7 +116,7 @@
             type: 'saveToMemento',
             from: 'edit-service',
             data: {
-                fields: fields,
+                fields: fields
             }
         });
     }
