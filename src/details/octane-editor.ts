@@ -275,7 +275,7 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
     let mapFields = new Map<string, any>();
     fields.forEach((field): any => {
         if(field.name !== "id") {
-            mapFields.set(field.name, field);
+            mapFields.set(field.label, field);
         }
     });
     mapFields = new Map([...mapFields].sort((a, b) => String(a[0]).localeCompare(b[0])));
