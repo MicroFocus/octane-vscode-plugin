@@ -21,6 +21,7 @@ import * as fs from 'fs';
 import { debounce } from 'ts-debounce';
 import { TextEncoder } from 'util';
 import { configure, getLogger, Appender } from 'log4js';
+import { OctaneEntityHolder } from './octane/model/octane-entity-holder';
 
 export async function activate(context: vscode.ExtensionContext) {
 
@@ -200,7 +201,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		context.subscriptions.push(commitMessageCommand);
 	}
 
-	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.openInBrowser', async (e: MyWorkItem) => {
+	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.openInBrowser', async (e: OctaneEntityHolder) => {
 		await vscode.env.openExternal(service.getBrowserUri(e.entity));
 	}));
 

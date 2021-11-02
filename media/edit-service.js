@@ -29,6 +29,10 @@
         addToMyWork();
     });
 
+    document.getElementById("openInBrowser").addEventListener('click', e => {
+        openInBrowser();
+    });
+
     function getComments() {
         let comments = document.getElementById("comments-element-id");
         let main = document.getElementById("element-id");
@@ -76,6 +80,14 @@
         });
     }
 
+    function openInBrowser() {
+        vscode.postMessage({
+            type: 'open-in-browser',
+            from: 'edit-service',
+            data: {}
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         var select = document.getElementById("filter_multiselect");
         var instances = M.FormSelect.init(select, {
@@ -85,7 +97,7 @@
                         console.log(select.selectedOptions);
                         let options = [];
                         for (let s of select.selectedOptions) {
-                            if (s != null && s.label) {
+                            if (s !== null && s.label) {
                                 options.push(
                                     s.label.replaceAll(" ", "_")
                                 );

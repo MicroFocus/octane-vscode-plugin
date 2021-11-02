@@ -142,9 +142,12 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                     vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', m.data);
                     OctaneEntityEditorProvider.emitter.fire('test');
                 }
-                if (m.type = 'add-to-mywork') {
+                if (m.type === 'add-to-mywork') {
                     await OctaneService.getInstance().addToMyWork(document.entity);
                     vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.refreshAll');
+                }
+                if (m.type === 'open-in-browser') {
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.openInBrowser', document.entity);
                 }
             });
 
