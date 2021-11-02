@@ -59,9 +59,9 @@
 			{
 				"title": "Visual Studio Code plugin for ALM Octane",
 				"properties": {
-					"visual-studio-code-plugin-for-alm-octane.server.uri": {
+					"visual-studio-code-plugin-for-alm-octane.server.url": {
 						"type": "string",
-						"description": "Server URI",
+						"description": "Server URL",
 						"format": "uri",
 						"scope": "window"
 					},
