@@ -166,9 +166,9 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
             context.extensionUri, 'media', 'edit-service.js'));
 
 
-        const activeFields: string[] = [];
+        var activeFields: string[] | undefined = [];
         if ((data.subtype && data.subtype !== "") || (data.type && data.type !== "")) {
-            await getSavedFields(data.subtype ?? data.type);
+            activeFields = await getSavedFields(data.subtype ?? data.type);
         }
         
         return `
