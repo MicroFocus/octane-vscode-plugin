@@ -20,17 +20,33 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { debounce } from 'ts-debounce';
 import { TextEncoder } from 'util';
-import { configure, getLogger} from 'log4js';
+import { configure, getLogger, Appender } from 'log4js';
 
 export async function activate(context: vscode.ExtensionContext) {
 
+	let logAppender: Appender = {
+		type: 'dateFile',
+		filename: `${context.logUri.path}/vs.log`,
+		compress: true,
+		alwaysIncludePattern: true
+	};
+	try {
+		fs.accessSync(context.logUri.path, fs.constants.W_OK);
+		console.info('Log dir is writeable.');
+	} catch (error) {
+		console.warn('Log dir is not writeable.');
+		logAppender = {
+			type: 'console'
+		};
+	}
+
 	configure({
-	  appenders: { vs: { type: 'file', filename: `${context.logUri.path}/vs.log` } },
-	  categories: { default: { appenders: ['vs'], level: 'debug' } }
+		appenders: { vs: logAppender },
+		categories: { default: { appenders: ['vs'], level: 'debug' } }
 	});
-	
+
 	const logger = getLogger('vs');
-	
+
 	const service = OctaneService.getInstance();
 	const authProvider = new AlmOctaneAuthenticationProvider(context);
 	context.subscriptions.push(authProvider);
@@ -71,7 +87,7 @@ export async function activate(context: vscode.ExtensionContext) {
 			let value: any = context.workspaceState.get('visibleFields');
 			if (value) {
 				value = JSON.parse(value);
-				if(value && value.fields) {
+				if (value && value.fields) {
 					return value.fields;
 				}
 			}
@@ -199,7 +215,14 @@ export async function activate(context: vscode.ExtensionContext) {
 					return;
 				}
 
-				const newFile = vscode.Uri.parse(path.join(vscode.workspace.workspaceFolders[0].uri.path, `${e.entity.name}_${e.entity.id}.feature`));
+				let newFile = vscode.Uri.parse(path.join(vscode.workspace.workspaceFolders[0].uri.path, `${e.entity.name}_${e.entity.id}.feature`));
+				try {
+					fs.accessSync(vscode.workspace.workspaceFolders[0].uri.path, fs.constants.W_OK);
+				} catch (error) {
+					logger.error('workspace folder is not writabel', error);
+					newFile = vscode.Uri.parse(`file://${e.entity.name}_${e.entity.id}.feature`);
+				}
+				
 				const fileInfos = await vscode.window.showSaveDialog({ defaultUri: newFile });
 				if (fileInfos) {
 					try {
@@ -210,12 +233,12 @@ export async function activate(context: vscode.ExtensionContext) {
 						} catch (e) {
 							logger.error(e);
 						}
-						vscode.window.showInformationMessage('Script saved.');	
+						vscode.window.showInformationMessage('Script saved.');
 					} catch (error) {
 						logger.error('While saving script: ', e);
 						vscode.window.showErrorMessage('Access error occurred while saving script.');
 					}
-					
+
 				}
 			}
 		});
