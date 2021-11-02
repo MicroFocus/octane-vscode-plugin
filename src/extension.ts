@@ -20,17 +20,17 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { debounce } from 'ts-debounce';
 import { TextEncoder } from 'util';
-import { configure, getLogger} from 'log4js';
+import { configure, getLogger } from 'log4js';
 
 export async function activate(context: vscode.ExtensionContext) {
 
 	configure({
-	  appenders: { vs: { type: 'file', filename: `${context.logUri.path}/vs.log` } },
-	  categories: { default: { appenders: ['vs'], level: 'debug' } }
+		appenders: { vs: { type: 'file', filename: `${context.logUri.path}/vs.log` } },
+		categories: { default: { appenders: ['vs'], level: 'debug' } }
 	});
-	
+
 	const logger = getLogger('vs');
-	
+
 	const service = OctaneService.getInstance();
 	const authProvider = new AlmOctaneAuthenticationProvider(context);
 	context.subscriptions.push(authProvider);
@@ -55,10 +55,10 @@ export async function activate(context: vscode.ExtensionContext) {
 	}
 
 	{
-		let setFields = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.setFields', async (data) => {
+		let setFields = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.setFields', async (data, entityType) => {
 			if (data.fields) {
 				logger.debug(data);
-				await context.workspaceState.update('visibleFields',
+				await context.workspaceState.update(`visibleFields-${entityType}`,
 					JSON.stringify(data)
 				);
 			}
@@ -67,12 +67,14 @@ export async function activate(context: vscode.ExtensionContext) {
 	}
 
 	{
-		let getFields = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.getFields', () => {
-			let value: any = context.workspaceState.get('visibleFields');
-			if (value) {
-				value = JSON.parse(value);
-				if(value && value.fields) {
-					return value.fields;
+		let getFields = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.getFields', (entityType) => {
+			if (entityType) {
+				let value: any = context.workspaceState.get(`visibleFields-${entityType}`);
+				if (value) {
+					value = JSON.parse(value);
+					if (value && value.fields) {
+						return value.fields;
+					}
 				}
 			}
 			return;
@@ -210,12 +212,12 @@ export async function activate(context: vscode.ExtensionContext) {
 						} catch (e) {
 							logger.error(e);
 						}
-						vscode.window.showInformationMessage('Script saved.');	
+						vscode.window.showInformationMessage('Script saved.');
 					} catch (error) {
 						logger.error('While saving script: ', e);
 						vscode.window.showErrorMessage('Access error occurred while saving script.');
 					}
-					
+
 				}
 			}
 		});
