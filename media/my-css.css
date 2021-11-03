@@ -124,6 +124,15 @@ textarea {
     display: none;
 }
 
+.select-container-single {
+    display: flex;
+    flex-direction: column;
+    margin: .5rem;
+    flex: 1;
+    min-width: 200px;
+    display: none;
+}
+
 /* .multi-select-container {
     display: flex;
     flex-direction: column;
@@ -213,6 +222,13 @@ hr {
 }
 
 .reference-select {
+    background-color: #3c3c3c;
+    color: #cccccc;
+    margin-top: 0.5rem;
+    height: 2.8rem;
+}
+
+.reference-select-single {
     background-color: #3c3c3c;
     color: #cccccc;
     margin-top: 0.5rem;
