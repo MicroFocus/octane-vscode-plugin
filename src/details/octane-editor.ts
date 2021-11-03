@@ -163,12 +163,14 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                         if (field) {
                             let data = await generateSelectOptions(field[0], document.entity);
                             if (data) {
+                                let selectedField = getFieldValue(document.entity, field[0].name);
                                 webviewPanel.webview.postMessage({
                                     type: 'post-options-for-single-select',
                                     from: 'webview',
                                     data: {
                                         field: field,
-                                        options: data
+                                        options: data,
+                                        selectedField: selectedField
                                     }
                                 });
                             }

@@ -61,24 +61,25 @@
         }
     }
 
-    function addOptionsForSelect(options, field) {
+    function addOptionsForSelect(options, field, selectedName) {
         let fieldName = field[0].name;
         let select = document.getElementById(fieldName);
         if (options && options.data) {
             for (let option of options.data) {
-                // console.log(option);
                 if (option.type === 'workspace_user') {
-                    select.add(new Option(option.full_name, JSON.stringify(option)));
+                    if (option.full_name !== selectedName) {
+                        select.add(new Option(option.full_name, JSON.stringify(option)));
+                    }
                 } else {
-                    select.add(new Option(option.name, JSON.stringify(option)));
+                    if (option.name !== selectedName) {
+                        select.add(new Option(option.name, JSON.stringify(option)));
+                    }
                 }
             }
-            //todo: update element
         }
         selectDataPresent.push(fieldName);
         let instance = M.FormSelect.init(select, {});
         instance.dropdown.open();
-        // console.log(select);
     }
 
     function getComments() {
@@ -282,7 +283,7 @@
                         if (e.data.data.options) {
                             let options = e.data.data.options;
                             if (e.data.data.field) {
-                                addOptionsForSelect(options, e.data.data.field);
+                                addOptionsForSelect(options, e.data.data.field, e.data.data.selectedField);
                             }
                         }
                     }
