@@ -159,7 +159,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                 }
                 if (m.type === 'get-data-for-single-select') {
                     if (m.data && m.data.field) {
-                        let field = document.fields.filter((f: any) => f.name == m.data.field);
+                        let field = document.fields.filter((f: any) => f.name === m.data.field);
                         if (field) {
                             let data = await generateSelectOptions(field[0], document.entity);
                             if (data) {

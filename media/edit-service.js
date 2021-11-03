@@ -3,10 +3,17 @@
 (function () {
     const vscode = acquireVsCodeApi();
     const filterOpened = false;
+    const selectDataPresent = [];
 
     document.addEventListener('DOMContentLoaded', function () {
         var elems = document.querySelectorAll('select');
         var instances = M.FormSelect.init(elems, {});
+        let referenceSelects = document.getElementsByClassName("select-container-single");
+        for (let select of referenceSelects) {
+            select.addEventListener('click', e => {
+                getDataForEntity(select);
+            });
+        }
     });
 
     document.getElementById("commentsId").addEventListener('click', e => {
@@ -33,15 +40,6 @@
         openInBrowser();
     });
 
-    {
-        let referenceSelects = document.getElementsByClassName("select-container-single");
-        for (let select of referenceSelects) {
-            select.addEventListener('click', e => {
-                getDataForEntity(select);
-            });
-        }
-    }
-
     function getDataForEntity(entity) {
         let fieldName;
         let label;
@@ -52,7 +50,7 @@
             }
         }
         // console.log(fieldName);
-        if (fieldName) {
+        if (fieldName && !selectDataPresent.includes(fieldName)) {
             vscode.postMessage({
                 type: 'get-data-for-single-select',
                 from: 'edit-service',
@@ -77,6 +75,9 @@
             }
             //todo: update element
         }
+        selectDataPresent.push(fieldName);
+        let instance = M.FormSelect.init(select, {});
+        instance.dropdown.open();
         // console.log(select);
     }
 
