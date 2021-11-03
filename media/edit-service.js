@@ -37,20 +37,30 @@
         let referenceSelects = document.getElementsByClassName("select-container-single");
         for (let select of referenceSelects) {
             select.addEventListener('click', e => {
-                getDataForEntity(e);
+                getDataForEntity(select);
             });
         }
     }
 
     function getDataForEntity(entity) {
-        console.log(entity);
-        vscode.postMessage({
-            type: 'get-data-for-single-select',
-            from: 'edit-service',
-            data: {
-                field: 'author'
+        let fieldName;
+        let label;
+        if (entity) {
+            label = entity.querySelectorAll("label")[0];
+            if (label) {
+                fieldName = label.getAttribute("name");
             }
-        });
+        }
+        // console.log(fieldName);
+        if (fieldName) {
+            vscode.postMessage({
+                type: 'get-data-for-single-select',
+                from: 'edit-service',
+                data: {
+                    field: fieldName
+                }
+            });
+        }
     }
 
     function addOptionsForSelect(options, field) {
@@ -58,13 +68,14 @@
         let select = document.getElementById(fieldName);
         if (options && options.data) {
             for (let option of options.data) {
-                console.log(option);
+                // console.log(option);
                 if (option.type === 'workspace_user') {
-                    select.add(new Option(option.full_name, JSON.stringify(option)));   
+                    select.add(new Option(option.full_name, JSON.stringify(option)));
                 } else {
                     select.add(new Option(option.name, JSON.stringify(option)));
                 }
             }
+            //todo: update element
         }
         // console.log(select);
     }

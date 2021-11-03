@@ -557,7 +557,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                         if (field.editable) {
                             html += `
                         <div class="select-container-single" id="container_${field.label.replaceAll(" ", "_")}">
-                            <label>${field.label}</label>
+                            <label name="${field.name}">${field.label}</label>
                             <select class="reference-select-single" id="${field.name}">
                         `;
                             html += `<option value="none" selected disabled hidden>${getFieldValue(data, field.name)}</option>`;
