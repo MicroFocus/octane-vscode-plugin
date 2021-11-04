@@ -563,20 +563,6 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                             <select class="reference-select-single" id="${field.name}">
                         `;
                             html += `<option value="none" selected disabled hidden>${getFieldValue(data, field.name)}</option>`;
-                            // if (field.field_type_data.targets[0].type) {
-                            //     let options = await OctaneService.getInstance().getFullDataForEntity(field.field_type_data.targets[0].type, field, data);
-                            //     if (options) {
-                            //         options.data.forEach((option: any) => {
-                            //             if (option) {
-                            //                 if (option.type === 'workspace_user') {
-                            //                     html += `<option value='${JSON.stringify(option)}'>${option.full_name}</option>`;
-                            //                 } else {
-                            //                     html += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
-                            //                 }
-                            //             }
-                            //         });
-                            //     }
-                            // }
                             html += `
                             </select>
                         </div>`;
