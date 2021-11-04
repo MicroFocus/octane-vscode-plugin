@@ -157,6 +157,43 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                 if (m.type === 'open-in-browser') {
                     vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.openInBrowser', document.entity);
                 }
+                if (m.type === 'get-data-for-select') {
+                    if (m.data && m.data.field) {
+                        let field = document.fields.filter((f: any) => f.name === m.data.field);
+                        if (field) {
+                            let data = await generateSelectOptions(field[0], document.entity);
+                            if (data) {
+                                let selectedField;
+                                if (field.field_type_data && field.field_type_data.multiple) {
+                                    selectedField = getFieldValue(data, fieldNameMap.get(field.name) ?? field.name);
+                                    webviewPanel.webview.postMessage({
+                                        type: 'post-options-for-multiple-select',
+                                        from: 'webview',
+                                        data: {
+                                            field: field,
+                                            options: data,
+                                            selectedList: selectedField
+                                        }
+                                    });
+                                } else {
+                                    selectedField = getFieldValue(document.entity, field[0].name);
+                                    webviewPanel.webview.postMessage({
+                                        type: 'post-options-for-single-select',
+                                        from: 'webview',
+                                        data: {
+                                            field: field,
+                                            options: data,
+                                            selectedField: selectedField
+                                        }
+                                    });
+                                }
+                            }
+
+                            console.log("data", data);
+                        }
+                    }
+
+                }
             });
 
         } catch (e) {
@@ -224,6 +261,13 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
     
         `;
     }
+}
+
+async function generateSelectOptions(field: any, data: any | OctaneEntity | undefined) {
+    if (field && field.field_type_data && field.field_type_data.targets && data) {
+        return await OctaneService.getInstance().getFullDataForEntity(field.field_type_data.targets[0].type, field, data);
+    }
+    return;
 }
 
 function getDataForSubtype(entity: OctaneEntity | undefined): [string, string] {
@@ -504,22 +548,10 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                 if (field.field_type === 'reference') {
                     if (field.field_type_data.multiple) {
                         html += `
-                    <div class="select-container" id="container_${field.label.replaceAll(" ", "_")}">
-                        <label>${field.label}</label>
-                        <select class="reference-select" multiple="multiple" id="${field.name}">
+                    <div class="select-container-multiple" id="container_${field.label.replaceAll(" ", "_")}">
+                        <label name="${field.name}">${field.label}</label>
+                        <select class="reference-select-multiple" multiple="multiple" id="${field.name}">
                     `;
-
-                        let selected = getFieldValue(data, fieldNameMap.get(field.name) ?? field.name);
-                        let options = await OctaneService.getInstance().getFullDataForEntity(field.field_type_data.targets[0].type, field, data);
-                        if (options) {
-                            options.data.forEach((option: any) => {
-                                if (selected.includes(option.name)) {
-                                    html += `<option selected value='${JSON.stringify(option)}'>${option.name}</option>`;
-                                } else {
-                                    html += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
-                                }
-                            });
-                        }
                         html += `
                         </select>
                         
@@ -528,25 +560,11 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                     } else {
                         if (field.editable) {
                             html += `
-                        <div class="select-container" id="container_${field.label.replaceAll(" ", "_")}">
-                            <label>${field.label}</label>
-                            <select class="reference-select" id="${field.name}">
+                        <div class="select-container-single" id="container_${field.label.replaceAll(" ", "_")}">
+                            <label name="${field.name}">${field.label}</label>
+                            <select class="reference-select-single" id="${field.name}">
                         `;
                             html += `<option value="none" selected disabled hidden>${getFieldValue(data, field.name)}</option>`;
-                            if (field.field_type_data.targets[0].type) {
-                                let options = await OctaneService.getInstance().getFullDataForEntity(field.field_type_data.targets[0].type, field, data);
-                                if (options) {
-                                    options.data.forEach((option: any) => {
-                                        if (option) {
-                                            if (option.type === 'workspace_user') {
-                                                html += `<option value='${JSON.stringify(option)}'>${option.full_name}</option>`;
-                                            } else {
-                                                html += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
-                                            }
-                                        }
-                                    });
-                                }
-                            }
                             html += `
                             </select>
                         </div>`;
