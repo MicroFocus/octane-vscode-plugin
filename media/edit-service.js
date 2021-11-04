@@ -8,17 +8,31 @@
     document.addEventListener('DOMContentLoaded', function () {
         var elems = document.querySelectorAll('select');
         var instances = M.FormSelect.init(elems, {});
-        let referenceSelects = document.getElementsByClassName("select-container-single");
-        for (let select of referenceSelects) {
-            select.addEventListener('click', e => {
-                getDataForEntity(select);
-            });
+        let referenceContainers = document.getElementsByClassName("select-container-single");
+        for (let container of referenceContainers) {
+            let select = container.querySelector("select");
+            if (select) {
+                var instances = M.FormSelect.init(select, {
+                    dropdownOptions: {
+                        onOpenStart: function () {
+                            getDataForEntity(container);
+                        }
+                    }
+                });
+            }
         }
-        let referenceMultiSelects = document.getElementsByClassName("select-container-multiple");
-        for (let select of referenceMultiSelects) {
-            select.addEventListener('click', e => {
-                getDataForEntity(select);
-            });
+        let referenceMultiSelectContainers = document.getElementsByClassName("select-container-multiple");
+        for (let container of referenceMultiSelectContainers) {
+            let select = container.querySelector("select");
+            if (select) {
+                var instances = M.FormSelect.init(select, {
+                    dropdownOptions: {
+                        onOpenStart: function () {
+                            getDataForEntity(container);
+                        }
+                    }
+                });
+            }
         }
     });
 
