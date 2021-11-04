@@ -552,18 +552,6 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                         <label name="${field.name}">${field.label}</label>
                         <select class="reference-select-multiple" multiple="multiple" id="${field.name}">
                     `;
-
-                        // let selected = getFieldValue(data, fieldNameMap.get(field.name) ?? field.name);
-                        // let options = await OctaneService.getInstance().getFullDataForEntity(field.field_type_data.targets[0].type, field, data);
-                        // if (options) {
-                        //     options.data.forEach((option: any) => {
-                        //         if (selected.includes(option.name)) {
-                        //             html += `<option selected value='${JSON.stringify(option)}'>${option.name}</option>`;
-                        //         } else {
-                        //             html += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
-                        //         }
-                        //     });
-                        // }
                         html += `
                         </select>
                         
