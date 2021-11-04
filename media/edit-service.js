@@ -14,6 +14,12 @@
                 getDataForEntity(select);
             });
         }
+        let referenceMultiSelects = document.getElementsByClassName("select-container-multiple");
+        for (let select of referenceMultiSelects) {
+            select.addEventListener('click', e => {
+                getDataForEntity(select);
+            });
+        }
     });
 
     document.getElementById("commentsId").addEventListener('click', e => {
@@ -80,6 +86,20 @@
         selectDataPresent.push(fieldName);
         let instance = M.FormSelect.init(select, {});
         instance.dropdown.open();
+    }
+
+    function addOptionsForMultipleSelect(options, field, selected) {
+        let fieldName = field[0].name;
+        let select = document.getElementById(fieldName);
+        if (options && options.data) {
+            for (let option of options.data) {
+                if (selected.includes(option.name)) {
+                    select.add(new Option(option.name, JSON.stringify(option), true));
+                } else {
+                    select.add(new Option(option.name, JSON.stringify(option)));
+                }
+            }
+        }
     }
 
     function getComments() {
@@ -284,6 +304,19 @@
                             let options = e.data.data.options;
                             if (e.data.data.field) {
                                 addOptionsForSelect(options, e.data.data.field, e.data.data.selectedField);
+                            }
+                        }
+                    }
+                    break;
+                }
+
+            case 'post-options-for-multiple-select':
+                {
+                    if (e && e.data && e.data.data) {
+                        if (e.data.data.options) {
+                            let options = e.data.data.options;
+                            if (e.data.data.field) {
+                                addOptionsForMultipleSelect(options, e.data.data.field, e.data.data.selectedList);
                             }
                         }
                     }
