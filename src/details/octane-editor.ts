@@ -157,7 +157,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                 if (m.type === 'open-in-browser') {
                     vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.openInBrowser', document.entity);
                 }
-                if (m.type === 'get-data-for-single-select') {
+                if (m.type === 'get-data-for-select') {
                     if (m.data && m.data.field) {
                         let field = document.fields.filter((f: any) => f.name === m.data.field);
                         if (field) {

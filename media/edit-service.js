@@ -58,7 +58,7 @@
         // console.log(fieldName);
         if (fieldName && !selectDataPresent.includes(fieldName)) {
             vscode.postMessage({
-                type: 'get-data-for-single-select',
+                type: 'get-data-for-select',
                 from: 'edit-service',
                 data: {
                     field: fieldName
