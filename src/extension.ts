@@ -344,7 +344,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		}
 	}));
 
-	const entityStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
+	const entityStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 102);
 	entityStatusBarItem.text = '$(clock) No active item';
 	entityStatusBarItem.command = 'visual-studio-code-plugin-for-alm-octane.openActiveItem';
 	entityStatusBarItem.show();
@@ -354,19 +354,30 @@ export async function activate(context: vscode.ExtensionContext) {
 		myActiveItem = e;
 		entityStatusBarItem.text = `$(clock) ${e.entity?.label} ${e.id}`;
 		clearActiveItemStatusBarItem.show();
+		copyCommitMessageStatusBarItem.show();
 	}));
 
 	const clearActiveItemStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
-	clearActiveItemStatusBarItem.text = '$(stop-circle) Stop work';
+	clearActiveItemStatusBarItem.text = '$(stop-circle)';
 	clearActiveItemStatusBarItem.command = 'visual-studio-code-plugin-for-alm-octane.endWork';
+	clearActiveItemStatusBarItem.tooltip = "Stop work";
 	context.subscriptions.push(clearActiveItemStatusBarItem);
 
-	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.endWork', async (e: MyWorkItem) => {
+	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.endWork', async () => {
 		myActiveItem = undefined;
 		entityStatusBarItem.text = `$(clock) No Active Item`;
 		clearActiveItemStatusBarItem.hide();
+		copyCommitMessageStatusBarItem.hide();
 	}));
 
+	const copyCommitMessageStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 101);
+	copyCommitMessageStatusBarItem.text = '$(git-commit)';
+	copyCommitMessageStatusBarItem.tooltip = 'Copy commit message';
+	copyCommitMessageStatusBarItem.command =  'visual-studio-code-plugin-for-alm-octane.copyCommitMessageClick';
+	context.subscriptions.push(copyCommitMessageStatusBarItem);
+	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.copyCommitMessageClick', async () => {
+		vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.commitMessage', myActiveItem);
+	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.dismissItem', async (e: MyWorkItem) => {
 		if (e.entity) {

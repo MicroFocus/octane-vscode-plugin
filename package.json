@@ -262,6 +262,11 @@
 				"icon": "$(git-commit)"
 			},
 			{
+				"command": "visual-studio-code-plugin-for-alm-octane.copyCommitMessageClick",
+				"title": "Copy commit message",
+				"icon": "$(git-commit)"
+			},
+			{
 				"command": "visual-studio-code-plugin-for-alm-octane.refreshAll",
 				"title": "Refresh All Views",
 				"icon": "$(extensions-refresh)"
