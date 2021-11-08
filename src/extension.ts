@@ -101,14 +101,23 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	await service.initialize();
 
-	vscode.authentication.onDidChangeSessions(async e => {
+	authProvider.onDidChangeSessions(async e => {
 		logger.info('Received session change', e);
-		if (e.provider && e.provider.id === AlmOctaneAuthenticationProvider.type) {
+		if (e.removed !== undefined) {
 			vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.endWork');
-			await service.initialize();
-			await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: false });
+			await context.workspaceState.update('visual-studio-code-plugin-for-alm-octane.quickPick.history', []);
 		}
+		await service.initialize();
+		await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: false });
 	});
+	// vscode.authentication.onDidChangeSessions(async e => {
+	// 	logger.info('Received session change', e);
+	// 	if (e.provider && e.provider.id === AlmOctaneAuthenticationProvider.type) {
+	// 		vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.endWork');
+	// 		await service.initialize();
+	// 		await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: false });
+	// 	}
+	// });
 
 	const welcomeViewProvider = new WelcomeViewProvider(context.extensionUri, authProvider);
 	context.subscriptions.push(vscode.window.registerWebviewViewProvider('visual-studio-code-plugin-for-alm-octane.myWelcome', welcomeViewProvider));
@@ -226,7 +235,7 @@ export async function activate(context: vscode.ExtensionContext) {
 					logger.error('workspace folder is not writabel', error);
 					newFile = vscode.Uri.parse(`file://${e.entity.name}_${e.entity.id}.feature`);
 				}
-				
+
 				const fileInfos = await vscode.window.showSaveDialog({ defaultUri: newFile });
 				if (fileInfos) {
 					try {

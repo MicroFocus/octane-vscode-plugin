@@ -39,24 +39,4 @@ export class Keychain {
 		}
 	}
 
-	// async tryMigrate(): Promise<string | null | undefined> {
-	// 	try {
-	// 		const keytar = getKeytar();
-	// 		if (!keytar) {
-	// 			throw new Error('keytar unavailable');
-	// 		}
-
-	// 		const oldValue = await keytar.getPassword(`${vscode.env.uriScheme}-github.login`, 'account');
-	// 		if (oldValue) {
-	// 			Logger.trace('Attempting to migrate from keytar to secret store...');
-	// 			await this.setToken(oldValue);
-	// 			await keytar.deletePassword(`${vscode.env.uriScheme}-github.login`, 'account');
-	// 		}
-
-	// 		return oldValue;
-	// 	} catch (_) {
-	// 		// Ignore
-	// 		return Promise.resolve(undefined);
-	// 	}
-	// }
 }
