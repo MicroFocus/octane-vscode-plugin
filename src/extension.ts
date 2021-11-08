@@ -345,7 +345,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	}));
 
 	const entityStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
-	entityStatusBarItem.text = '$(clock) No Active Item';
+	entityStatusBarItem.text = '$(clock) No active item';
 	entityStatusBarItem.command = 'visual-studio-code-plugin-for-alm-octane.openActiveItem';
 	entityStatusBarItem.show();
 	context.subscriptions.push(entityStatusBarItem);
@@ -357,7 +357,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	}));
 
 	const clearActiveItemStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
-	clearActiveItemStatusBarItem.text = '$(stop-circle) Stop Work';
+	clearActiveItemStatusBarItem.text = '$(stop-circle) Stop work';
 	clearActiveItemStatusBarItem.command = 'visual-studio-code-plugin-for-alm-octane.endWork';
 	context.subscriptions.push(clearActiveItemStatusBarItem);
 

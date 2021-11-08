@@ -243,7 +243,7 @@
 			},
 			{
 				"command": "visual-studio-code-plugin-for-alm-octane.startWork",
-				"title": "Start Work",
+				"title": "Start work",
 				"icon": "$(timeline-pin)"
 			},
 			{
