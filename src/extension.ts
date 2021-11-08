@@ -104,6 +104,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.authentication.onDidChangeSessions(async e => {
 		logger.info('Received session change', e);
 		if (e.provider && e.provider.id === AlmOctaneAuthenticationProvider.type) {
+			vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.endWork');
 			await service.initialize();
 			await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: false });
 		}
@@ -361,6 +362,9 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.dismissItem', async (e: MyWorkItem) => {
 		if (e.entity) {
 			await service.dismissFromMyWork(e.entity);
+			if (myActiveItem !== undefined && e.entity.id === myActiveItem.entity?.id && e.entity.type === myActiveItem.entity?.type) {
+				vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.endWork');
+			}
 			vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.refreshAll');
 		}
 	}));
