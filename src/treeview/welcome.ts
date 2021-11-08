@@ -52,7 +52,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                         try {
                             const uri = vscode.workspace.getConfiguration('visual-studio-code-plugin-for-alm-octane');
                             //save url to memento
-                            vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.saveLoginData',
+                            await vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.saveLoginData',
                                 JSON.parse(
                                     `{"url": "${data.uri}", "authTypeBrowser": ${data.browser}}`
                                 ));

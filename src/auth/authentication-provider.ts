@@ -106,10 +106,15 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 			if (idResult.ok) {
 				const response = await idResult.json();
 				this.logger.info(response);
+				const self = this;
+				const logWrapper = function(msg: string) {
+					self.logger.info(msg);
+				};
 				const browserResponse = await vscode.env.openExternal(vscode.Uri.parse(response?.authentication_url));
 				if (browserResponse) {
-					const decoratedFetchToken = retryDecorator(this.fetchToken, { retries: 100, delay: 1000 });
+					const decoratedFetchToken = retryDecorator(this.fetchToken, { retries: 100, delay: 1000, logger: logWrapper });
 					const token = await decoratedFetchToken(uri, user, response);
+					// const token = await this.fetchToken(uri, user, response);
 					this.logger.info('Fetchtoken returned: ', token);
 					const authTestResult = await OctaneService.getInstance().testAuthentication(uri, space, workspace, user, undefined, token.cookie_name, token.access_token);
 					if (authTestResult === undefined) {
@@ -148,12 +153,13 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 
 	private async fetchToken(uri: string, username: string, response: any): Promise<any> {
 		const tokenResult = await fetch(`${uri}authentication/tokens/${response.id}?userName=${username}`);
+		const logger = getLogger('vs');
 		if (tokenResult.ok) {
 			const tokenResponse = await tokenResult.json();
-			this.logger.info(tokenResponse);
+			logger.info(tokenResponse);
 			return tokenResponse;
 		} else {
-			this.logger.error(tokenResult.statusText);
+			logger.error(tokenResult.statusText);
 			throw new Error(tokenResult.statusText);
 		}
 	}
