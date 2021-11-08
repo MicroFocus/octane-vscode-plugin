@@ -135,12 +135,6 @@
 					"when": "visual-studio-code-plugin-for-alm-octane.hasSession"
 				},
 				{
-					"id": "myMentions",
-					"name": "Mentions",
-					"icon": "media/favicon.png",
-					"when": "visual-studio-code-plugin-for-alm-octane.hasSession"
-				},
-				{
 					"id": "myRequirements",
 					"name": "Requirements",
 					"icon": "media/favicon.png",
@@ -149,6 +143,12 @@
 				{
 					"id": "myTasks",
 					"name": "Tasks",
+					"icon": "media/favicon.png",
+					"when": "visual-studio-code-plugin-for-alm-octane.hasSession"
+				},
+				{
+					"id": "myMentions",
+					"name": "Mentions",
 					"icon": "media/favicon.png",
 					"when": "visual-studio-code-plugin-for-alm-octane.hasSession"
 				}
