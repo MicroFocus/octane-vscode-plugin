@@ -248,7 +248,7 @@
 			},
 			{
 				"command": "visual-studio-code-plugin-for-alm-octane.openInBrowser",
-				"title": "Open in browser",
+				"title": "View in browser",
 				"icon": "$(ports-open-browser-icon)"
 			},
 			{
@@ -258,7 +258,7 @@
 			},
 			{
 				"command": "visual-studio-code-plugin-for-alm-octane.commitMessage",
-				"title": "Copy commit message",
+				"title": "Copy Commit Message",
 				"icon": "$(git-commit)"
 			},
 			{
@@ -313,7 +313,7 @@
 			},
 			{
 				"command": "visual-studio-code-plugin-for-alm-octane.details",
-				"title": "Details",
+				"title": "View details",
 				"icon": "$(open-preview)"
 			},
 			{
