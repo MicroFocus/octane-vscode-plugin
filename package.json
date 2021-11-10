@@ -204,24 +204,28 @@
 			],
 			"view/item/context": [
 				{
-					"command": "visual-studio-code-plugin-for-alm-octane.details"
+					"command": "visual-studio-code-plugin-for-alm-octane.details",
+					"when": "viewItem == 'task' || viewItem == 'story' || viewItem == 'defect' || viewItem == 'quality_story' || viewItem == 'gherkin_test' || viewItem == 'scenario_test' || viewItem == 'feature' || viewItem == 'test_manual' || viewItem == 'run_suite' || viewItem == 'run_manual' || viewItem == 'test_suite' || viewItem == 'auto_test' || viewItem == 'requirement_document'"
 				},
 				{
 					"command": "visual-studio-code-plugin-for-alm-octane.startWork",
 					"when": "viewItem == 'task' || viewItem == 'story' || viewItem == 'defect' || viewItem == 'quality_story'"
 				},
 				{
-					"command": "visual-studio-code-plugin-for-alm-octane.commitMessage"
+					"command": "visual-studio-code-plugin-for-alm-octane.commitMessage",
+					"when": "viewItem == 'task' || viewItem == 'story' || viewItem == 'defect' || viewItem == 'quality_story'"
 				},
 				{
 					"command": "visual-studio-code-plugin-for-alm-octane.myTests.download",
 					"when": "viewItem == 'gherkin_test' || viewItem == 'scenario_test'"
 				},
 				{
-					"command": "visual-studio-code-plugin-for-alm-octane.openInBrowser"
+					"command": "visual-studio-code-plugin-for-alm-octane.openInBrowser",
+					"when": "viewItem == 'task' || viewItem == 'story' || viewItem == 'defect' || viewItem == 'quality_story' || viewItem == 'gherkin_test' || viewItem == 'scenario_test' || viewItem == 'feature' || viewItem == 'test_manual' || viewItem == 'run_suite' || viewItem == 'run_manual' || viewItem == 'test_suite' || viewItem == 'auto_test' || viewItem == 'requirement_document'"
 				},
 				{
-					"command": "visual-studio-code-plugin-for-alm-octane.dismissItem"
+					"command": "visual-studio-code-plugin-for-alm-octane.dismissItem",
+					"when": "viewItem == 'task' || viewItem == 'story' || viewItem == 'defect' || viewItem == 'quality_story' || viewItem == 'gherkin_test' || viewItem == 'scenario_test' || viewItem == 'feature' || viewItem == 'test_manual' || viewItem == 'run_suite' || viewItem == 'run_manual' || viewItem == 'test_suite' || viewItem == 'auto_test' || viewItem == 'requirement_document'"
 				}
 			]
 		},
