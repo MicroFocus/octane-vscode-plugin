@@ -253,7 +253,7 @@
 			},
 			{
 				"command": "visual-studio-code-plugin-for-alm-octane.myTests.download",
-				"title": "Download test",
+				"title": "Download script",
 				"icon": "$(notebook-move-down)"
 			},
 			{
