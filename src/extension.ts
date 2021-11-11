@@ -101,6 +101,23 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	await service.initialize();
 
+	vscode.commands.executeCommand('setContext', 'visual-studio-code-plugin-for-alm-octane.supportedViews', [
+		'myBacklog',
+		'myTests',
+		'myTestRuns',
+		'myFeatures',
+		'myRequirements',
+		'myTasks',
+		'myMentions'
+	]);
+
+	vscode.commands.executeCommand('setContext', 'visual-studio-code-plugin-for-alm-octane.supportsStartWork', [
+		'task',
+		'story',
+		'defect',
+		'quality_story'
+	]);
+
 	authProvider.onDidChangeSessions(async e => {
 		logger.info('Received session change', e);
 		if (e.removed !== undefined) {
@@ -374,7 +391,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	const copyCommitMessageStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 101);
 	copyCommitMessageStatusBarItem.text = '$(git-commit)';
 	copyCommitMessageStatusBarItem.tooltip = 'Copy commit message';
-	copyCommitMessageStatusBarItem.command =  'visual-studio-code-plugin-for-alm-octane.copyCommitMessageClick';
+	copyCommitMessageStatusBarItem.command = 'visual-studio-code-plugin-for-alm-octane.copyCommitMessageClick';
 	context.subscriptions.push(copyCommitMessageStatusBarItem);
 	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.copyCommitMessageClick', async () => {
 		vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.commitMessage', myActiveItem);
