@@ -258,7 +258,7 @@
 			},
 			{
 				"command": "visual-studio-code-plugin-for-alm-octane.commitMessage",
-				"title": "Copy Commit Message",
+				"title": "Copy commit message",
 				"icon": "$(git-commit)"
 			},
 			{
