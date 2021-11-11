@@ -50,9 +50,47 @@ class OctaneEntityDocument implements vscode.CustomDocument {
 
 }
 
+class WebviewCollection {
+
+	private readonly webviews = new Set<{
+		readonly resource: string;
+		readonly webviewPanel: vscode.WebviewPanel;
+	}>();
+
+	/**
+	 * Get all known webviews for a given uri.
+	 */
+	public *get(uri: vscode.Uri): Iterable<vscode.WebviewPanel> {
+		const key = uri.toString();
+		for (const entry of this.webviews) {
+			if (entry.resource === key) {
+				yield entry.webviewPanel;
+			}
+		}
+	}
+
+	/**
+	 * Add a new webview to the collection.
+	 */
+	public add(uri: vscode.Uri, webviewPanel: vscode.WebviewPanel) {
+		const entry = { resource: uri.toString(), webviewPanel };
+		this.webviews.add(entry);
+
+		webviewPanel.onDidDispose(() => {
+			this.webviews.delete(entry);
+		});
+	}
+
+    public closeAll() {
+        this.webviews.forEach(v => v.webviewPanel.dispose());
+    }
+}
+
 export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorProvider<OctaneEntityDocument> {
 
     private logger = getLogger('vs');
+
+    private webviewPanels = new WebviewCollection();
 
     public static readonly viewType = 'visual-studio-code-plugin-for-alm-octane.octane';
 
@@ -73,6 +111,9 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
         private readonly context: vscode.ExtensionContext
     ) {
         this.onDidChangeCustomDocument = new vscode.EventEmitter<vscode.CustomDocumentEditEvent<OctaneEntityDocument>>().event;
+        context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.details.closeAll', () => {
+            this.webviewPanels.closeAll();
+        }));
     }
 
     onDidChangeCustomDocument: vscode.Event<vscode.CustomDocumentEditEvent<OctaneEntityDocument>> | vscode.Event<vscode.CustomDocumentContentChangeEvent<OctaneEntityDocument>>;
@@ -200,6 +241,8 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
             this.logger.error(e);
             throw e;
         }
+
+        this.webviewPanels.add(document.uri, webviewPanel);
     }
 
     private async getHtmlForWebview(webview: vscode.Webview, context: any, data: any | OctaneEntity | undefined, fields: any[]): Promise<string> {

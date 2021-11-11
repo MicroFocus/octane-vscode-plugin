@@ -329,6 +329,11 @@
 				"command": "visual-studio-code-plugin-for-alm-octane.mySearch.refreshEntry",
 				"title": "Search refresh",
 				"icon": "$(search-view-icon)"
+			},
+			{
+				"command": "visual-studio-code-plugin-for-alm-octane.details.closeAll",
+				"title": "Close all octane entity editors",
+				"icon": "$(close-all)"
 			}
 		]
 	},

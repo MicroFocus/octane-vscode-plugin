@@ -122,6 +122,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		logger.info('Received session change', e);
 		if (e.removed !== undefined) {
 			vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.endWork');
+			vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.details.closeAll');
 			await context.workspaceState.update('visual-studio-code-plugin-for-alm-octane.quickPick.history', []);
 		}
 		await service.initialize();
