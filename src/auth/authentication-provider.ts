@@ -210,6 +210,7 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 			return [sessionData];
 		} catch (e) {
 			this.logger.error(`Error reading token: ${e}`);
+			vscode.window.showErrorMessage('Error in reading sessions information.');
 			return [];
 		}
 	}
