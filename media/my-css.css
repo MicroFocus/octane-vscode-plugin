@@ -96,6 +96,7 @@ textarea {
     margin: 1.22rem 0.5rem 0 0.5rem;
     flex: 1;
     min-width: 200px;
+    max-width: unset;
     display: none;
 }
 
@@ -305,4 +306,8 @@ hr {
 
 .dropdown-content li>a, .dropdown-content li>span {
     color: var(--vscode-button-background);
+}
+
+.input-field.col label {
+    left: unset;
 }
