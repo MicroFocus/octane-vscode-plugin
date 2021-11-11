@@ -22,6 +22,7 @@ import { debounce } from 'ts-debounce';
 import { TextEncoder } from 'util';
 import { configure, getLogger, Appender } from 'log4js';
 import { OctaneEntityHolder } from './octane/model/octane-entity-holder';
+import { Comment } from './octane/model/comment';
 
 export async function activate(context: vscode.ExtensionContext) {
 
@@ -232,7 +233,15 @@ export async function activate(context: vscode.ExtensionContext) {
 	}
 
 	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.openInBrowser', async (e: OctaneEntityHolder) => {
-		await vscode.env.openExternal(service.getBrowserUri(e.entity));
+		if (e.entity) {
+			if (e.entity instanceof Comment) {
+				if ( (e.entity as Comment).ownerWorkItem) {
+					await vscode.env.openExternal(service.getBrowserUri((e.entity as Comment).ownerWorkItem));
+				}
+			} else {
+				await vscode.env.openExternal(service.getBrowserUri(e.entity));
+			}
+		} 
 	}));
 
 	{
@@ -351,6 +360,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.details', async (e: MyWorkItem) => {
 		if (e.entity) {
+			
 			await vscode.commands.executeCommand('vscode.openWith', vscode.Uri.parse(`octane:///octane/${e.entity.type}/${e.entity.subtype}/${e.entity.id}`), OctaneEntityEditorProvider.viewType);
 		}
 	}));
