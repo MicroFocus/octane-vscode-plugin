@@ -125,7 +125,7 @@ export async function activate(context: vscode.ExtensionContext) {
 			await context.workspaceState.update('visual-studio-code-plugin-for-alm-octane.quickPick.history', []);
 		}
 		await service.initialize();
-		await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: false });
+		vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.refreshAll');
 	});
 	// vscode.authentication.onDidChangeSessions(async e => {
 	// 	logger.info('Received session change', e);
