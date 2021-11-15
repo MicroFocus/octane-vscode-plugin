@@ -52,34 +52,34 @@ class OctaneEntityDocument implements vscode.CustomDocument {
 
 class WebviewCollection {
 
-	private readonly webviews = new Set<{
-		readonly resource: string;
-		readonly webviewPanel: vscode.WebviewPanel;
-	}>();
+    private readonly webviews = new Set<{
+        readonly resource: string;
+        readonly webviewPanel: vscode.WebviewPanel;
+    }>();
 
-	/**
-	 * Get all known webviews for a given uri.
-	 */
-	public *get(uri: vscode.Uri): Iterable<vscode.WebviewPanel> {
-		const key = uri.toString();
-		for (const entry of this.webviews) {
-			if (entry.resource === key) {
-				yield entry.webviewPanel;
-			}
-		}
-	}
+    /**
+     * Get all known webviews for a given uri.
+     */
+    public *get(uri: vscode.Uri): Iterable<vscode.WebviewPanel> {
+        const key = uri.toString();
+        for (const entry of this.webviews) {
+            if (entry.resource === key) {
+                yield entry.webviewPanel;
+            }
+        }
+    }
 
-	/**
-	 * Add a new webview to the collection.
-	 */
-	public add(uri: vscode.Uri, webviewPanel: vscode.WebviewPanel) {
-		const entry = { resource: uri.toString(), webviewPanel };
-		this.webviews.add(entry);
+    /**
+     * Add a new webview to the collection.
+     */
+    public add(uri: vscode.Uri, webviewPanel: vscode.WebviewPanel) {
+        const entry = { resource: uri.toString(), webviewPanel };
+        this.webviews.add(entry);
 
-		webviewPanel.onDidDispose(() => {
-			this.webviews.delete(entry);
-		});
-	}
+        webviewPanel.onDidDispose(() => {
+            this.webviews.delete(entry);
+        });
+    }
 
     public closeAll() {
         this.webviews.forEach(v => v.webviewPanel.dispose());
@@ -253,6 +253,16 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
         const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(
             context.extensionUri, 'media', 'edit-service.js'));
 
+        const jqueryJs = webview.asWebviewUri(vscode.Uri.joinPath(
+            context.extensionUri, 'media', 'jquery.min.js'));
+        const bootstrapCss = webview.asWebviewUri(vscode.Uri.joinPath(
+            context.extensionUri, 'media', 'bootstrap.min.css'));
+        const bootstrapJs = webview.asWebviewUri(vscode.Uri.joinPath(
+            context.extensionUri, 'media', 'bootstrap.bundle.min.js'));
+        const bootstrapMultiselectCss = webview.asWebviewUri(vscode.Uri.joinPath(
+            context.extensionUri, 'media', 'bootstrap-multiselect.min.css'));
+        const bootstrapMultiselectJs = webview.asWebviewUri(vscode.Uri.joinPath(
+            context.extensionUri, 'media', 'bootstrap-multiselect.min.js'));
 
         var activeFields: string[] | undefined = [];
         if (data.subtype !== null && data.subtype !== undefined && data.subtype !== "") {
@@ -266,13 +276,17 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
         return `
             <!DOCTYPE html>
             <head>
-    
-            <!-- Compiled and minified CSS -->
-                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-                <!-- Compiled and minified JavaScript -->
-                <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+                <!-- Include Twitter Bootstrap and jQuery: -->
+                <link rel="stylesheet" href="${bootstrapCss}" type="text/css"/>
+                <script type="text/javascript" src="${jqueryJs}"></script>
+                <script type="text/javascript" src="${bootstrapJs}"></script>
+                
+                <!-- Include the plugin's CSS and JS: -->
+                <script type="text/javascript" src="${bootstrapMultiselectJs}"></script>
+                <link rel="stylesheet" href="${bootstrapMultiselectCss}" type="text/css"/>
                 <link href="${styleVSCodeUri}" rel="stylesheet" />
                 <link href="${myStyle}" rel="stylesheet" />
+
             </head>
             <body>
                 <div class="top-container">
@@ -390,9 +404,8 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
         });
         mapFields = new Map([...mapFields].sort((a, b) => String(a[0]).localeCompare(b[0])));
         html += `
-                <div style="margin: 0 0 0 0.5rem; width: 20rem;" id="container_filter_multiselect">
-                    <select class="reference-select" multiple="multiple" id="filter_multiselect">
-                    <option value="" disabled>Filter</option>
+                <div class="select-container-multiple">
+                    <select multiple="multiple" id="example-getting-started">
                 `;
         for (const [key, field] of mapFields) {
 
@@ -403,9 +416,9 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
                     filteredFields = filteredFields.filter(f => f !== field.name);
                 }
                 if (filteredFields.includes(field.name)) {
-                    html += `<option class="filter_option" selected value='${JSON.stringify(field)}'>${field.label}</option>`;
+                    html += `<option class="filter_option" data-label="${field.label}" selected value='${JSON.stringify(field)}'>${field.label}</option>`;
                 } else {
-                    html += `<option class="filter_option" value='${JSON.stringify(field)}'>${field.label}</option>`;
+                    html += `<option class="filter_option" data-label="${field.label}" value='${JSON.stringify(field)}'>${field.label}</option>`;
                 }
             }
         }

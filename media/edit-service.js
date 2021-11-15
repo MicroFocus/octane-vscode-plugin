@@ -5,35 +5,17 @@
     const filterOpened = false;
     const selectDataPresent = [];
 
-    document.addEventListener('DOMContentLoaded', function () {
-        var elems = document.querySelectorAll('select');
-        var instances = M.FormSelect.init(elems, {});
-        let referenceContainers = document.getElementsByClassName("select-container-single");
-        for (let container of referenceContainers) {
-            let select = container.querySelector("select");
-            if (select) {
-                var instances = M.FormSelect.init(select, {
-                    dropdownOptions: {
-                        onOpenStart: function () {
-                            getDataForEntity(container);
-                        }
-                    }
-                });
+    $(document).ready(function() {
+        $('.select-container-multiple select').multiselect({
+            onDropdownShow: function(event) {
+                getDataForEntity(this);
             }
-        }
-        let referenceMultiSelectContainers = document.getElementsByClassName("select-container-multiple");
-        for (let container of referenceMultiSelectContainers) {
-            let select = container.querySelector("select");
-            if (select) {
-                var instances = M.FormSelect.init(select, {
-                    dropdownOptions: {
-                        onOpenStart: function () {
-                            getDataForEntity(container);
-                        }
-                    }
-                });
+        });
+        $('.select-container-single select').multiselect({
+            onDropdownShow: function(event) {
+                getDataForEntity(this);
             }
-        }
+        });
     });
 
     document.getElementById("commentsId").addEventListener('click', e => {
@@ -61,24 +43,17 @@
     });
 
     function getDataForEntity(entity) {
-        let fieldName;
-        let label;
-        if (entity) {
-            label = entity.querySelectorAll("label")[0];
-            if (label) {
-                fieldName = label.getAttribute("name");
-            }
-        }
-        // console.log(fieldName);
-        if (fieldName && !selectDataPresent.includes(fieldName)) {
-            vscode.postMessage({
-                type: 'get-data-for-select',
-                from: 'edit-service',
-                data: {
-                    field: fieldName
-                }
-            });
-        }
+        let fieldName = entity.select;
+        console.log(fieldName);
+        // if (fieldName && !selectDataPresent.includes(fieldName)) {
+        //     vscode.postMessage({
+        //         type: 'get-data-for-select',
+        //         from: 'edit-service',
+        //         data: {
+        //             field: fieldName
+        //         }
+        //     });
+        // }
     }
 
     function addOptionsForSelect(options, field, selectedName) {
