@@ -246,6 +246,8 @@ hr {
 }
 
 .save {
+    display: flex;
+    align-items: center;
     margin: 0 0 0 0.5rem;
     width: 2rem;
     height: 2rem;
@@ -253,6 +255,8 @@ hr {
 }
 
 #refresh, #addToMyWork, #filterId, #commentsId, #openInBrowser {
+    display: flex;
+    align-items: center;
     margin: 0 0 0 0.5rem;
     width: 2rem;
     height: 2rem;
