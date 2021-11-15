@@ -347,7 +347,8 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
         }
         if (data.phase) {
             let transitions: Transition[] = OctaneService.getInstance().getPhaseTransitionForEntity(data.phase.id);
-            html += `<select id="select_phase" name="action" class="action">`;
+            html += `<div style="margin-top: 1rem;">
+            <select id="select_phase" name="action" class="action">`;
             // html += `
             //     <option value="none">${getFieldValue(data, 'phase')}</option>
             // `;
@@ -361,7 +362,7 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
             `;
             });
         }
-        html += `</select>
+        html += `</select></div>
                     <button title="Save" id="saveId" class="save" type="button">
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm2 16H5V5h11.17L19 7.83V19zm-7-7c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zM6 6h9v4H6z"/></svg>
                     </button>
@@ -390,7 +391,7 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
         });
         mapFields = new Map([...mapFields].sort((a, b) => String(a[0]).localeCompare(b[0])));
         html += `
-                <div style="margin: 0 0 0 0.5rem; width: 20rem;" id="container_filter_multiselect">
+                <div style="margin: 1rem 0 0 0.5rem; width: 20rem;" id="container_filter_multiselect">
                     <select class="reference-select" multiple="multiple" id="filter_multiselect">
                     <option value="" disabled>Filter</option>
                 `;
@@ -631,7 +632,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                                 html += `
                                 <div class="input-field col s6 container" id="container_${field.label.replaceAll(" ", "_")}">
                                     <label class="active" for="${field.label}">${field.label}</label>
-                                    <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border); margin-top: 1.55rem;" id="${field.name}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
+                                    <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
                                     <script>
                                         document.getElementById("${field.name}").readOnly = !${field.editable};
                                     </script>
@@ -643,7 +644,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                         html += `
                     <div class="input-field col s6 container" id="container_${field.label.replaceAll(" ", "_")}">
                         <label class="active" for="${field.label}">${field.label}</label>
-                        <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border); margin-top: 1.55rem;" id="${field.name}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
+                        <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
                         <script>
                             document.getElementById("${field.name}").readOnly = !${field.editable};
                         </script>
