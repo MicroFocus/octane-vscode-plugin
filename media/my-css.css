@@ -93,7 +93,7 @@ textarea {
 .container {
     /* display: flex; */
     flex-direction: column;
-    margin: 1.22rem 0.5rem 0 0.5rem;
+    margin: 2rem 0.5rem 0 0.5rem;
     flex: 1;
     min-width: 200px;
     max-width: unset;
@@ -128,7 +128,7 @@ textarea {
 .select-container-single {
     display: flex;
     flex-direction: column;
-    margin: .5rem;
+    margin: 1.22rem 0.5rem 0 0.5rem;
     flex: 1;
     min-width: 200px;
     display: none;
@@ -137,7 +137,7 @@ textarea {
 .select-container-multiple {
     display: flex;
     flex-direction: column;
-    margin: .5rem;
+    margin: 1.22rem 0.5rem 0 0.5rem;
     flex: 1;
     min-width: 200px;
     display: none;
@@ -292,7 +292,7 @@ hr {
     /* border-bottom: unset !important; */
     border-color: var(--vscode-dropdown-border) !important;
     border: 0.5px solid;
-    margin-top: 1rem;
+    margin-top: 0rem;
 }
 
 .select-wrapper .caret {
