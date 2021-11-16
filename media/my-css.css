@@ -187,7 +187,6 @@ hr {
 
 .name-container {
     margin: 2rem 0 0 0.5rem !important;
-    max-width: 40vw;
 }
 
 .action-container {
@@ -211,7 +210,7 @@ hr {
     justify-content: center;
     align-items: center;
     place-content: center;
-    margin-top: 2.1rem;
+    margin-top: 2.6rem;
 }
 
 .label {
