@@ -117,19 +117,22 @@
     }
 
     function getComments() {
+        let button = document.getElementById("commentsId");
         let comments = document.getElementById("comments-element-id");
         let main = document.getElementById("element-id");
         let sidebar = document.getElementById("comments-sidebar-id");
         if (comments) {
             if (comments.style && comments.style.display && comments.style.display !== "none") {
                 comments.style.display = "none";
-                comments.style.width = "0vw";
-                main.style.width = "100vw";
+                button.style.backgroundColor = "#3c3c3c";
+                // comments.style.width = "0vw";
+                // main.style.width = "100vw";
                 sidebar.style.display = "none";
             } else {
                 comments.style.display = "flex";
-                comments.style.width = "30vw";
-                main.style.width = "70vw";
+                button.style.backgroundColor = "#777474";
+                // comments.style.width = "30vw";
+                // main.style.width = "100vw";
                 sidebar.style.display = "flex";
             }
         }

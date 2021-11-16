@@ -428,7 +428,7 @@ async function generateCommentElement(data: any | OctaneEntity | undefined, fiel
     let html: string = ``;
     try {
         html += `   <br>
-                    
+                    <hr>
                     Comments
                     <div class="information-container">
                         <div class="comments-container">
@@ -448,6 +448,8 @@ async function generateCommentElement(data: any | OctaneEntity | undefined, fiel
                 `;
             }
         }
+        html += `   <br>
+                    <hr>`;
     } catch (e: any) {
         vscode.window.showErrorMessage('Error generating comments for entity.');
     }

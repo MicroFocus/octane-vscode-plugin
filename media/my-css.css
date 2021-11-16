@@ -265,25 +265,23 @@ hr {
 
 .main-element {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
 }
 
 #comments-element-id {
     display: none;
     flex-direction: column;
-    width: 0vw;
 }
 
 #element-id {
     display: flex;
     flex-direction: column;
-    width: 100vw;
 }
 
 #comments-sidebar-id {
     display: none;
     flex-direction: column;
-    margin-left: 1rem;
+    /* margin-left: 1rem; */
     /* width: 25%; */
 }
 
