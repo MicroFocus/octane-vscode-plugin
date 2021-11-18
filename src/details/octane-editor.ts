@@ -331,6 +331,7 @@ function getDataForSubtype(entity: OctaneEntity | undefined): [string, string] {
         if (entity?.subtype === 'requirement_document') { return ["RD", "#0b8eac"]; }
         if (entity?.subtype === 'run_suite') { return ["SR", "#5216ac"]; }
         if (entity?.subtype === 'run_manual') { return ["MR", "#29ceff"]; }
+        if (entity?.subtype === 'epic') { return ["E", "#7425AD"]; }
         if (entity?.subtype === 'run_automated') { return ["AR", "#ba47ee"]; }
     }
     return ['', ''];
