@@ -325,13 +325,14 @@ function getDataForSubtype(entity: OctaneEntity | undefined): [string, string] {
         if (entity?.subtype === 'feature') { return ["F", "#e57828"]; }
         if (entity?.subtype === 'scenario_test') { return ["BSC", "#75da4d"]; }
         if (entity?.subtype === 'test_manual') { return ["MT", "#00abf3"]; }
-        if (entity?.subtype === 'auto_test') { return ["AT", "#9b1e83"]; }
+        if (entity?.subtype === 'test_automated') { return ["AT", "#9b1e83"]; }
         if (entity?.subtype === 'gherkin_test') { return ["GT", "#00a989"]; }
         if (entity?.subtype === 'test_suite') { return ["TS", "#271782"]; }
         if (entity?.subtype === 'requirement_document') { return ["RD", "#0b8eac"]; }
         if (entity?.subtype === 'run_suite') { return ["SR", "#5216ac"]; }
         if (entity?.subtype === 'run_manual') { return ["MR", "#29ceff"]; }
         if (entity?.subtype === 'epic') { return ["E", "#7425AD"]; }
+        if (entity?.subtype === 'run_automated') { return ["AR", "#ba47ee"]; }
     }
     return ['', ''];
 }
