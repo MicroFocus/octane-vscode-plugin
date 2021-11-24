@@ -330,6 +330,7 @@ export async function activate(context: vscode.ExtensionContext) {
 				promises.push(OctaneService.getInstance().globalSearchWorkItems('quality_story', e));
 				promises.push(OctaneService.getInstance().globalSearchWorkItems('epic', e));
 				promises.push(OctaneService.getInstance().globalSearchWorkItems('feature', e));
+				promises.push(OctaneService.getInstance().globalSearchTasks(e));
 				promises.push(OctaneService.getInstance().globalSearchRequirements(e));
 				promises.push(OctaneService.getInstance().globalSearchTests(e));
 
