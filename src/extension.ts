@@ -233,13 +233,13 @@ export async function activate(context: vscode.ExtensionContext) {
 	}
 
 	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.openInBrowser', async (e: OctaneEntityHolder) => {
-		if (e.entity) {
-			if (e.entity instanceof Comment) {
-				if ( (e.entity as Comment).ownerWorkItem) {
-					await vscode.env.openExternal(service.getBrowserUri((e.entity as Comment).ownerWorkItem));
+		if (e) {
+			if (e instanceof Comment) {
+				if ( (e as Comment).ownerWorkItem) {
+					await vscode.env.openExternal(service.getBrowserUri((e as Comment).ownerWorkItem));
 				}
 			} else {
-				await vscode.env.openExternal(service.getBrowserUri(e.entity));
+				await vscode.env.openExternal(service.getBrowserUri(e));
 			}
 		} 
 	}));
