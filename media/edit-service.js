@@ -228,88 +228,92 @@
         switch (data.type) {
             case 'post':
                 {
-                    const fields = e.data.data.fields;
-                    const fullData = e.data.data.fullData;
-                    const updatedData = {};
-                    const fieldNameMap = new Map([
-                        ['application_modules', 'product_areas']
-                    ]);
-                    console.log('fullData', fullData);
-                    if (fields && fullData) {
-                        let mapFields = new Map();
-                        // console.log(fields);
-                        fields
-                            .filter(f => (f.name !== 'author') && (f.name !== 'sprint'))
-                            .filter(f => (f.editable))
-                            .forEach(field => {
-                                mapFields.set(fieldNameMap.get(field.name) ?? field.name, field);
-                            });
-                        console.log('mapFields', mapFields);
-                        updatedData['id'] = fullData['id'];
-                        mapFields.forEach((field, key) => {
-                            let data = {};
-                            data['data'] = [];
-                            let doc;
-                            if (field.name === 'phase') {
-                                doc = document.getElementById('select_phase');
-                            } else {
-                                doc = document.getElementById(fieldNameMap.get(field.name) ?? field.name);
-                                if (!doc) {
-                                    doc = document.getElementById(field.full_name);
+                    try {
+                        const fields = e.data.data.fields;
+                        const fullData = e.data.data.fullData;
+                        const updatedData = {};
+                        const fieldNameMap = new Map([
+                            ['application_modules', 'product_areas']
+                        ]);
+                        console.log('fullData', fullData);
+                        if (fields && fullData) {
+                            let mapFields = new Map();
+                            // console.log(fields);
+                            fields
+                                .filter(f => (f.name !== 'author') && (f.name !== 'sprint'))
+                                .filter(f => (f.editable))
+                                .forEach(field => {
+                                    mapFields.set(fieldNameMap.get(field.name) ?? field.name, field);
+                                });
+                            console.log('mapFields', mapFields);
+                            updatedData['id'] = fullData['id'];
+                            mapFields.forEach((field, key) => {
+                                let data = {};
+                                data['data'] = [];
+                                let doc;
+                                if (field.name === 'phase') {
+                                    doc = document.getElementById('select_phase');
+                                } else {
+                                    doc = document.getElementById(fieldNameMap.get(field.name) ?? field.name);
+                                    if (!doc) {
+                                        doc = document.getElementById(field.full_name);
+                                    }
                                 }
-                            }
-                            if (doc) {
-                                if (doc.selectedOptions) {
-                                    Array.from(doc.selectedOptions).forEach(d => {
+                                if (doc) {
+                                    if (doc.selectedOptions) {
+                                        Array.from(doc.selectedOptions).forEach(d => {
+                                            var val;
+                                            if (d?.value.startsWith("{") && d?.value.endsWith("}")) {
+                                                val = JSON.parse(d?.value);
+                                            } else {
+                                                val = d?.value;
+                                            }
+                                            if (val && val !== 'none' && val !== '-') {
+                                                if (field.field_type === 'integer') {
+                                                    updatedData[fieldNameMap.get(field.name) ?? field.name] = parseFloat(val);
+                                                } else {
+                                                    if (field.field_type_data?.multiple) {
+                                                        data['data'].push({
+                                                            'type': val.type,
+                                                            'id': val.id,
+                                                            'name': val.name
+                                                        });
+                                                    } else {
+                                                        updatedData[fieldNameMap.get(field.name) ?? field.name] = val;
+                                                    }
+                                                }
+                                            }
+                                        });
+                                    } else {
                                         var val;
-                                        if (d?.value.startsWith("{") && d?.value.endsWith("}")) {
+                                        if (doc?.value.startsWith("{") && doc?.value.endsWith("}")) {
                                             val = JSON.parse(d?.value);
                                         } else {
-                                            val = d?.value;
+                                            val = doc?.value;
                                         }
                                         if (val && val !== 'none' && val !== '-') {
                                             if (field.field_type === 'integer') {
                                                 updatedData[fieldNameMap.get(field.name) ?? field.name] = parseFloat(val);
                                             } else {
-                                                if (field.field_type_data?.multiple) {
-                                                    data['data'].push({
-                                                        'type': val.type,
-                                                        'id': val.id,
-                                                        'name': val.name
-                                                    });
-                                                } else {
-                                                    updatedData[fieldNameMap.get(field.name) ?? field.name] = val;
-                                                }
+                                                updatedData[fieldNameMap.get(field.name) ?? field.name] = val;
                                             }
                                         }
-                                    });
-                                } else {
-                                    var val;
-                                    if (doc?.value.startsWith("{") && doc?.value.endsWith("}")) {
-                                        val = JSON.parse(d?.value);
-                                    } else {
-                                        val = doc?.value;
                                     }
-                                    if (val && val !== 'none' && val !== '-') {
-                                        if (field.field_type === 'integer') {
-                                            updatedData[fieldNameMap.get(field.name) ?? field.name] = parseFloat(val);
-                                        } else {
-                                            updatedData[fieldNameMap.get(field.name) ?? field.name] = val;
-                                        }
+
+                                    if (field.field_type_data?.multiple) {
+                                        updatedData[fieldNameMap.get(field.name) ?? field.name] = data;
                                     }
                                 }
+                            });
 
-                                if (field.field_type_data?.multiple) {
-                                    updatedData[fieldNameMap.get(field.name) ?? field.name] = data;
-                                }
-                            }
-                        });
-
-                        vscode.postMessage({
-                            type: 'update',
-                            from: 'edit-service',
-                            data: updatedData
-                        });
+                            vscode.postMessage({
+                                type: 'update',
+                                from: 'edit-service',
+                                data: updatedData
+                            });
+                        }
+                    } catch (e) {
+                        console.log(e);
                     }
                     break;
                 }
