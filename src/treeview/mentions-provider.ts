@@ -14,8 +14,8 @@ export class MyMentionsProvider extends MyWorkProvider {
     getMyWorkItem(i: Comment): MyWorkItem {
         const item = super.getMyWorkItem(i);
         item.contextValue = 'comment';
-        if (i.ownerWorkItem) {
-            item.command = { command: 'vscode.openWith', title: 'Details', arguments: [vscode.Uri.parse(`octane:///octane/${i.ownerWorkItem?.type}/${i.ownerWorkItem?.subtype}/${i.ownerWorkItem?.id}`), OctaneEntityEditorProvider.viewType] };
+        if (i.ownerEntity ) {
+            item.command = { command: 'vscode.openWith', title: 'Details', arguments: [vscode.Uri.parse(`octane:///octane/${i.ownerEntity?.type}/${i.ownerEntity?.subtype}/${i.ownerEntity?.id}`), OctaneEntityEditorProvider.viewType] };
         } else {
             item.command = undefined;
         }

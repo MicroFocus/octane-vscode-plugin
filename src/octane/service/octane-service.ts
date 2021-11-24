@@ -339,7 +339,7 @@ export class OctaneService {
 
     public async getMyMentions(): Promise<OctaneEntity[]> {
         const response = await this.octane.get(Octane.Octane.entityTypes.comments)
-            .fields('text', 'owner_work_item', 'author{id,name,full_name}')
+            .fields('text', 'owner_work_item', 'owner_requirement', 'owner_test', 'owner_run', 'owner_bdd_spec', 'author{id,name,full_name}')
             .query(
                 Query.field('mention_user').equal(Query.field('id').equal(this.loggedInUserId))
                     .build()

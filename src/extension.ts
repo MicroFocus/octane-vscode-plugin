@@ -235,8 +235,8 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.openInBrowser', async (e: OctaneEntityHolder) => {
 		if (e.entity) {
 			if (e.entity instanceof Comment) {
-				if ( (e.entity as Comment).ownerWorkItem) {
-					await vscode.env.openExternal(service.getBrowserUri((e.entity as Comment).ownerWorkItem));
+				if ( (e.entity as Comment).ownerEntity) {
+					await vscode.env.openExternal(service.getBrowserUri((e.entity as Comment).ownerEntity));
 				}
 			} else {
 				await vscode.env.openExternal(service.getBrowserUri(e.entity));
@@ -359,9 +359,16 @@ export async function activate(context: vscode.ExtensionContext) {
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.details', async (e: MyWorkItem) => {
-		if (e.entity) {
-			
-			await vscode.commands.executeCommand('vscode.openWith', vscode.Uri.parse(`octane:///octane/${e.entity.type}/${e.entity.subtype}/${e.entity.id}`), OctaneEntityEditorProvider.viewType);
+		// if (e.entity) {
+		// 	if (e.contextValue === 'comment') {
+		// 		let comment = e.entity as Comment;
+		// 		await vscode.commands.executeCommand('vscode.openWith', vscode.Uri.parse(`octane:///octane/${comment.ownerEntity?.type}/${comment.ownerEntity?.subtype}/${comment.ownerEntity?.id}`), OctaneEntityEditorProvider.viewType);
+		// 	} else {
+		// 		await vscode.commands.executeCommand('vscode.openWith', vscode.Uri.parse(`octane:///octane/${e.entity.type}/${e.entity.subtype}/${e.entity.id}`), OctaneEntityEditorProvider.viewType);
+		// 	}
+		// }
+		if (e.command && e.command.arguments) {
+			await vscode.commands.executeCommand(e.command.command, e.command.arguments[0], e.command.arguments[1]);
 		}
 	}));
 
