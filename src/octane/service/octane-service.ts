@@ -13,6 +13,12 @@ export class OctaneService {
     private logger = getLogger('vs');
     private static _instance: OctaneService;
 
+    public static entitiesToOpenExternally = [
+		'epic',
+		'test_suite',
+		'test_automated'
+	];
+
     private octane?: any;
 
     private user?: string;
@@ -339,7 +345,7 @@ export class OctaneService {
 
     public async getMyMentions(): Promise<OctaneEntity[]> {
         const response = await this.octane.get(Octane.Octane.entityTypes.comments)
-            .fields('text', 'owner_work_item', 'author{id,name,full_name}')
+            .fields('text', 'owner_work_item', 'owner_requirement', 'owner_test', 'owner_run', 'owner_bdd_spec', 'author{id,name,full_name}')
             .query(
                 Query.field('mention_user').equal(Query.field('id').equal(this.loggedInUserId))
                     .build()
@@ -389,7 +395,7 @@ export class OctaneService {
             .then((res: any) => {
                 vscode.window.showInformationMessage('Your comment have been saved.');
             }, (error: any) => {
-                vscode.window.showErrorMessage('We couldn’t save your comment.' + error);
+                vscode.window.showErrorMessage((error.response.body.description) ?? 'We couldn’t save your comment.');
             });
     }
 
@@ -473,7 +479,7 @@ export class OctaneService {
             .then((res: any) => {
                 vscode.window.showInformationMessage('Your item changes have been saved.');
             }, (error: any) => {
-                vscode.window.showErrorMessage('We couldn’t save your changes.' + error);
+                vscode.window.showErrorMessage((error.response.body.description) ?? 'We couldn’t save your changes');
             });
     }
 
@@ -558,7 +564,7 @@ export class OctaneService {
                     vscode.window.showInformationMessage('Your item changes have been saved.');
                 }, (error: any) => {
                     this.logger.error('While adding to MyWork.', e);
-                    vscode.window.showErrorMessage('We couldn’t save your changes.');
+                    vscode.window.showErrorMessage((error.response.body.description) ?? 'We couldn’t save your changes.');
                 });
         } catch (e) {
             this.logger.error('While adding to MyWork.', e);
@@ -638,7 +644,7 @@ export class OctaneService {
                     .then((res: any) => {
                         vscode.window.showInformationMessage('Item dismissed.');
                     }, (error: any) => {
-                        vscode.window.showErrorMessage('Item dismissal failed.' + error);
+                        vscode.window.showErrorMessage((error.response.body.description) ?? 'Item dismissal failed');
                     });
             }
         } catch (e) {

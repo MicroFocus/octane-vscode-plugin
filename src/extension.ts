@@ -235,8 +235,8 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.openInBrowser', async (e: OctaneEntityHolder) => {
 		if (e.entity) {
 			if (e.entity instanceof Comment) {
-				if ( (e.entity as Comment).ownerWorkItem) {
-					await vscode.env.openExternal(service.getBrowserUri((e.entity as Comment).ownerWorkItem));
+				if ( (e.entity as Comment).ownerEntity) {
+					await vscode.env.openExternal(service.getBrowserUri((e.entity as Comment).ownerEntity));
 				}
 			} else {
 				await vscode.env.openExternal(service.getBrowserUri(e.entity));
@@ -304,7 +304,7 @@ export async function activate(context: vscode.ExtensionContext) {
 						return;
 					}
 					try {
-						if (item.entity.type && entitiesToOpenExternally.includes(item.entity.type)) {
+						if (item.entity.type && OctaneService.entitiesToOpenExternally.includes(item.entity.type)) {
 							await vscode.env.openExternal(service.getBrowserUri(item.entity));
 						} else {
 							await vscode.commands.executeCommand('vscode.openWith', vscode.Uri.parse(`octane:///octane/${item.entity.type}/${item.entity.subtype}/${item.entity.id}`), OctaneEntityEditorProvider.viewType);
@@ -359,9 +359,8 @@ export async function activate(context: vscode.ExtensionContext) {
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.details', async (e: MyWorkItem) => {
-		if (e.entity) {
-			
-			await vscode.commands.executeCommand('vscode.openWith', vscode.Uri.parse(`octane:///octane/${e.entity.type}/${e.entity.subtype}/${e.entity.id}`), OctaneEntityEditorProvider.viewType);
+		if (e.command && e.command.arguments) {
+			await vscode.commands.executeCommand(e.command.command, e.command.arguments[0], e.command.arguments[1]);
 		}
 	}));
 
@@ -420,11 +419,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.refreshAll');
 
-	const entitiesToOpenExternally = [
-		'epic',
-		'test_suite',
-		'test_automated'
-	];
 }
 
 
