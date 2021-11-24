@@ -13,6 +13,12 @@ export class OctaneService {
     private logger = getLogger('vs');
     private static _instance: OctaneService;
 
+    public static entitiesToOpenExternally = [
+		'epic',
+		'test_suite',
+		'test_automated'
+	];
+
     private octane?: any;
 
     private user?: string;
