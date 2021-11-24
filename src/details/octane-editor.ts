@@ -339,6 +339,11 @@ function getDataForSubtype(entity: OctaneEntity | undefined): [string, string] {
 
 async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, fields: any[], activeFields: string[] | undefined): Promise<string> {
     let html: string = ``;
+    const entitiesToOpenExternally = [
+		'epic',
+		'test_suite',
+		'test_automated'
+	];
     try {
         if (data.phase) {
             html += `
@@ -412,14 +417,19 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
                 }
             }
         }
-        html += `
-                            </select>
-                            
-                        </div>
-                        <button title="Add to MyWork" id="addToMyWork" type="button">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-                        </button>
-                        `;
+        if(data.subtype && entitiesToOpenExternally.includes(data.subtype)) {
+            html += `
+                </select>
+            </div>`;  
+        } else { 
+            html += `
+                </select>
+            </div>
+            <button title="Add to MyWork" id="addToMyWork" type="button">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            </button>
+            `;
+        }
     } catch (e: any) {
         vscode.window.showErrorMessage('Error generating phase select for entity.');
     }
