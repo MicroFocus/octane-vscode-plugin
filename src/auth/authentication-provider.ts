@@ -183,6 +183,7 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 				sessionData = JSON.parse(storedSessions);
 			} catch (e) {
 				await this.keychain.deleteToken();
+				this.sessionChangeEmitter.fire({ added: [], removed: [{ id: '-1', accessToken: '', account: { id: '', label: '' }, scopes: [] }], changed: [] });
 				throw e;
 			}
 
@@ -196,14 +197,16 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 			const workspace: string | undefined = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.workspace');
 			const user: string | undefined = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.user.userName');
 
-			if (uri === undefined || user === undefined) {
+			if (uri === undefined || user === undefined || sessionData.account.id !== user) {
 				await this.keychain.deleteToken();
+				this.sessionChangeEmitter.fire({ added: [], removed: [{ id: sessionData.id, accessToken: '', account: { id: '', label: '' }, scopes: [] }], changed: [] });
 				return [];
 			}
 
 			const authTestResult = await OctaneService.getInstance().testAuthentication(uri, space, workspace, user, sessionData.accessToken, sessionData.cookieName, sessionData.accessToken);
 			if (authTestResult === undefined) {
 				await this.keychain.deleteToken();
+				this.sessionChangeEmitter.fire({ added: [], removed: [{ id: sessionData.id, accessToken: '', account: { id: '', label: '' }, scopes: [] }], changed: [] });
 				return [];
 			}
 
