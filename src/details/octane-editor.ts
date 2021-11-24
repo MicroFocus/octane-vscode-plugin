@@ -196,7 +196,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                     vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.refreshAll');
                 }
                 if (m.type === 'open-in-browser') {
-                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.openInBrowser', document.entity);
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.openInBrowser', { entity: document.entity });
                 }
                 if (m.type === 'get-data-for-select') {
                     if (m.data && m.data.field) {
@@ -412,14 +412,19 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
                 }
             }
         }
-        html += `
-                            </select>
-                            
-                        </div>
-                        <button title="Add to MyWork" id="addToMyWork" type="button">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-                        </button>
-                        `;
+        if(data.subtype && OctaneService.entitiesToOpenExternally.includes(data.subtype)) {
+            html += `
+                </select>
+            </div>`;  
+        } else { 
+            html += `
+                </select>
+            </div>
+            <button title="Add to MyWork" id="addToMyWork" type="button">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            </button>
+            `;
+        }
     } catch (e: any) {
         vscode.window.showErrorMessage('Error generating phase select for entity.');
     }
