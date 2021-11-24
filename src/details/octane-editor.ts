@@ -679,14 +679,14 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
 function getFieldValue(data: any, fieldName: string): string | any[] {
     const field = data[fieldName];
     if (!field) {
-        return '-';
+        return '';
     }
     if (field['data']) {
         const ref: string[] = [];
         field['data'].forEach((r: any) => {
             ref.push(r.name);
         });
-        return ref.length ? ref : '-';
+        return ref.length ? ref : '';
     }
     if (field['name']) {
         return field['name'];
