@@ -339,11 +339,6 @@ function getDataForSubtype(entity: OctaneEntity | undefined): [string, string] {
 
 async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, fields: any[], activeFields: string[] | undefined): Promise<string> {
     let html: string = ``;
-    const entitiesToOpenExternally = [
-		'epic',
-		'test_suite',
-		'test_automated'
-	];
     try {
         if (data.phase) {
             html += `
@@ -417,7 +412,7 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
                 }
             }
         }
-        if(data.subtype && entitiesToOpenExternally.includes(data.subtype)) {
+        if(data.subtype && OctaneService.entitiesToOpenExternally.includes(data.subtype)) {
             html += `
                 </select>
             </div>`;  
