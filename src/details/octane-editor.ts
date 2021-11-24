@@ -196,7 +196,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                     vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.refreshAll');
                 }
                 if (m.type === 'open-in-browser') {
-                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.openInBrowser', document.entity);
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.openInBrowser', { entity: document.entity });
                 }
                 if (m.type === 'get-data-for-select') {
                     if (m.data && m.data.field) {
