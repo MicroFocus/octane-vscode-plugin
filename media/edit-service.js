@@ -36,6 +36,10 @@
         }
     });
 
+    document.getElementById("filter_button").addEventListener('click', e => {
+        openFilterMultiselect();
+    });
+
     document.getElementById("commentsId").addEventListener('click', e => {
         getComments();
     });
@@ -59,6 +63,22 @@
     document.getElementById("openInBrowser").addEventListener('click', e => {
         openInBrowser();
     });
+
+    function openFilterMultiselect() {
+        let select = document.getElementById("filter_multiselect");
+        let select_2 = document.querySelector("#filter_multiselect");
+        console.log(select, select_2);
+        // var event = new MouseEvent('mousedown');
+        // select.dispatchEvent(event);
+        // var instances = M.Dropdown.init(select, {});
+        // // console.log(instances);
+        // if (select) {
+        //     console.log(select);
+        //     let instance = M.Dropdown.getInstance(select);
+        //     console.log(instance);
+        //     instance.open();
+        // }
+    }
 
     function getDataForEntity(entity) {
         let fieldName;

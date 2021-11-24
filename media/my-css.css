@@ -253,7 +253,7 @@ hr {
     margin-top: 1rem;
 }
 
-#refresh, #addToMyWork, #filterId, #commentsId, #openInBrowser {
+#refresh, #addToMyWork, #filterId, #commentsId, #openInBrowser, #filter_button {
     display: flex;
     align-items: center;
     margin: 0 0 0 0.5rem;
