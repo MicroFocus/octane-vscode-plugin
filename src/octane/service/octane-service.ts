@@ -395,7 +395,7 @@ export class OctaneService {
             .then((res: any) => {
                 vscode.window.showInformationMessage('Your comment have been saved.');
             }, (error: any) => {
-                vscode.window.showErrorMessage('We couldn’t save your comment.' + error);
+                vscode.window.showErrorMessage((error.response.body.description) ?? 'We couldn’t save your comment.');
             });
     }
 
@@ -479,7 +479,7 @@ export class OctaneService {
             .then((res: any) => {
                 vscode.window.showInformationMessage('Your item changes have been saved.');
             }, (error: any) => {
-                vscode.window.showErrorMessage('We couldn’t save your changes.' + error);
+                vscode.window.showErrorMessage((error.response.body.description) ?? 'We couldn’t save your changes');
             });
     }
 
@@ -564,7 +564,7 @@ export class OctaneService {
                     vscode.window.showInformationMessage('Your item changes have been saved.');
                 }, (error: any) => {
                     this.logger.error('While adding to MyWork.', e);
-                    vscode.window.showErrorMessage('We couldn’t save your changes.');
+                    vscode.window.showErrorMessage((error.response.body.description) ?? 'We couldn’t save your changes.');
                 });
         } catch (e) {
             this.logger.error('While adding to MyWork.', e);
@@ -644,7 +644,7 @@ export class OctaneService {
                     .then((res: any) => {
                         vscode.window.showInformationMessage('Item dismissed.');
                     }, (error: any) => {
-                        vscode.window.showErrorMessage('Item dismissal failed.' + error);
+                        vscode.window.showErrorMessage((error.response.body.description) ?? 'Item dismissal failed');
                     });
             }
         } catch (e) {
