@@ -609,12 +609,6 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
             `;
         }
         for (const [key, field] of mapFields) {
-            if (field.label === 'Progress') {
-                console.log(field);
-            }
-            if (field.label === 'Test Coverage') {
-                console.log(field);
-            }
             if (field) {
                 if (!['description', 'phase', ...mainFields].includes(key)) {
                     if (counter === 0) {
