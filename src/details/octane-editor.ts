@@ -656,60 +656,39 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                             }
                         }
                     } else {
-                        if (field.field_type === 'string') {
-                            if (field.type === 'field_metadata') {
+                        if ((field.field_type === 'string' && field.type === 'field_metadata') && (field.name === 'last_runs' || field.name === 'progress')) {
+                            let val: any = getFieldValue(data, field.name);
+                            let tooltip = '';
+                            if (typeof (val) === 'string') {
+                                val = JSON.parse(val);
                                 if (field.name === 'last_runs') {
                                     //label - Test Coverage
-                                    let val: any = getFieldValue(data, field.name);
-                                    if (typeof (val) === 'string') {
-                                        val = JSON.parse(val);
-
-                                        let tooltip = 'Test coverage \n ' + (val?.passed ?? 0) + ' Passed \n ' + (val?.failed ?? 0) + ' Failed \n ' + (val?.needsAttention ?? 0) + ' Require Attention \n ' + (val?.planned ?? 0) + ' Planned \n ' + (val?.testNoRun ?? 0) + ' Tests did not run \n';
-                                        html += `
-                                            <div class="input-field col s6 container" id="container_${field.label.replaceAll(" ", "_")}">
-                                                <label class="active" for="${field.label}">${field.label}</label>
-                                                <input 
-                                                    title="${tooltip}"
-                                                    style="border: 0.5px solid; border-color: var(--vscode-dropdown-border); cursor: pointer;" id="${field.name}" type="${field.field_type}">
-                                                <script>
-                                                    document.getElementById("${field.name}").readOnly = !${field.editable};
-                                                    $(document).ready(function() {
-                                                        $('[data-toggle="tooltip"]').tooltip();
-                                                    });
-                                                </script>
-                                            </div>
-                                            `;
-                                    }
-
-                                } else {
-                                    let d = getFieldValue(data, field.name);
-                                    html += `
-                                        <div class="input-field col s6 container" id="container_${field.label.replaceAll(" ", "_")}">
-                                            <label class="active" for="${field.label}">${field.label}</label>
-                                            <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" type="${field.field_type}" value='${d}'>
-                                            <script>
-                                                document.getElementById("${field.name}").readOnly = !${field.editable};
-                                            </script>
-                                        </div>
-                                        `;
+                                    tooltip = 'Test coverage \n ' + (val?.passed ?? 0) + ' Passed \n ' + (val?.failed ?? 0) + ' Failed \n ' + (val?.needsAttention ?? 0) + ' Require Attention \n ' + (val?.planned ?? 0) + ' Planned \n ' + (val?.testNoRun ?? 0) + ' Tests did not run \n';
                                 }
-                            } else {
-                                let d = getFieldValue(data, field.name);
-                                html += `
-                                    <div class="input-field col s6 container" id="container_${field.label.replaceAll(" ", "_")}">
-                                        <label class="active" for="${field.label}">${field.label}</label>
-                                        <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" type="${field.field_type}" value='${d}'>
-                                        <script>
-                                            document.getElementById("${field.name}").readOnly = !${field.editable};
-                                        </script>
-                                    </div>
-                                    `;
+                                if (field.name === 'progress') {
+                                    //label - Progress
+                                    tooltip = (val?.passed ?? 0) + ' Invested hours \n ' + (val?.failed ?? 0) + ' Remaining hours \n ' + (val?.needsAttention ?? 0) + ' Estimated hours \n ';
+                                }
                             }
+                            html += `
+                            <div class="input-field col s6 container" id="container_${field.label.replaceAll(" ", "_")}">
+                                <label class="active" for="${field.label}">${field.label}</label>
+                                <input 
+                                    title="${tooltip}"
+                                    style="border: 0.5px solid; border-color: var(--vscode-dropdown-border); cursor: pointer;" id="${field.name}" type="${field.field_type}" value='${getFieldValue(data, field.name)}'>
+                                <script>
+                                    document.getElementById("${field.name}").readOnly = !${field.editable};
+                                    $(document).ready(function() {
+                                        $('[data-toggle="tooltip"]').tooltip();
+                                    });
+                                </script>
+                            </div>
+                            `;
                         } else {
                             html += `
                             <div class="input-field col s6 container" id="container_${field.label.replaceAll(" ", "_")}">
                                 <label class="active" for="${field.label}">${field.label}</label>
-                                <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
+                                <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" type="${field.field_type}" value='${getFieldValue(data, field.name)}'>
                                 <script>
                                     document.getElementById("${field.name}").readOnly = !${field.editable};
                                 </script>
