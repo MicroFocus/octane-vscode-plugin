@@ -667,7 +667,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                                 }
                                 if (field.name === 'progress') {
                                     //label - Progress
-                                    tooltip = (val?.passed ?? 0) + ' Invested hours \n ' + (val?.failed ?? 0) + ' Remaining hours \n ' + (val?.needsAttention ?? 0) + ' Estimated hours \n ';
+                                    tooltip = (val?.tasksInvestedHoursSumTotal ?? 0) + ' Invested hours \n ' + (val?.tasksRemainingHoursSumTotal ?? 0) + ' Remaining hours \n ' + (val?.tasksEstimatedHoursSumTotal ?? 0) + ' Estimated hours \n ';
                                 }
                             }
                             html += `
