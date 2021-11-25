@@ -658,16 +658,19 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                     } else {
                         if ((field.field_type === 'string' && field.type === 'field_metadata') && (field.name === 'last_runs' || field.name === 'progress')) {
                             let val: any = getFieldValue(data, field.name);
+                            let containerValue = '';
                             let tooltip = '';
                             if (typeof (val) === 'string') {
                                 val = JSON.parse(val);
                                 if (field.name === 'last_runs') {
                                     //label - Test Coverage
                                     tooltip = 'Test coverage \n ' + (val?.passed ?? 0) + ' Passed \n ' + (val?.failed ?? 0) + ' Failed \n ' + (val?.needsAttention ?? 0) + ' Require Attention \n ' + (val?.planned ?? 0) + ' Planned \n ' + (val?.testNoRun ?? 0) + ' Tests did not run \n';
+                                    containerValue = (val?.passed ?? 0) + ' Passed, ' + (val?.failed ?? 0) + ' Failed, ' + (val?.needsAttention ?? 0) + ' Require Attention, ' + (val?.planned ?? 0) + ' Planned, ' + (val?.testNoRun ?? 0) + ' Tests did not run';
                                 }
                                 if (field.name === 'progress') {
                                     //label - Progress
                                     tooltip = (val?.tasksInvestedHoursSumTotal ?? 0) + ' Invested hours \n ' + (val?.tasksRemainingHoursSumTotal ?? 0) + ' Remaining hours \n ' + (val?.tasksEstimatedHoursSumTotal ?? 0) + ' Estimated hours \n ';
+                                    containerValue = (val?.tasksInvestedHoursSumTotal ?? 0) + ' Invested hours, ' + (val?.tasksRemainingHoursSumTotal ?? 0) + ' Remaining hours, ' + (val?.tasksEstimatedHoursSumTotal ?? 0) + ' Estimated hours';
                                 }
                             }
                             html += `
@@ -675,7 +678,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                                 <label class="active" for="${field.label}">${field.label}</label>
                                 <input 
                                     title="${tooltip}"
-                                    style="border: 0.5px solid; border-color: var(--vscode-dropdown-border); cursor: pointer;" id="${field.name}" type="${field.field_type}" value='${getFieldValue(data, field.name)}'>
+                                    style="border: 0.5px solid; border-color: var(--vscode-dropdown-border); cursor: pointer;" id="${field.name}" type="${field.field_type}" value='${containerValue}'>
                                 <script>
                                     document.getElementById("${field.name}").readOnly = !${field.editable};
                                     $(document).ready(function() {
