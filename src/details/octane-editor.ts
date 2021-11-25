@@ -656,7 +656,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                             }
                         }
                     } else {
-                        if ((field.field_type === 'string' && field.type === 'field_metadata') && (field.name === 'last_runs' || field.name === 'progress')) {
+                        if ((field.field_type === 'string' && field.type === 'field_metadata') && (field.name === 'last_runs' || field.name === 'progress' || field.name === 'commit_files')) {
                             let val: any = getFieldValue(data, field.name);
                             let containerValue = '';
                             let tooltip = '';
@@ -669,9 +669,14 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                                 }
                                 if (field.name === 'progress') {
                                     //label - Progress
-                                    tooltip = (val?.tasksInvestedHoursSumTotal ?? 0) + ' Invested hours \n ' + (val?.tasksRemainingHoursSumTotal ?? 0) + ' Remaining hours \n ' + (val?.tasksEstimatedHoursSumTotal ?? 0) + ' Estimated hours \n ';
+                                    tooltip = 'Progress \n ' + (val?.tasksInvestedHoursSumTotal ?? 0) + ' Invested hours \n ' + (val?.tasksRemainingHoursSumTotal ?? 0) + ' Remaining hours \n ' + (val?.tasksEstimatedHoursSumTotal ?? 0) + ' Estimated hours \n ';
                                     containerValue = (val?.tasksInvestedHoursSumTotal ?? 0) + ' Invested hours, ' + (val?.tasksRemainingHoursSumTotal ?? 0) + ' Remaining hours, ' + (val?.tasksEstimatedHoursSumTotal ?? 0) + ' Estimated hours';
                                 }
+                                if (field.name === 'commit_files') {
+                                    //label - COmmit files
+                                    containerValue = (val?.deleted ?? 0) + ' Deleted, ' + (val?.added ?? 0) + ' Added, ' + (val?.edited ?? 0) + ' Edited';
+                                }
+
                             }
                             html += `
                             <div class="input-field col s6 container" id="container_${field.label.replaceAll(" ", "_")}">
@@ -688,15 +693,27 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                             </div>
                             `;
                         } else {
-                            html += `
-                            <div class="input-field col s6 container" id="container_${field.label.replaceAll(" ", "_")}">
-                                <label class="active" for="${field.label}">${field.label}</label>
-                                <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" type="${field.field_type}" value='${getFieldValue(data, field.name)}'>
-                                <script>
-                                    document.getElementById("${field.name}").readOnly = !${field.editable};
-                                </script>
-                            </div>
-                        `;
+                            if (field.name === 'is_in_filter') {
+                                html += `
+                                    <div class="input-field col s6 container" id="container_${field.label.replaceAll(" ", "_")}">
+                                        <label class="active" for="${field.label}">${field.label}</label>
+                                        <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" type="string" value='${getFieldValue(data, field.name) ? 'Yes' : 'No'}'>
+                                        <script>
+                                            document.getElementById("${field.name}").readOnly = !${field.editable};
+                                        </script>
+                                    </div>
+                                `;
+                            } else {
+                                html += `
+                                <div class="input-field col s6 container" id="container_${field.label.replaceAll(" ", "_")}">
+                                    <label class="active" for="${field.label}">${field.label}</label>
+                                    <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" type="${field.field_type}" value='${getFieldValue(data, field.name)}'>
+                                    <script>
+                                        document.getElementById("${field.name}").readOnly = !${field.editable};
+                                    </script>
+                                </div>
+                            `;
+                            }
                         }
                     }
                     if (counter === columnCount) {
