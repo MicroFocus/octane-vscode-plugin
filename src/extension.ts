@@ -119,6 +119,11 @@ export async function activate(context: vscode.ExtensionContext) {
 		'quality_story'
 	]);
 
+	vscode.commands.executeCommand('setContext', 'visual-studio-code-plugin-for-alm-octane.supportsDownloadScript', [
+		'gherkin_test',
+		'scenario_test'
+	]);
+
 	authProvider.onDidChangeSessions(async e => {
 		logger.info('Received session change', e);
 		if (e.removed !== undefined) {
@@ -425,4 +430,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 
 // this method is called when your extension is deactivated
-export function deactivate() { }
+export function deactivate() {
+	vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.endWork');
+	vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.details.closeAll');
+}
