@@ -196,7 +196,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                     vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.refreshAll');
                 }
                 if (m.type === 'open-in-browser') {
-                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.openInBrowser', document.entity);
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.openInBrowser', { entity: document.entity });
                 }
                 if (m.type === 'get-data-for-select') {
                     if (m.data && m.data.field) {
@@ -339,12 +339,14 @@ function getDataForSubtype(entity: OctaneEntity | undefined): [string, string] {
         if (entity?.subtype === 'feature') { return ["F", "#e57828"]; }
         if (entity?.subtype === 'scenario_test') { return ["BSC", "#75da4d"]; }
         if (entity?.subtype === 'test_manual') { return ["MT", "#00abf3"]; }
-        if (entity?.subtype === 'auto_test') { return ["AT", "#9b1e83"]; }
+        if (entity?.subtype === 'test_automated') { return ["AT", "#9b1e83"]; }
         if (entity?.subtype === 'gherkin_test') { return ["GT", "#00a989"]; }
         if (entity?.subtype === 'test_suite') { return ["TS", "#271782"]; }
         if (entity?.subtype === 'requirement_document') { return ["RD", "#0b8eac"]; }
         if (entity?.subtype === 'run_suite') { return ["SR", "#5216ac"]; }
         if (entity?.subtype === 'run_manual') { return ["MR", "#29ceff"]; }
+        if (entity?.subtype === 'epic') { return ["E", "#7425AD"]; }
+        if (entity?.subtype === 'run_automated') { return ["AR", "#ba47ee"]; }
     }
     return ['', ''];
 }
@@ -361,7 +363,8 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
         }
         if (data.phase) {
             let transitions: Transition[] = OctaneService.getInstance().getPhaseTransitionForEntity(data.phase.id);
-            html += `<select id="select_phase" name="action" class="action">`;
+            html += `<div style="margin-top: 1rem;">
+            <select id="select_phase" name="action" class="action">`;
             // html += `
             //     <option value="none">${getFieldValue(data, 'phase')}</option>
             // `;
@@ -375,14 +378,14 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
             `;
             });
         }
-        html += `</select>
+        html += `</select></div>
                     <button title="Save" id="saveId" class="save" type="button">
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm2 16H5V5h11.17L19 7.83V19zm-7-7c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zM6 6h9v4H6z"/></svg>
                     </button>
                     <button title="Refresh" id="refresh" type="button">
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
                     </button>
-                    <button title="Open in browser the current entity" id="openInBrowser" type="button">
+                    <button title="Open in browser" id="openInBrowser" type="button">
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0z" fill="none"/><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95c-.32-1.25-.78-2.45-1.38-3.56 1.84.63 3.37 1.91 4.33 3.56zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2 0 .68.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56-1.84-.63-3.37-1.9-4.33-3.56zm2.95-8H5.08c.96-1.66 2.49-2.93 4.33-3.56C8.81 5.55 8.35 6.75 8.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2 0-.68.07-1.35.16-2h4.68c.09.65.16 1.32.16 2 0 .68-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95c-.96 1.65-2.49 2.93-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2 0-.68-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z"/></svg>
                     </button>
                     <button title="Comments" id="commentsId" type="button">
@@ -422,14 +425,19 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
                 }
             }
         }
-        html += `
-                            </select>
-                            
-                        </div>
-                        <button title="Add to MyWork" id="addToMyWork" type="button">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-                        </button>
-                        `;
+        if(data.subtype && OctaneService.entitiesToOpenExternally.includes(data.subtype)) {
+            html += `
+                </select>
+            </div>`;  
+        } else { 
+            html += `
+                </select>
+            </div>
+            <button title="Add to MyWork" id="addToMyWork" type="button">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            </button>
+            `;
+        }
     } catch (e: any) {
         vscode.window.showErrorMessage('Error generating phase select for entity.');
     }
@@ -440,7 +448,7 @@ async function generateCommentElement(data: any | OctaneEntity | undefined, fiel
     let html: string = ``;
     try {
         html += `   <br>
-                    
+                    <hr>
                     Comments
                     <div class="information-container">
                         <div class="comments-container">
@@ -460,6 +468,8 @@ async function generateCommentElement(data: any | OctaneEntity | undefined, fiel
                 `;
             }
         }
+        html += `   <br>
+                    <hr>`;
     } catch (e: any) {
         vscode.window.showErrorMessage('Error generating comments for entity.');
     }
@@ -644,7 +654,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                                 html += `
                                 <div class="input-field col s6 container" id="container_${field.label.replaceAll(" ", "_")}">
                                     <label class="active" for="${field.label}">${field.label}</label>
-                                    <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border); margin-top: 1.55rem;" id="${field.name}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
+                                    <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
                                     <script>
                                         document.getElementById("${field.name}").readOnly = !${field.editable};
                                     </script>
@@ -656,7 +666,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                         html += `
                     <div class="input-field col s6 container" id="container_${field.label.replaceAll(" ", "_")}">
                         <label class="active" for="${field.label}">${field.label}</label>
-                        <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border); margin-top: 1.55rem;" id="${field.name}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
+                        <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
                         <script>
                             document.getElementById("${field.name}").readOnly = !${field.editable};
                         </script>
@@ -687,14 +697,14 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
 function getFieldValue(data: any, fieldName: string): string | any[] {
     const field = data[fieldName];
     if (!field) {
-        return '-';
+        return '';
     }
     if (field['data']) {
         const ref: string[] = [];
         field['data'].forEach((r: any) => {
             ref.push(r.name);
         });
-        return ref.length ? ref : '-';
+        return ref.length ? ref : '';
     }
     if (field['name']) {
         return field['name'];

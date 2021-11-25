@@ -13,6 +13,12 @@ export class OctaneService {
     private logger = getLogger('vs');
     private static _instance: OctaneService;
 
+    public static entitiesToOpenExternally = [
+		'epic',
+		'test_suite',
+		'test_automated'
+	];
+
     private octane?: any;
 
     private user?: string;
@@ -59,7 +65,7 @@ export class OctaneService {
                 .query(Query.field('name').equal(username).build())
                 .execute();
             this.logger.info('Successful auth test.', result.data);
-            return result.data ? (result.data[0].full_name ? result.data[0].full_name : username) : username;
+            return result.data && result.data[0] ? (result.data[0].full_name ? result.data[0].full_name : username) : username;
         } catch (e: any) {
             this.logger.error('Error while testing auth.', e);
             throw e;
@@ -195,6 +201,39 @@ export class OctaneService {
             return [];
         } catch (e) {
             this.logger.error('While global searching requirements.', e);
+            return [];
+        }
+    }
+
+    public async globalSearchTasks(criteria: string): Promise<OctaneEntity[]> {
+        try {
+            const response = await this.octane.get(Octane.Octane.entityTypes.tasks)
+                .fields('id', 'name', 'author{id,name,full_name}', 'owner{id,name,full_name}', 'phase', 'global_text_search_result')
+                .limit(`5&text_search={"type":"global","text":"${criteria}"}`)
+                .execute();
+            this.logger.log('Global search response', response);
+            if (response.data && response.data.length) {
+                let responseWithFields = await this.octane.get(Octane.Octane.entityTypes.tasks)
+                    .fields('id', 'name', 'author{id,name,full_name}', 'owner{id,name,full_name}', 'phase')
+                    .query(
+                        Query.field('id').inComparison(response.data.map((r: any) => r.id))
+                            .build()
+                    )
+                    .execute();
+
+                let entities = responseWithFields.data.map((r: any) => {
+                    let gsr = response.data.find((re: { id: any; }) => re.id === r.id);
+                    r.global_text_search_result = gsr?.global_text_search_result.description;
+                    let oe = new OctaneEntity(r);
+                    this.logger.log('Extended oe', oe);
+                    return oe;
+                });
+                this.logger.log('Global search results: ', entities);
+                return entities;
+            }
+            return [];
+        } catch (e) {
+            this.logger.error('While global searching tasks.', e);
             return [];
         }
     }
@@ -339,7 +378,7 @@ export class OctaneService {
 
     public async getMyMentions(): Promise<OctaneEntity[]> {
         const response = await this.octane.get(Octane.Octane.entityTypes.comments)
-            .fields('text', 'owner_work_item', 'author{id,name,full_name}')
+            .fields('text', 'owner_work_item', 'owner_requirement', 'owner_test', 'owner_run', 'owner_bdd_spec', 'author{id,name,full_name}')
             .query(
                 Query.field('mention_user').equal(Query.field('id').equal(this.loggedInUserId))
                     .build()
@@ -389,7 +428,7 @@ export class OctaneService {
             .then((res: any) => {
                 vscode.window.showInformationMessage('Your comment have been saved.');
             }, (error: any) => {
-                vscode.window.showErrorMessage('We couldn’t save your comment.' + error);
+                vscode.window.showErrorMessage((error.response.body.description) ?? 'We couldn’t save your comment.');
             });
     }
 
@@ -473,7 +512,7 @@ export class OctaneService {
             .then((res: any) => {
                 vscode.window.showInformationMessage('Your item changes have been saved.');
             }, (error: any) => {
-                vscode.window.showErrorMessage('We couldn’t save your changes.' + error);
+                vscode.window.showErrorMessage((error.response.body.description) ?? 'We couldn’t save your changes');
             });
     }
 
@@ -558,7 +597,7 @@ export class OctaneService {
                     vscode.window.showInformationMessage('Your item changes have been saved.');
                 }, (error: any) => {
                     this.logger.error('While adding to MyWork.', e);
-                    vscode.window.showErrorMessage('We couldn’t save your changes.');
+                    vscode.window.showErrorMessage((error.response.body.description) ?? 'We couldn’t save your changes.');
                 });
         } catch (e) {
             this.logger.error('While adding to MyWork.', e);
@@ -638,7 +677,7 @@ export class OctaneService {
                     .then((res: any) => {
                         vscode.window.showInformationMessage('Item dismissed.');
                     }, (error: any) => {
-                        vscode.window.showErrorMessage('Item dismissal failed.' + error);
+                        vscode.window.showErrorMessage((error.response.body.description) ?? 'Item dismissal failed');
                     });
             }
         } catch (e) {

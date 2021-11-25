@@ -90,7 +90,7 @@
 				{
 					"id": "visual-studio-code-plugin-for-alm-octane-explorer",
 					"title": "My Work - ALM Octane",
-					"icon": "media/logo2.svg"
+					"icon": "media/logo.svg"
 				}
 			]
 		},
@@ -217,7 +217,7 @@
 				},
 				{
 					"command": "visual-studio-code-plugin-for-alm-octane.myTests.download",
-					"when": "view in visual-studio-code-plugin-for-alm-octane.supportedViews && (viewItem == 'gherkin_test' || viewItem == 'scenario_test')"
+					"when": "view in visual-studio-code-plugin-for-alm-octane.supportedViews && viewItem in visual-studio-code-plugin-for-alm-octane.supportsDownloadScript"
 				},
 				{
 					"command": "visual-studio-code-plugin-for-alm-octane.openInBrowser",

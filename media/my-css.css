@@ -93,7 +93,7 @@ textarea {
 .container {
     /* display: flex; */
     flex-direction: column;
-    margin: 1.22rem 0.5rem 0 0.5rem;
+    margin: 2rem 0.5rem 0 0.5rem;
     flex: 1;
     min-width: 200px;
     max-width: unset;
@@ -128,7 +128,7 @@ textarea {
 .select-container-single {
     display: flex;
     flex-direction: column;
-    margin: .5rem;
+    margin: 1.22rem 0.5rem 0 0.5rem;
     flex: 1;
     min-width: 200px;
     display: none;
@@ -137,7 +137,7 @@ textarea {
 .select-container-multiple {
     display: flex;
     flex-direction: column;
-    margin: .5rem;
+    margin: 1.22rem 0.5rem 0 0.5rem;
     flex: 1;
     min-width: 200px;
     display: none;
@@ -187,7 +187,6 @@ hr {
 
 .name-container {
     margin: 2rem 0 0 0.5rem !important;
-    max-width: 40vw;
 }
 
 .action-container {
@@ -211,7 +210,7 @@ hr {
     justify-content: center;
     align-items: center;
     place-content: center;
-    margin-top: 2.1rem;
+    margin-top: 2.6rem;
 }
 
 .label {
@@ -246,6 +245,8 @@ hr {
 }
 
 .save {
+    display: flex;
+    align-items: center;
     margin: 0 0 0 0.5rem;
     width: 2rem;
     height: 2rem;
@@ -253,6 +254,8 @@ hr {
 }
 
 #refresh, #addToMyWork, #filterId, #commentsId, #openInBrowser {
+    display: flex;
+    align-items: center;
     margin: 0 0 0 0.5rem;
     width: 2rem;
     height: 2rem;
@@ -262,25 +265,23 @@ hr {
 
 .main-element {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
 }
 
 #comments-element-id {
     display: none;
     flex-direction: column;
-    width: 0vw;
 }
 
 #element-id {
     display: flex;
     flex-direction: column;
-    width: 100vw;
 }
 
 #comments-sidebar-id {
     display: none;
     flex-direction: column;
-    margin-left: 1rem;
+    /* margin-left: 1rem; */
     /* width: 25%; */
 }
 
@@ -292,7 +293,7 @@ hr {
     /* border-bottom: unset !important; */
     border-color: var(--vscode-dropdown-border) !important;
     border: 0.5px solid;
-    margin-top: 1rem;
+    margin-top: 0rem;
 }
 
 .select-wrapper .caret {
