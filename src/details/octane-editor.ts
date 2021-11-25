@@ -52,34 +52,34 @@ class OctaneEntityDocument implements vscode.CustomDocument {
 
 class WebviewCollection {
 
-	private readonly webviews = new Set<{
-		readonly resource: string;
-		readonly webviewPanel: vscode.WebviewPanel;
-	}>();
+    private readonly webviews = new Set<{
+        readonly resource: string;
+        readonly webviewPanel: vscode.WebviewPanel;
+    }>();
 
-	/**
-	 * Get all known webviews for a given uri.
-	 */
-	public *get(uri: vscode.Uri): Iterable<vscode.WebviewPanel> {
-		const key = uri.toString();
-		for (const entry of this.webviews) {
-			if (entry.resource === key) {
-				yield entry.webviewPanel;
-			}
-		}
-	}
+    /**
+     * Get all known webviews for a given uri.
+     */
+    public *get(uri: vscode.Uri): Iterable<vscode.WebviewPanel> {
+        const key = uri.toString();
+        for (const entry of this.webviews) {
+            if (entry.resource === key) {
+                yield entry.webviewPanel;
+            }
+        }
+    }
 
-	/**
-	 * Add a new webview to the collection.
-	 */
-	public add(uri: vscode.Uri, webviewPanel: vscode.WebviewPanel) {
-		const entry = { resource: uri.toString(), webviewPanel };
-		this.webviews.add(entry);
+    /**
+     * Add a new webview to the collection.
+     */
+    public add(uri: vscode.Uri, webviewPanel: vscode.WebviewPanel) {
+        const entry = { resource: uri.toString(), webviewPanel };
+        this.webviews.add(entry);
 
-		webviewPanel.onDidDispose(() => {
-			this.webviews.delete(entry);
-		});
-	}
+        webviewPanel.onDidDispose(() => {
+            this.webviews.delete(entry);
+        });
+    }
 
     public closeAll() {
         this.webviews.forEach(v => v.webviewPanel.dispose());
@@ -412,11 +412,11 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
                 }
             }
         }
-        if(data.subtype && OctaneService.entitiesToOpenExternally.includes(data.subtype)) {
+        if (data.subtype && OctaneService.entitiesToOpenExternally.includes(data.subtype)) {
             html += `
                 </select>
-            </div>`;  
-        } else { 
+            </div>`;
+        } else {
             html += `
                 </select>
             </div>
@@ -609,6 +609,12 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
             `;
         }
         for (const [key, field] of mapFields) {
+            if (field.label === 'Progress') {
+                console.log(field);
+            }
+            if (field.label === 'Test Coverage') {
+                console.log(field);
+            }
             if (field) {
                 if (!['description', 'phase', ...mainFields].includes(key)) {
                     if (counter === 0) {
@@ -650,15 +656,30 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                             }
                         }
                     } else {
-                        html += `
-                    <div class="input-field col s6 container" id="container_${field.label.replaceAll(" ", "_")}">
-                        <label class="active" for="${field.label}">${field.label}</label>
-                        <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
-                        <script>
-                            document.getElementById("${field.name}").readOnly = !${field.editable};
-                        </script>
-                    </div>
-                `;
+                        if (field.field_type === 'string') {
+                            if (field.type === 'field_metadata') {
+                                let d = getFieldValue(data, field.name);
+                                html += `
+                                    <div class="input-field col s6 container" id="container_${field.label.replaceAll(" ", "_")}">
+                                        <label class="active" for="${field.label}">${field.label}</label>
+                                        <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" type="${field.field_type}" value='${d}'>
+                                        <script>
+                                            document.getElementById("${field.name}").readOnly = !${field.editable};
+                                        </script>
+                                    </div>
+                                    `;
+                            }
+                        } else {
+                            html += `
+                            <div class="input-field col s6 container" id="container_${field.label.replaceAll(" ", "_")}">
+                                <label class="active" for="${field.label}">${field.label}</label>
+                                <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
+                                <script>
+                                    document.getElementById("${field.name}").readOnly = !${field.editable};
+                                </script>
+                            </div>
+                        `;
+                        }
                     }
                     if (counter === columnCount) {
                         html += `</div>`;
