@@ -261,9 +261,11 @@ export async function activate(context: vscode.ExtensionContext) {
 					return;
 				}
 
-				let newFile = vscode.Uri.parse(path.join(vscode.workspace.workspaceFolders[0].uri.path, `${e.entity.name}_${e.entity.id}.feature`));
+				logger.debug(`Trying to populate download script default location using ${vscode.workspace.workspaceFolders[0].uri}`);
+				let newFile;
 				try {
 					fs.accessSync(vscode.workspace.workspaceFolders[0].uri.path, fs.constants.W_OK);
+					newFile = vscode.Uri.parse(path.join(vscode.workspace.workspaceFolders[0].uri.path, `${e.entity.name}_${e.entity.id}.feature`));
 				} catch (error) {
 					logger.error('workspace folder is not writabel', error);
 					newFile = vscode.Uri.parse(`file://${e.entity.name}_${e.entity.id}.feature`);
