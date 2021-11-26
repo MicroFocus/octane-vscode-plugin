@@ -175,6 +175,7 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 		try {
 			const storedSessions = await this.keychain.getToken();
 			if (!storedSessions) {
+				this.sessionChangeEmitter.fire({ added: [], removed: [{ id: '-1', accessToken: '', account: { id: '', label: '' }, scopes: [] }], changed: [] });
 				return [];
 			}
 			this.logger.info('Stored sessions:', storedSessions);
@@ -189,6 +190,7 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 
 			if (!sessionData.type) {
 				await this.keychain.deleteToken();
+				this.sessionChangeEmitter.fire({ added: [], removed: [{ id: sessionData.id, accessToken: '', account: { id: '', label: '' }, scopes: [] }], changed: [] });
 				return [];
 			}
 
