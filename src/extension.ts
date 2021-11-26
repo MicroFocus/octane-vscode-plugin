@@ -232,7 +232,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	{
 		let commitMessageCommand = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.commitMessage', async (e: MyWorkItem) => {
-			await vscode.env.clipboard.writeText(`${e.entity?.subtype ?? e.entity?.type} #${e.id}: `);
+			await vscode.env.clipboard.writeText(`${(e.entity?.subtype && e.entity.subtype !== '') ? e.entity.subtype : e.entity?.type} #${e.id}: `);
 			vscode.window.showInformationMessage('Commit message copied to clipboard.');
 		});
 		context.subscriptions.push(commitMessageCommand);
