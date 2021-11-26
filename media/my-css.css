@@ -312,3 +312,7 @@ hr {
 .input-field.col label {
     left: unset;
 }
+
+.multiselect-container {
+    color: var(--vscode-button-background);
+}

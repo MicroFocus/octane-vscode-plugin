@@ -407,7 +407,7 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
         });
         mapFields = new Map([...mapFields].sort((a, b) => String(a[0]).localeCompare(b[0])));
         html += `
-                <div class="select-container-multiple">
+                <div>
                     <select multiple="multiple" id="example-getting-started">
                 `;
         for (const [key, field] of mapFields) {
@@ -419,9 +419,9 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
                     filteredFields = filteredFields.filter(f => f !== field.name);
                 }
                 if (filteredFields.includes(field.name)) {
-                    html += `<option class="filter_option" data-label="${field.label}" selected value='${JSON.stringify(field)}'>${field.label}</option>`;
+                    html += `<option data-label="${field.label}" selected value='${JSON.stringify(field)}'>${field.label}</option>`;
                 } else {
-                    html += `<option class="filter_option" data-label="${field.label}" value='${JSON.stringify(field)}'>${field.label}</option>`;
+                    html += `<option data-label="${field.label}" value='${JSON.stringify(field)}'>${field.label}</option>`;
                 }
             }
         }
@@ -632,7 +632,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                             html += `
                         <div class="select-container-multiple" id="container_${field.label.replaceAll(" ", "_")}">
                             <label name="${field.name}">${field.label}</label>
-                            <select class="reference-select-multiple" multiple="multiple" id="${field.name}">
+                            <select multiple="multiple" id="${field.name}">
                         `;
                             html += `
                             </select>
@@ -644,7 +644,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                                 html += `
                             <div class="select-container-single" id="container_${field.label.replaceAll(" ", "_")}">
                                 <label name="${field.name}">${field.label}</label>
-                                <select class="reference-select-single" id="${field.name}">
+                                <select id="${field.name}">
                             `;
                                 html += `<option value="none" selected disabled hidden>${getFieldValue(data, field.name)}</option>`;
                                 html += `

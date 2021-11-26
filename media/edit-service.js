@@ -6,6 +6,7 @@
     const selectDataPresent = [];
 
     $(document).ready(function() {
+        $('select_phase').multiselect();
         $('.select-container-multiple select').multiselect({
             onDropdownShow: function(event) {
                 getDataForEntity(this);
@@ -43,38 +44,37 @@
     });
 
     function getDataForEntity(entity) {
-        let fieldName = entity.select;
+        let fieldName = entity.$select.find('#select').context.id;
         console.log(fieldName);
-        // if (fieldName && !selectDataPresent.includes(fieldName)) {
-        //     vscode.postMessage({
-        //         type: 'get-data-for-select',
-        //         from: 'edit-service',
-        //         data: {
-        //             field: fieldName
-        //         }
-        //     });
-        // }
+        if (fieldName && !selectDataPresent.includes(fieldName)) {
+            vscode.postMessage({
+                type: 'get-data-for-select',
+                from: 'edit-service',
+                data: {
+                    field: fieldName
+                }
+            });
+        }
     }
 
     function addOptionsForSelect(options, field, selectedName) {
         let fieldName = field[0].name;
-        let select = document.getElementById(fieldName);
+        let select = $('#' + fieldName);
         if (options && options.data) {
             for (let option of options.data) {
                 if (option.type === 'workspace_user') {
                     if (option.full_name !== selectedName) {
-                        select.add(new Option(option.full_name, JSON.stringify(option)));
+                        select.append(`<option data-label="${option.full_name}" value='${JSON.stringify(option)}'>${option.full_name}</option>`);
                     }
                 } else {
                     if (option.name !== selectedName) {
-                        select.add(new Option(option.name, JSON.stringify(option)));
+                        select.append(`<option data-label="${option.name}" value='${JSON.stringify(option)}'>${option.name}</option>`);
                     }
                 }
             }
         }
         selectDataPresent.push(fieldName);
-        let instance = M.FormSelect.init(select, {});
-        instance.dropdown.open();
+        select.multiselect('rebuild');
     }
 
     function addOptionsForMultipleSelect(options, field, selected) {
