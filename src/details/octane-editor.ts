@@ -333,6 +333,20 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
             "Team"
         ];
 
+        let resetFilterValuesForGT = [
+            "Application_modules",
+            "Automation_status",
+            "Backlog_Coverage",
+            "Created",
+            "Description",
+            "Designer",
+            "Estimated_duration_(minutes)",
+            "Last_modified",
+            "Owner",
+            "Test_type",
+            "Testing_tool_type"
+        ];
+
         var activeFields: string[] | undefined = [];
         if (data.subtype !== null && data.subtype !== undefined && data.subtype !== "") {
             activeFields = await getSavedFields(data.subtype);
@@ -348,6 +362,9 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                 }
                 if (data.subtype === 'feature') {
                     vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForFeature }, data.subtype);
+                }
+                if (data.subtype === 'gherkin_test') {
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForGT }, data.subtype);
                 }
                 activeFields = await getSavedFields(data.subtype);
             }
