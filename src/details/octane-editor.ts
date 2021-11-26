@@ -293,6 +293,24 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
             "Test_Coverage",
         ];
 
+        let resetFilterValuesForQStory = [
+            "Application_modules",
+            "Author",
+            "Blocked",
+            "Blocked_reason",
+            "Creation_time",
+            "Description",
+            "Feature",
+            "Item_origin",
+            "Last_modified",
+            "Owner",
+            "Quality_story_type",
+            "Release",
+            "Sprint",
+            "Story_points",
+            "Team"
+        ];
+
         var activeFields: string[] | undefined = [];
         if (data.subtype !== null && data.subtype !== undefined && data.subtype !== "") {
             activeFields = await getSavedFields(data.subtype);
@@ -302,6 +320,9 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                 }
                 if (data.subtype === 'story') {
                     vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForStory }, data.subtype);
+                }
+                if (data.subtype === 'quality_story') {
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForQStory }, data.subtype);
                 }
                 activeFields = await getSavedFields(data.subtype);
             }
