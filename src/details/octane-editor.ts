@@ -280,7 +280,8 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
             activeFields = await getSavedFields(data.subtype);
             if (activeFields === undefined) {
                 if (data.subtype === 'defect') {
-                    activeFields = resetFilterValuesForDefect;
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForDefect }, data.subtype);
+                    activeFields = await getSavedFields(data.subtype);
                 }
             }
         } else {
