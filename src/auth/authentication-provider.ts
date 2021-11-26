@@ -94,7 +94,7 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 		const user: string | undefined = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.user.userName');
 		const space: string | undefined = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.space');
 		const workspace: string | undefined = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.workspace');
-		if (uri === undefined || user === undefined) {
+		if (uri === undefined || user === undefined || uri === '' || user === '') {
 			throw new Error('No authentication possible. No uri or username provided.');
 		}
 		let session: AlmOctaneAuthenticationSession | undefined;
