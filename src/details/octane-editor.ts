@@ -368,6 +368,19 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
             "Owner"
         ];
 
+        let resetFilterValuesForTask = [
+            "Author",
+            "Story",
+            "Last_modified",
+            "Estimated_hours",
+            "Remaining_hours",
+            "Owner",
+            "Description",
+            "Creation_time",
+            "Invested_hours",
+            "Type"
+        ];
+
         var activeFields: string[] | undefined = [];
         if (data.subtype !== null && data.subtype !== undefined && data.subtype !== "") {
             activeFields = await getSavedFields(data.subtype);
@@ -401,9 +414,12 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
         } else {
             if (data.type !== null && data.type !== undefined) {
                 activeFields = await getSavedFields(data.type);
-                // if (activeFields === undefined) {
-
-                // }
+                if (activeFields === undefined) {
+                    if (data.type === 'task') {
+                        vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForTask }, data.type);
+                    }
+                    activeFields = await getSavedFields(data.type);
+                }
             }
         }
 
