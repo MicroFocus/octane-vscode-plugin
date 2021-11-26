@@ -253,13 +253,42 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
         const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(
             context.extensionUri, 'media', 'edit-service.js'));
 
+        let resetFilterValuesForDefect = [
+            "Application_modules",
+            "Blocked",
+            "Blocked_reason",
+            "Closed_on",
+            "Creation_time",
+            "Defect_type",
+            "Description",
+            "Detected_by",
+            "Detected_in_release",
+            "Environment",
+            "Feature",
+            "Last_modified",
+            "Owner",
+            "Priority",
+            "Release",
+            "Severity",
+            "Sprint",
+            "Story_points",
+            "Team"
+        ];
 
         var activeFields: string[] | undefined = [];
         if (data.subtype !== null && data.subtype !== undefined && data.subtype !== "") {
             activeFields = await getSavedFields(data.subtype);
+            if (activeFields === undefined) {
+                if (data.subtype === 'defect') {
+                    activeFields = resetFilterValuesForDefect;
+                }
+            }
         } else {
             if (data.type !== null && data.type !== undefined) {
                 activeFields = await getSavedFields(data.type);
+                // if (activeFields === undefined) {
+
+                // }
             }
         }
 
@@ -319,7 +348,7 @@ function getDataForSubtype(entity: OctaneEntity | undefined): [string, string] {
         return ['T', '#1668c1'];
     }
     if (entity?.type === 'bdd_spec') {
-        return [ 'BSP', '#118c4f'];
+        return ['BSP', '#118c4f'];
     }
     if (entity?.subtype) {
         if (entity?.subtype === 'defect') { return ["D", "#b21646"]; }
@@ -621,10 +650,10 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                             if (typeof (val) === 'string' && val !== '') {
                                 try {
                                     val = JSON.parse(val);
-                                } catch(e: any) {
+                                } catch (e: any) {
                                     getLogger('vs').error(`While evaluating JSON value: ${val} `, e);
                                 }
-                                 
+
                                 if (field.name === 'last_runs') {
                                     //label - Test Coverage
                                     tooltip = 'Test coverage \n ' + (val?.passed ?? 0) + ' Passed \n ' + (val?.failed ?? 0) + ' Failed \n ' + (val?.needsAttention ?? 0) + ' Require Attention \n ' + (val?.planned ?? 0) + ' Planned \n ' + (val?.testNoRun ?? 0) + ' Tests did not run \n';
