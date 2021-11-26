@@ -293,13 +293,15 @@ export async function activate(context: vscode.ExtensionContext) {
 	{
 		context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.quickPick', async (value: OctaneQuickPickItem) => {
 			const quickPick = vscode.window.createQuickPick();
+			quickPick.title = 'Search in Octane';
+			quickPick.placeholder = 'Search term';
 			quickPick.items = [];
 			let history: OctaneQuickPickItem[] = context.workspaceState.get('visual-studio-code-plugin-for-alm-octane.quickPick.history', []);
 			logger.info('history: ', history);
 
 			quickPick.onDidChangeSelection(async selection => {
 				if (quickPick.value && history.find(e => e.searchString === quickPick.value) === undefined) {
-					history = [new OctaneQuickPickItem(undefined, quickPick.value)].concat(history).slice(0, 5);
+					history = [new OctaneQuickPickItem(undefined, quickPick.value, false)].concat(history).slice(0, 5);
 					await context.workspaceState.update('visual-studio-code-plugin-for-alm-octane.quickPick.history', history);
 					vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.mySearch.refreshEntry');
 				}
@@ -322,8 +324,6 @@ export async function activate(context: vscode.ExtensionContext) {
 			});
 
 			if (value) {
-				// quickPick.items = [value];
-				// quickPick.selectedItems = [value];
 				quickPick.value = value.searchString ?? '';
 			} else {
 				quickPick.items = history;
@@ -341,10 +341,18 @@ export async function activate(context: vscode.ExtensionContext) {
 				promises.push(OctaneService.getInstance().globalSearchTests(e));
 
 				let items: OctaneQuickPickItem[] = [];
+				quickPick.busy = true;
 				const results = await Promise.all(promises);
-				results.map(r => items.push(...r.map((oe: OctaneEntity) => new OctaneQuickPickItem(oe, e))));
+				results.map(r => items.push(...r.map((oe: OctaneEntity) => new OctaneQuickPickItem(oe, e, false))));
 				logger.debug('setting items to', items);
-				quickPick.items = items;
+				if (items.length === 0) {
+					quickPick.items = [
+						new OctaneQuickPickItem(undefined, 'No results found', true)
+					];
+				} else {
+					quickPick.items = items;
+				}
+				quickPick.busy = false;
 			};
 			const debouncedFunction = debounce(quickPickChangedValue, 100);
 
