@@ -347,6 +347,18 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
             "Testing_tool_type"
         ];
 
+        let resetFilterValuesForRunSuite= [
+            "Content",
+            "Default_Environment",
+            "Description",
+            "Draft_run",
+            "Last_modified",
+            "Native_status",
+            "Release",
+            "Started",
+            "Suite_name",
+        ];
+
         var activeFields: string[] | undefined = [];
         if (data.subtype !== null && data.subtype !== undefined && data.subtype !== "") {
             activeFields = await getSavedFields(data.subtype);
@@ -368,6 +380,9 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                 }
                 if (data.subtype === 'test_manual') {
                     vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForGT_MT }, data.subtype);
+                }
+                if (data.subtype === 'run_suite') {
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForRunSuite }, data.subtype);
                 }
                 activeFields = await getSavedFields(data.subtype);
             }
