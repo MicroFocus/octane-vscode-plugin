@@ -11,13 +11,17 @@ export class OctaneQuickPickItem implements QuickPickItem, OctaneEntityHolder {
     public alwaysShow: boolean = true;
     public searchString?: string;
 
-    constructor(i: OctaneEntity | undefined, label: string) {
+    constructor(i: OctaneEntity | undefined, label: string, placeholder: boolean) {
         this.entity = i;
         if (i) {
             this.label = `${i.id} ${i.name}`;
         } else {
             this.label = `$(search-refresh) ${label}`;
-            this.searchString = label;
+            if (!placeholder) {
+                this.searchString = label;
+            } else {
+                this.searchString = '';
+            }
         }
         if (i && i.globalTextSearchResult) {
             this.detail = `${stripHtml(i.globalTextSearchResult).result}`;

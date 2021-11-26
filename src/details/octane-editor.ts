@@ -332,6 +332,9 @@ function getDataForSubtype(entity: OctaneEntity | undefined): [string, string] {
     if (entity?.type === 'task') {
         return ['T', '#1668c1'];
     }
+    if (entity?.type === 'bdd_spec') {
+        return [ 'BSP', '#118c4f'];
+    }
     if (entity?.subtype) {
         if (entity?.subtype === 'defect') { return ["D", "#b21646"]; }
         if (entity?.subtype === 'story') { return ["US", "#ffb000"]; }
@@ -401,7 +404,7 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
         let filteredFields: string[] = [];
         let mapFields = new Map<string, any>();
         fields.forEach((field): any => {
-            if (field.name !== "id") {
+            if (field.name !== "id" && field.name !== "phase" && field.name !== "name") {
                 mapFields.set(field.label, field);
             }
         });
@@ -425,11 +428,11 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
                 }
             }
         }
-        if(data.subtype && OctaneService.entitiesToOpenExternally.includes(data.subtype)) {
+        if (data.subtype && OctaneService.entitiesToOpenExternally.includes(data.subtype)) {
             html += `
                 </select>
-            </div>`;  
-        } else { 
+            </div>`;
+        } else {
             html += `
                 </select>
             </div>
@@ -505,7 +508,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
         let mainFields: string[] = ['name'];
         let mapFields = new Map<string, any>();
         fields.forEach((field): any => {
-            if (field.name !== "id") {
+            if (field.name !== "id" && field.name !== "phase" && field.name !== "name") {
                 mapFields.set(field.name, field);
             }
         });
@@ -663,15 +666,70 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                             }
                         }
                     } else {
-                        html += `
-                    <div class="input-field col s6 container" id="container_${field.label.replaceAll(" ", "_")}">
-                        <label class="active" for="${field.label}">${field.label}</label>
-                        <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
-                        <script>
-                            document.getElementById("${field.name}").readOnly = !${field.editable};
-                        </script>
-                    </div>
-                `;
+                        if ((field.field_type === 'string' && field.type === 'field_metadata') && (field.name === 'last_runs' || field.name === 'progress' || field.name === 'commit_files')) {
+                            let val: any = getFieldValue(data, field.name);
+                            let containerValue = '';
+                            let tooltip = '';
+                            if (typeof (val) === 'string' && val !== '') {
+                                try {
+                                    val = JSON.parse(val);
+                                } catch(e: any) {
+                                    getLogger('vs').error(`While evaluating JSON value: ${val} `, e);
+                                }
+                                 
+                                if (field.name === 'last_runs') {
+                                    //label - Test Coverage
+                                    tooltip = 'Test coverage \n ' + (val?.passed ?? 0) + ' Passed \n ' + (val?.failed ?? 0) + ' Failed \n ' + (val?.needsAttention ?? 0) + ' Require Attention \n ' + (val?.planned ?? 0) + ' Planned \n ' + (val?.testNoRun ?? 0) + ' Tests did not run \n';
+                                    containerValue = (val?.passed ?? 0) + ' Passed, ' + (val?.failed ?? 0) + ' Failed, ' + (val?.needsAttention ?? 0) + ' Require Attention, ' + (val?.planned ?? 0) + ' Planned, ' + (val?.testNoRun ?? 0) + ' Tests did not run';
+                                }
+                                if (field.name === 'progress') {
+                                    //label - Progress
+                                    tooltip = 'Progress \n ' + (val?.tasksInvestedHoursSumTotal ?? 0) + ' Invested hours \n ' + (val?.tasksRemainingHoursSumTotal ?? 0) + ' Remaining hours \n ' + (val?.tasksEstimatedHoursSumTotal ?? 0) + ' Estimated hours \n ';
+                                    containerValue = (val?.tasksInvestedHoursSumTotal ?? 0) + ' Invested hours, ' + (val?.tasksRemainingHoursSumTotal ?? 0) + ' Remaining hours, ' + (val?.tasksEstimatedHoursSumTotal ?? 0) + ' Estimated hours';
+                                }
+                                if (field.name === 'commit_files') {
+                                    //label - COmmit files
+                                    containerValue = (val?.deleted ?? 0) + ' Deleted, ' + (val?.added ?? 0) + ' Added, ' + (val?.edited ?? 0) + ' Edited';
+                                }
+
+                            }
+                            html += `
+                            <div class="input-field col s6 container" id="container_${field.label.replaceAll(" ", "_")}">
+                                <label class="active" for="${field.label}">${field.label}</label>
+                                <input 
+                                    title="${tooltip}"
+                                    style="border: 0.5px solid; border-color: var(--vscode-dropdown-border); cursor: pointer;" id="${field.name}" type="${field.field_type}" value='${containerValue}'>
+                                <script>
+                                    document.getElementById("${field.name}").readOnly = !${field.editable};
+                                    $(document).ready(function() {
+                                        $('[data-toggle="tooltip"]').tooltip();
+                                    });
+                                </script>
+                            </div>
+                            `;
+                        } else {
+                            if (field.name === 'is_in_filter') {
+                                html += `
+                                    <div class="input-field col s6 container" id="container_${field.label.replaceAll(" ", "_")}">
+                                        <label class="active" for="${field.label}">${field.label}</label>
+                                        <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" type="string" value='${getFieldValue(data, field.name) ? 'Yes' : 'No'}'>
+                                        <script>
+                                            document.getElementById("${field.name}").readOnly = !${field.editable};
+                                        </script>
+                                    </div>
+                                `;
+                            } else {
+                                html += `
+                                <div class="input-field col s6 container" id="container_${field.label.replaceAll(" ", "_")}">
+                                    <label class="active" for="${field.label}">${field.label}</label>
+                                    <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" type="${field.field_type}" value='${getFieldValue(data, field.name)}'>
+                                    <script>
+                                        document.getElementById("${field.name}").readOnly = !${field.editable};
+                                    </script>
+                                </div>
+                            `;
+                            }
+                        }
                     }
                     if (counter === columnCount) {
                         html += `</div>`;
@@ -689,6 +747,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
         }
         html += `</div>`;
     } catch (e: any) {
+        getLogger('vs').error("comments", e);
         vscode.window.showErrorMessage('Error generating fields for entity.');
     }
     return html;

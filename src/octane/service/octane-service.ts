@@ -2,11 +2,12 @@ import * as vscode from 'vscode';
 import * as Octane from '@microfocus/alm-octane-js-rest-sdk';
 import * as Query from '@microfocus/alm-octane-js-rest-sdk/lib/query';
 import { OctaneEntity } from '../model/octane-entity';
+import { Task } from '../model/task';
 import { Transition } from '../model/transition';
 import { Comment } from '../model/comment';
 import { AlmOctaneAuthenticationProvider, AlmOctaneAuthenticationSession, AlmOctaneAuthenticationType } from '../../auth/authentication-provider';
 import fetch, { Headers, RequestInit } from 'node-fetch';
-import { getLogger} from 'log4js';
+import { getLogger } from 'log4js';
 
 export class OctaneService {
 
@@ -14,10 +15,10 @@ export class OctaneService {
     private static _instance: OctaneService;
 
     public static entitiesToOpenExternally = [
-		'epic',
-		'test_suite',
-		'test_automated'
-	];
+        'epic',
+        'test_suite',
+        'test_automated'
+    ];
 
     private octane?: any;
 
@@ -153,7 +154,9 @@ export class OctaneService {
 
                 let entities = responseWithFields.data.map((r: any) => {
                     let gsr = response.data.find((re: { id: any; }) => re.id === r.id);
-                    r.global_text_search_result = gsr?.global_text_search_result.description;
+                    if (gsr && gsr.global_text_search_result) {
+                        r.global_text_search_result = gsr?.global_text_search_result.description;
+                    }
                     let oe = new OctaneEntity(r);
                     this.logger.log('Extended oe', oe);
                     return oe;
@@ -190,7 +193,9 @@ export class OctaneService {
 
                 let entities = responseWithFields.data.map((r: any) => {
                     let gsr = response.data.find((re: { id: any; }) => re.id === r.id);
-                    r.global_text_search_result = gsr?.global_text_search_result.description;
+                    if (gsr && gsr.global_text_search_result) {
+                        r.global_text_search_result = gsr?.global_text_search_result.description;
+                    }
                     let oe = new OctaneEntity(r);
                     this.logger.log('Extended oe', oe);
                     return oe;
@@ -223,7 +228,9 @@ export class OctaneService {
 
                 let entities = responseWithFields.data.map((r: any) => {
                     let gsr = response.data.find((re: { id: any; }) => re.id === r.id);
-                    r.global_text_search_result = gsr?.global_text_search_result.description;
+                    if (gsr && gsr.global_text_search_result) {
+                        r.global_text_search_result = gsr?.global_text_search_result.description;
+                    }
                     let oe = new OctaneEntity(r);
                     this.logger.log('Extended oe', oe);
                     return oe;
@@ -260,7 +267,9 @@ export class OctaneService {
 
                 let entities = responseWithFields.data.map((r: any) => {
                     let gsr = response.data.find((re: { id: any; }) => re.id === r.id);
-                    r.global_text_search_result = gsr?.global_text_search_result.description;
+                    if (gsr && gsr.global_text_search_result) {
+                        r.global_text_search_result = gsr?.global_text_search_result.description;
+                    }
                     let oe = new OctaneEntity(r);
                     this.logger.log('Extended oe', oe);
                     return oe;
@@ -392,14 +401,14 @@ export class OctaneService {
 
     public async getMyTasks(): Promise<OctaneEntity[]> {
         const response = await this.octane.get(Octane.Octane.entityTypes.tasks)
-            .fields('id', 'name', 'author{id,name,full_name}', 'owner{id,name,full_name}', 'phase')
+            .fields('id', 'name', 'author{id,name,full_name}', 'owner{id,name,full_name}', 'phase', 'story')
             .query(
                 Query.field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
                     .build()
             )
             .orderBy('creation_time')
             .execute();
-        let entities = response.data.map((r: any) => new OctaneEntity(r));
+        let entities = response.data.map((r: any) => new Task(r));
         this.logger.log(entities);
         return entities;
     }
@@ -620,7 +629,7 @@ export class OctaneService {
                     if (this.session.type === AlmOctaneAuthenticationType.browser) {
                         myHeaders.append('Cookie', `${this.session.cookieName}=${this.session.accessToken}`);
                     } else {
-                        myHeaders.set('Authorization', 'Basic ' + Buffer.from(this.user + ":" + this.session.accessToken).toString('base64')); 
+                        myHeaders.set('Authorization', 'Basic ' + Buffer.from(this.user + ":" + this.session.accessToken).toString('base64'));
                     }
                     myHeaders.append('Content-Type', 'application/json');
 
@@ -629,16 +638,16 @@ export class OctaneService {
                     });
 
                     var requestOptions: RequestInit = {
-                      method: 'PUT',
-                      headers: myHeaders,
-                      body: entityModel,
-                      redirect: 'follow'
+                        method: 'PUT',
+                        headers: myHeaders,
+                        body: entityModel,
+                        redirect: 'follow'
                     };
 
                     await fetch(`${this.uri}internal-api/shared_spaces/${this.space}/workspaces/${this.workspace}/comments/${e.id}/dismiss`, requestOptions)
-                      .then(response => response.text())
-                      .then(result => this.logger.log(result))
-                      .catch(error => this.logger.log('error', error));
+                        .then(response => response.text())
+                        .then(result => this.logger.log(result))
+                        .catch(error => this.logger.log('error', error));
 
 
                     // await this.octane.update(Octane.Octane.entityTypes.comments, entityModel).at(`${e.id}/dismiss`)
@@ -753,5 +762,6 @@ const entityTypeApiEndpoint: Map<string, string> = new Map([
     ['work_item', Octane.Octane.entityTypes.workItems],
     ['workspace_role', Octane.Octane.entityTypes.workspaceRoles],
     ['workspace_user', Octane.Octane.entityTypes.workspaceUsers],
-    ['quality_story', Octane.Octane.entityTypes.qualityStories]
+    ['quality_story', Octane.Octane.entityTypes.qualityStories],
+    ['bdd_spec', 'bdd_specs']
 ]);

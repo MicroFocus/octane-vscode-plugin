@@ -94,7 +94,7 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 		const user: string | undefined = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.user.userName');
 		const space: string | undefined = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.space');
 		const workspace: string | undefined = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.workspace');
-		if (uri === undefined || user === undefined) {
+		if (uri === undefined || user === undefined || uri === '' || user === '') {
 			throw new Error('No authentication possible. No uri or username provided.');
 		}
 		let session: AlmOctaneAuthenticationSession | undefined;
@@ -175,6 +175,7 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 		try {
 			const storedSessions = await this.keychain.getToken();
 			if (!storedSessions) {
+				this.sessionChangeEmitter.fire({ added: [], removed: [{ id: '-1', accessToken: '', account: { id: '', label: '' }, scopes: [] }], changed: [] });
 				return [];
 			}
 			this.logger.info('Stored sessions:', storedSessions);
@@ -189,6 +190,7 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 
 			if (!sessionData.type) {
 				await this.keychain.deleteToken();
+				this.sessionChangeEmitter.fire({ added: [], removed: [{ id: sessionData.id, accessToken: '', account: { id: '', label: '' }, scopes: [] }], changed: [] });
 				return [];
 			}
 

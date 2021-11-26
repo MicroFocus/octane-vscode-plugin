@@ -23,6 +23,7 @@ import { TextEncoder } from 'util';
 import { configure, getLogger, Appender } from 'log4js';
 import { OctaneEntityHolder } from './octane/model/octane-entity-holder';
 import { Comment } from './octane/model/comment';
+import { Task } from './octane/model/task';
 
 export async function activate(context: vscode.ExtensionContext) {
 
@@ -292,13 +293,15 @@ export async function activate(context: vscode.ExtensionContext) {
 	{
 		context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.quickPick', async (value: OctaneQuickPickItem) => {
 			const quickPick = vscode.window.createQuickPick();
+			quickPick.title = 'Search in Octane';
+			quickPick.placeholder = 'Search term';
 			quickPick.items = [];
 			let history: OctaneQuickPickItem[] = context.workspaceState.get('visual-studio-code-plugin-for-alm-octane.quickPick.history', []);
 			logger.info('history: ', history);
 
 			quickPick.onDidChangeSelection(async selection => {
 				if (quickPick.value && history.find(e => e.searchString === quickPick.value) === undefined) {
-					history = [new OctaneQuickPickItem(undefined, quickPick.value)].concat(history).slice(0, 5);
+					history = [new OctaneQuickPickItem(undefined, quickPick.value, false)].concat(history).slice(0, 5);
 					await context.workspaceState.update('visual-studio-code-plugin-for-alm-octane.quickPick.history', history);
 					vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.mySearch.refreshEntry');
 				}
@@ -321,8 +324,6 @@ export async function activate(context: vscode.ExtensionContext) {
 			});
 
 			if (value) {
-				// quickPick.items = [value];
-				// quickPick.selectedItems = [value];
 				quickPick.value = value.searchString ?? '';
 			} else {
 				quickPick.items = history;
@@ -340,10 +341,18 @@ export async function activate(context: vscode.ExtensionContext) {
 				promises.push(OctaneService.getInstance().globalSearchTests(e));
 
 				let items: OctaneQuickPickItem[] = [];
+				quickPick.busy = true;
 				const results = await Promise.all(promises);
-				results.map(r => items.push(...r.map((oe: OctaneEntity) => new OctaneQuickPickItem(oe, e))));
+				results.map(r => items.push(...r.map((oe: OctaneEntity) => new OctaneQuickPickItem(oe, e, false))));
 				logger.debug('setting items to', items);
-				quickPick.items = items;
+				if (items.length === 0) {
+					quickPick.items = [
+						new OctaneQuickPickItem(undefined, 'No results found', true)
+					];
+				} else {
+					quickPick.items = items;
+				}
+				quickPick.busy = false;
 			};
 			const debouncedFunction = debounce(quickPickChangedValue, 100);
 
@@ -367,6 +376,18 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.details', async (e: MyWorkItem) => {
 		if (e.command && e.command.arguments) {
 			await vscode.commands.executeCommand(e.command.command, e.command.arguments[0], e.command.arguments[1]);
+		}
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.parentDetails', async (e: MyWorkItem) => {
+		if (e.entity && e.entity instanceof Task) {
+			let task = e.entity as Task;
+			let story = task.story;
+			if (!story) {
+				logger.warn(`No story found for task: ${task.id}`);
+				return;
+			}
+			await vscode.commands.executeCommand('vscode.openWith', vscode.Uri.parse(`octane:///octane/${story.type}/${story.subtype}/${story.id}`), OctaneEntityEditorProvider.viewType);
 		}
 	}));
 

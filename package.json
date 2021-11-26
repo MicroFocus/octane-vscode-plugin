@@ -226,6 +226,10 @@
 				{
 					"command": "visual-studio-code-plugin-for-alm-octane.dismissItem",
 					"when": "view in visual-studio-code-plugin-for-alm-octane.supportedViews"
+				},
+				{
+					"command": "visual-studio-code-plugin-for-alm-octane.parentDetails",
+					"when": "view in visual-studio-code-plugin-for-alm-octane.supportedViews && viewItem == 'task'"
 				}
 			]
 		},
@@ -239,6 +243,11 @@
 				"command": "visual-studio-code-plugin-for-alm-octane.dismissItem",
 				"title": "Dismiss",
 				"icon": "$(remove-close)"
+			},
+			{
+				"command": "visual-studio-code-plugin-for-alm-octane.parentDetails",
+				"title": "View parent details",
+				"icon": "$(open-preview)"
 			},
 			{
 				"command": "visual-studio-code-plugin-for-alm-octane.openActiveItem",
