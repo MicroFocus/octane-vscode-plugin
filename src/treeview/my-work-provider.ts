@@ -54,6 +54,9 @@ export abstract class MyWorkProvider implements vscode.TreeDataProvider<MyWorkIt
         if (entity?.type === 'task') {
             return vscode.Uri.file(`${__filename}/../../../media/treeIcons/T.svg`);
         }
+        if (entity?.type === 'bdd_spec') {
+            return vscode.Uri.file(`${__filename}/../../../media/treeIcons/BSP.svg`);
+        }
         return vscode.Uri.file('');
     }
 

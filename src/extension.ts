@@ -23,6 +23,7 @@ import { TextEncoder } from 'util';
 import { configure, getLogger, Appender } from 'log4js';
 import { OctaneEntityHolder } from './octane/model/octane-entity-holder';
 import { Comment } from './octane/model/comment';
+import { Task } from './octane/model/task';
 
 export async function activate(context: vscode.ExtensionContext) {
 
@@ -367,6 +368,18 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.details', async (e: MyWorkItem) => {
 		if (e.command && e.command.arguments) {
 			await vscode.commands.executeCommand(e.command.command, e.command.arguments[0], e.command.arguments[1]);
+		}
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.parentDetails', async (e: MyWorkItem) => {
+		if (e.entity && e.entity instanceof Task) {
+			let task = e.entity as Task;
+			let story = task.story;
+			if (!story) {
+				logger.warn(`No story found for task: ${task.id}`);
+				return;
+			}
+			await vscode.commands.executeCommand('vscode.openWith', vscode.Uri.parse(`octane:///octane/${story.type}/${story.subtype}/${story.id}`), OctaneEntityEditorProvider.viewType);
 		}
 	}));
 

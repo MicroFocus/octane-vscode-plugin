@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as Octane from '@microfocus/alm-octane-js-rest-sdk';
 import * as Query from '@microfocus/alm-octane-js-rest-sdk/lib/query';
 import { OctaneEntity } from '../model/octane-entity';
+import { Task } from '../model/task';
 import { Transition } from '../model/transition';
 import { Comment } from '../model/comment';
 import { AlmOctaneAuthenticationProvider, AlmOctaneAuthenticationSession, AlmOctaneAuthenticationType } from '../../auth/authentication-provider';
@@ -392,14 +393,14 @@ export class OctaneService {
 
     public async getMyTasks(): Promise<OctaneEntity[]> {
         const response = await this.octane.get(Octane.Octane.entityTypes.tasks)
-            .fields('id', 'name', 'author{id,name,full_name}', 'owner{id,name,full_name}', 'phase')
+            .fields('id', 'name', 'author{id,name,full_name}', 'owner{id,name,full_name}', 'phase', 'story')
             .query(
                 Query.field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
                     .build()
             )
             .orderBy('creation_time')
             .execute();
-        let entities = response.data.map((r: any) => new OctaneEntity(r));
+        let entities = response.data.map((r: any) => new Task(r));
         this.logger.log(entities);
         return entities;
     }

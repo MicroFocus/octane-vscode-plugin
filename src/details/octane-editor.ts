@@ -618,8 +618,13 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                             let val: any = getFieldValue(data, field.name);
                             let containerValue = '';
                             let tooltip = '';
-                            if (typeof (val) === 'string') {
-                                val = JSON.parse(val);
+                            if (typeof (val) === 'string' && val !== '') {
+                                try {
+                                    val = JSON.parse(val);
+                                } catch(e: any) {
+                                    getLogger('vs').error(`While evaluating JSON value: ${val} `, e);
+                                }
+                                 
                                 if (field.name === 'last_runs') {
                                     //label - Test Coverage
                                     tooltip = 'Test coverage \n ' + (val?.passed ?? 0) + ' Passed \n ' + (val?.failed ?? 0) + ' Failed \n ' + (val?.needsAttention ?? 0) + ' Require Attention \n ' + (val?.planned ?? 0) + ' Planned \n ' + (val?.testNoRun ?? 0) + ' Tests did not run \n';
@@ -690,6 +695,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
         }
         html += `</div>`;
     } catch (e: any) {
+        getLogger('vs').error("comments", e);
         vscode.window.showErrorMessage('Error generating fields for entity.');
     }
     return html;
