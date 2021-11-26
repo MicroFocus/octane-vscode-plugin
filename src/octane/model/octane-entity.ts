@@ -66,6 +66,18 @@ export class OctaneEntity extends BaseEntity {
             case 'run_suite':
                 this.label = 'SR';
                 break;
+
+            case '':
+            case undefined:
+                switch (this.type) {
+                    case 'task':
+                        this.label = 'T';
+                        break;
+                    case 'bdd_spec':
+                        this.label = 'BSP';
+                        break;
+                }
+                break;
         }
     }
 

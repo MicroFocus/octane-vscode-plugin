@@ -318,6 +318,9 @@ function getDataForSubtype(entity: OctaneEntity | undefined): [string, string] {
     if (entity?.type === 'task') {
         return ['T', '#1668c1'];
     }
+    if (entity?.type === 'bdd_spec') {
+        return [ 'BSP', '#118c4f'];
+    }
     if (entity?.subtype) {
         if (entity?.subtype === 'defect') { return ["D", "#b21646"]; }
         if (entity?.subtype === 'story') { return ["US", "#ffb000"]; }
