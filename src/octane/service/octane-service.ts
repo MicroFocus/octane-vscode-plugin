@@ -714,5 +714,6 @@ const entityTypeApiEndpoint: Map<string, string> = new Map([
     ['work_item', Octane.Octane.entityTypes.workItems],
     ['workspace_role', Octane.Octane.entityTypes.workspaceRoles],
     ['workspace_user', Octane.Octane.entityTypes.workspaceUsers],
-    ['quality_story', Octane.Octane.entityTypes.qualityStories]
+    ['quality_story', Octane.Octane.entityTypes.qualityStories],
+    ['bdd_spec', 'bdd_specs']
 ]);
