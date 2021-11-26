@@ -275,14 +275,35 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
             "Team"
         ];
 
+        let resetFilterValuesForStory = [
+            "Application_modules",
+            "Author",
+            "Blocked",
+            "Blocked_reason",
+            "Creation_time",
+            "Description",
+            "Feature",
+            "Item_origin",
+            "Last_modified",
+            "Owner",
+            "Release",
+            "Sprint",
+            "Story_points",
+            "Team",
+            "Test_Coverage",
+        ];
+
         var activeFields: string[] | undefined = [];
         if (data.subtype !== null && data.subtype !== undefined && data.subtype !== "") {
             activeFields = await getSavedFields(data.subtype);
             if (activeFields === undefined) {
                 if (data.subtype === 'defect') {
                     vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForDefect }, data.subtype);
-                    activeFields = await getSavedFields(data.subtype);
                 }
+                if (data.subtype === 'story') {
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForStory }, data.subtype);
+                }
+                activeFields = await getSavedFields(data.subtype);
             }
         } else {
             if (data.type !== null && data.type !== undefined) {
