@@ -497,20 +497,6 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
             }
         });
         mapFields = new Map([...mapFields].sort((a, b) => String(a[0]).localeCompare(b[0])));
-        html += `
-                    <br id="filterbr">
-                    <hr id="filterhr">
-                    <span id="filtertext">Select fields for this entity type</span>
-                    <div id="filterContainer">
-                        <div id="filterContainerLeft">
-                            <button id="allId" type="button">All</button>
-                            <button id="noneId" type="button">None</button>
-                            <button id="resetId" type="button">Reset</button>
-                        </div>
-                        <div id="filterContainerRight">
-                            
-                        
-            `;
         // ['ID', 'Name', 'Description'].forEach(f => {
         //     vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFilterSelection', JSON.parse(`{"filterName": "${f}", "message": true}`));
         // });
@@ -521,29 +507,9 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                 } else {
                     filteredFields = filteredFields.filter(f => f !== field.name);
                 }
-                if (filteredFields.includes(field.name)) {
-                    html += `           <div class="checkboxDiv">
-                                            <label>
-                                                <input checked type="checkbox" class="filterCheckbox" name='${field.label.replaceAll(" ", "_")}'>
-                                                <span class="filterCheckboxLabel">${field.label}</span>    
-                                            </label>
-                                        </div>`;
-                } else {
-                    html += `           <div class="checkboxDiv">
-                                            <label>
-                                                <input type="checkbox" class="filterCheckbox" name='${field.label.replaceAll(" ", "_")}'>
-                                                <span class="filterCheckboxLabel">${field.label}</span>
-                                            </label>
-                                        </div>`;
-                }
             }
         }
-        html += `       </div>
-                    </div>`;
         html += `
-                    <br>
-                    <hr>
-                    General
                     <div class="information-container">
             `;
         mainFields.forEach(async (key): Promise<any> => {
@@ -587,9 +553,6 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
         }
 
         html += `   </div>
-                    <br>
-                    <hr>
-                    Description
                     <div class="information-container">
                         <div class="description-container" id="container_Description">
                             <textarea id="description" class="description" type="text">${stripHtml(getFieldValue(data, 'description').toString()).result}</textarea>
@@ -598,8 +561,6 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                             document.getElementById("description").readOnly = !false;
                         </script>
                     </div>
-                    <br>
-                    <hr>
         `;
         if (!await isSelectedField("Description", activeFields)) {
             html += `
