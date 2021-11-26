@@ -742,7 +742,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
 
 function getFieldValue(data: any, fieldName: string): string | any[] {
     const field = data[fieldName];
-    if (!field) {
+    if (field === null || field === undefined) {
         return '';
     }
     if (field['data']) {
