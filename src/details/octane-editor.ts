@@ -372,9 +372,9 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
             // html += `
             //     <option value="none">${getFieldValue(data, 'phase')}</option>
             // `;
-            html += `
-                <option value="none"></option>
-            `;
+            // html += `
+            //     <option value="none"></option>
+            // `;
             transitions.forEach((target: any) => {
                 if (!target) { return; }
                 html += `
@@ -382,7 +382,15 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
             `;
             });
         }
-        html += `</select></div>
+        html += `</select>
+                <script type="text/javascript">
+                    $(document).ready(function() {
+                        $('#select_phase').multiselect({
+                            maxHeight: 400
+                        });
+                    });
+                </script>
+                </div>
                     <button title="Save" id="saveId" class="save" type="button">
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm2 16H5V5h11.17L19 7.83V19zm-7-7c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zM6 6h9v4H6z"/></svg>
                     </button>
@@ -411,7 +419,7 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
         });
         mapFields = new Map([...mapFields].sort((a, b) => String(a[0]).localeCompare(b[0])));
         html += `
-                <div style="margin: 0rem 0rem 0rem 0.5rem; width: 20rem;" id="container_filter_multiselect">
+                <div style="margin: 0rem 0rem 0rem 0.5rem;" id="container_filter_multiselect">
                     <select multiple="multiple" id="filter_multiselect">
                 `;
         for (const [key, field] of mapFields) {
