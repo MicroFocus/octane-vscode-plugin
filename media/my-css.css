@@ -128,7 +128,7 @@ textarea {
 .select-container-single {
     display: flex;
     flex-direction: column;
-    margin: 1.22rem 0.5rem 0 0.5rem;
+    margin: 2rem 0.5rem 0 0.5rem;
     flex: 1;
     min-width: 200px;
     display: none;
@@ -137,7 +137,7 @@ textarea {
 .select-container-multiple {
     display: flex;
     flex-direction: column;
-    margin: 1.22rem 0.5rem 0 0.5rem;
+    margin: 2rem 0.5rem 0 0.5rem;
     flex: 1;
     min-width: 200px;
     display: none;
@@ -315,4 +315,42 @@ hr {
 
 .multiselect-container {
     color: var(--vscode-button-background);
+    background-color: #cccccc;
+}
+
+.btn-group, .btn-group-vertical {
+    display: flex !important;
+}
+
+.custom-select {
+    background-color: var(--vscode-input-background) !important;
+    /* background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='white' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") !important; */
+    /* background-image: url("/media/data_image_svg+xml\,….svg") !important; */
+    border: 0.5px solid !important;
+    border-color: var(--vscode-dropdown-border) !important;
+    color: var(--vscode-input-foreground) !important;
+}
+
+.dropdown-item {
+    display: unset;
+}
+
+.dropdown-menu.show {
+    width: -webkit-fill-available;
+}
+
+.form-check {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+}
+
+.form-check-label {
+    margin-bottom: unset !important;
+    padding-left: 2rem !important;
+}
+
+.form-check-input {
+    margin-top: unset !important;
+    width: 2rem !important;
 }

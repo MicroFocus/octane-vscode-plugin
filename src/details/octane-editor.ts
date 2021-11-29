@@ -639,7 +639,6 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                         `;
                             html += `
                             </select>
-                            
                         </div>
                         `;
                         } else {
@@ -649,7 +648,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                                 <label name="${field.name}">${field.label}</label>
                                 <select id="${field.name}">
                             `;
-                                html += `<option value="none" selected disabled hidden>${getFieldValue(data, field.name)}</option>`;
+                                html += `<option value="none" selected="selected" disabled hidden>${getFieldValue(data, field.name)}</option>`;
                                 html += `
                                 </select>
                             </div>`;

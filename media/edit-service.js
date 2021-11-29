@@ -8,11 +8,13 @@
     $(document).ready(function() {
         $('select_phase').multiselect();
         $('.select-container-multiple select').multiselect({
+            maxHeight: 400,
             onDropdownShow: function(event) {
                 getDataForEntity(this);
             }
         });
         $('.select-container-single select').multiselect({
+            maxHeight: 400,
             onDropdownShow: function(event) {
                 getDataForEntity(this);
             }
