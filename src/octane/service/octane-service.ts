@@ -512,7 +512,7 @@ export class OctaneService {
     }
 
     public async updateEntity(type: string | undefined, subType: string | undefined, body: any) {
-        this.logger.log("update", body);
+        this.logger.debug("update", body);
         const apiEntityType = type || subType;
         if (!apiEntityType) {
             return;
@@ -526,6 +526,7 @@ export class OctaneService {
             .then((res: any) => {
                 vscode.window.showInformationMessage('Your item changes have been saved.');
             }, (error: any) => {
+                this.logger.error('While updating entity: ', error);
                 vscode.window.showErrorMessage((error.response.body.description) ?? 'We couldn’t save your changes');
             });
     }

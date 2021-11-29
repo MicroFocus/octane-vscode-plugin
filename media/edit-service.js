@@ -244,7 +244,7 @@
                             // console.log(fields);
                             fields
                                 .filter(f => (f.name !== 'author') && (f.name !== 'sprint'))
-                                .filter(f => (f.editable && !f.final))
+                                .filter(f => (f.editable && !f.final && f.access_level !== 'PRIVATE'))
                                 .forEach(field => {
                                     mapFields.set(fieldNameMap.get(field.name) ?? field.name, field);
                                 });
