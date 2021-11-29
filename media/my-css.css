@@ -353,4 +353,5 @@ hr {
 .form-check-input {
     margin-top: unset !important;
     width: 2rem !important;
+    height: 1rem !important;
 }
