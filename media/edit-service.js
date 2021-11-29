@@ -246,7 +246,7 @@
                             // console.log(fields);
                             fields
                                 .filter(f => (f.name !== 'author') && (f.name !== 'sprint'))
-                                .filter(f => (f.editable))
+                                .filter(f => (f.editable && !f.final && f.access_level !== 'PRIVATE'))
                                 .forEach(field => {
                                     mapFields.set(fieldNameMap.get(field.name) ?? field.name, field);
                                 });
@@ -299,6 +299,8 @@
                                         if (val && val !== 'none' && val !== '-') {
                                             if (field.field_type === 'integer') {
                                                 updatedData[fieldNameMap.get(field.name) ?? field.name] = parseFloat(val);
+                                            } else if (field.field_type === 'boolean') {
+                                                updatedData[fieldNameMap.get(field.name) ?? field.name] = val === 'true';
                                             } else {
                                                 updatedData[fieldNameMap.get(field.name) ?? field.name] = val;
                                             }
