@@ -655,7 +655,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                             </div>`;
                             } else {
                                 html += `
-                                <div class="input-field col s6 container" id="container_${field.label.replaceAll(" ", "_")}">
+                                <div style="padding: unset;" class="container" id="container_${field.label.replaceAll(" ", "_")}">
                                     <label class="active" for="${field.label}">${field.label}</label>
                                     <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
                                     <script>
@@ -694,7 +694,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
 
                             }
                             html += `
-                            <div class="input-field col s6 container" id="container_${field.label.replaceAll(" ", "_")}">
+                            <div style="padding: unset;" class="container" id="container_${field.label.replaceAll(" ", "_")}">
                                 <label class="active" for="${field.label}">${field.label}</label>
                                 <input 
                                     title="${tooltip}"
@@ -710,7 +710,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                         } else {
                             if (field.name === 'is_in_filter') {
                                 html += `
-                                    <div class="input-field col s6 container" id="container_${field.label.replaceAll(" ", "_")}">
+                                    <div style="padding: unset;" class="container" id="container_${field.label.replaceAll(" ", "_")}">
                                         <label class="active" for="${field.label}">${field.label}</label>
                                         <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" type="string" value='${getFieldValue(data, field.name) ? 'Yes' : 'No'}'>
                                         <script>
@@ -731,7 +731,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                                 </div>`;
                             } else {
                                 html += `
-                                <div class="input-field col s6 container" id="container_${field.label.replaceAll(" ", "_")}">
+                                <div style="padding: unset;" class="container" id="container_${field.label.replaceAll(" ", "_")}">
                                     <label class="active" for="${field.label}">${field.label}</label>
                                     <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" type="${field.field_type}" value='${getFieldValue(data, field.name)}'>
                                     <script>
