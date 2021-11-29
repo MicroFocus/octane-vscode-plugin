@@ -279,11 +279,14 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                 <!-- Include Twitter Bootstrap and jQuery: -->
                 <link rel="stylesheet" href="${bootstrapCss}" type="text/css"/>
                 <script type="text/javascript" src="${jqueryJs}"></script>
+                <script type="text/javascript" src="${webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, 'media', 'moment.min.js'))}"></script>
                 <script type="text/javascript" src="${bootstrapJs}"></script>
+                <script type="text/javascript" src="${webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, 'media', 'bootstrap-datetimepicker.min.js'))}"></script>
                 
                 <!-- Include the plugin's CSS and JS: -->
                 <script type="text/javascript" src="${bootstrapMultiselectJs}"></script>
                 <link rel="stylesheet" href="${bootstrapMultiselectCss}" type="text/css"/>
+                <link rel="stylesheet" href="${webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, 'media', 'bootstrap-datetimepicker.css'))}" type="text/css"/>
                 <link href="${styleVSCodeUri}" rel="stylesheet" />
                 <link href="${myStyle}" rel="stylesheet" />
 

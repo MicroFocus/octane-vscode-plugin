@@ -44,6 +44,7 @@
                 }
             }
         });
+        
     });
 
     document.getElementById("commentsId").addEventListener('click', e => {
