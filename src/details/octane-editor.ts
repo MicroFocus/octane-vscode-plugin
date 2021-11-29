@@ -411,8 +411,8 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
         });
         mapFields = new Map([...mapFields].sort((a, b) => String(a[0]).localeCompare(b[0])));
         html += `
-                <div>
-                    <select multiple="multiple" id="example-getting-started">
+                <div style="margin: 0rem 0rem 0rem 0.5rem; width: 20rem;" id="container_filter_multiselect">
+                    <select multiple="multiple" id="filter_multiselect">
                 `;
         for (const [key, field] of mapFields) {
 
@@ -423,7 +423,7 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
                     filteredFields = filteredFields.filter(f => f !== field.name);
                 }
                 if (filteredFields.includes(field.name)) {
-                    html += `<option data-label="${field.label}" selected value='${JSON.stringify(field)}'>${field.label}</option>`;
+                    html += `<option data-label="${field.label}" selected="selected" value='${JSON.stringify(field)}'>${field.label}</option>`;
                 } else {
                     html += `<option data-label="${field.label}" value='${JSON.stringify(field)}'>${field.label}</option>`;
                 }

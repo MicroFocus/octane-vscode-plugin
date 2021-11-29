@@ -19,6 +19,31 @@
                 getDataForEntity(this);
             }
         });
+        var filter = $('#filter_multiselect').multiselect({
+            maxHeight: 400,
+            enableFiltering: true,
+            includeResetOption: true,
+            includeResetDivider: true,
+            includeSelectAllOption: true,
+            onDropdownHide: function(event) {
+                // console.log("filterfilter",filter);
+                var select = document.getElementById("filter_multiselect");
+                // console.log("selectselect",select)
+                if (select && select.selectedOptions) {
+                    // console.log(select.selectedOptions);
+                    let options = [];
+                    for (let s of select.selectedOptions) {
+                        if (s !== null && s.label) {
+                            options.push(
+                                s.label.replaceAll(" ", "_")
+                            );
+                        }
+                    }
+                    // console.log("options", options);
+                    setFields(options);
+                }
+            }
+        });
     });
 
     document.getElementById("commentsId").addEventListener('click', e => {
