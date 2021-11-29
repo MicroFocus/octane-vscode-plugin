@@ -66,6 +66,12 @@ export class OctaneEntity extends BaseEntity {
             case 'run_suite':
                 this.label = 'SR';
                 break;
+            case 'requirement_document':
+                this.label = 'RD';
+                break;
+            case 'requirement_folder':
+                this.label = 'RF';
+                break;
 
             case '':
             case undefined:

@@ -20,6 +20,11 @@ export class OctaneService {
         'test_automated'
     ];
 
+    public static typeLabels : Map<string, string> = new Map([
+        ['story', 'user story'],
+        ['quality_story', 'quality story']
+    ]); 
+
     private octane?: any;
 
     private user?: string;

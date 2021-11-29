@@ -62,9 +62,12 @@
         postCommentForEntity();
     });
 
-    document.getElementById("addToMyWork").addEventListener('click', e => {
-        addToMyWork();
-    });
+    var addToMyWorkButton = document.getElementById("addToMyWork");
+    if (addToMyWorkButton) {
+            addToMyWorkButton.addEventListener('click', e => {
+            addToMyWork();
+        });
+    }
 
     document.getElementById("openInBrowser").addEventListener('click', e => {
         openInBrowser();
