@@ -278,6 +278,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
             <head>
                 <!-- Include Twitter Bootstrap and jQuery: -->
                 <link rel="stylesheet" href="${bootstrapCss}" type="text/css"/>
+                <link rel="stylesheet" href="${webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, 'media', 'font-awesome.css'))}" type="text/css"/>
                 <script type="text/javascript" src="${jqueryJs}"></script>
                 <script type="text/javascript" src="${webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, 'media', 'moment.min.js'))}"></script>
                 <script type="text/javascript" src="${bootstrapJs}"></script>
@@ -729,6 +730,17 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                                         </script>
                                     </div>
                                 `;
+                            } else if (field.field_type === 'date_time') {
+                                html += `
+                                <div style="padding: unset;" class="container" id="container_${field.label.replaceAll(" ", "_")}">
+                                    <label class="active" for="${field.label}">${field.label}</label>
+                                    <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" value='${getFieldValue(data, field.name)}' data-toggle="datetimepicker" class="datetimepicker-input" data-target="#${field.name}">
+                                    <script>
+                                        $('#${field.name}').datetimepicker({date: '${getFieldValue(data, field.name)}', format: 'll HH:mm:ss'});
+                                        document.getElementById("${field.name}").readOnly = !${field.editable};
+                                    </script>
+                                </div>
+                            `;
                             } else if (field.field_type === 'boolean') {
                                 html += `
                                 <div class="select-container-single" id="container_${field.label.replaceAll(" ", "_")}">
