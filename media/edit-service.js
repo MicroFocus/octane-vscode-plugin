@@ -276,6 +276,8 @@
                                             if (val && val !== 'none' && val !== '-') {
                                                 if (field.field_type === 'integer') {
                                                     updatedData[fieldNameMap.get(field.name) ?? field.name] = parseFloat(val);
+                                                } else if (field.field_type === 'boolean') {
+                                                    updatedData[fieldNameMap.get(field.name) ?? field.name] = val === 'true';
                                                 } else {
                                                     if (field.field_type_data?.multiple) {
                                                         data['data'].push({

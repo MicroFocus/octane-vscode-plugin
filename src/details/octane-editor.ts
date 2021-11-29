@@ -5,7 +5,7 @@ import { OctaneEntity } from '../octane/model/octane-entity';
 import { Transition } from '../octane/model/transition';
 import { stripHtml } from 'string-strip-html';
 import * as path from 'path';
-import { getLogger } from 'log4js';
+import { getLogger, Logger } from 'log4js';
 
 class OctaneEntityDocument implements vscode.CustomDocument {
 
@@ -324,7 +324,7 @@ async function generateSelectOptions(field: any, data: any | OctaneEntity | unde
     if (field && field.field_type_data && field.field_type_data.targets && data) {
         return await OctaneService.getInstance().getFullDataForEntity(field.field_type_data.targets[0].type, field, data);
     }
-    vscode.window.showErrorMessage('Error generating select options.');
+    getLogger('vs').warn('Error generating select options for field.', field);
     return;
 }
 
@@ -718,6 +718,17 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                                         </script>
                                     </div>
                                 `;
+                            } else if (field.field_type === 'boolean') {
+                                html += `
+                                <div class="select-container-single" id="container_${field.label.replaceAll(" ", "_")}">
+                                    <label name="${field.name}">${field.label}</label>
+                                    <select id="${field.name}">
+                                `;
+                                    html += `<option value="true" #{${getFieldValue(data, field.name) ? 'selected' : ''}}>Yes</option>`;
+                                    html += `<option value="false" #{${getFieldValue(data, field.name) ? '' : 'selected'}}>No</option>`;
+                                    html += `
+                                    </select>
+                                </div>`;
                             } else {
                                 html += `
                                 <div class="input-field col s6 container" id="container_${field.label.replaceAll(" ", "_")}">
