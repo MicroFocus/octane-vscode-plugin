@@ -201,31 +201,38 @@
 			"view/item/context": [
 				{
 					"command": "visual-studio-code-plugin-for-alm-octane.details",
-					"when": "view in visual-studio-code-plugin-for-alm-octane.supportedViews"
+					"when": "view in visual-studio-code-plugin-for-alm-octane.supportedViews",
+					"group": "octane@0"
 				},
 				{
 					"command": "visual-studio-code-plugin-for-alm-octane.startWork",
-					"when": "view in visual-studio-code-plugin-for-alm-octane.supportedViews && viewItem in visual-studio-code-plugin-for-alm-octane.supportsStartWork"
+					"when": "view in visual-studio-code-plugin-for-alm-octane.supportedViews && viewItem in visual-studio-code-plugin-for-alm-octane.supportsStartWork",
+					"group": "octane@3"
 				},
 				{
 					"command": "visual-studio-code-plugin-for-alm-octane.commitMessage",
-					"when": "view in visual-studio-code-plugin-for-alm-octane.supportedViews && viewItem in visual-studio-code-plugin-for-alm-octane.supportsStartWork"
+					"when": "view in visual-studio-code-plugin-for-alm-octane.supportedViews && viewItem in visual-studio-code-plugin-for-alm-octane.supportsStartWork",
+					"group": "octane@4"
 				},
 				{
 					"command": "visual-studio-code-plugin-for-alm-octane.myTests.download",
-					"when": "view in visual-studio-code-plugin-for-alm-octane.supportedViews && viewItem in visual-studio-code-plugin-for-alm-octane.supportsDownloadScript"
+					"when": "view in visual-studio-code-plugin-for-alm-octane.supportedViews && viewItem in visual-studio-code-plugin-for-alm-octane.supportsDownloadScript",
+					"group": "octane@5"
 				},
 				{
 					"command": "visual-studio-code-plugin-for-alm-octane.openInBrowser",
-					"when": "view in visual-studio-code-plugin-for-alm-octane.supportedViews"
+					"when": "view in visual-studio-code-plugin-for-alm-octane.supportedViews",
+					"group": "octane@2"
 				},
 				{
 					"command": "visual-studio-code-plugin-for-alm-octane.dismissItem",
-					"when": "view in visual-studio-code-plugin-for-alm-octane.supportedViews"
+					"when": "view in visual-studio-code-plugin-for-alm-octane.supportedViews",
+					"group": "octane@7"
 				},
 				{
 					"command": "visual-studio-code-plugin-for-alm-octane.parentDetails",
-					"when": "view in visual-studio-code-plugin-for-alm-octane.supportedViews && viewItem == 'task'"
+					"when": "view in visual-studio-code-plugin-for-alm-octane.supportedViews && viewItem == 'task'",
+					"group": "octane@1"
 				}
 			]
 		},
