@@ -513,7 +513,7 @@ export class OctaneService {
 
     public async updateEntity(type: string | undefined, subType: string | undefined, body: any) {
         this.logger.log("update", body);
-        const apiEntityType = subType || type;
+        const apiEntityType = type || subType;
         if (!apiEntityType) {
             return;
         }
