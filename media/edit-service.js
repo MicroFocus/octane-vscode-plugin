@@ -179,29 +179,6 @@
         });
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
-        var select = document.getElementById("filter_multiselect");
-        // var instances = M.FormSelect.init(select, {
-        //     dropdownOptions: {
-        //         onCloseEnd: function () {
-        //             if (select && select.selectedOptions) {
-        //                 console.log(select.selectedOptions);
-        //                 let options = [];
-        //                 for (let s of select.selectedOptions) {
-        //                     if (s !== null && s.label) {
-        //                         options.push(
-        //                             s.label.replaceAll(" ", "_")
-        //                         );
-        //                     }
-        //                 }
-        //                 console.log("options", options);
-        //                 setFields(options);
-        //             }
-        //         }
-        //     }
-        // });
-    });
-
     function setFields(fields) {
         vscode.postMessage({
             type: 'saveToMemento',
