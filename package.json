@@ -61,25 +61,21 @@
 				"properties": {
 					"visual-studio-code-plugin-for-alm-octane.server.url": {
 						"type": "string",
-						"description": "Server URL",
 						"format": "uri",
 						"scope": "window"
 					},
 					"visual-studio-code-plugin-for-alm-octane.server.space": {
 						"type": "string",
-						"description": "Space",
 						"format": "number",
 						"scope": "window"
 					},
 					"visual-studio-code-plugin-for-alm-octane.server.workspace": {
 						"type": "string",
-						"description": "Workspace",
 						"format": "number",
 						"scope": "window"
 					},
 					"visual-studio-code-plugin-for-alm-octane.user.userName": {
 						"type": "string",
-						"description": "Username",
 						"scope": "window"
 					}
 				}

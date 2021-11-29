@@ -346,6 +346,7 @@ function getDataForSubtype(entity: OctaneEntity | undefined): [string, string] {
         if (entity?.subtype === 'gherkin_test') { return ["GT", "#00a989"]; }
         if (entity?.subtype === 'test_suite') { return ["TS", "#271782"]; }
         if (entity?.subtype === 'requirement_document') { return ["RD", "#0b8eac"]; }
+        if (entity?.subtype === 'requirement_folder') { return ["RF", "#bbb"]; }
         if (entity?.subtype === 'run_suite') { return ["SR", "#5216ac"]; }
         if (entity?.subtype === 'run_manual') { return ["MR", "#29ceff"]; }
         if (entity?.subtype === 'epic') { return ["E", "#7425AD"]; }
@@ -754,7 +755,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
 
 function getFieldValue(data: any, fieldName: string): string | any[] {
     const field = data[fieldName];
-    if (!field) {
+    if (field === null || field === undefined) {
         return '';
     }
     if (field['data']) {
