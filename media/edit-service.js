@@ -24,6 +24,8 @@
             includeResetOption: true,
             includeResetDivider: true,
             includeSelectAllOption: true,
+            dropRight: true,
+            enableCaseInsensitiveFiltering: true,
             onDropdownHide: function(event) {
                 // console.log("filterfilter",filter);
                 var select = document.getElementById("filter_multiselect");
@@ -43,7 +45,10 @@
                 }
             },
             templates: {
-                button: '<button style="padding: unset;" id="filterBUttonId" data-toggle="dropdown"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M15 4v7H5.17l-.59.59-.58.58V4h11m1-2H3c-.55 0-1 .45-1 1v14l4-4h10c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1zm5 4h-2v9H6v2c0 .55.45 1 1 1h11l4 4V7c0-.55-.45-1-1-1z"/></svg></button>'
+                popupContainer: '<div class="multiselect-container dropdown-menu" style="min-width: 300px"></div>',
+                button: '<button style="padding: unset;" id="filterBUttonId" data-toggle="dropdown" class="dropleft">' +
+                    '<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#FFFFFF"><path d="M0 8.654h7.021v1H0zM0 4.577h16v1H0zM0 .501h16v1H0zM14.7 9.8l.6-.9-1-1-.9.4c-.2-.2-.6-.3-.9-.4l-.2-1h-1.5l-.2.9c-.3 0-.6.2-.9.3l-.9-.6-1 1 .4.9c-.2.2-.3.6-.4.9l-1 .2V12l1 .2c0 .3.2.6.3.9l-.6.9 1 1 .9-.4c.2.2.6.3.9.4l.2 1H12l.2-1c.3 0 .6-.2.9-.3l.898.6 1-1-.398-.9c.2-.2.3-.6.4-.9l1-.2v-1.4l-1-.2c0-.3-.2-.6-.3-.9zm-3.4 4.3c-1.5 0-2.6-1.1-2.6-2.6.1-1.5 1.2-2.6 2.7-2.6s2.6 1.3 2.5 2.6c0 1.5-1.1 2.6-2.6 2.6z"></path><path d="M14.7 9.8l.6-.9-1-1-.9.4c-.2-.2-.6-.3-.9-.4l-.2-1h-1.5l-.2.9c-.3 0-.6.2-.9.3l-.9-.6-1 1 .4.9c-.2.2-.3.6-.4.9l-1 .2V12l1 .2c0 .3.2.6.3.9l-.6.9 1 1 .9-.4c.2.2.6.3.9.4l.2 1H12l.2-1c.3 0 .6-.2.9-.3l.898.6 1-1-.398-.9c.2-.2.3-.6.4-.9l1-.2v-1.4l-1-.2c0-.3-.2-.6-.3-.9z" fill="none"></path></svg>' 
+                    + '</button>'
             }
         });
 

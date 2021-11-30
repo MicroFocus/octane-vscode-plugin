@@ -423,8 +423,8 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
         });
         mapFields = new Map([...mapFields].sort((a, b) => String(a[0]).localeCompare(b[0])));
         html += `
-                <div style="margin: 0rem 0rem 0rem 0.5rem;" id="container_filter_multiselect">
-                    <select multiple="multiple" id="filter_multiselect">
+                <div style="margin: 0rem 0rem 0rem 0.5rem;" id="container_filter_multiselect" class="dropleft">
+                    <select multiple="multiple" id="filter_multiselect" data-display="static">
                 `;
         for (const [key, field] of mapFields) {
 
