@@ -678,7 +678,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                             }
                         }
                     } else {
-                        if ((field.field_type === 'string' && field.type === 'field_metadata') && (field.name === 'last_runs' || field.name === 'progress' || field.name === 'commit_files')) {
+                        if ((field.field_type === 'string' && field.type === 'field_metadata') && (field.name === 'test_status' || field.name === 'last_runs' || field.name === 'progress' || field.name === 'commit_files')) {
                             let val: any = getFieldValue(data, field.name);
                             let containerValue = '';
                             let tooltip = '';
@@ -689,7 +689,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                                     getLogger('vs').error(`While evaluating JSON value: ${val} `, e);
                                 }
                                  
-                                if (field.name === 'last_runs') {
+                                if (field.name === 'last_runs' || field.name === 'test_status') {
                                     //label - Test Coverage
                                     tooltip = 'Test coverage \n ' + (val?.passed ?? 0) + ' Passed \n ' + (val?.failed ?? 0) + ' Failed \n ' + (val?.needsAttention ?? 0) + ' Require Attention \n ' + (val?.planned ?? 0) + ' Planned \n ' + (val?.testNoRun ?? 0) + ' Tests did not run \n';
                                     containerValue = (val?.passed ?? 0) + ' Passed, ' + (val?.failed ?? 0) + ' Failed, ' + (val?.needsAttention ?? 0) + ' Require Attention, ' + (val?.planned ?? 0) + ' Planned, ' + (val?.testNoRun ?? 0) + ' Tests did not run';
