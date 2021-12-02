@@ -185,7 +185,7 @@ hr {
 }
 
 .name-container {
-    margin: 2rem 0 0 0.5rem !important;
+    margin: 2.7rem 0 0 0.5rem !important;
 }
 
 .action-container {
@@ -269,6 +269,7 @@ label {
 .main-element {
     display: flex;
     flex-direction: column;
+    margin-bottom: 3rem;
 }
 
 #comments-element-id {
@@ -370,4 +371,12 @@ label {
 .custom-select {
     font-size: 13px !important;
     height: 2rem !important;
+}
+
+.dropdown-menu {
+    background-clip: unset;
+}
+
+.align-items-center {
+    justify-content: flex-end;
 }
