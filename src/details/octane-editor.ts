@@ -656,15 +656,23 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                         `;
                         } else {
                             if (field.editable) {
-                                html += `
-                            <div class="select-container-single" id="container_${field.label.replaceAll(" ", "_")}">
-                                <label name="${field.name}">${field.label}</label>
-                                <select id="${field.name}">
-                            `;
+                                if(field.name === 'author') {
+                                    html += `
+                                    <div class="select-container-single" id="container_${field.label.replaceAll(" ", "_")}">
+                                        <label name="${field.name}">${field.label}</label>
+                                        <select disabled id="${field.name}">
+                                    `;
+                                } else {
+                                    html += `
+                                    <div class="select-container-single" id="container_${field.label.replaceAll(" ", "_")}">
+                                        <label name="${field.name}">${field.label}</label>
+                                        <select id="${field.name}">
+                                    `;
+                                }
                                 html += `<option value="none" selected="selected" disabled hidden>${getFieldValue(data, field.name)}</option>`;
-                                html += `
-                                </select>
-                            </div>`;
+                                        html += `
+                                        </select>
+                                    </div>`;
                             } else {
                                 html += `
                                 <div style="padding: unset;" class="container" id="container_${field.label.replaceAll(" ", "_")}">
