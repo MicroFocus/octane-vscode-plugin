@@ -563,7 +563,25 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
                     </button>
                     <button title="Open in browser" id="openInBrowser" type="button">
-                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0z" fill="none"/><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95c-.32-1.25-.78-2.45-1.38-3.56 1.84.63 3.37 1.91 4.33 3.56zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2 0 .68.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56-1.84-.63-3.37-1.9-4.33-3.56zm2.95-8H5.08c.96-1.66 2.49-2.93 4.33-3.56C8.81 5.55 8.35 6.75 8.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2 0-.68.07-1.35.16-2h4.68c.09.65.16 1.32.16 2 0 .68-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95c-.96 1.65-2.49 2.93-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2 0-.68-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z"/></svg>
+                    <svg style="margin: 0rem 0rem 0rem 0.22rem;" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="16px" height="16px" viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve">  <image id="image0" width="16" height="16" x="0" y="0"
+                            href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAABGdBTUEAALGPC/xhBQAAACBjSFJN
+                        AAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAABPlBMVEU8r9wAAAA8r9w8r9w8
+                        r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8
+                        r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8
+                        r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8
+                        r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8
+                        r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8r9w8
+                        r9w8r9w8r9w8r9w8r9w8r9z///8oFSlUAAAAaHRSTlMAAAYnjNTyGo20029l0rUZHLZLP5lmPhsF
+                        g8nISGBJhSSzLe++4+bkLIRTiotUxoJeTQ5qUsXrXV9Fl896Y8TqXGsmbdrnKmn2/vQ1Sv0Y+fWl
+                        zqQr3cKyf5uPOstWWQkwZ6kfiG5wPP2isbsAAAABYktHRGm8a8S0AAAACXBIWXMAAAsTAAALEwEA
+                        mpwYAAAAB3RJTUUH5QwCEC0tnHeg8QAAAO1JREFUGNNFj3lTgnAYhN9FEFKyNDGTKASzIMy8kg7T
+                        srJLu8sOu7T8ff9PIDTMtH8+M7vzLBGBC/FCOCzwIQ7kBaI0FYnKcnQ6Js14BLPxxFwSioJkKhGf
+                        B6UXhIy6CE3DkpoRljnSszDM3Eo+v5oz15DVybJhr8OvwLFRsGgDKG6WyhUZqBaBGm3VXXV7Z1ff
+                        UxrSvltvUrN1cNg+YscnnQCo0E4ZO2PnF0Hlst1lPqiJcKr+aO+KXd/csrv7h0fTwJNOfcYDzy+v
+                        7p+Ylaa3xuD94xOdL1895ql/Y8j3Rz+K/BucGwPc0Pm/PwGN2CP+EoNwngAAACV0RVh0ZGF0ZTpj
+                        cmVhdGUAMjAyMS0xMi0wMlQxMzo0NTo0NSswMzowMD81oSsAAAAldEVYdGRhdGU6bW9kaWZ5ADIw
+                        MjEtMTItMDJUMTM6NDU6NDUrMDM6MDBOaBmXAAAAAElFTkSuQmCC" />
+                    </svg>
                     </button>
                     <button title="Comments" id="commentsId" type="button">
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M15 4v7H5.17l-.59.59-.58.58V4h11m1-2H3c-.55 0-1 .45-1 1v14l4-4h10c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1zm5 4h-2v9H6v2c0 .55.45 1 1 1h11l4 4V7c0-.55-.45-1-1-1z"/></svg>
