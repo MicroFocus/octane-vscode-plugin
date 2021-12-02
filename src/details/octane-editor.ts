@@ -253,13 +253,173 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
         const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(
             context.extensionUri, 'media', 'edit-service.js'));
 
+        let resetFilterValuesForDefect = [
+            "Application_modules",
+            "Blocked",
+            "Blocked_reason",
+            "Closed_on",
+            "Creation_time",
+            "Defect_type",
+            "Description",
+            "Detected_by",
+            "Detected_in_release",
+            "Environment",
+            "Feature",
+            "Last_modified",
+            "Owner",
+            "Priority",
+            "Release",
+            "Severity",
+            "Sprint",
+            "Story_points",
+            "Team"
+        ];
+
+        let resetFilterValuesForStory = [
+            "Application_modules",
+            "Author",
+            "Blocked",
+            "Blocked_reason",
+            "Creation_time",
+            "Description",
+            "Feature",
+            "Item_origin",
+            "Last_modified",
+            "Owner",
+            "Release",
+            "Sprint",
+            "Story_points",
+            "Team",
+            "Test_Coverage",
+        ];
+
+        let resetFilterValuesForQStory = [
+            "Application_modules",
+            "Author",
+            "Blocked",
+            "Blocked_reason",
+            "Creation_time",
+            "Description",
+            "Feature",
+            "Item_origin",
+            "Last_modified",
+            "Owner",
+            "Quality_story_type",
+            "Release",
+            "Sprint",
+            "Story_points",
+            "Team"
+        ];
+
+        let resetFilterValuesForFeature = [
+            "Application_modules",
+            "Blocked",
+            "Blocked_reason",
+            "Closed_on",
+            "Creation_time",
+            "Defect_type",
+            "Description",
+            "Detected_by",
+            "Detected_in_release",
+            "Environment",
+            "Feature",
+            "Last_modified",
+            "Owner",
+            "Priority",
+            "Release",
+            "Severity",
+            "Sprint",
+            "Story_points",
+            "Team"
+        ];
+
+        let resetFilterValuesForGT_MT = [
+            "Application_modules",
+            "Automation_status",
+            "Backlog_Coverage",
+            "Created",
+            "Description",
+            "Designer",
+            "Estimated_duration_(minutes)",
+            "Last_modified",
+            "Owner",
+            "Test_type",
+            "Testing_tool_type"
+        ];
+
+        let resetFilterValuesForRunSuite = [
+            "Content",
+            "Default_Environment",
+            "Description",
+            "Draft_run",
+            "Last_modified",
+            "Native_status",
+            "Release",
+            "Started",
+            "Suite_name"
+        ];
+
+        let resetFilterValuesForRD = [
+            "Author",
+            "Creation_time",
+            "Description",
+            "Release",
+            "Last_modified",
+            "Owner"
+        ];
+
+        let resetFilterValuesForTask = [
+            "Author",
+            "Story",
+            "Last_modified",
+            "Estimated_hours",
+            "Remaining_hours",
+            "Owner",
+            "Description",
+            "Creation_time",
+            "Invested_hours",
+            "Type"
+        ];
 
         var activeFields: string[] | undefined = [];
         if (data.subtype !== null && data.subtype !== undefined && data.subtype !== "") {
             activeFields = await getSavedFields(data.subtype);
+            if (activeFields === undefined) {
+                if (data.subtype === 'defect') {
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForDefect }, data.subtype);
+                }
+                if (data.subtype === 'story') {
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForStory }, data.subtype);
+                }
+                if (data.subtype === 'quality_story') {
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForQStory }, data.subtype);
+                }
+                if (data.subtype === 'feature') {
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForFeature }, data.subtype);
+                }
+                if (data.subtype === 'gherkin_test') {
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForGT_MT }, data.subtype);
+                }
+                if (data.subtype === 'test_manual') {
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForGT_MT }, data.subtype);
+                }
+                if (data.subtype === 'run_suite') {
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForRunSuite }, data.subtype);
+                }
+                if (data.subtype === 'requirement_document') {
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForRD }, data.subtype);
+                }
+                activeFields = await getSavedFields(data.subtype);
+            }
         } else {
             if (data.type !== null && data.type !== undefined) {
                 activeFields = await getSavedFields(data.type);
+                if (activeFields === undefined) {
+                    if (data.type === 'task') {
+                        vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForTask }, data.type);
+                    }
+                    activeFields = await getSavedFields(data.type);
+                }
             }
         }
 
@@ -319,7 +479,7 @@ function getDataForSubtype(entity: OctaneEntity | undefined): [string, string] {
         return ['T', '#1668c1'];
     }
     if (entity?.type === 'bdd_spec') {
-        return [ 'BSP', '#118c4f'];
+        return ['BSP', '#118c4f'];
     }
     if (entity?.subtype) {
         if (entity?.subtype === 'defect') { return ["D", "#b21646"]; }
@@ -501,20 +661,6 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
             }
         });
         mapFields = new Map([...mapFields].sort((a, b) => String(a[0]).localeCompare(b[0])));
-        html += `
-                    <br id="filterbr">
-                    <hr id="filterhr">
-                    <span id="filtertext">Select fields for this entity type</span>
-                    <div id="filterContainer">
-                        <div id="filterContainerLeft">
-                            <button id="allId" type="button">All</button>
-                            <button id="noneId" type="button">None</button>
-                            <button id="resetId" type="button">Reset</button>
-                        </div>
-                        <div id="filterContainerRight">
-                            
-                        
-            `;
         // ['ID', 'Name', 'Description'].forEach(f => {
         //     vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFilterSelection', JSON.parse(`{"filterName": "${f}", "message": true}`));
         // });
@@ -525,29 +671,9 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                 } else {
                     filteredFields = filteredFields.filter(f => f !== field.name);
                 }
-                if (filteredFields.includes(field.name)) {
-                    html += `           <div class="checkboxDiv">
-                                            <label>
-                                                <input checked type="checkbox" class="filterCheckbox" name='${field.label.replaceAll(" ", "_")}'>
-                                                <span class="filterCheckboxLabel">${field.label}</span>    
-                                            </label>
-                                        </div>`;
-                } else {
-                    html += `           <div class="checkboxDiv">
-                                            <label>
-                                                <input type="checkbox" class="filterCheckbox" name='${field.label.replaceAll(" ", "_")}'>
-                                                <span class="filterCheckboxLabel">${field.label}</span>
-                                            </label>
-                                        </div>`;
-                }
             }
         }
-        html += `       </div>
-                    </div>`;
         html += `
-                    <br>
-                    <hr>
-                    General
                     <div class="information-container">
             `;
         mainFields.forEach(async (key): Promise<any> => {
@@ -591,9 +717,6 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
         }
 
         html += `   </div>
-                    <br>
-                    <hr>
-                    Description
                     <div class="information-container">
                         <div class="description-container" id="container_Description">
                             <textarea id="description" class="description" type="text">${stripHtml(getFieldValue(data, 'description').toString()).result}</textarea>
@@ -602,8 +725,6 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                             document.getElementById("description").readOnly = !false;
                         </script>
                     </div>
-                    <br>
-                    <hr>
         `;
         if (!await isSelectedField("Description", activeFields)) {
             html += `
@@ -661,10 +782,10 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                             if (typeof (val) === 'string' && val !== '') {
                                 try {
                                     val = JSON.parse(val);
-                                } catch(e: any) {
+                                } catch (e: any) {
                                     getLogger('vs').error(`While evaluating JSON value: ${val} `, e);
                                 }
-                                 
+
                                 if (field.name === 'last_runs') {
                                     //label - Test Coverage
                                     tooltip = 'Test coverage \n ' + (val?.passed ?? 0) + ' Passed \n ' + (val?.failed ?? 0) + ' Failed \n ' + (val?.needsAttention ?? 0) + ' Require Attention \n ' + (val?.planned ?? 0) + ' Planned \n ' + (val?.testNoRun ?? 0) + ' Tests did not run \n';
