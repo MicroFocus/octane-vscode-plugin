@@ -5,7 +5,10 @@
     const filterOpened = false;
     const selectDataPresent = [];
 
-    $(document).ready(function() {
+    $(document).ready(initialize());
+
+    function initialize() {
+        console.log('initialize called...');
         $('.select-container-multiple select').multiselect({
             maxHeight: 400,
             onDropdownShow: function(event) {
@@ -54,16 +57,17 @@
                     + '</button>'
             }
         });
+        initDateTimeFields();
+       
+    }
 
-        // $('.datetimepicker-input').each(function() {
-        //     console.log(this.value);
-        //     this.datetimepicker({
-        //         date: this.value, format: 'll HH:mm:ss'
-        //     });
-        // });
-        // // let value = $('#creation_time')[0].value;
-        // let ct = $('#creation_time').datetimepicker({date: value, format: 'll HH:mm:ss'});
-    });
+    function initDateTimeFields() {
+        $('.datetimepicker-input').each(function() {
+            $(this).datetimepicker({
+                date: this.value, format: 'll HH:mm:ss'
+            });
+        });
+    }
 
     document.getElementById("commentsId").addEventListener('click', e => {
         getComments();
@@ -215,16 +219,30 @@
     }
 
     function refreshPanel() {
+        
+        $('#mainform')[0].reset();
+        $('.datetimepicker-input').each(function() {
+            $(this).datetimepicker('destroy');
+        });
+        initDateTimeFields();
+        $('.select-container-multiple select').multiselect('refresh');
+        $('.select-container-single select').multiselect('refresh');
         vscode.postMessage({
             type: 'refresh',
             from: 'edit-service',
             data: {}
         });
+        
     }
 
     window.addEventListener('message', e => {
         let data = e.data;
         switch (data.type) {
+
+            case 'init':
+                initialize();
+                break;
+
             case 'post':
                 {
                     try {

@@ -12,6 +12,12 @@ class OctaneEntityDocument implements vscode.CustomDocument {
 
     private logger = getLogger('vs');
 
+    private _onDidChange = new vscode.EventEmitter<vscode.Uri>();
+
+    get onDidChange(): vscode.Event<vscode.Uri> {
+		return this._onDidChange.event;
+	}
+
     static async create(
         uri: vscode.Uri
     ): Promise<OctaneEntityDocument> {
@@ -47,8 +53,13 @@ class OctaneEntityDocument implements vscode.CustomDocument {
     }
 
     dispose(): void {
+        this._onDidChange.dispose();
     }
 
+    async updated(): Promise<void> {
+        this.entity = await OctaneService.getInstance().getDataFromOctaneForTypeAndId(this.entity.type, this.entity.subType, this.entity.id);
+        this._onDidChange.fire(this.uri);
+    }
 }
 
 class WebviewCollection {
@@ -111,13 +122,13 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
     constructor(
         private readonly context: vscode.ExtensionContext
     ) {
-        this.onDidChangeCustomDocument = new vscode.EventEmitter<vscode.CustomDocumentEditEvent<OctaneEntityDocument>>().event;
+        // this.onDidChangeCustomDocument = new vscode.EventEmitter<vscode.CustomDocumentEditEvent<OctaneEntityDocument>>().event;
         context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.details.closeAll', () => {
             this.webviewPanels.closeAll();
         }));
     }
 
-    onDidChangeCustomDocument: vscode.Event<vscode.CustomDocumentEditEvent<OctaneEntityDocument>> | vscode.Event<vscode.CustomDocumentContentChangeEvent<OctaneEntityDocument>>;
+    // onDidChangeCustomDocument: vscode.Event<vscode.CustomDocumentEditEvent<OctaneEntityDocument>> | vscode.Event<vscode.CustomDocumentContentChangeEvent<OctaneEntityDocument>>;
 
     static emitter = new vscode.EventEmitter<string>();
     static onDidFilterChange: vscode.Event<string> = OctaneEntityEditorProvider.emitter.event;
@@ -159,8 +170,13 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                     OctaneService.getInstance().updateEntity(document.entity.type, document.entity.subtype, m.data);
                 }
                 if (m.type === 'refresh') {
-                    document.entity = await OctaneService.getInstance().getDataFromOctaneForTypeAndId(document.entity.type, document.entity.subtype, document.entity.id);
+                    // document.entity = await OctaneService.getInstance().getDataFromOctaneForTypeAndId(document.entity.type, document.entity.subtype, document.entity.id);
+                    await document.updated();
                     webviewPanel.webview.html = await this.getHtmlForWebview(webviewPanel.webview, this.context, document.entity, document.fields);
+                    webviewPanel.webview.postMessage({
+                        type: 'init',
+                        from: 'webview'
+                    });
                 }
                 if (m.type === 'post-comment') {
                     let comment: Comment = new Comment(m.data);
@@ -448,9 +464,9 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                 <link rel="stylesheet" href="${webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, 'media', 'bootstrap-datetimepicker.css'))}" type="text/css"/>
                 <link href="${styleVSCodeUri}" rel="stylesheet" />
                 <link href="${myStyle}" rel="stylesheet" />
-
             </head>
             <body>
+                <form id="mainform">
                 <div class="top-container">
                     <div class="icon-container" style="background-color: ${getDataForSubtype(data)[1]}">
                         <span class="label">${getDataForSubtype(data)[0]}</span>
@@ -476,6 +492,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                 </div>
                 
                 <script src="${scriptUri}"></script>
+                </form>
             </body>
     
         `;
@@ -880,11 +897,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                                 html += `
                                 <div style="padding: unset;" class="container" id="container_${field.label.replaceAll(" ", "_")}">
                                     <label class="active" for="${field.label}">${field.label}</label>
-                                    <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" value='${getFieldValue(data, field.name)}' data-toggle="datetimepicker" class="datetimepicker-input" data-target="#${field.name}">
-                                    <script>
-                                        $('#${field.name}').datetimepicker({date: '${getFieldValue(data, field.name)}', format: 'll HH:mm:ss'});
-                                        document.getElementById("${field.name}").readOnly = !${field.editable};
-                                    </script>
+                                    <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" value='${getFieldValue(data, field.name)}' data-toggle="datetimepicker" class="datetimepicker-input" data-target="#${field.name}" disabled="!${field.editable}">
                                 </div>
                             `;
                             } else if (field.field_type === 'boolean') {
@@ -893,8 +906,8 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                                     <label name="${field.name}">${field.label}</label>
                                     <select id="${field.name}">
                                 `;
-                                    html += `<option value="true" #{${getFieldValue(data, field.name) ? 'selected' : ''}}>Yes</option>`;
-                                    html += `<option value="false" #{${getFieldValue(data, field.name) ? '' : 'selected'}}>No</option>`;
+                                    html += `<option value="true" ${getFieldValue(data, field.name) ? 'selected' : ''}>Yes</option>`;
+                                    html += `<option value="false" ${getFieldValue(data, field.name) ? '' : 'selected'}>No</option>`;
                                     html += `
                                     </select>
                                 </div>`;
