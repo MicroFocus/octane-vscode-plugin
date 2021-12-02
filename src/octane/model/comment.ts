@@ -34,6 +34,10 @@ export class Comment extends OctaneEntity {
             this.ownerEntity = new OctaneEntity(i.owner_bdd_spec);
             this.ownerEntity.type = this.ownerEntity.type;
         }
+        if (i?.owner_task) {
+            this.ownerEntity = new OctaneEntity(i.owner_task);
+            this.ownerEntity.type = this.ownerEntity.type;
+        }
     }
 
     getStrippedText(): string {

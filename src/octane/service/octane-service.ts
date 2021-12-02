@@ -20,10 +20,10 @@ export class OctaneService {
         'test_automated'
     ];
 
-    public static typeLabels : Map<string, string> = new Map([
+    public static typeLabels: Map<string, string> = new Map([
         ['story', 'user story'],
         ['quality_story', 'quality story']
-    ]); 
+    ]);
 
     private octane?: any;
 
@@ -392,7 +392,7 @@ export class OctaneService {
 
     public async getMyMentions(): Promise<OctaneEntity[]> {
         const response = await this.octane.get(Octane.Octane.entityTypes.comments)
-            .fields('text', 'owner_work_item', 'owner_requirement', 'owner_test', 'owner_run', 'owner_bdd_spec', 'author{id,name,full_name}')
+            .fields('text', 'owner_work_item', 'owner_requirement', 'owner_test', 'owner_run', 'owner_bdd_spec', 'owner_task', 'author{id,name,full_name}')
             .query(
                 Query.field('mention_user').equal(Query.field('id').equal(this.loggedInUserId))
                     .build()
@@ -418,32 +418,45 @@ export class OctaneService {
         return entities;
     }
 
-    public async getCommentsForEntity(entityId: number): Promise<Comment[] | undefined> {
-        if (!entityId) {
+    public async getCommentsForEntity(entity: OctaneEntity): Promise<Comment[] | undefined> {
+        if (!entity || !entity.id) {
             return;
         }
-        const response = await this.octane.get(Octane.Octane.entityTypes.comments)
-            .fields('id', 'author', 'owner_work_item', 'creation_time', 'text')
-            .query(
-                Query.field('owner_work_item').equal(Query.field('id').equal(entityId))
-                    .build()
-            )
-            .execute();
-        let entities = response.data.map((r: any) => new Comment(r));
-        return entities;
+        try {
+            const response = await this.octane.get(Octane.Octane.entityTypes.comments)
+                .fields('id', 'author', 'owner_work_item', 'owner_requirement', 'owner_test', 'owner_run', 'owner_bdd_spec', 'owner_task', 'creation_time', 'text')
+                .query(
+                    Query.field(`owner_${entity.type}`).equal(Query.field('id').equal(entity.id))
+                        .build()
+                )
+                .execute();
+            let entities = response.data.map((r: any) => new Comment(r));
+            return entities;
+        } catch (e) {
+            this.logger.error('While retreiving comment: ', e);
+        }
     }
 
-    public postCommentForEntity(body: Comment | undefined) {
-        if (!body) {
+    public postCommentForEntity(comment: Comment | undefined) {
+        if (!comment) {
             return;
         }
-        const endPoint = entityTypeApiEndpoint.get('comment');
-        this.octane.create(endPoint, body).execute()
-            .then((res: any) => {
-                vscode.window.showInformationMessage('Your comment have been saved.');
-            }, (error: any) => {
-                vscode.window.showErrorMessage((error.response.body.description) ?? 'We couldn’t save your comment.');
-            });
+        if (comment.ownerEntity && comment.ownerEntity.type) {
+            let body: any = {};
+            body[`owner_${comment.ownerEntity?.type}`] = {
+                id: comment.ownerEntity?.id,
+                type: comment.ownerEntity?.subtype ?? comment.ownerEntity?.type
+            };
+            body['text'] = comment.text;
+            const endPoint = entityTypeApiEndpoint.get('comment');
+            this.octane.create(endPoint, body).execute()
+                .then((res: any) => {
+                    vscode.window.showInformationMessage('Your comment have been saved.');
+                }, (error: any) => {
+                    this.logger.error('While saving comment: ', error);
+                    vscode.window.showErrorMessage((error.response.body.description) ?? 'We couldn’t save your comment.');
+                });
+        }
     }
 
     private async getRemoteFieldsForType(type: string) {

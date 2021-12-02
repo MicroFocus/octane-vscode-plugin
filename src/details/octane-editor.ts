@@ -6,6 +6,7 @@ import { Transition } from '../octane/model/transition';
 import { stripHtml } from 'string-strip-html';
 import * as path from 'path';
 import { getLogger, Logger } from 'log4js';
+import { Comment } from '../octane/model/comment';
 
 class OctaneEntityDocument implements vscode.CustomDocument {
 
@@ -162,14 +163,9 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                     webviewPanel.webview.html = await this.getHtmlForWebview(webviewPanel.webview, this.context, document.entity, document.fields);
                 }
                 if (m.type === 'post-comment') {
-                    let commentData = m.data;
-                    commentData.owner_work_item = {
-                        'id': document.entity.id ?? '',
-                        'type': document.entity.type ?? '',
-                        'subtype': document.entity.subtype ?? '',
-                        'name': document.entity.name ?? ''
-                    };
-                    OctaneService.getInstance().postCommentForEntity(commentData);
+                    let comment: Comment = new Comment(m.data);
+                    comment.ownerEntity = document.entity;
+                    OctaneService.getInstance().postCommentForEntity(comment);
                     // this.fullData = await OctaneService.getInstance().getDataFromOctaneForTypeAndId(data.type, data.subtype, data.id);
                     webviewPanel.webview.html = await self.getHtmlForWebview(webviewPanel.webview, self.context, document.entity, document.fields);
                 }
@@ -344,6 +340,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
             "Team"
         ];
 
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         let resetFilterValuesForGT_MT = [
             "Application_modules",
             "Automation_status",
@@ -634,7 +631,7 @@ async function generateCommentElement(data: any | OctaneEntity | undefined, fiel
                         </div>
                     </div>
                     <br>`;
-        let comments = await OctaneService.getInstance().getCommentsForEntity(data.id);
+        let comments = await OctaneService.getInstance().getCommentsForEntity(data);
         getLogger('vs').info("comments", comments);
         if (comments) {
             for (const comment of comments) {

@@ -175,9 +175,7 @@
             type: 'post-comment',
             from: 'edit-service',
             data: {
-                'text': text,
-                'owner_work_item': {
-                }
+                'text': text
             }
         });
     }
