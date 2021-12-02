@@ -647,6 +647,7 @@ async function generateCommentElement(data: any | OctaneEntity | undefined, fiel
                     Comments
                     <div class="information-container">
                         <div class="comments-container">
+
                             <input id="comments-text" type="text">
                             <button id="comments" type="button">Comment</button>
                         </div>
@@ -658,7 +659,7 @@ async function generateCommentElement(data: any | OctaneEntity | undefined, fiel
             for (const comment of comments) {
                 html += `
                     <div class="information-container">
-                        ${comment.author?.fullName ?? ''}: <input type="text" value="${stripHtml(comment.text).result}">
+                        ${comment.author?.fullName ?? ''}: <textarea type="text" value="${stripHtml(comment.text).result}">${stripHtml(comment.text).result}</textarea>
                     </div>
                 `;
             }
