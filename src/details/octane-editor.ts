@@ -472,7 +472,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                         <span class="label">${getDataForSubtype(data)[0]}</span>
                     </div>
                     <div class="name-container">
-                        <h6>${data?.id ?? ''} | ${data?.name ?? ''}</h6>
+                        <h6 style="margin: 0rem 0.5rem 0rem 0rem;">${data?.id ?? ''}</h6> <input style="background: transparent; font-size: 1rem;" id="name" type="text" value="${data?.name ?? ''}">
                     </div>
                     <div class="action-container">
                         ${await generatePhaseSelectElement(data, fields, activeFields)}
