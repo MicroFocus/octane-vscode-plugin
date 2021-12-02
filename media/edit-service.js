@@ -5,35 +5,64 @@
     const filterOpened = false;
     const selectDataPresent = [];
 
-    document.addEventListener('DOMContentLoaded', function () {
-        var elems = document.querySelectorAll('select');
-        var instances = M.FormSelect.init(elems, {});
-        let referenceContainers = document.getElementsByClassName("select-container-single");
-        for (let container of referenceContainers) {
-            let select = container.querySelector("select");
-            if (select) {
-                var instances = M.FormSelect.init(select, {
-                    dropdownOptions: {
-                        onOpenStart: function () {
-                            getDataForEntity(container);
+    $(document).ready(function() {
+        $('.select-container-multiple select').multiselect({
+            maxHeight: 400,
+            onDropdownShow: function(event) {
+                getDataForEntity(this);
+            }
+        });
+        $('.select-container-single select').multiselect({
+            maxHeight: 400,
+            onDropdownShow: function(event) {
+                getDataForEntity(this);
+            }
+        });
+        var filter = $('#filter_multiselect').multiselect({
+            maxHeight: 400,
+            enableFiltering: true,
+            includeResetOption: true,
+            resetText: "None",
+            enableResetButton: true,
+            resetButtonText: 'Reset',
+            includeResetDivider: true,
+            includeSelectAllOption: true,
+            dropRight: true,
+            enableCaseInsensitiveFiltering: true,
+            onDropdownHide: function(event) {
+                // console.log("filterfilter",filter);
+                var select = document.getElementById("filter_multiselect");
+                // console.log("selectselect",select)
+                if (select && select.selectedOptions) {
+                    // console.log(select.selectedOptions);
+                    let options = [];
+                    for (let s of select.selectedOptions) {
+                        if (s !== null && s.label) {
+                            options.push(
+                                s.label.replaceAll(" ", "_")
+                            );
                         }
                     }
-                });
+                    // console.log("options", options);
+                    setFields(options);
+                }
+            },
+            templates: {
+                popupContainer: '<div class="multiselect-container dropdown-menu" style="min-width: 300px"></div>',
+                button: '<button style="padding: unset; margin: 1rem 0rem 0rem 0rem;" id="filterBUttonId" data-toggle="dropdown" class="dropleft">' +
+                    '<svg style="margin: 0.6rem 0rem 0rem 0.4rem;" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#FFFFFF"><path d="M0 8.654h7.021v1H0zM0 4.577h16v1H0zM0 .501h16v1H0zM14.7 9.8l.6-.9-1-1-.9.4c-.2-.2-.6-.3-.9-.4l-.2-1h-1.5l-.2.9c-.3 0-.6.2-.9.3l-.9-.6-1 1 .4.9c-.2.2-.3.6-.4.9l-1 .2V12l1 .2c0 .3.2.6.3.9l-.6.9 1 1 .9-.4c.2.2.6.3.9.4l.2 1H12l.2-1c.3 0 .6-.2.9-.3l.898.6 1-1-.398-.9c.2-.2.3-.6.4-.9l1-.2v-1.4l-1-.2c0-.3-.2-.6-.3-.9zm-3.4 4.3c-1.5 0-2.6-1.1-2.6-2.6.1-1.5 1.2-2.6 2.7-2.6s2.6 1.3 2.5 2.6c0 1.5-1.1 2.6-2.6 2.6z"></path><path d="M14.7 9.8l.6-.9-1-1-.9.4c-.2-.2-.6-.3-.9-.4l-.2-1h-1.5l-.2.9c-.3 0-.6.2-.9.3l-.9-.6-1 1 .4.9c-.2.2-.3.6-.4.9l-1 .2V12l1 .2c0 .3.2.6.3.9l-.6.9 1 1 .9-.4c.2.2.6.3.9.4l.2 1H12l.2-1c.3 0 .6-.2.9-.3l.898.6 1-1-.398-.9c.2-.2.3-.6.4-.9l1-.2v-1.4l-1-.2c0-.3-.2-.6-.3-.9z" fill="none"></path></svg>' 
+                    + '</button>'
             }
-        }
-        let referenceMultiSelectContainers = document.getElementsByClassName("select-container-multiple");
-        for (let container of referenceMultiSelectContainers) {
-            let select = container.querySelector("select");
-            if (select) {
-                var instances = M.FormSelect.init(select, {
-                    dropdownOptions: {
-                        onOpenStart: function () {
-                            getDataForEntity(container);
-                        }
-                    }
-                });
-            }
-        }
+        });
+
+        // $('.datetimepicker-input').each(function() {
+        //     console.log(this.value);
+        //     this.datetimepicker({
+        //         date: this.value, format: 'll HH:mm:ss'
+        //     });
+        // });
+        // // let value = $('#creation_time')[0].value;
+        // let ct = $('#creation_time').datetimepicker({date: value, format: 'll HH:mm:ss'});
     });
 
     document.getElementById("commentsId").addEventListener('click', e => {
@@ -64,15 +93,8 @@
     });
 
     function getDataForEntity(entity) {
-        let fieldName;
-        let label;
-        if (entity) {
-            label = entity.querySelectorAll("label")[0];
-            if (label) {
-                fieldName = label.getAttribute("name");
-            }
-        }
-        // console.log(fieldName);
+        let fieldName = entity.$select.find('#select').context.id;
+        console.log(fieldName);
         if (fieldName && !selectDataPresent.includes(fieldName)) {
             vscode.postMessage({
                 type: 'get-data-for-select',
@@ -86,23 +108,22 @@
 
     function addOptionsForSelect(options, field, selectedName) {
         let fieldName = field[0].name;
-        let select = document.getElementById(fieldName);
+        let select = $('#' + fieldName);
         if (options && options.data) {
             for (let option of options.data) {
                 if (option.type === 'workspace_user') {
                     if (option.full_name !== selectedName) {
-                        select.add(new Option(option.full_name, JSON.stringify(option)));
+                        select.append(`<option data-label="${option.full_name}" value='${JSON.stringify(option)}'>${option.full_name}</option>`);
                     }
                 } else {
                     if (option.name !== selectedName) {
-                        select.add(new Option(option.name, JSON.stringify(option)));
+                        select.append(`<option data-label="${option.name}" value='${JSON.stringify(option)}'>${option.name}</option>`);
                     }
                 }
             }
         }
         selectDataPresent.push(fieldName);
-        let instance = M.FormSelect.init(select, {});
-        instance.dropdown.open();
+        select.multiselect('rebuild');
     }
 
     function addOptionsForMultipleSelect(options, field, selected) {
@@ -176,29 +197,6 @@
             data: {}
         });
     }
-
-    document.addEventListener('DOMContentLoaded', function () {
-        var select = document.getElementById("filter_multiselect");
-        var instances = M.FormSelect.init(select, {
-            dropdownOptions: {
-                onCloseEnd: function () {
-                    if (select && select.selectedOptions) {
-                        console.log(select.selectedOptions);
-                        let options = [];
-                        for (let s of select.selectedOptions) {
-                            if (s !== null && s.label) {
-                                options.push(
-                                    s.label.replaceAll(" ", "_")
-                                );
-                            }
-                        }
-                        console.log("options", options);
-                        setFields(options);
-                    }
-                }
-            }
-        });
-    });
 
     function setFields(fields) {
         vscode.postMessage({
@@ -274,6 +272,8 @@
                                             if (val && val !== 'none' && val !== '-') {
                                                 if (field.field_type === 'integer') {
                                                     updatedData[fieldNameMap.get(field.name) ?? field.name] = parseFloat(val);
+                                                } else if (field.field_type === 'boolean') {
+                                                    updatedData[fieldNameMap.get(field.name) ?? field.name] = val === 'true';
                                                 } else {
                                                     if (field.field_type_data?.multiple) {
                                                         data['data'].push({

@@ -466,7 +466,7 @@ export class OctaneService {
     }
 
     public async getFieldsForType(type: string) {
-        if (!this.octaneMap.get(type)) {
+        if (!this.octaneMap.get(type) || !this.octaneMap.get(type)?.length) {
             await this.getRemoteFieldsForType(type);
         }
         // logger.log('Application modules: ', this.octaneMap.get(type)?.filter(f => f.name === 'application_modules'));

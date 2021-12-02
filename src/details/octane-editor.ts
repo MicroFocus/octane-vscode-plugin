@@ -5,7 +5,7 @@ import { OctaneEntity } from '../octane/model/octane-entity';
 import { Transition } from '../octane/model/transition';
 import { stripHtml } from 'string-strip-html';
 import * as path from 'path';
-import { getLogger } from 'log4js';
+import { getLogger, Logger } from 'log4js';
 
 class OctaneEntityDocument implements vscode.CustomDocument {
 
@@ -253,6 +253,17 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
         const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(
             context.extensionUri, 'media', 'edit-service.js'));
 
+        const jqueryJs = webview.asWebviewUri(vscode.Uri.joinPath(
+            context.extensionUri, 'media', 'jquery.min.js'));
+        const bootstrapCss = webview.asWebviewUri(vscode.Uri.joinPath(
+            context.extensionUri, 'media', 'bootstrap.min.css'));
+        const bootstrapJs = webview.asWebviewUri(vscode.Uri.joinPath(
+            context.extensionUri, 'media', 'bootstrap.bundle.min.js'));
+        const bootstrapMultiselectCss = webview.asWebviewUri(vscode.Uri.joinPath(
+            context.extensionUri, 'media', 'bootstrap-multiselect.min.css'));
+        const bootstrapMultiselectJs = webview.asWebviewUri(vscode.Uri.joinPath(
+            context.extensionUri, 'media', 'bootstrap-multiselect.min.js'));
+            
         let resetFilterValuesForDefect = [
             "Application_modules",
             "Blocked",
@@ -426,13 +437,21 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
         return `
             <!DOCTYPE html>
             <head>
-    
-            <!-- Compiled and minified CSS -->
-                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-                <!-- Compiled and minified JavaScript -->
-                <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+                <!-- Include Twitter Bootstrap and jQuery: -->
+                <link rel="stylesheet" href="${bootstrapCss}" type="text/css"/>
+                <link rel="stylesheet" href="${webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, 'media', 'font-awesome.css'))}" type="text/css"/>
+                <script type="text/javascript" src="${jqueryJs}"></script>
+                <script type="text/javascript" src="${webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, 'media', 'moment.min.js'))}"></script>
+                <script type="text/javascript" src="${bootstrapJs}"></script>
+                <script type="text/javascript" src="${webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, 'media', 'bootstrap-datetimepicker.min.js'))}"></script>
+                
+                <!-- Include the plugin's CSS and JS: -->
+                <script type="text/javascript" src="${bootstrapMultiselectJs}"></script>
+                <link rel="stylesheet" href="${bootstrapMultiselectCss}" type="text/css"/>
+                <link rel="stylesheet" href="${webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, 'media', 'bootstrap-datetimepicker.css'))}" type="text/css"/>
                 <link href="${styleVSCodeUri}" rel="stylesheet" />
                 <link href="${myStyle}" rel="stylesheet" />
+
             </head>
             <body>
                 <div class="top-container">
@@ -470,7 +489,7 @@ async function generateSelectOptions(field: any, data: any | OctaneEntity | unde
     if (field && field.field_type_data && field.field_type_data.targets && data) {
         return await OctaneService.getInstance().getFullDataForEntity(field.field_type_data.targets[0].type, field, data);
     }
-    vscode.window.showErrorMessage('Error generating select options.');
+    getLogger('vs').warn('Error generating select options for field.', field);
     return;
 }
 
@@ -518,9 +537,9 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
             // html += `
             //     <option value="none">${getFieldValue(data, 'phase')}</option>
             // `;
-            html += `
-                <option value="none"></option>
-            `;
+            // html += `
+            //     <option value="none"></option>
+            // `;
             transitions.forEach((target: any) => {
                 if (!target) { return; }
                 html += `
@@ -528,7 +547,15 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
             `;
             });
         }
-        html += `</select></div>
+        html += `</select>
+                <script type="text/javascript">
+                    $(document).ready(function() {
+                        $('#select_phase').multiselect({
+                            maxHeight: 400
+                        });
+                    });
+                </script>
+                </div>
                     <button title="Save" id="saveId" class="save" type="button">
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm2 16H5V5h11.17L19 7.83V19zm-7-7c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zM6 6h9v4H6z"/></svg>
                     </button>
@@ -557,9 +584,8 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
         });
         mapFields = new Map([...mapFields].sort((a, b) => String(a[0]).localeCompare(b[0])));
         html += `
-                <div style="margin: 1rem 0 0 0.5rem; width: 20rem;" id="container_filter_multiselect">
-                    <select class="reference-select" multiple="multiple" id="filter_multiselect">
-                    <option value="" disabled>Filter</option>
+                <div style="margin: 0rem 0rem 0rem 0.5rem;" id="container_filter_multiselect" class="dropleft">
+                    <select multiple="multiple" id="filter_multiselect" data-display="static">
                 `;
         for (const [key, field] of mapFields) {
 
@@ -570,9 +596,9 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
                     filteredFields = filteredFields.filter(f => f !== field.name);
                 }
                 if (filteredFields.includes(field.name)) {
-                    html += `<option class="filter_option" selected value='${JSON.stringify(field)}'>${field.label}</option>`;
+                    html += `<option data-label="${field.label}" selected="selected" value='${JSON.stringify(field)}'>${field.label}</option>`;
                 } else {
-                    html += `<option class="filter_option" value='${JSON.stringify(field)}'>${field.label}</option>`;
+                    html += `<option data-label="${field.label}" value='${JSON.stringify(field)}'>${field.label}</option>`;
                 }
             }
         }
@@ -744,27 +770,34 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                             html += `
                         <div class="select-container-multiple" id="container_${field.label.replaceAll(" ", "_")}">
                             <label name="${field.name}">${field.label}</label>
-                            <select class="reference-select-multiple" multiple="multiple" id="${field.name}">
+                            <select multiple="multiple" id="${field.name}">
                         `;
                             html += `
                             </select>
-                            
                         </div>
                         `;
                         } else {
                             if (field.editable) {
-                                html += `
-                            <div class="select-container-single" id="container_${field.label.replaceAll(" ", "_")}">
-                                <label name="${field.name}">${field.label}</label>
-                                <select class="reference-select-single" id="${field.name}">
-                            `;
-                                html += `<option value="none" selected disabled hidden>${getFieldValue(data, field.name)}</option>`;
-                                html += `
-                                </select>
-                            </div>`;
+                                if(field.name === 'author') {
+                                    html += `
+                                    <div class="select-container-single" id="container_${field.label.replaceAll(" ", "_")}">
+                                        <label name="${field.name}">${field.label}</label>
+                                        <select disabled id="${field.name}">
+                                    `;
+                                } else {
+                                    html += `
+                                    <div class="select-container-single" id="container_${field.label.replaceAll(" ", "_")}">
+                                        <label name="${field.name}">${field.label}</label>
+                                        <select id="${field.name}">
+                                    `;
+                                }
+                                html += `<option value="none" selected="selected" disabled hidden>${getFieldValue(data, field.name)}</option>`;
+                                        html += `
+                                        </select>
+                                    </div>`;
                             } else {
                                 html += `
-                                <div class="input-field col s6 container" id="container_${field.label.replaceAll(" ", "_")}">
+                                <div style="padding: unset;" class="container" id="container_${field.label.replaceAll(" ", "_")}">
                                     <label class="active" for="${field.label}">${field.label}</label>
                                     <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
                                     <script>
@@ -775,7 +808,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                             }
                         }
                     } else {
-                        if ((field.field_type === 'string' && field.type === 'field_metadata') && (field.name === 'last_runs' || field.name === 'progress' || field.name === 'commit_files')) {
+                        if ((field.field_type === 'string' && field.type === 'field_metadata') && (field.name === 'test_status' || field.name === 'last_runs' || field.name === 'progress' || field.name === 'commit_files')) {
                             let val: any = getFieldValue(data, field.name);
                             let containerValue = '';
                             let tooltip = '';
@@ -785,8 +818,8 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                                 } catch (e: any) {
                                     getLogger('vs').error(`While evaluating JSON value: ${val} `, e);
                                 }
-
-                                if (field.name === 'last_runs') {
+                                 
+                                if (field.name === 'last_runs' || field.name === 'test_status') {
                                     //label - Test Coverage
                                     tooltip = 'Test coverage \n ' + (val?.passed ?? 0) + ' Passed \n ' + (val?.failed ?? 0) + ' Failed \n ' + (val?.needsAttention ?? 0) + ' Require Attention \n ' + (val?.planned ?? 0) + ' Planned \n ' + (val?.testNoRun ?? 0) + ' Tests did not run \n';
                                     containerValue = (val?.passed ?? 0) + ' Passed, ' + (val?.failed ?? 0) + ' Failed, ' + (val?.needsAttention ?? 0) + ' Require Attention, ' + (val?.planned ?? 0) + ' Planned, ' + (val?.testNoRun ?? 0) + ' Tests did not run';
@@ -803,7 +836,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
 
                             }
                             html += `
-                            <div class="input-field col s6 container" id="container_${field.label.replaceAll(" ", "_")}">
+                            <div style="padding: unset;" class="container" id="container_${field.label.replaceAll(" ", "_")}">
                                 <label class="active" for="${field.label}">${field.label}</label>
                                 <input 
                                     title="${tooltip}"
@@ -819,7 +852,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                         } else {
                             if (field.name === 'is_in_filter') {
                                 html += `
-                                    <div class="input-field col s6 container" id="container_${field.label.replaceAll(" ", "_")}">
+                                    <div style="padding: unset;" class="container" id="container_${field.label.replaceAll(" ", "_")}">
                                         <label class="active" for="${field.label}">${field.label}</label>
                                         <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" type="string" value='${getFieldValue(data, field.name) ? 'Yes' : 'No'}'>
                                         <script>
@@ -827,9 +860,31 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                                         </script>
                                     </div>
                                 `;
+                            } else if (field.field_type === 'date_time') {
+                                html += `
+                                <div style="padding: unset;" class="container" id="container_${field.label.replaceAll(" ", "_")}">
+                                    <label class="active" for="${field.label}">${field.label}</label>
+                                    <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" value='${getFieldValue(data, field.name)}' data-toggle="datetimepicker" class="datetimepicker-input" data-target="#${field.name}">
+                                    <script>
+                                        $('#${field.name}').datetimepicker({date: '${getFieldValue(data, field.name)}', format: 'll HH:mm:ss'});
+                                        document.getElementById("${field.name}").readOnly = !${field.editable};
+                                    </script>
+                                </div>
+                            `;
+                            } else if (field.field_type === 'boolean') {
+                                html += `
+                                <div class="select-container-single" id="container_${field.label.replaceAll(" ", "_")}">
+                                    <label name="${field.name}">${field.label}</label>
+                                    <select id="${field.name}">
+                                `;
+                                    html += `<option value="true" #{${getFieldValue(data, field.name) ? 'selected' : ''}}>Yes</option>`;
+                                    html += `<option value="false" #{${getFieldValue(data, field.name) ? '' : 'selected'}}>No</option>`;
+                                    html += `
+                                    </select>
+                                </div>`;
                             } else {
                                 html += `
-                                <div class="input-field col s6 container" id="container_${field.label.replaceAll(" ", "_")}">
+                                <div style="padding: unset;" class="container" id="container_${field.label.replaceAll(" ", "_")}">
                                     <label class="active" for="${field.label}">${field.label}</label>
                                     <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" type="${field.field_type}" value='${getFieldValue(data, field.name)}'>
                                     <script>
