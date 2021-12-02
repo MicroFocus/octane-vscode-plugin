@@ -19,7 +19,7 @@ With the ALM Octane Visual Studio Code plugin, you can do your ALM Octane work (
 
 ## Publishing the extention
 
-1 intall `vsce` ,short for "Visual Studio Code Extensions": `npm install -g vsce`
-2 `cd octane-vscode-plugin/`
-3 run command `vsce package`
-4 run command `vsce publish`
+1. intall `vsce` ,short for "Visual Studio Code Extensions": `npm install -g vsce`
+2. `cd octane-vscode-plugin/`
+3. run command `vsce package`
+4. run command `vsce publish`
