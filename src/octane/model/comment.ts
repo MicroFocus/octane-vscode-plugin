@@ -6,10 +6,12 @@ export class Comment extends OctaneEntity {
 
     public text: string;
     public ownerEntity?: OctaneEntity;
+    public creation_time? :string;
 
     constructor(i?: any) {
         super(i);
         this.text = (i && i.text) ? i.text : '';
+        this.creation_time = (i && i.creation_time) ? i.creation_time : '';
         if (i?.owner_work_item) {
             this.ownerEntity = new OctaneEntity(i.owner_work_item);
             this.ownerEntity.subtype = this.ownerEntity.type;
