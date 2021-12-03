@@ -671,9 +671,13 @@ async function generateCommentElement(data: any | OctaneEntity | undefined, fiel
         getLogger('vs').info("comments", comments);
         if (comments) {
             for (const comment of comments) {
+                let time;
+                if(comment.creation_time && comment.creation_time !== '') {
+                    time = new Date(comment.creation_time).toLocaleString();
+                }
                 html += `
-                    <div class="information-container">
-                        ${comment.author?.fullName ?? ''}: <textarea type="text" value="${stripHtml(comment.text).result}">${stripHtml(comment.text).result}</textarea>
+                    <div class="information-container" style="display: block; border-color: var(--vscode-foreground); border-bottom: 1px solid; margin: 0rem 0rem 1rem 0rem;">
+                    ${time ?? ''} <b>${comment.author?.fullName ?? ''}</b>: <div style="margin: 0.5rem 0rem 0.5rem 0rem; background-color: transparent; padding-left: 1rem;">${stripHtml(comment.text).result}</div>
                     </div>
                 `;
             }
