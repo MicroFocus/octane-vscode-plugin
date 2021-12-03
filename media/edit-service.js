@@ -71,6 +71,7 @@
 
     document.getElementById("commentsId").addEventListener('click', e => {
         getComments();
+        document.getElementById("comments-element-id").scrollIntoView({behavior: "smooth"});
     });
 
     document.getElementById("saveId").addEventListener('click', e => {
