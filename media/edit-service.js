@@ -169,7 +169,8 @@
 
     function postCommentForEntity() {
         let message = document.getElementById('comments-text').value;
-        let text = `
+        if (message && message !== '') {
+            let text = `
             <html>
                 <body>
                     ${message ?? ''}
