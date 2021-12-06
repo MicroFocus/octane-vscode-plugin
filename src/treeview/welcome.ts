@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { AlmOctaneAuthenticationProvider, AlmOctaneAuthenticationType } from '../auth/authentication-provider';
 import { OctaneService } from '../octane/service/octane-service';
 import { v4 as uuid } from 'uuid';
-import { getLogger} from 'log4js';
+import { getLogger } from 'log4js';
 
 export class WelcomeViewProvider implements vscode.WebviewViewProvider {
 
@@ -151,7 +151,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                             space = altRegExp !== null ? altRegExp[2] : null;
                             workspace = altRegExp !== null ? altRegExp[4] : null;
                         }
-                        if(space === null || workspace === null) {
+                        if (space === null || workspace === null) {
                             let altRegExp = url.match(/\?[A-Za-z]*&?p=((\d+)(\/?%?\d*[A-Za-z]*)(\d+))\/?#?/);
                             space = altRegExp !== null ? altRegExp[1].split('/')[0] : null;
                             workspace = altRegExp !== null ? altRegExp[1].split('/')[1] : null;
@@ -220,10 +220,23 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                 </div>
                 <hr>
                 <div class="main-container" style="flex-direction: row; align-items: center;">
-				    <input style="width: unset" id="attempt_authentication_radio_id" class="attempt_authentication_radio" type="radio" name="auth"></input> <label style="margin-top: 0.5rem;">Login with username and password</label>
+				    <input style="width: unset" id="attempt_authentication_radio_id" class="attempt_authentication_radio" type="radio" name="auth"></input> <label style="margin: unset !important;">Login with username and password</label>
                     <span 
                         title="Log into ALM Octane directly with your user name and password, in non-SSO environments. This method saves your login credentials between sessions, so you do not have to re-enter them." 
-                        style="margin: 0.5rem 0rem 0rem 0.5rem; cursor: pointer;"> ?</span>
+                        style="margin: 0.5rem 0rem 0rem 0.5rem; cursor: pointer;">
+                        <svg style="margin-bottom: 0.4rem;" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="16px" height="16px" viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve">  <image id="image0" width="16" height="16" x="0" y="0"
+                            href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAABGdBTUEAALGPC/xhBQAAACBjSFJN
+                        AAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAkFBMVEX///9IjrdKkblMk7pM
+                        k7pJj7hGjLZNlbtVnsFYosRZosVYosRKkrlMlbxUnsJZo8dSm8BGj7hQmsBTncI9hLBEjLZTnsNL
+                        lbxAibRNmL9Ikrs5ga5EjrhJlb1Djrc/ibRBirU1e6k7gq87g7A2fKo2fKo/h7M/iLQ4fqxNlLtT
+                        nMBapchZpMdPmb9JlLz///96MZqwAAAAKXRSTlMAW7Lo5pQWov3RtPLAFx5p9w7BuzDewxXdjQMK
+                        zMwYERY4+v5fKObwSo7gz3IAAAABYktHRACIBR1IAAAAB3RJTUUH5QwGDigldgHFqwAAAFFJREFU
+                        GNNjYCATMDIxa7KwsiEE2Dk4ubi1eBACvHwMDPzaAii6BIV0hJH5IqK6YuLIAhJ6klLIfGkZWTlU
+                        i+UVUPmKSsoqKAKqauoa5PqKAQAckwQ6m3rNOQAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMS0xMi0w
+                        NlQxMTo0MDozNyswMzowMPAri5MAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjEtMTItMDZUMTE6NDA6
+                        MzcrMDM6MDCBdjMvAAAAAElFTkSuQmCC" />
+                        </svg>
+                        </span>
                     <script>
                         $(document).ready(function() {
                             $('[data-toggle="tooltip"]').tooltip();
@@ -253,10 +266,24 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                     </script>
                 </div>
                 <div class="main-container" style="flex-direction: row; align-items: center;">
-				    <input style="width: unset" id="attempt_browser_authentication_radio_id" class="attempt_browser_authentication_radio" type="radio" name="auth"></input> <label style="margin-top: 0.5rem;">Login using a browser</label>
+				    <input style="width: unset" id="attempt_browser_authentication_radio_id" class="attempt_browser_authentication_radio" type="radio" name="auth"></input> <label style="margin: unset !important;">Login using a browser</label>
                     <span 
                         title="Log into ALM Octane using a browser. You can use this method for non-SSO, SSO, and federated environments. Your login credentials are not saved between sessions, so you will have to re-enter them each time." 
-                        style="margin: 0.5rem 0rem 0rem 0.5rem; cursor: pointer;"> ?</span>
+                        style="margin: 0.5rem 0rem 0rem 0.5rem; cursor: pointer;">
+                        <svg style="margin-bottom: 0.4rem;" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="16px" height="16px" viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve">  <image id="image0" width="16" height="16" x="0" y="0"
+                            href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAABGdBTUEAALGPC/xhBQAAACBjSFJN
+                        AAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAkFBMVEX///9IjrdKkblMk7pM
+                        k7pJj7hGjLZNlbtVnsFYosRZosVYosRKkrlMlbxUnsJZo8dSm8BGj7hQmsBTncI9hLBEjLZTnsNL
+                        lbxAibRNmL9Ikrs5ga5EjrhJlb1Djrc/ibRBirU1e6k7gq87g7A2fKo2fKo/h7M/iLQ4fqxNlLtT
+                        nMBapchZpMdPmb9JlLz///96MZqwAAAAKXRSTlMAW7Lo5pQWov3RtPLAFx5p9w7BuzDewxXdjQMK
+                        zMwYERY4+v5fKObwSo7gz3IAAAABYktHRACIBR1IAAAAB3RJTUUH5QwGDigldgHFqwAAAFFJREFU
+                        GNNjYCATMDIxa7KwsiEE2Dk4ubi1eBACvHwMDPzaAii6BIV0hJH5IqK6YuLIAhJ6klLIfGkZWTlU
+                        i+UVUPmKSsoqKAKqauoa5PqKAQAckwQ6m3rNOQAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMS0xMi0w
+                        NlQxMTo0MDozNyswMzowMPAri5MAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjEtMTItMDZUMTE6NDA6
+                        MzcrMDM6MDCBdjMvAAAAAElFTkSuQmCC" />
+                        </svg>
+                        </span>
+
                     <script>
                         $(document).ready(function() {
                             $('[data-toggle="tooltip"]').tooltip();
