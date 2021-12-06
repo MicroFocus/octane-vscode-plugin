@@ -183,7 +183,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                     comment.ownerEntity = document.entity;
                     OctaneService.getInstance().postCommentForEntity(comment);
                     // this.fullData = await OctaneService.getInstance().getDataFromOctaneForTypeAndId(data.type, data.subtype, data.id);
-                    webviewPanel.webview.html = await self.getHtmlForWebview(webviewPanel.webview, self.context, document.entity, document.fields);
+                    // webviewPanel.webview.html = await self.getHtmlForWebview(webviewPanel.webview, self.context, document.entity, document.fields);
                 }
                 // if (m.type === 'saveToMemento') {
                 //     OctaneEntityEditorProvider.emitter.fire('test');
@@ -484,7 +484,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                             ${await generateBodyElement(data, fields, activeFields)}
                         </div>
                     </div>
-                    <div id="comments-element-id" class="comments-element">
+                    <div id="comments-element-id" class="comments-element" currentAuthor='${''}'>
                         <div id="comments-sidebar-id" class="comments-sidebar">
                             ${await generateCommentElement(data, fields)}
                         </div>
@@ -676,14 +676,14 @@ async function generateCommentElement(data: any | OctaneEntity | undefined, fiel
                     time = new Date(comment.creation_time).toLocaleString();
                 }
                 html += `
-                    <div class="information-container" style="display: block; border-color: var(--vscode-foreground); border-bottom: 1px solid; margin: 0rem 0rem 1rem 0rem;">
+                    <div class="information-container" style="word-break: break-word; display: block; border-color: var(--vscode-foreground); border-bottom: 1px solid; margin: 0rem 0rem 1rem 0rem;">
                     ${time ?? ''} <b>${comment.author?.fullName ?? ''}</b>: <div style="margin: 0.5rem 0rem 0.5rem 0rem; background-color: transparent; padding-left: 1rem;">${stripHtml(comment.text).result}</div>
                     </div>
                 `;
             }
         }
-        html += `   <br>
-                    <hr>`;
+        // html += `   <br>
+        //             <hr>`;
     } catch (e: any) {
         vscode.window.showErrorMessage('Error generating comments for entity.');
     }

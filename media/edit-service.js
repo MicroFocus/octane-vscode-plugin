@@ -177,13 +177,29 @@
                 </body>
             </html>
         `;
-            vscode.postMessage({
-                type: 'post-comment',
-                from: 'edit-service',
-                data: {
-                    'text': text
-                }
-            });
+        vscode.postMessage({
+            type: 'post-comment',
+            from: 'edit-service',
+            data: {
+                'text': text
+            }
+        });
+        if(message && message !== '') {
+            let button = document.getElementById("commentsId");
+            let comments = document.getElementById("comments-element-id");
+            let sidebar = document.getElementById("comments-sidebar-id");
+            let auth = comments.getAttribute("currentAuthor") ?? '';
+            comments.style.display = "flex";
+            button.style.backgroundColor = "#777474";
+            sidebar.style.display = "flex";
+            let inf_cont = document.createElement('div');
+            inf_cont.innerHTML = `${new Date().toLocaleString() ?? ''} <b>${auth}</b>: <div style="margin: 0.5rem 0rem 0.5rem 0rem; background-color: transparent; padding-left: 1rem;">${message}</div>`;
+            inf_cont.style.display = "block";
+            inf_cont.style.borderBlockColor = "var(--vscode-foreground)";
+            inf_cont.style.borderBottom = "1px solid";
+            inf_cont.style.margin = "0rem 0rem 1rem 0rem";
+            inf_cont.classList.add("information-container");
+            sidebar.appendChild(inf_cont);
         }
     }
 
