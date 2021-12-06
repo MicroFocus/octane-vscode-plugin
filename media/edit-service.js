@@ -11,13 +11,13 @@
         console.log('initialize called...');
         $('.select-container-multiple select').multiselect({
             maxHeight: 400,
-            onDropdownShow: function(event) {
+            onDropdownShow: function (event) {
                 getDataForEntity(this);
             }
         });
         $('.select-container-single select').multiselect({
             maxHeight: 400,
-            onDropdownShow: function(event) {
+            onDropdownShow: function (event) {
                 getDataForEntity(this);
             }
         });
@@ -32,7 +32,7 @@
             includeSelectAllOption: true,
             dropRight: true,
             enableCaseInsensitiveFiltering: true,
-            onDropdownHide: function(event) {
+            onDropdownHide: function (event) {
                 // console.log("filterfilter",filter);
                 var select = document.getElementById("filter_multiselect");
                 // console.log("selectselect",select)
@@ -59,11 +59,11 @@
             }
         });
         initDateTimeFields();
-       
+
     }
 
     function initDateTimeFields() {
-        $('.datetimepicker-input').each(function() {
+        $('.datetimepicker-input').each(function () {
             $(this).datetimepicker({
                 date: this.value, format: 'll HH:mm:ss'
             });
@@ -72,7 +72,7 @@
 
     document.getElementById("commentsId").addEventListener('click', e => {
         getComments();
-        document.getElementById("comments-element-id").scrollIntoView({behavior: "smooth"});
+        document.getElementById("comments-element-id").scrollIntoView({ behavior: "smooth" });
     });
 
     document.getElementById("saveId").addEventListener('click', e => {
@@ -89,7 +89,7 @@
 
     var addToMyWorkButton = document.getElementById("addToMyWork");
     if (addToMyWorkButton) {
-            addToMyWorkButton.addEventListener('click', e => {
+        addToMyWorkButton.addEventListener('click', e => {
             addToMyWork();
         });
     }
@@ -184,6 +184,23 @@
                 'text': text
             }
         });
+        if(message && message !== '') {
+            let button = document.getElementById("commentsId");
+            let comments = document.getElementById("comments-element-id");
+            let sidebar = document.getElementById("comments-sidebar-id");
+            let auth = comments.getAttribute("currentAuthor") ?? '';
+            comments.style.display = "flex";
+            button.style.backgroundColor = "#777474";
+            sidebar.style.display = "flex";
+            let inf_cont = document.createElement('div');
+            inf_cont.innerHTML = `${new Date().toLocaleString() ?? ''} <b>${auth}</b>: <div style="margin: 0.5rem 0rem 0.5rem 0rem; background-color: transparent; padding-left: 1rem;">${message}</div>`;
+            inf_cont.style.display = "block";
+            inf_cont.style.borderBlockColor = "var(--vscode-foreground)";
+            inf_cont.style.borderBottom = "1px solid";
+            inf_cont.style.margin = "0rem 0rem 1rem 0rem";
+            inf_cont.classList.add("information-container");
+            sidebar.appendChild(inf_cont);
+        }
     }
 
     function addToMyWork() {
@@ -221,9 +238,9 @@
     }
 
     function refreshPanel() {
-        
+
         $('#mainform')[0].reset();
-        $('.datetimepicker-input').each(function() {
+        $('.datetimepicker-input').each(function () {
             $(this).datetimepicker('destroy');
         });
         initDateTimeFields();
@@ -234,7 +251,7 @@
             from: 'edit-service',
             data: {}
         });
-        
+
     }
 
     window.addEventListener('message', e => {
