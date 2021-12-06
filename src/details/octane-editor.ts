@@ -183,7 +183,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                     comment.ownerEntity = document.entity;
                     OctaneService.getInstance().postCommentForEntity(comment);
                     // this.fullData = await OctaneService.getInstance().getDataFromOctaneForTypeAndId(data.type, data.subtype, data.id);
-                    webviewPanel.webview.html = await self.getHtmlForWebview(webviewPanel.webview, self.context, document.entity, document.fields);
+                    // webviewPanel.webview.html = await self.getHtmlForWebview(webviewPanel.webview, self.context, document.entity, document.fields);
                 }
                 // if (m.type === 'saveToMemento') {
                 //     OctaneEntityEditorProvider.emitter.fire('test');
@@ -484,7 +484,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                             ${await generateBodyElement(data, fields, activeFields)}
                         </div>
                     </div>
-                    <div id="comments-element-id" class="comments-element">
+                    <div id="comments-element-id" class="comments-element" currentAuthor='${''}'>
                         <div id="comments-sidebar-id" class="comments-sidebar">
                             ${await generateCommentElement(data, fields)}
                         </div>
@@ -682,8 +682,8 @@ async function generateCommentElement(data: any | OctaneEntity | undefined, fiel
                 `;
             }
         }
-        html += `   <br>
-                    <hr>`;
+        // html += `   <br>
+        //             <hr>`;
     } catch (e: any) {
         vscode.window.showErrorMessage('Error generating comments for entity.');
     }
