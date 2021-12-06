@@ -7,8 +7,19 @@
 
     $(document).ready(initialize());
 
+    function reInit() {
+        $('#mainform')[0].reset();
+        $('.datetimepicker-input').each(function() {
+            $(this).datetimepicker('destroy');
+        });
+        initDateTimeFields();
+        $('.select-container-multiple select').multiselect('refresh');
+        $('.select-container-single select').multiselect('refresh');
+    }
+
     function initialize() {
         console.log('initialize called...');
+        
         $('.select-container-multiple select').multiselect({
             maxHeight: 400,
             onDropdownShow: function(event) {
@@ -220,13 +231,13 @@
 
     function refreshPanel() {
         
-        $('#mainform')[0].reset();
-        $('.datetimepicker-input').each(function() {
-            $(this).datetimepicker('destroy');
-        });
-        initDateTimeFields();
-        $('.select-container-multiple select').multiselect('refresh');
-        $('.select-container-single select').multiselect('refresh');
+        // $('#mainform')[0].reset();
+        // $('.datetimepicker-input').each(function() {
+        //     $(this).datetimepicker('destroy');
+        // });
+        // initDateTimeFields();
+        // $('.select-container-multiple select').multiselect('refresh');
+        // $('.select-container-single select').multiselect('refresh');
         vscode.postMessage({
             type: 'refresh',
             from: 'edit-service',
@@ -240,7 +251,7 @@
         switch (data.type) {
 
             case 'init':
-                initialize();
+                reInit();
                 break;
 
             case 'post':

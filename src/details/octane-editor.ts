@@ -168,6 +168,12 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                 }
                 if (m.type === 'update') {
                     OctaneService.getInstance().updateEntity(document.entity.type, document.entity.subtype, m.data);
+                    await document.updated();
+                    webviewPanel.webview.html = await this.getHtmlForWebview(webviewPanel.webview, this.context, document.entity, document.fields);
+                    webviewPanel.webview.postMessage({
+                        type: 'init',
+                        from: 'webview'
+                    });
                 }
                 if (m.type === 'refresh') {
                     // document.entity = await OctaneService.getInstance().getDataFromOctaneForTypeAndId(document.entity.type, document.entity.subtype, document.entity.id);
