@@ -56,7 +56,6 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 		this.logger.info(`Getting sessions for ${scopes?.join(',') || 'all scopes'}...`);
 
 		const sessionsList = await this.readSessions();
-		this.logger.info('Returning sessions: ', sessionsList);
 		await vscode.commands.executeCommand('setContext', 'visual-studio-code-plugin-for-alm-octane.hasSession', sessionsList?.length > 0);
 		return sessionsList;
 	}
@@ -178,8 +177,6 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 				this.sessionChangeEmitter.fire({ added: [], removed: [{ id: '-1', accessToken: '', account: { id: '', label: '' }, scopes: [] }], changed: [] });
 				return [];
 			}
-			this.logger.info('Stored sessions:', storedSessions);
-
 			try {
 				sessionData = JSON.parse(storedSessions);
 			} catch (e) {
