@@ -12,6 +12,8 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
 
     private view?: vscode.WebviewView;
 
+    private wasDisposed = false;
+
     constructor(private readonly extensionUri: vscode.Uri, private readonly authenticationProvider: AlmOctaneAuthenticationProvider) {
         this.logger.info('WelcomeViewProvider constructed');
     }
@@ -21,8 +23,11 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
     }
 
     public async refresh() {
-        if (this.view) {
-            this.view.webview.html = await this.getHtmlForWebview(this.view.webview);
+        if (this.view && this.view.webview) {
+            let content = await this.getHtmlForWebview(this.view.webview);
+            if (!this.wasDisposed) {
+                this.view.webview.html = content;
+            }
         }
     }
 
@@ -32,6 +37,8 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
         token: vscode.CancellationToken,
     ) {
         this.logger.info('WelcomeViewProvider.resolveWebviewView called');
+        this.logger.info('context: ', context);
+        this.logger.info('token: ', token);
         this.view = webviewView;
 
         webviewView.webview.options = {
@@ -43,6 +50,11 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
             ]
         };
 
+        webviewView.onDidDispose(
+            () => {
+                this.wasDisposed = true;
+            }
+        );
         webviewView.webview.html = await this.getHtmlForWebview(webviewView.webview);
 
         webviewView.webview.onDidReceiveMessage(async data => {
