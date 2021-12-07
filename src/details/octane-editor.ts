@@ -915,6 +915,16 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                                     html += `
                                     </select>
                                 </div>`;
+                            } else if (field.field_type === 'integer') {
+                                html += `
+                                    <div style="padding: unset;" class="container" id="container_${field.label.replaceAll(" ", "_")}">
+                                        <label class="active" for="${field.label}">${field.label}</label>
+                                        <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" type="number" value='${getFieldValue(data, field.name)}'>
+                                        <script>
+                                            document.getElementById("${field.name}").readOnly = !${field.editable};
+                                        </script>
+                                    </div>
+                                `;
                             } else {
                                 html += `
                                 <div style="padding: unset;" class="container" id="container_${field.label.replaceAll(" ", "_")}">
