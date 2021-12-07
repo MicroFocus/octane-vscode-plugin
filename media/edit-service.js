@@ -199,6 +199,7 @@
             inf_cont.style.borderBottom = "1px solid";
             inf_cont.style.margin = "0rem 0rem 1rem 0rem";
             inf_cont.classList.add("information-container");
+            inf_cont.style.fontFamily = "Roboto,Arial,sans-serif";
             sidebar.appendChild(inf_cont);
         }
     }
