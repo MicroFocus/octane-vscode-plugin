@@ -676,7 +676,7 @@ async function generateCommentElement(data: any | OctaneEntity | undefined, fiel
                     time = new Date(comment.creation_time).toLocaleString();
                 }
                 html += `
-                    <div class="information-container" style="word-break: break-word; display: block; border-color: var(--vscode-foreground); border-bottom: 1px solid; margin: 0rem 0rem 1rem 0rem;">
+                    <div class="information-container" style="font-family: Roboto,Arial,sans-serif; word-break: break-word; display: block; border-color: var(--vscode-foreground); border-bottom: 1px solid; margin: 0rem 0rem 1rem 0rem;">
                     ${time ?? ''} <b>${comment.author?.fullName ?? ''}</b>: <div style="margin: 0.5rem 0rem 0.5rem 0rem; background-color: transparent; padding-left: 1rem;">${stripHtml(comment.text).result}</div>
                     </div>
                 `;
@@ -915,6 +915,16 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                                     html += `
                                     </select>
                                 </div>`;
+                            } else if (field.field_type === 'integer') {
+                                html += `
+                                    <div style="padding: unset;" class="container" id="container_${field.label.replaceAll(" ", "_")}">
+                                        <label class="active" for="${field.label}">${field.label}</label>
+                                        <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" type="number" value='${getFieldValue(data, field.name)}'>
+                                        <script>
+                                            document.getElementById("${field.name}").readOnly = !${field.editable};
+                                        </script>
+                                    </div>
+                                `;
                             } else {
                                 html += `
                                 <div style="padding: unset;" class="container" id="container_${field.label.replaceAll(" ", "_")}">

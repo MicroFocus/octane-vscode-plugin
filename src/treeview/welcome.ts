@@ -12,6 +12,8 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
 
     private view?: vscode.WebviewView;
 
+    private wasDisposed = false;
+
     constructor(private readonly extensionUri: vscode.Uri, private readonly authenticationProvider: AlmOctaneAuthenticationProvider) {
         this.logger.info('WelcomeViewProvider constructed');
     }
@@ -21,8 +23,11 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
     }
 
     public async refresh() {
-        if (this.view) {
-            this.view.webview.html = await this.getHtmlForWebview(this.view.webview);
+        if (this.view && this.view.webview) {
+            let content = await this.getHtmlForWebview(this.view.webview);
+            if (!this.wasDisposed) {
+                this.view.webview.html = content;
+            }
         }
     }
 
@@ -32,6 +37,8 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
         token: vscode.CancellationToken,
     ) {
         this.logger.info('WelcomeViewProvider.resolveWebviewView called');
+        this.logger.info('context: ', context);
+        this.logger.info('token: ', token);
         this.view = webviewView;
 
         webviewView.webview.options = {
@@ -43,6 +50,11 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
             ]
         };
 
+        webviewView.onDidDispose(
+            () => {
+                this.wasDisposed = true;
+            }
+        );
         webviewView.webview.html = await this.getHtmlForWebview(webviewView.webview);
 
         webviewView.webview.onDidReceiveMessage(async data => {
@@ -223,8 +235,8 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
 				    <input style="width: unset" id="attempt_authentication_radio_id" class="attempt_authentication_radio" type="radio" name="auth"></input> <label style="margin: unset !important;">Login with username and password</label>
                     <span 
                         title="Log into ALM Octane directly with your user name and password, in non-SSO environments. This method saves your login credentials between sessions, so you do not have to re-enter them." 
-                        style="margin: 0.5rem 0rem 0rem 0.5rem; cursor: pointer;">
-                        <svg style="margin-bottom: 0.4rem;" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="16px" height="16px" viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve">  <image id="image0" width="16" height="16" x="0" y="0"
+                        style="margin: 0rem 0rem 0rem 0.5rem; cursor: pointer;  display: flex;">
+                        <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="16px" height="16px" viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve">  <image id="image0" width="16" height="16" x="0" y="0"
                             href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAABGdBTUEAALGPC/xhBQAAACBjSFJN
                         AAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAkFBMVEX///9IjrdKkblMk7pM
                         k7pJj7hGjLZNlbtVnsFYosRZosVYosRKkrlMlbxUnsJZo8dSm8BGj7hQmsBTncI9hLBEjLZTnsNL
@@ -269,8 +281,8 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
 				    <input style="width: unset" id="attempt_browser_authentication_radio_id" class="attempt_browser_authentication_radio" type="radio" name="auth"></input> <label style="margin: unset !important;">Login using a browser</label>
                     <span 
                         title="Log into ALM Octane using a browser. You can use this method for non-SSO, SSO, and federated environments. Your login credentials are not saved between sessions, so you will have to re-enter them each time." 
-                        style="margin: 0.5rem 0rem 0rem 0.5rem; cursor: pointer;">
-                        <svg style="margin-bottom: 0.4rem;" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="16px" height="16px" viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve">  <image id="image0" width="16" height="16" x="0" y="0"
+                        style="margin: 0rem 0rem 0rem 0.5rem; cursor: pointer; display: flex;">
+                        <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="16px" height="16px" viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve">  <image id="image0" width="16" height="16" x="0" y="0"
                             href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAABGdBTUEAALGPC/xhBQAAACBjSFJN
                         AAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAkFBMVEX///9IjrdKkblMk7pM
                         k7pJj7hGjLZNlbtVnsFYosRZosVYosRKkrlMlbxUnsJZo8dSm8BGj7hQmsBTncI9hLBEjLZTnsNL
