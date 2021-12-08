@@ -4,6 +4,7 @@
     const vscode = acquireVsCodeApi();
     const filterOpened = false;
     const selectDataPresent = [];
+    var currentDefaultFields;
 
     $(document).ready(initialize());
 
@@ -21,15 +22,15 @@
                 getDataForEntity(this);
             }
         });
+        let currentDefaultFields = document.getElementById("filter_multiselect").getAttribute('defaultFields');
         var filter = $('#filter_multiselect').multiselect({
             maxHeight: 400,
             enableFiltering: true,
-            includeResetOption: true,
-            resetText: "None",
-            enableResetButton: true,
-            resetButtonText: 'Reset',
-            includeResetDivider: true,
-            includeSelectAllOption: true,
+            // includeResetOption: true,
+            // resetText: "None",
+            // enableResetButton: true,
+            // includeResetDivider: true,
+            // includeSelectAllOption: true,
             dropRight: true,
             enableCaseInsensitiveFiltering: true,
             onDropdownHide: function (event) {
@@ -51,11 +52,41 @@
                 }
             },
             templates: {
-                popupContainer: '<div class="multiselect-container dropdown-menu" style="min-width: 300px"></div>',
+                popupContainer: `<div class="multiselect-container dropdown-menu" style="min-width: 300px">
+                                <div  style="display:flex;">
+                                    <button type="button" id="allButton" class="multiselect-all">All</button>
+                                    <script>
+                                        $(document).ready(function() {
+                                            $('#allButton').on('click', function() {
+                                                $('#filter_multiselect').multiselect('selectAll', false);
+                                            });
+                                        });
+                                    </script>
+                                    <button id="noneButton" type="button">None</button>
+                                    <script>
+                                        $(document).ready(function() {
+                                            $('#noneButton').on('click', function() {
+                                                $('#filter_multiselect').multiselect('deselectAll', false);
+                                            });
+                                        });
+                                    </script>
+                                    <button id="resetButton" type="button">Reset</button>
+                                    <script>
+                                        $(document).ready(function() {
+                                            $('#resetButton').on('click', function() {
+                                                $('#filter_multiselect').multiselect('deselectAll', false);
+                                                $('#filter_multiselect').multiselect('select', ${currentDefaultFields ?? '[]'});
+                                            });
+                                        });
+                                    </script>
+                              </div>
+                </div>`,
                 button: '<button  title="Select fields for this entity type" style="padding: unset; margin: 1rem 0rem 0rem 0rem;" id="filterBUttonId" data-toggle="dropdown" class="dropleft">' +
                     '<svg style="margin: 0.6rem 0rem 0rem 0.4rem;" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#FFFFFF"><path d="M0 8.654h7.021v1H0zM0 4.577h16v1H0zM0 .501h16v1H0zM14.7 9.8l.6-.9-1-1-.9.4c-.2-.2-.6-.3-.9-.4l-.2-1h-1.5l-.2.9c-.3 0-.6.2-.9.3l-.9-.6-1 1 .4.9c-.2.2-.3.6-.4.9l-1 .2V12l1 .2c0 .3.2.6.3.9l-.6.9 1 1 .9-.4c.2.2.6.3.9.4l.2 1H12l.2-1c.3 0 .6-.2.9-.3l.898.6 1-1-.398-.9c.2-.2.3-.6.4-.9l1-.2v-1.4l-1-.2c0-.3-.2-.6-.3-.9zm-3.4 4.3c-1.5 0-2.6-1.1-2.6-2.6.1-1.5 1.2-2.6 2.7-2.6s2.6 1.3 2.5 2.6c0 1.5-1.1 2.6-2.6 2.6z"></path><path d="M14.7 9.8l.6-.9-1-1-.9.4c-.2-.2-.6-.3-.9-.4l-.2-1h-1.5l-.2.9c-.3 0-.6.2-.9.3l-.9-.6-1 1 .4.9c-.2.2-.3.6-.4.9l-1 .2V12l1 .2c0 .3.2.6.3.9l-.6.9 1 1 .9-.4c.2.2.6.3.9.4l.2 1H12l.2-1c.3 0 .6-.2.9-.3l.898.6 1-1-.398-.9c.2-.2.3-.6.4-.9l1-.2v-1.4l-1-.2c0-.3-.2-.6-.3-.9z" fill="none"></path></svg>'
                     + `<script>$(document).ready(function() {$('[data-toggle="tooltip"]').tooltip();});</script>`
-                    + '</button>'
+                    + '</button>',
+                filter: '<div class="multiselect-filter d-flex align-items-center"><i class="fa fa-sm fa-search text-muted"></i><input type="search" class="multiselect-search form-control" /></div>',
+
             }
         });
         initDateTimeFields();
