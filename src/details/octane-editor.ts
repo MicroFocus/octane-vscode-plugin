@@ -15,8 +15,8 @@ class OctaneEntityDocument implements vscode.CustomDocument {
     private _onDidChange = new vscode.EventEmitter<vscode.Uri>();
 
     get onDidChange(): vscode.Event<vscode.Uri> {
-		return this._onDidChange.event;
-	}
+        return this._onDidChange.event;
+    }
 
     static async create(
         uri: vscode.Uri
@@ -275,7 +275,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
             context.extensionUri, 'media', 'bootstrap-multiselect.min.css'));
         const bootstrapMultiselectJs = webview.asWebviewUri(vscode.Uri.joinPath(
             context.extensionUri, 'media', 'bootstrap-multiselect.min.js'));
-            
+
         let resetFilterValuesForDefect = [
             "Application_modules",
             "Blocked",
@@ -447,6 +447,42 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
             }
         }
 
+        var currentDefaultFields: string[] | undefined = [];
+        if (data.subtype !== null && data.subtype !== undefined && data.subtype !== "") {
+            if (data.subtype === 'defect') {
+                currentDefaultFields = resetFilterValuesForDefect;
+            }
+            if (data.subtype === 'story') {
+                currentDefaultFields = resetFilterValuesForStory;
+            }
+            if (data.subtype === 'quality_story') {
+                currentDefaultFields = resetFilterValuesForQStory;
+            }
+            if (data.subtype === 'feature') {
+                currentDefaultFields = resetFilterValuesForFeature;
+            }
+            if (data.subtype === 'gherkin_test') {
+                currentDefaultFields = resetFilterValuesForGT_MT;
+            }
+            if (data.subtype === 'test_manual') {
+                currentDefaultFields = resetFilterValuesForGT_MT;
+            }
+            if (data.subtype === 'run_suite') {
+                currentDefaultFields = resetFilterValuesForRunSuite;
+            }
+            if (data.subtype === 'requirement_document') {
+                currentDefaultFields = resetFilterValuesForRD;
+            }
+        } else {
+            if (data.type !== null && data.type !== undefined) {
+                if (data.type === 'task') {
+                    currentDefaultFields = resetFilterValuesForTask;
+                }
+            } else {
+                currentDefaultFields = resetFilterValuesForDefect;
+            }
+        }
+
         return `
             <!DOCTYPE html>
             <head>
@@ -475,7 +511,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                         <h6 style="margin: 0rem 0.5rem 0rem 0rem;">${data?.id ?? ''}</h6> <input style="background: transparent; font-size: 1rem;" id="name" type="text" value="${data?.name ?? ''}">
                     </div>
                     <div class="action-container">
-                        ${await generatePhaseSelectElement(data, fields, activeFields)}
+                        ${await generatePhaseSelectElement(data, fields, activeFields, currentDefaultFields)}
                     </div>
                 </div>
                 <div class="main-element">
@@ -534,7 +570,7 @@ function getDataForSubtype(entity: OctaneEntity | undefined): [string, string] {
     return ['', ''];
 }
 
-async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, fields: any[], activeFields: string[] | undefined): Promise<string> {
+async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, fields: any[], activeFields: string[] | undefined, currentDefaultFields: string[] | undefined): Promise<string> {
     let html: string = ``;
     try {
         if (data.phase) {
@@ -617,7 +653,7 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
         mapFields = new Map([...mapFields].sort((a, b) => String(a[0]).localeCompare(b[0])));
         html += `
                 <div style="margin: 0rem 0rem 0rem 0.5rem;" id="container_filter_multiselect" class="dropleft">
-                    <select multiple="multiple" id="filter_multiselect" data-display="static">
+                    <select multiple="multiple" id="filter_multiselect" data-display="static" defaultFields="${(<any>JSON.stringify(currentDefaultFields ?? '')).replaceAll('"','\'')}">
                 `;
         for (const [key, field] of mapFields) {
 
@@ -628,9 +664,9 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
                     filteredFields = filteredFields.filter(f => f !== field.name);
                 }
                 if (filteredFields.includes(field.name)) {
-                    html += `<option data-label="${field.label}" selected="selected" value='${JSON.stringify(field)}'>${field.label}</option>`;
+                    html += `<option data-label="${field.label}" selected="selected" value='${field.label.replaceAll(" ", "_")}'>${field.label}</option>`;
                 } else {
-                    html += `<option data-label="${field.label}" value='${JSON.stringify(field)}'>${field.label}</option>`;
+                    html += `<option data-label="${field.label}" value='${field.label.replaceAll(" ", "_")}'>${field.label}</option>`;
                 }
             }
         }
@@ -672,7 +708,7 @@ async function generateCommentElement(data: any | OctaneEntity | undefined, fiel
         if (comments) {
             for (const comment of comments) {
                 let time;
-                if(comment.creation_time && comment.creation_time !== '') {
+                if (comment.creation_time && comment.creation_time !== '') {
                     time = new Date(comment.creation_time).toLocaleString();
                 }
                 html += `
@@ -815,7 +851,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                         `;
                         } else {
                             if (field.editable) {
-                                if(field.name === 'author') {
+                                if (field.name === 'author') {
                                     html += `
                                     <div class="select-container-single" id="container_${field.label.replaceAll(" ", "_")}">
                                         <label name="${field.name}">${field.label}</label>
@@ -829,7 +865,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                                     `;
                                 }
                                 html += `<option value="none" selected="selected" disabled hidden>${getFieldValue(data, field.name)}</option>`;
-                                        html += `
+                                html += `
                                         </select>
                                     </div>`;
                             } else {
@@ -855,7 +891,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                                 } catch (e: any) {
                                     getLogger('vs').error(`While evaluating JSON value: ${val} `, e);
                                 }
-                                 
+
                                 if (field.name === 'last_runs' || field.name === 'test_status') {
                                     //label - Test Coverage
                                     tooltip = 'Test coverage \n ' + (val?.passed ?? 0) + ' Passed \n ' + (val?.failed ?? 0) + ' Failed \n ' + (val?.needsAttention ?? 0) + ' Require Attention \n ' + (val?.planned ?? 0) + ' Planned \n ' + (val?.testNoRun ?? 0) + ' Tests did not run \n';
@@ -910,9 +946,9 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                                     <label name="${field.name}">${field.label}</label>
                                     <select id="${field.name}">
                                 `;
-                                    html += `<option value="true" ${getFieldValue(data, field.name) ? 'selected' : ''}>Yes</option>`;
-                                    html += `<option value="false" ${getFieldValue(data, field.name) ? '' : 'selected'}>No</option>`;
-                                    html += `
+                                html += `<option value="true" ${getFieldValue(data, field.name) ? 'selected' : ''}>Yes</option>`;
+                                html += `<option value="false" ${getFieldValue(data, field.name) ? '' : 'selected'}>No</option>`;
+                                html += `
                                     </select>
                                 </div>`;
                             } else if (field.field_type === 'integer') {

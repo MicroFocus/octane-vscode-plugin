@@ -4,6 +4,7 @@
     const vscode = acquireVsCodeApi();
     const filterOpened = false;
     const selectDataPresent = [];
+    var currentDefaultFields;
 
     $(document).ready(initialize());
 
@@ -21,6 +22,7 @@
                 getDataForEntity(this);
             }
         });
+        let currentDefaultFields = document.getElementById("filter_multiselect").getAttribute('defaultFields');
         var filter = $('#filter_multiselect').multiselect({
             maxHeight: 400,
             enableFiltering: true,
@@ -72,7 +74,8 @@
                                     <script>
                                         $(document).ready(function() {
                                             $('#resetButton').on('click', function() {
-                                                $('#filter_multiselect').multiselect('select', ['Author']);
+                                                $('#filter_multiselect').multiselect('deselectAll', false);
+                                                $('#filter_multiselect').multiselect('select', ${currentDefaultFields ?? '[]'});
                                             });
                                         });
                                     </script>
@@ -83,7 +86,7 @@
                     + `<script>$(document).ready(function() {$('[data-toggle="tooltip"]').tooltip();});</script>`
                     + '</button>',
                 filter: '<div class="multiselect-filter d-flex align-items-center"><i class="fa fa-sm fa-search text-muted"></i><input type="search" class="multiselect-search form-control" /></div>',
-            
+
             }
         });
         initDateTimeFields();
