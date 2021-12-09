@@ -131,10 +131,17 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                                 authTestResult = e;
                             }
                             if (authTestResult.error) {
-                                webviewView.webview.postMessage({
-                                    type: 'workspaceIdDoesNotExist',
-                                    message: authTestResult?.response?.body?.description_translated ?? 'Invalid URI/Space/Workspace'
-                                });
+                                if (authTestResult.statusCode === 403) {
+                                    webviewView.webview.postMessage({
+                                        type: 'workspaceIdDoesNotExist',
+                                        message: 'Current user is not authorized to perform this operation.'
+                                    });
+                                } else {
+                                    webviewView.webview.postMessage({
+                                        type: 'workspaceIdDoesNotExist',
+                                        message: authTestResult?.response?.body?.description_translated ?? 'Invalid URI/Space/Workspace'
+                                    });
+                                }
                                 webviewView.webview.postMessage({
                                     type: 'testConnectionResponse',
                                     authTestResult: false
