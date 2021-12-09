@@ -24,16 +24,6 @@
     });
 
     document.querySelector('.attempt_browser_authentication_radio').addEventListener('click', () => {
-        var element = document.getElementById('authentication_username_id');
-        if (element) {
-            element.style.opacity = "0.6";
-            element.setAttribute("disabled", "disabled");
-        }
-        var username = document.getElementsByClassName('authentication_username')[0];
-        if (username) {
-            username.setAttribute("disabled", "disabled");
-        }
-
         var element = document.getElementById('authentication_password_id');
         if (element) {
             element.style.opacity = "0.6";
@@ -46,16 +36,6 @@
     });
 
     document.querySelector('.attempt_authentication_radio').addEventListener('click', () => {
-        var element = document.getElementById('authentication_username_id');
-        if (element) {
-            element.style.opacity = "100";
-            element.setAttribute("disabled", "disabled");
-        }
-        var username = document.getElementsByClassName('authentication_username')[0];
-        if (username) {
-            username.removeAttribute("disabled");
-        }
-        
         var element = document.getElementById('authentication_password_id');
         if (element) {
             element.style.display = "flex";
