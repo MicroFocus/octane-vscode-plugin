@@ -70,7 +70,7 @@ export class OctaneService {
                 .fields('id', 'name', 'full_name')
                 .query(Query.field('name').equal(username).build())
                 .execute();
-            this.logger.info('Successful auth test.', result.data);
+            this.logger.debug('Successful auth test.', result.data);
             return result.data && result.data[0] ? (result.data[0].full_name ? result.data[0].full_name : username) : username;
         } catch (e: any) {
             this.logger.error('Error while testing auth.', e);
@@ -128,7 +128,7 @@ export class OctaneService {
                     .fields('id', 'entity', 'logical_name', 'is_primary', 'source_phase{name}', 'target_phase{name}')
                     .execute();
                 this.transitions = result.data.map((t: any) => new Transition(t));
-                this.logger.log(this.transitions);
+                this.logger.debug(this.transitions);
             }
 
         }
@@ -145,7 +145,7 @@ export class OctaneService {
                 )
                 .limit(`5&text_search={"type":"global","text":"${criteria}"}`)
                 .execute();
-            this.logger.log('Global search response', response);
+            this.logger.debug('Global search response', response);
             if (response.data && response.data.length) {
                 let responseWithFields = await this.octane.get(Octane.Octane.entityTypes.workItems)
                     .fields('name', 'story_points', 'phase', 'owner{id,name,full_name}',
@@ -163,10 +163,10 @@ export class OctaneService {
                         r.global_text_search_result = gsr?.global_text_search_result.description;
                     }
                     let oe = new OctaneEntity(r);
-                    this.logger.log('Extended oe', oe);
+                    this.logger.debug('Extended oe', oe);
                     return oe;
                 });
-                this.logger.log('Global search results: ', entities);
+                this.logger.debug('Global search results: ', entities);
                 return entities;
             }
             return [];
@@ -185,7 +185,7 @@ export class OctaneService {
                 )
                 .limit(`5&text_search={"type":"global","text":"${criteria}"}`)
                 .execute();
-            this.logger.log('Global search response', response);
+            this.logger.debug('Global search response', response);
             if (response.data && response.data.length) {
                 let responseWithFields = await this.octane.get(Octane.Octane.entityTypes.requirements)
                     .fields('name', 'phase', 'owner{id,name,full_name}', 'author{id,name,full_name}')
@@ -202,10 +202,10 @@ export class OctaneService {
                         r.global_text_search_result = gsr?.global_text_search_result.description;
                     }
                     let oe = new OctaneEntity(r);
-                    this.logger.log('Extended oe', oe);
+                    this.logger.debug('Extended oe', oe);
                     return oe;
                 });
-                this.logger.log('Global search results: ', entities);
+                this.logger.debug('Global search results: ', entities);
                 return entities;
             }
             return [];
@@ -221,7 +221,7 @@ export class OctaneService {
                 .fields('id', 'name', 'author{id,name,full_name}', 'owner{id,name,full_name}', 'phase', 'global_text_search_result')
                 .limit(`5&text_search={"type":"global","text":"${criteria}"}`)
                 .execute();
-            this.logger.log('Global search response', response);
+            this.logger.debug('Global search response', response);
             if (response.data && response.data.length) {
                 let responseWithFields = await this.octane.get(Octane.Octane.entityTypes.tasks)
                     .fields('id', 'name', 'author{id,name,full_name}', 'owner{id,name,full_name}', 'phase')
@@ -237,10 +237,10 @@ export class OctaneService {
                         r.global_text_search_result = gsr?.global_text_search_result.description;
                     }
                     let oe = new OctaneEntity(r);
-                    this.logger.log('Extended oe', oe);
+                    this.logger.debug('Extended oe', oe);
                     return oe;
                 });
-                this.logger.log('Global search results: ', entities);
+                this.logger.debug('Global search results: ', entities);
                 return entities;
             }
             return [];
@@ -260,7 +260,7 @@ export class OctaneService {
                 .orderBy('id')
                 .limit(`5&text_search={"type":"global","text":"${criteria}"}`)
                 .execute();
-            this.logger.log('Global search response', response);
+            this.logger.debug('Global search response', response);
             if (response.data && response.data.length) {
                 let responseWithFields = await this.octane.get(Octane.Octane.entityTypes.tests)
                     .fields('name', 'owner{id,name,full_name}', 'author{id,name,full_name}', 'phase')
@@ -276,10 +276,10 @@ export class OctaneService {
                         r.global_text_search_result = gsr?.global_text_search_result.description;
                     }
                     let oe = new OctaneEntity(r);
-                    this.logger.log('Extended oe', oe);
+                    this.logger.debug('Extended oe', oe);
                     return oe;
                 });
-                this.logger.log('Global search results: ', entities);
+                this.logger.debug('Global search results: ', entities);
                 return entities;
             }
             return [];
@@ -312,7 +312,7 @@ export class OctaneService {
             .orderBy('creation_time')
             .execute();
         let entities = response.data.map((r: any) => new OctaneEntity(r));
-        this.logger.log(entities);
+        this.logger.debug(entities);
         return entities;
     }
 
@@ -337,10 +337,10 @@ export class OctaneService {
             )
             .orderBy('creation_time')
             .execute();
-        this.logger.log(response);
+        this.logger.debug(response);
 
         let entities = response.data.map((r: any) => new OctaneEntity(r));
-        this.logger.log(entities);
+        this.logger.debug(entities);
         return entities;
     }
 
@@ -371,7 +371,7 @@ export class OctaneService {
             .orderBy('creation_time')
             .execute();
         let entities = response.data.map((r: any) => new OctaneEntity(r));
-        this.logger.log(entities);
+        this.logger.debug(entities);
         return entities;
     }
 
@@ -386,7 +386,7 @@ export class OctaneService {
             .orderBy('creation_time')
             .execute();
         let entities = response.data.map((r: any) => new OctaneEntity(r));
-        this.logger.log(entities);
+        this.logger.debug(entities);
         return entities;
     }
 
@@ -400,7 +400,7 @@ export class OctaneService {
             .orderBy('creation_time')
             .execute();
         let entities = response.data.map((r: any) => new Comment(r));
-        this.logger.log(entities);
+        this.logger.debug(entities);
         return entities;
     }
 
@@ -414,7 +414,7 @@ export class OctaneService {
             .orderBy('creation_time')
             .execute();
         let entities = response.data.map((r: any) => new Task(r));
-        this.logger.log(entities);
+        this.logger.debug(entities);
         return entities;
     }
 
@@ -482,7 +482,7 @@ export class OctaneService {
         if (!this.octaneMap.get(type) || !this.octaneMap.get(type)?.length) {
             await this.getRemoteFieldsForType(type);
         }
-        // logger.log('Application modules: ', this.octaneMap.get(type)?.filter(f => f.name === 'application_modules'));
+        // logger.debug('Application modules: ', this.octaneMap.get(type)?.filter(f => f.name === 'application_modules'));
         return this.octaneMap.get(type);
     }
 
@@ -518,7 +518,7 @@ export class OctaneService {
             const transitions = this.transitions.filter(t =>
                 (t.sourcePhase && t.sourcePhase.id === phaseId)
             );
-            this.logger.log("transitions----", transitions);
+            this.logger.debug("[transitions]", transitions);
             return transitions;
         }
         return [];
@@ -566,7 +566,7 @@ export class OctaneService {
             if (entityTypes === 'product_area') {
                 const result = await this.octane.get(endPoint)
                     .execute();
-                this.logger.log('application_modules', result);
+                this.logger.debug('application_modules', result);
                 return result ?? undefined;
             }
             if (entityTypes === 'sprint' && fullData['release']) {
@@ -665,8 +665,8 @@ export class OctaneService {
 
                     await fetch(`${this.uri}internal-api/shared_spaces/${this.space}/workspaces/${this.workspace}/comments/${e.id}/dismiss`, requestOptions)
                         .then(response => response.text())
-                        .then(result => this.logger.log(result))
-                        .catch(error => this.logger.log('error', error));
+                        .then(result => this.logger.debug(result))
+                        .catch(error => this.logger.error('error', error));
 
 
                     // await this.octane.update(Octane.Octane.entityTypes.comments, entityModel).at(`${e.id}/dismiss`)
