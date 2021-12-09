@@ -233,6 +233,7 @@
             inf_cont.style.fontFamily = "Roboto,Arial,sans-serif";
             sidebar.appendChild(inf_cont);
         }
+        document.getElementById('comments-text').value = '';
     }
 
     function addToMyWork() {
