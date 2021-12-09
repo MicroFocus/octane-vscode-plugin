@@ -248,12 +248,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                         NlQxMTo0MDozNyswMzowMPAri5MAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjEtMTItMDZUMTE6NDA6
                         MzcrMDM6MDCBdjMvAAAAAElFTkSuQmCC" />
                         </svg>
-                        </span>
-                    <script>
-                        $(document).ready(function() {
-                            $('[data-toggle="tooltip"]').tooltip();
-                        });
-                    </script>
+                    </span>
                 </div>
                 <div class="main-container" id="authentication_username_id">
                     <span>Username</span>
@@ -294,13 +289,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                         NlQxMTo0MDozNyswMzowMPAri5MAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjEtMTItMDZUMTE6NDA6
                         MzcrMDM6MDCBdjMvAAAAAElFTkSuQmCC" />
                         </svg>
-                        </span>
-
-                    <script>
-                        $(document).ready(function() {
-                            $('[data-toggle="tooltip"]').tooltip();
-                        });
-                    </script>
+                    </span>
                 </div>
                 <script>
                     document.getElementById("attempt_authentication_radio_id").checked = ${!isBrowserAuth};
