@@ -955,7 +955,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                                 html += `
                                     <div style="padding: unset;" class="container" id="container_${field.label.replaceAll(" ", "_")}">
                                         <label class="active" for="${field.label}">${field.label}</label>
-                                        <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" type="number" value='${getFieldValue(data, field.name)}'>
+                                        <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" type="number" value='${getFieldValue(data, field.name)}' min="0" oninput="validity.valid || (value='');">
                                         <script>
                                             document.getElementById("${field.name}").readOnly = !${field.editable};
                                         </script>
