@@ -267,13 +267,9 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                     <script type="text/javascript">
                         if(${isBrowserAuth} === true) {
                             document.getElementById("authentication_password_id").style.opacity = "0.6";
-                            document.getElementById("authentication_username_id").style.opacity = "0.6";
-                            document.getElementsByClassName('authentication_username')[0].setAttribute("disabled", "disabled");
                             document.getElementsByClassName('authentication_password')[0].setAttribute("disabled", "disabled");
                         } else {
                             document.getElementById("authentication_password_id").style.opacity = "100";
-                            document.getElementById("authentication_username_id").style.opacity = "100";
-                            document.getElementsByClassName('authentication_username')[0].removeAttribute("disabled");
                             document.getElementsByClassName('authentication_password')[0].removeAttribute("disabled");
                         }
                     
