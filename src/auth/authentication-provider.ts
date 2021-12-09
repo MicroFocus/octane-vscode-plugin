@@ -53,7 +53,7 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 	}
 
 	async getSessions(scopes?: string[]): Promise<AlmOctaneAuthenticationSession[]> {
-		this.logger.info(`Getting sessions for ${scopes?.join(',') || 'all scopes'}...`);
+		this.logger.debug(`Getting sessions for ${scopes?.join(',') || 'all scopes'}...`);
 
 		const sessionsList = await this.readSessions();
 		await vscode.commands.executeCommand('setContext', 'visual-studio-code-plugin-for-alm-octane.hasSession', sessionsList?.length > 0);
@@ -104,7 +104,7 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 			const idResult = await fetch(`${uri.endsWith('/') ? uri : uri + '/'}authentication/tokens`, { method: 'POST' });
 			if (idResult.ok) {
 				const response = await idResult.json();
-				this.logger.info(response);
+				this.logger.debug(response);
 				const self = this;
 				const logWrapper = function(msg: string) {
 					self.logger.info(msg);
@@ -114,7 +114,7 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 					const decoratedFetchToken = retryDecorator(this.fetchToken, { retries: 100, delay: 1000, logger: logWrapper });
 					const token = await decoratedFetchToken(uri, user, response);
 					// const token = await this.fetchToken(uri, user, response);
-					this.logger.info('Fetchtoken returned: ', token);
+					this.logger.debug('Fetchtoken returned: ', token);
 					const authTestResult = await OctaneService.getInstance().testAuthentication(uri, space, workspace, user, undefined, token.cookie_name, token.access_token);
 					if (authTestResult === undefined) {
 						throw new Error('Authentication failed.');
@@ -164,7 +164,7 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 	}
 
 	async removeSession(sessionId: string): Promise<void> {
-		this.logger.info('Remove session received.', sessionId);
+		this.logger.debug('Remove session received.', sessionId);
 		await this.keychain.deleteToken();
 		this.sessionChangeEmitter.fire({ added: [], removed: [{ id: sessionId, accessToken: '', account: { id: '', label: '' }, scopes: [] }], changed: [] });
 	}

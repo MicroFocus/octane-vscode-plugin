@@ -134,13 +134,13 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
     static onDidFilterChange: vscode.Event<string> = OctaneEntityEditorProvider.emitter.event;
 
     async openCustomDocument(uri: vscode.Uri, openContext: vscode.CustomDocumentOpenContext, token: vscode.CancellationToken): Promise<OctaneEntityDocument> {
-        this.logger.info('openCustomDocument called', uri, openContext);
+        this.logger.debug('openCustomDocument called', uri, openContext);
         const document: OctaneEntityDocument = await OctaneEntityDocument.create(uri);
         return document;
     }
 
     async resolveCustomEditor(document: OctaneEntityDocument, webviewPanel: vscode.WebviewPanel, token: vscode.CancellationToken): Promise<void> {
-        this.logger.info('resolveCustomEditor called', document, webviewPanel);
+        this.logger.debug('resolveCustomEditor called', document, webviewPanel);
 
         webviewPanel.iconPath = vscode.Uri.file(path.join(this.context.extensionPath, `media/treeIcons/${getDataForSubtype(document.entity)[0]}.svg`));
 
@@ -704,7 +704,7 @@ async function generateCommentElement(data: any | OctaneEntity | undefined, fiel
                     </div>
                     <br>`;
         let comments = await OctaneService.getInstance().getCommentsForEntity(data);
-        getLogger('vs').info("comments", comments);
+        getLogger('vs').debug("comments", comments);
         if (comments) {
             for (const comment of comments) {
                 let time;

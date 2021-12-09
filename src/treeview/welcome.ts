@@ -37,8 +37,8 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
         token: vscode.CancellationToken,
     ) {
         this.logger.info('WelcomeViewProvider.resolveWebviewView called');
-        this.logger.info('context: ', context);
-        this.logger.info('token: ', token);
+        this.logger.debug('context: ', context);
+        this.logger.debug('token: ', token);
         this.view = webviewView;
 
         webviewView.webview.options = {
