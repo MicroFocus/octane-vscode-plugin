@@ -818,6 +818,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
         html += `   </div>
                     <div class="information-container">
                         <div class="description-container" id="container_Description">
+                            <label name="description">Description</label>
                             <textarea id="description" class="description" type="text">${stripHtml(getFieldValue(data, 'description').toString()).result}</textarea>
                         </div>
                         <script>
