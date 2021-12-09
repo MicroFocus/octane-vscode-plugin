@@ -451,7 +451,7 @@ export class OctaneService {
             const endPoint = entityTypeApiEndpoint.get('comment');
             this.octane.create(endPoint, body).execute()
                 .then((res: any) => {
-                    vscode.window.showInformationMessage('Your comment have been saved.');
+                    vscode.window.showInformationMessage('Your comment has been saved.');
                 }, (error: any) => {
                     this.logger.error('While saving comment: ', error);
                     vscode.window.showErrorMessage((error.response.body.description) ?? 'We couldn’t save your comment.');
