@@ -720,6 +720,7 @@ function getDataForSubtype(entity: OctaneEntity | undefined): [string, string] {
         if (entity?.subtype === 'run_manual') { return ["MR", "#29ceff"]; }
         if (entity?.subtype === 'epic') { return ["E", "#7425AD"]; }
         if (entity?.subtype === 'run_automated') { return ["AR", "#ba47ee"]; }
+        if (entity?.subtype === 'gherkin_automated_run') { return ["GAR", "#ba47e2"]; }
     }
     return ['', ''];
 }

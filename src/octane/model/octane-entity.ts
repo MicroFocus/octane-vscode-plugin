@@ -72,6 +72,9 @@ export class OctaneEntity extends BaseEntity {
             case 'requirement_folder':
                 this.label = 'RF';
                 break;
+            case 'gherkin_automated_run':
+                this.label = 'GAR';
+                break;
 
             case '':
             case undefined:
