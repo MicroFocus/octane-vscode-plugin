@@ -335,25 +335,24 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
         ];
 
         let resetFilterValuesForFeature = [
-            "Application_modules",
-            "Blocked",
-            "Blocked_reason",
-            "Closed_on",
-            "Creation_time",
-            "Defect_type",
-            "Description",
-            "Detected_by",
-            "Detected_in_release",
-            "Environment",
-            "Feature",
-            "Last_modified",
             "Owner",
-            "Priority",
-            "Release",
-            "Severity",
-            "Sprint",
+            "Author",
+            "Creation_time",
+            "Last_modified",
             "Story_points",
-            "Team"
+            "Item_origin",
+            "Test_Coverage",
+            "Epic",
+            "Priority",
+            "Application_modules",
+            "Release",
+            "Milestone",
+            "Team",
+            "Target_Sprint",
+            "Items_in_releases",
+            "Progress",
+            "Feature_type",
+            "Actual_story_points"
         ];
 
         // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -405,6 +404,113 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
             "Type"
         ];
 
+        let resetFilterValuesForMR = [
+            "Test_name",
+            "Native_status",
+            "Author",
+            "Run_by",
+            "Started",
+            "Duration",
+            "Content",
+            "Release",
+            "Milestone",
+            "Sprint",
+            "Version_from_Release",
+            "Draft_run",
+            "Last_modified",
+            "Draft_run",
+            "Environment",
+            "Backlog_Coverage"
+        ];
+
+        let resetFilterValuesForEpic = [
+            "Description",
+            "Owner",
+            "Creation_time",
+            "Last_modified",
+            "Milestone",
+            "Story_points",
+            "Author",
+            "Item_origin",
+            "Items_in_releases",
+            "Progress",
+            "Epic_type"
+        ];
+
+        let resetFilterValuesForBDDSpec = [
+            "Description",
+            "Creation_time",
+            "Last_modified",
+            "Author",
+            "Owner",
+            "Application_modules",
+            "Automation_status",
+            "Linked_backlog_items",
+            "Code_alignment"
+        ];
+
+        let resetFilterValuesForBDDScenario = [
+            "Test_type",
+            "Testing_tool_type",
+            "Owner",
+            "Estimated_duration_(minutes)",
+            "Created",
+            "Last_modified",
+            "Backlog_Coverage",
+            "Application_modules",
+            "Automation_status",
+            "BDD_Spec",
+            "Description"
+        ];
+
+        let resetFilterValuesForTestAutomated = [
+            "Framework",
+            "Testing_tool_type",
+            "Owner",
+            "Test_level",
+            "Test_type",
+            "Branch",
+            "Application_modules",
+            "Backlog_Coverage",
+            "Executable",
+            "Description"
+        ];
+
+        let resetFilterValuesForTestSuite = [
+            "Test_type",
+            "Testing_tool_type",
+            "Owner",
+            "Estimated_duration_(minutes)",
+            "Designer",
+            "Created",
+            "Last_modified",
+            "Backlog_Coverage",
+            "Application_modules",
+            "Description"
+        ];
+
+        let resetFilterValuesForAR = [
+            "Test_name",
+            "Draft_run",
+            "Run_by",
+            "Assigned_to_('On it')",
+            "Component",
+            "Started",
+            "Duration",
+            "Backlog_Coverage"
+        ];
+
+        let resetFilterValuesForGAR = [
+            "Test_name",
+            "Native_status",
+            "Run_by",
+            "Started",
+            "Duration",
+            "Content",
+            "Last_modified",
+            "Backlog_Coverage"
+        ];
+
         var activeFields: string[] | undefined = [];
         if (data.subtype !== null && data.subtype !== undefined && data.subtype !== "") {
             activeFields = await getSavedFields(data.subtype);
@@ -433,6 +539,27 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                 if (data.subtype === 'requirement_document') {
                     vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForRD }, data.subtype);
                 }
+                if (data.subtype === 'run_manual') {
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForMR }, data.subtype);
+                }
+                if (data.subtype === 'epic') {
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForEpic }, data.subtype);
+                }
+                if (data.subtype === 'scenario_test') {
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForBDDScenario }, data.subtype);
+                }
+                if (data.subtype === 'test_automated') {
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForTestAutomated }, data.subtype);
+                }
+                if (data.subtype === 'test_suite') {
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForTestSuite }, data.subtype);
+                }
+                if (data.subtype === 'run_automated') {
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForAR }, data.subtype);
+                }
+                if (data.subtype === 'gherkin_automated_run') {
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForGAR }, data.subtype);
+                }
                 activeFields = await getSavedFields(data.subtype);
             }
         } else {
@@ -441,6 +568,9 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                 if (activeFields === undefined) {
                     if (data.type === 'task') {
                         vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForTask }, data.type);
+                    }
+                    if (data.type === 'bdd_spec') {
+                        vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForBDDSpec }, data.type);
                     }
                     activeFields = await getSavedFields(data.type);
                 }
@@ -473,10 +603,34 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
             if (data.subtype === 'requirement_document') {
                 currentDefaultFields = resetFilterValuesForRD;
             }
+            if (data.subtype === 'run_manual') {
+                currentDefaultFields = resetFilterValuesForMR;
+            }
+            if (data.subtype === 'epic') {
+                currentDefaultFields = resetFilterValuesForEpic;
+            }
+            if (data.subtype === 'scenario_test') {
+                currentDefaultFields = resetFilterValuesForBDDScenario;
+            }
+            if (data.subtype === 'test_automated') {
+                currentDefaultFields = resetFilterValuesForTestAutomated;
+            }
+            if (data.subtype === 'test_suite') {
+                currentDefaultFields = resetFilterValuesForTestSuite;
+            }
+            if (data.subtype === 'run_automated') {
+                currentDefaultFields = resetFilterValuesForAR;
+            }
+            if (data.subtype === 'gherkin_automated_run') {
+                currentDefaultFields = resetFilterValuesForGAR;
+            }
         } else {
             if (data.type !== null && data.type !== undefined) {
                 if (data.type === 'task') {
                     currentDefaultFields = resetFilterValuesForTask;
+                }
+                if (data.type === 'bdd_spec') {
+                    currentDefaultFields = resetFilterValuesForBDDSpec;
                 }
             } else {
                 currentDefaultFields = resetFilterValuesForDefect;
@@ -653,7 +807,7 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
         mapFields = new Map([...mapFields].sort((a, b) => String(a[0]).localeCompare(b[0])));
         html += `
                 <div style="margin: 0rem 0rem 0rem 0.5rem;" id="container_filter_multiselect" class="dropleft">
-                    <select multiple="multiple" id="filter_multiselect" data-display="static" defaultFields="${(<any>JSON.stringify(currentDefaultFields ?? '')).replaceAll('"','\'')}">
+                    <select multiple="multiple" id="filter_multiselect" data-display="static" defaultFields="${(<any>JSON.stringify(currentDefaultFields ?? '')).replaceAll('"', '\'')}">
                 `;
         for (const [key, field] of mapFields) {
 
