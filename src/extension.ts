@@ -371,14 +371,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	}
 
-	context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(async e => {
-		if (e.affectsConfiguration('visual-studio-code-plugin-for-alm-octane')) {
-			await service.initialize();
-			// await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: false });
-			vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.refreshAll');
-		}
-	}));
-
 	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.details', async (e: MyWorkItem) => {
 		if (e.command && e.command.arguments) {
 			await vscode.commands.executeCommand(e.command.command, e.command.arguments[0], e.command.arguments[1]);
