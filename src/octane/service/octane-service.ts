@@ -8,6 +8,7 @@ import { Comment } from '../model/comment';
 import { AlmOctaneAuthenticationProvider, AlmOctaneAuthenticationSession, AlmOctaneAuthenticationType } from '../../auth/authentication-provider';
 import fetch, { Headers, RequestInit } from 'node-fetch';
 import { getLogger } from 'log4js';
+import { LoginData } from '../../auth/login-data';
 
 export class OctaneService {
 
@@ -27,10 +28,7 @@ export class OctaneService {
 
     private octane?: any;
 
-    private user?: string;
-    private uri?: string;
-    private space?: string;
-    private workspace?: string;
+    private loginData: LoginData | undefined;
     private loggedInUserId?: number;
     private transitions?: Transition[];
     private phases = new Map<string, string>();
@@ -39,6 +37,9 @@ export class OctaneService {
 
     private password?: string;
     private session?: AlmOctaneAuthenticationSession;
+
+    private constructor() {
+    }
 
     public async testConnectionOnBrowserAuthentication(uri: string) {
         try {
@@ -88,50 +89,51 @@ export class OctaneService {
 
     public async initialize() {
 
+            this.loginData = await vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.getLoginData');
 
-        this.uri = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.url');
-        if (this.uri !== undefined) {
-            let regExp = this.uri.match(/\?p=(\d+\/\d+)/);
-            if (regExp) {
-                this.uri = this.uri.split(regExp[0])[0];
-            }
-        }
-        this.space = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.space');
-        this.workspace = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.workspace');
-        this.user = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.user.userName');
+            // this.uri = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.url');
+            // if (this.uri !== undefined) {
+            //     let regExp = this.uri.match(/\?p=(\d+\/\d+)/);
+            //     if (regExp) {
+            //         this.uri = this.uri.split(regExp[0])[0];
+            //     }
+            // }
+            // this.space = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.space');
+            // this.workspace = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.workspace');
+            // this.user = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.user.userName');
 
-        this.session = await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: false }) as AlmOctaneAuthenticationSession;
+            this.session = await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: false }) as AlmOctaneAuthenticationSession;
 
-        if (this.uri && this.space && this.workspace && this.user && this.session) {
-            this.octane = new Octane.Octane({
-                server: this.uri,
-                sharedSpace: this.space,
-                workspace: this.workspace,
-                user: this.user,
-                password: this.session.type === AlmOctaneAuthenticationType.userNameAndPassword ? this.session.accessToken : undefined,
-                headers: {
-                    // eslint-disable-next-line @typescript-eslint/naming-convention
-                    ALM_OCTANE_TECH_PREVIEW: true,
-                    // eslint-disable-next-line @typescript-eslint/naming-convention
-                    HPECLIENTTYPE: 'OCTANE_IDE_PLUGIN',
-                    // eslint-disable-next-line @typescript-eslint/naming-convention
-                    Cookie: this.session.type === AlmOctaneAuthenticationType.browser ? `${this.session.cookieName}=${this.session.accessToken}` : undefined
-                }
-            });
-            const result: any = await this.octane.get(Octane.Octane.entityTypes.workspaceUsers)
-                .query(Query.field('name').equal(this.user).build())
-                .execute();
-            this.loggedInUserId = result.data[0].id;
-
-            {
-                const result = await this.octane.get(Octane.Octane.entityTypes.transitions)
-                    .fields('id', 'entity', 'logical_name', 'is_primary', 'source_phase{name}', 'target_phase{name}')
+            if (this.loginData?.url && this.loginData.space && this.loginData.workspace && this.loginData.user && this.session) {
+                this.octane = new Octane.Octane({
+                    server: this.loginData.url,
+                    sharedSpace: this.loginData.space,
+                    workspace: this.loginData.workspace,
+                    user: this.loginData.user,
+                    password: this.session.type === AlmOctaneAuthenticationType.userNameAndPassword ? this.session.accessToken : undefined,
+                    headers: {
+                        // eslint-disable-next-line @typescript-eslint/naming-convention
+                        ALM_OCTANE_TECH_PREVIEW: true,
+                        // eslint-disable-next-line @typescript-eslint/naming-convention
+                        HPECLIENTTYPE: 'OCTANE_IDE_PLUGIN',
+                        // eslint-disable-next-line @typescript-eslint/naming-convention
+                        Cookie: this.session.type === AlmOctaneAuthenticationType.browser ? `${this.session.cookieName}=${this.session.accessToken}` : undefined
+                    }
+                });
+                const result: any = await this.octane.get(Octane.Octane.entityTypes.workspaceUsers)
+                    .query(Query.field('name').equal(this.loginData.user).build())
                     .execute();
-                this.transitions = result.data.map((t: any) => new Transition(t));
-                this.logger.debug(this.transitions);
-            }
+                this.loggedInUserId = result.data[0].id;
 
-        }
+                {
+                    const result = await this.octane.get(Octane.Octane.entityTypes.transitions)
+                        .fields('id', 'entity', 'logical_name', 'is_primary', 'source_phase{name}', 'target_phase{name}')
+                        .execute();
+                    this.transitions = result.data.map((t: any) => new Transition(t));
+                    this.logger.debug(this.transitions);
+                }
+
+            }
     }
 
     public async globalSearchWorkItems(subtype: string, criteria: string): Promise<OctaneEntity[]> {
@@ -641,14 +643,14 @@ export class OctaneService {
             let type = e.type;
             if (e.type === 'comment') {
 
-                if (this.uri && this.space && this.workspace && this.user && this.session) {
+                if (this.loginData?.uri && this.loginData.space && this.loginData.workspace && this.loginData.user && this.session) {
                     var myHeaders = new Headers();
                     myHeaders.append('ALM_OCTANE_TECH_PREVIEW', 'true');
                     myHeaders.append('HPECLIENTTYPE', 'OCTANE_IDE_PLUGIN');
                     if (this.session.type === AlmOctaneAuthenticationType.browser) {
                         myHeaders.append('Cookie', `${this.session.cookieName}=${this.session.accessToken}`);
                     } else {
-                        myHeaders.set('Authorization', 'Basic ' + Buffer.from(this.user + ":" + this.session.accessToken).toString('base64'));
+                        myHeaders.set('Authorization', 'Basic ' + Buffer.from(this.loginData.user + ":" + this.session.accessToken).toString('base64'));
                     }
                     myHeaders.append('Content-Type', 'application/json');
 
@@ -663,7 +665,7 @@ export class OctaneService {
                         redirect: 'follow'
                     };
 
-                    await fetch(`${this.uri}internal-api/shared_spaces/${this.space}/workspaces/${this.workspace}/comments/${e.id}/dismiss`, requestOptions)
+                    await fetch(`${this.loginData.url}internal-api/shared_spaces/${this.loginData.space}/workspaces/${this.loginData.workspace}/comments/${e.id}/dismiss`, requestOptions)
                         .then(response => response.text())
                         .then(result => this.logger.debug(result))
                         .catch(error => this.logger.error('error', error));
@@ -715,7 +717,7 @@ export class OctaneService {
     }
 
     public getBrowserUri(entity: any): vscode.Uri {
-        return vscode.Uri.parse(`${this.uri}ui/?p=${this.space}%2F${this.workspace}#/entity-navigation?entityType=${entity.type}&id=${entity.id}`);
+        return vscode.Uri.parse(`${this.loginData?.url}ui/?p=${this.loginData?.space}%2F${this.loginData?.workspace}#/entity-navigation?entityType=${entity.type}&id=${entity.id}`);
     }
 }
 
