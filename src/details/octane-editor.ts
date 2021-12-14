@@ -850,7 +850,7 @@ async function generateCommentElement(data: any | OctaneEntity | undefined, fiel
         html += `   <br>
                     <hr>
                     Comments
-                    <div class="information-container">
+                    <div id="addCommentContainer" class="information-container">
                         <div class="comments-container">
 
                             <input id="comments-text" type="text">
@@ -861,14 +861,15 @@ async function generateCommentElement(data: any | OctaneEntity | undefined, fiel
         let comments = await OctaneService.getInstance().getCommentsForEntity(data);
         getLogger('vs').debug("comments", comments);
         if (comments) {
-            for (const comment of comments) {
+            const sortedComments = comments.sort((a: Comment, b: Comment) => new Date(b.creation_time ?? '').getTime() - new Date (a.creation_time ?? '').getTime());
+            for (const comment of sortedComments) {
                 let time;
                 if (comment.creation_time && comment.creation_time !== '') {
                     time = new Date(comment.creation_time).toLocaleString();
                 }
                 html += `
                     <div class="information-container" style="font-family: Roboto,Arial,sans-serif; word-break: break-word; display: block; border-color: var(--vscode-foreground); border-bottom: 1px solid; margin: 0rem 0rem 1rem 0rem;">
-                    ${time ?? ''} <b>${comment.author?.fullName ?? ''}</b>: <div style="margin: 0.5rem 0rem 0.5rem 0rem; background-color: transparent; padding-left: 1rem;">${stripHtml(comment.text).result}</div>
+                    ${time ?? ''} <b>${comment.author?.fullName ?? ''}</b>: <div style="margin: 0.5rem 0rem 0.5rem 0rem; background-color: transparent; padding-left: 1rem;">${comment.text}</div>
                     </div>
                 `;
             }
