@@ -55,32 +55,6 @@
 				]
 			}
 		],
-		"configuration": [
-			{
-				"title": "Visual Studio Code plugin for ALM Octane",
-				"properties": {
-					"visual-studio-code-plugin-for-alm-octane.server.url": {
-						"type": "string",
-						"format": "uri",
-						"scope": "window"
-					},
-					"visual-studio-code-plugin-for-alm-octane.server.space": {
-						"type": "string",
-						"format": "number",
-						"scope": "window"
-					},
-					"visual-studio-code-plugin-for-alm-octane.server.workspace": {
-						"type": "string",
-						"format": "number",
-						"scope": "window"
-					},
-					"visual-studio-code-plugin-for-alm-octane.user.userName": {
-						"type": "string",
-						"scope": "window"
-					}
-				}
-			}
-		],
 		"viewsContainers": {
 			"activitybar": [
 				{

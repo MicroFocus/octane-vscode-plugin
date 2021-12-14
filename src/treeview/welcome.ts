@@ -64,21 +64,25 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                         try {
                             const uri = vscode.workspace.getConfiguration('visual-studio-code-plugin-for-alm-octane');
                             //save url to memento
-                            await vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.saveLoginData',
-                                JSON.parse(
-                                    `{"url": "${data.uri}", "authTypeBrowser": ${data.browser}}`
-                                ));
-                            let regExp = data.uri.match(/\?p=(\d+\/\d+)/) ?? data.uri.match(/(\/?%\d*[A-Za-z]*)/) ?? data.uri.match(/\/ui/);
+                            let regularUri = data.uri;
+                            let regExp = regularUri.match(/\?p=(\d+\/\d+)/) ?? regularUri.match(/(\/?%\d*[A-Za-z]*)/) ?? regularUri.match(/\/ui/);
                             if (regExp) {
-                                data.uri = data.uri.split(regExp[0])[0];
-                                if (data.uri) {
-                                    data.uri = data.uri.split('ui')[0];
+                                regularUri = regularUri.split(regExp[0])[0];
+                                if (regularUri) {
+                                    regularUri = regularUri.split('ui')[0];
                                 }
                             }
-                            await uri.update('server.url', data.uri.endsWith('/') ? data.uri : data.uri + '/', true);
-                            await uri.update('server.space', data.space, true);
-                            await uri.update('server.workspace', data.workspace, true);
-                            await uri.update('user.userName', data.user, true);
+                            await vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.saveLoginData',
+                                {
+                                    "uri": data.uri,
+                                    "url": regularUri.endsWith('/') ? regularUri : regularUri + '/',
+                                    "authTypeBrowser": data.browser,
+                                    "space": data.space,
+                                    "workspace": data.workspace,
+                                    "user": data.user
+                                }
+                            );
+
                             if (data.browser) {
                                 try {
                                     await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: true });
@@ -198,11 +202,11 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
         this.logger.info('WelcomeViewProvider.getHtmlForWebview called');
 
         let loginData: any | undefined = await vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.getLoginData');
-        const uri: string | undefined = loginData?.url ?? vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.url');
+        const uri: string | undefined = loginData?.uri ?? '';
         let isBrowserAuth: boolean = loginData?.authTypeBrowser ?? false;
-        const space = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.space');
-        const workspace = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.workspace');
-        const user = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.user.userName');
+        const space = loginData?.space ?? '';
+        const workspace = loginData?.workspace ?? '';
+        const user = loginData?.user ?? '';
 
         const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'media', 'welcome-controller.js'));
 

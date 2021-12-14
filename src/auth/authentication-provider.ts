@@ -6,6 +6,7 @@ import { v4 as uuid } from 'uuid';
 import { OctaneService } from '../octane/service/octane-service';
 import { create } from 'domain';
 import { getLogger} from 'log4js';
+import { LoginData } from './login-data';
 
 export const type = 'alm-octane.auth';
 
@@ -89,10 +90,13 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 	}
 
 	async createSession(scopes: string[]): Promise<AlmOctaneAuthenticationSession> {
-		const uri: string | undefined = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.url');
-		const user: string | undefined = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.user.userName');
-		const space: string | undefined = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.space');
-		const workspace: string | undefined = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.workspace');
+
+		let loginData: LoginData | undefined = await this.context.workspaceState.get('loginData');
+
+		const uri: string | undefined = loginData?.url;
+		const user: string | undefined = loginData?.user;
+		const space: string | undefined = loginData?.space;
+		const workspace: string | undefined = loginData?.workspace;
 		if (uri === undefined || user === undefined || uri === '' || user === '') {
 			throw new Error('No authentication possible. No uri or username provided.');
 		}
@@ -191,10 +195,12 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 				return [];
 			}
 
-			let uri: string | undefined = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.url');
-			const space: string | undefined = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.space');
-			const workspace: string | undefined = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.workspace');
-			const user: string | undefined = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.user.userName');
+			let loginData: LoginData | undefined = await this.context.workspaceState.get('loginData');
+
+			let uri: string | undefined = loginData?.url;
+			const space: string | undefined = loginData?.space;
+			const workspace: string | undefined = loginData?.workspace;
+			const user: string | undefined = loginData?.user;
 
 			if (uri === undefined || user === undefined || sessionData.account.id !== user) {
 				await this.keychain.deleteToken();
