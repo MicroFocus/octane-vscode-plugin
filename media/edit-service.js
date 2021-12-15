@@ -131,7 +131,7 @@
 
     function getDataForEntity(entity) {
         let fieldName = entity.$select.find('#select').context.id;
-        console.log(fieldName);
+        // console.log("fieldName" , fieldName);
         if (fieldName && !selectDataPresent.includes(fieldName)) {
             vscode.postMessage({
                 type: 'get-data-for-select',

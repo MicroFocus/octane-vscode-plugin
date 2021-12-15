@@ -565,6 +565,14 @@ export class OctaneService {
                     .execute();
                 return result ?? undefined;
             }
+            if (entityTypes === 'story') {
+                const result = await this.octane.get(endPoint)
+                    // .query(
+                    //     Query.field('list_root').equal(Query.field('logical_name').equal(field.field_type_data.targets[0].logical_name))
+                    //         .build())
+                    .execute();
+                return result ?? undefined;
+            }
             if (entityTypes === 'product_area') {
                 const result = await this.octane.get(endPoint)
                     .execute();

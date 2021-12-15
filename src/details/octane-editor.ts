@@ -217,8 +217,8 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                             let data = await generateSelectOptions(field[0], document.entity);
                             if (data) {
                                 let selectedField;
-                                if (field.field_type_data && field.field_type_data.multiple) {
-                                    selectedField = getFieldValue(data, fieldNameMap.get(field.name) ?? field.name);
+                                if (field[0].field_type_data && field[0].field_type_data.multiple) {
+                                    selectedField = getFieldValue(data, fieldNameMap.get(field[0].name) ?? field[0].name);
                                     webviewPanel.webview.postMessage({
                                         type: 'post-options-for-multiple-select',
                                         from: 'webview',
