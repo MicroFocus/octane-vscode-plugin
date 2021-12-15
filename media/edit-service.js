@@ -166,14 +166,16 @@
     function addOptionsForMultipleSelect(options, field, selected) {
         let fieldName = field[0].name;
         let select = document.getElementById(fieldName);
-        if (options && options.data) {
-            for (let option of options.data) {
+        console.log(options, field, selected);
+        if (options) {
+            for (let option of options) {
                 if (selected.includes(option.name)) {
-                    select.add(new Option(option.name, JSON.stringify(option), true));
+                    select.innerHTML+= `<option selected value='${JSON.stringify(option)}'>${option.name}</option>`;
                 } else {
-                    select.add(new Option(option.name, JSON.stringify(option)));
+                    select.innerHTML+= `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
                 }
             }
+            $('#'+fieldName).multiselect('rebuild');
         }
     }
 
@@ -406,6 +408,7 @@
 
             case 'post-options-for-multiple-select':
                 {
+                    console.log("e",e);
                     if (e && e.data && e.data.data) {
                         if (e.data.data.options) {
                             let options = e.data.data.options;

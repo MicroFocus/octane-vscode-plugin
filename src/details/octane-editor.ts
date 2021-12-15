@@ -691,7 +691,11 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
 
 async function generateSelectOptions(field: any, data: any | OctaneEntity | undefined) {
     if (field && field.field_type_data && field.field_type_data.targets && data) {
-        return await OctaneService.getInstance().getFullDataForEntity(field.field_type_data.targets[0].type, field, data);
+        var options = [];
+        for(const target of field.field_type_data.targets) {
+            options.push(...(await OctaneService.getInstance().getFullDataForEntity(target.type, field, data)).data);
+        }
+        return options;
     }
     getLogger('vs').warn('Error generating select options for field.', field);
     return;
