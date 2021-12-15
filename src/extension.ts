@@ -35,7 +35,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	};
 	try {
 		fs.accessSync(context.logUri.path, fs.constants.W_OK);
-		console.info('Log dir is writeable.');
+		console.debug('Log dir is writeable.');
 	} catch (error) {
 		console.warn('Log dir is not writeable.');
 		logAppender = {
@@ -43,12 +43,23 @@ export async function activate(context: vscode.ExtensionContext) {
 		};
 	}
 
+	const logLevel: string = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.logLevel') ?? 'info';
 	configure({
 		appenders: { vs: logAppender },
-		categories: { default: { appenders: ['vs'], level: 'debug' } }
+		categories: { default: { appenders: ['vs'], level: logLevel } }
 	});
 
 	const logger = getLogger('vs');
+
+	context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(async e => {
+		if (e.affectsConfiguration('visual-studio-code-plugin-for-alm-octane')) {
+			const logLevel: string = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.logLevel') ?? 'info';
+			configure({
+				appenders: { vs: logAppender },
+				categories: { default: { appenders: ['vs'], level: logLevel } }
+			});
+		}
+	}));
 
 	const service = OctaneService.getInstance();
 	const authProvider = new AlmOctaneAuthenticationProvider(context);
