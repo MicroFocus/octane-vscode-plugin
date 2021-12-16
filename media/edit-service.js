@@ -146,21 +146,48 @@
     function addOptionsForSelect(options, field, selectedName) {
         let fieldName = field[0].name;
         let select = $('#' + fieldName);
-        if (options && options.data) {
-            for (let option of options.data) {
-                if (option.type === 'workspace_user') {
-                    if (option.full_name !== selectedName) {
-                        select.append(`<option data-label="${option.full_name}" value='${JSON.stringify(option)}'>${option.full_name}</option>`);
+        console.log(options);
+        if (options) {
+            if (options.data) {
+                for (let option of options.data) {
+                    if (option.type === 'workspace_user') {
+                        // ... 
+                        if (option.full_name !== selectedName) {
+                            select.innerHTML += `<option data-label='${option.full_name}' value='${JSON.stringify(option)}'>${option.full_name}</option>`;
+                        }
+                    } else {
+                        // ... 
+                        if (option.name !== selectedName) {
+                            select.innerHTML += `<option data-label='${option.name}' value='${JSON.stringify(option)}'>${option.name}</option>`;
+                        }
                     }
-                } else {
-                    if (option.name !== selectedName) {
-                        select.append(`<option data-label="${option.name}" value='${JSON.stringify(option)}'>${option.name}</option>`);
+                }
+            } else {
+                for (let option of options) {
+                    if (option.type === 'workspace_user') {
+                        if (option.full_name !== selectedName) {
+                            if (select.innerHTML) {
+                                select.innerHTML += `<option data-label='${option.full_name}' value='${JSON.stringify(option)}'>${option.full_name}</option>`;
+                            } else {
+                                select.innerHTML = `<option data-label='${option.full_name}' value='${JSON.stringify(option)}'>${option.full_name}</option>`;
+                            }
+                        }
+                    } else {
+                        if (option.name !== selectedName) {
+                            console.log(select.innerHTML);
+                            if (select.innerHTML !== undefined) {
+                                select.innerHTML += `<option data-label='${option.name}' value='${JSON.stringify(option)}'>${option.name}</option>`;
+                            } else {
+                                select.innerHTML = `<option data-label='${option.name}' value='${JSON.stringify(option)}'>${option.name}</option>`;
+                            }
+                        }
                     }
                 }
             }
         }
         selectDataPresent.push(fieldName);
-        select.multiselect('rebuild');
+        $('#' + fieldName).multiselect('rebuild');
+        // select.multiselect('rebuild');
     }
 
     function addOptionsForMultipleSelect(options, field, selected) {
@@ -168,14 +195,25 @@
         let select = document.getElementById(fieldName);
         console.log(options, field, selected);
         if (options) {
-            for (let option of options) {
-                if (selected.includes(option.name)) {
-                    select.innerHTML+= `<option selected value='${JSON.stringify(option)}'>${option.name}</option>`;
-                } else {
-                    select.innerHTML+= `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
+            if (options.data) {
+                for (let option of options.data) {
+                    if (selected.includes(option.name)) {
+                        select.innerHTML += `<option selected value='${JSON.stringify(option)}'>${option.name}</option>`;
+                    } else {
+                        select.innerHTML += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
+                    }
+                }
+            } else {
+                for (let option of options) {
+                    if (selected.includes(option.name)) {
+                        select.innerHTML += `<option selected value='${JSON.stringify(option)}'>${option.name}</option>`;
+                    } else {
+                        select.innerHTML += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
+                    }
                 }
             }
-            $('#'+fieldName).multiselect('rebuild');
+            selectDataPresent.push(fieldName);
+            $('#' + fieldName).multiselect('rebuild');
         }
     }
 
@@ -408,7 +446,7 @@
 
             case 'post-options-for-multiple-select':
                 {
-                    console.log("e",e);
+                    console.log("e", e);
                     if (e && e.data && e.data.data) {
                         if (e.data.data.options) {
                             let options = e.data.data.options;
