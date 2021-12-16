@@ -87,7 +87,8 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                                 try {
                                     await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: true });
                                 } catch (e: any) {
-                                    vscode.window.showErrorMessage(e.message);
+                                    this.logger.error(`Error on login: ${e}`);
+                                    vscode.window.showErrorMessage("Error on login.");
                                     throw e;
                                 }
                             } else {
@@ -96,7 +97,8 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                                     // await this.authenticationProvider.createManualSession(data.password);
                                     await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: true });
                                 } catch (e: any) {
-                                    vscode.window.showErrorMessage(e.message);
+                                    this.logger.error(`Error on login: ${e}`);
+                                    vscode.window.showErrorMessage("Error on login.");
                                     throw e;
                                 } finally {
                                     OctaneService.getInstance().storePasswordForAuthentication(undefined);
