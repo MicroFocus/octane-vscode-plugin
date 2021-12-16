@@ -98,7 +98,7 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 		const space: string | undefined = loginData?.space;
 		const workspace: string | undefined = loginData?.workspace;
 		if (uri === undefined || user === undefined || uri === '' || user === '') {
-			throw new Error('No authentication possible. No uri or username provided.');
+			throw new Error('Username cannot be blank. Password cannot be blank.');
 		}
 		let session: AlmOctaneAuthenticationSession | undefined;
 		const password = OctaneService.getInstance().getPasswordForAuthentication();
