@@ -367,6 +367,8 @@
                                                 updatedData[fieldNameMap.get(field.name) ?? field.name] = parseFloat(val);
                                             } else if (field.field_type === 'boolean') {
                                                 updatedData[fieldNameMap.get(field.name) ?? field.name] = val === 'true';
+                                            } else if (field.field_type === 'date_time') {
+                                                updatedData[fieldNameMap.get(field.name) ?? field.name] = new Date(val).toISOString();
                                             } else {
                                                 updatedData[fieldNameMap.get(field.name) ?? field.name] = val;
                                             }
