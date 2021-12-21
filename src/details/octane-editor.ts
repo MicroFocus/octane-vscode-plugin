@@ -1094,7 +1094,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                                 html += `
                                 <div style="padding: unset;" class="container" id="container_${field.label.replaceAll(" ", "_")}">
                                     <label class="active" for="${field.label}">${field.label}</label>
-                                    <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" value='${getFieldValue(data, field.name)}' data-toggle="datetimepicker" class="datetimepicker-input" data-target="#${field.name}" disabled="!${field.editable}">
+                                    <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" value='${getFieldValue(data, field.name)}' data-toggle="datetimepicker" class="datetimepicker-input" data-target="#${field.name}" ${disableOrEnable(field)}>
                                 </div>
                             `;
                             } else if (field.field_type === 'boolean') {
@@ -1151,6 +1151,10 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
         vscode.window.showErrorMessage('Error generating fields for entity.');
     }
     return html;
+}
+
+function disableOrEnable(field: any): string {
+    return field.editable ? '' : 'disabled';
 }
 
 function getFieldValue(data: any, fieldName: string): string | any[] {
