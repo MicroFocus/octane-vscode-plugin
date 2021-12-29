@@ -43,7 +43,7 @@
                     for (let s of select.selectedOptions) {
                         if (s !== null && s.label) {
                             options.push(
-                                s.label.replaceAll(" ", "_")
+                                s.label.replaceAll(" ", "_").replaceAll('"', "")
                             );
                         }
                     }

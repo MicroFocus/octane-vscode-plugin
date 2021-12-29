@@ -493,7 +493,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
             "Test_name",
             "Draft_run",
             "Run_by",
-            "Assigned_to_('On it')",
+            "Assigned_to_(On_it)",
             "Component",
             "Started",
             "Duration",
@@ -813,15 +813,15 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
         for (const [key, field] of mapFields) {
 
             if (field) {
-                if (await isSelectedField(field.label.replaceAll(" ", "_"), activeFields)) {
+                if (await isSelectedField(field.label.replaceAll(" ", "_").replaceAll('"', ""), activeFields)) {
                     filteredFields = filteredFields.concat(field.name);
                 } else {
                     filteredFields = filteredFields.filter(f => f !== field.name);
                 }
                 if (filteredFields.includes(field.name)) {
-                    html += `<option data-label="${field.label}" selected="selected" value='${field.label.replaceAll(" ", "_")}'>${field.label}</option>`;
+                    html += `<option data-label="${field.label}" selected="selected" value='${field.label.replaceAll(" ", "_").replaceAll('"', "")}'>${field.label}</option>`;
                 } else {
-                    html += `<option data-label="${field.label}" value='${field.label.replaceAll(" ", "_")}'>${field.label}</option>`;
+                    html += `<option data-label="${field.label}" value='${field.label.replaceAll(" ", "_").replaceAll('"', "")}'>${field.label}</option>`;
                 }
             }
         }
@@ -861,7 +861,7 @@ async function generateCommentElement(data: any | OctaneEntity | undefined, fiel
         let comments = await OctaneService.getInstance().getCommentsForEntity(data);
         getLogger('vs').debug("comments", comments);
         if (comments) {
-            const sortedComments = comments.sort((a: Comment, b: Comment) => new Date(b.creation_time ?? '').getTime() - new Date (a.creation_time ?? '').getTime());
+            const sortedComments = comments.sort((a: Comment, b: Comment) => new Date(b.creation_time ?? '').getTime() - new Date(a.creation_time ?? '').getTime());
             for (const comment of sortedComments) {
                 let time;
                 if (comment.creation_time && comment.creation_time !== '') {
@@ -921,7 +921,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
         // });
         for (const [key, field] of mapFields) {
             if (field) {
-                if (await isSelectedField(field.label.replaceAll(" ", "_"), activeFields)) {
+                if (await isSelectedField(field.label.replaceAll(" ", "_").replaceAll('"', ""), activeFields)) {
                     filteredFields = filteredFields.concat(field.name);
                 } else {
                     filteredFields = filteredFields.filter(f => f !== field.name);
@@ -1013,6 +1013,12 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                                     <div class="select-container-single" id="container_${field.label.replaceAll(" ", "_")}">
                                         <label name="${field.name}">${field.label}</label>
                                         <select disabled id="${field.name}">
+                                    `;
+                                } else if (field.name === 'merged_on_it') {
+                                    html += `
+                                    <div class="select-container-single" id="container_${field.label.replaceAll(" ", "_").replaceAll('"', "")}">
+                                        <label name="${field.name}">${field.label}</label>
+                                        <select id="${field.name}">
                                     `;
                                 } else {
                                     html += `
@@ -1139,7 +1145,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                 if (filteredFields.includes(field.name)) {
                     html += `
                     <script>
-                        document.getElementById("container_${field.label.replaceAll(" ", "_")}").style.display = "flex";
+                        document.getElementById("container_${field.label.replaceAll(" ", "_").replaceAll('"', "")}").style.display = "flex";
                     </script>
                 `;
                 }

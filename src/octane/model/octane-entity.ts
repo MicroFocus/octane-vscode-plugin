@@ -63,6 +63,9 @@ export class OctaneEntity extends BaseEntity {
             case 'run_manual':
                 this.label = 'MR';
                 break;
+            case 'run_automated':
+                this.label = 'AR';
+                break;
             case 'run_suite':
                 this.label = 'SR';
                 break;
