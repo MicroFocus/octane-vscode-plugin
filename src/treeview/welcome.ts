@@ -195,6 +195,20 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                         }
                         break;
                     }
+                case 'clearAllSavedLoginData':
+                    {
+                        await vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.saveLoginData',
+                            {
+                                "uri": '',
+                                "url": '',
+                                "authTypeBrowser": false,
+                                "space": '',
+                                "workspace": '',
+                                "user": ''
+                            }
+                        );
+                        break;
+                    }
             }
         });
     }
