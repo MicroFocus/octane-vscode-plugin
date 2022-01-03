@@ -87,7 +87,8 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                                 try {
                                     await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: true });
                                 } catch (e: any) {
-                                    vscode.window.showErrorMessage(e.message);
+                                    this.logger.error(`Error on login: ${e}`);
+                                    vscode.window.showErrorMessage("Error on login.");
                                     throw e;
                                 }
                             } else {
@@ -96,7 +97,8 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                                     // await this.authenticationProvider.createManualSession(data.password);
                                     await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: true });
                                 } catch (e: any) {
-                                    vscode.window.showErrorMessage(e.message);
+                                    this.logger.error(`Error on login: ${e}`);
+                                    vscode.window.showErrorMessage("Error on login.");
                                     throw e;
                                 } finally {
                                     OctaneService.getInstance().storePasswordForAuthentication(undefined);
@@ -193,6 +195,20 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                         }
                         break;
                     }
+                case 'clearAllSavedLoginData':
+                    {
+                        await vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.saveLoginData',
+                            {
+                                "uri": '',
+                                "url": '',
+                                "authTypeBrowser": false,
+                                "space": '',
+                                "workspace": '',
+                                "user": ''
+                            }
+                        );
+                        break;
+                    }
             }
         });
     }
@@ -245,7 +261,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                 <div class="main-container" style="flex-direction: row; align-items: center;">
 				    <input style="width: unset" id="attempt_authentication_radio_id" class="attempt_authentication_radio" type="radio" name="auth"></input> <label style="margin: unset !important;">Login with username and password</label>
                     <span 
-                        title="Log into ALM Octane directly with your user name and password, in non-SSO environments. This method saves your login credentials between sessions, so you do not have to re-enter them." 
+                        title="Log into ALM Octane directly with your username and password, in non-SSO environments. This method saves your login credentials between sessions, so you do not have to re-enter them." 
                         style="margin: 0rem 0rem 0rem 0.5rem; cursor: pointer;  display: flex;">
                         <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="16px" height="16px" viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve">  <image id="image0" width="16" height="16" x="0" y="0"
                             href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAABGdBTUEAALGPC/xhBQAAACBjSFJN

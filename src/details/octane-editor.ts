@@ -352,7 +352,8 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
             "Items_in_releases",
             "Progress",
             "Feature_type",
-            "Actual_story_points"
+            "Actual_story_points",
+            "Description"
         ];
 
         // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -420,7 +421,8 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
             "Last_modified",
             "Draft_run",
             "Environment",
-            "Backlog_Coverage"
+            "Backlog_Coverage",
+            "Description"
         ];
 
         let resetFilterValuesForEpic = [
@@ -493,7 +495,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
             "Test_name",
             "Draft_run",
             "Run_by",
-            "Assigned_to_('On it')",
+            "Assigned_to_(On_it)",
             "Component",
             "Started",
             "Duration",
@@ -817,15 +819,15 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
         for (const [key, field] of mapFields) {
 
             if (field) {
-                if (await isSelectedField(field.label.replaceAll(" ", "_"), activeFields)) {
+                if (await isSelectedField(field.label.replaceAll(" ", "_").replaceAll('"', ""), activeFields)) {
                     filteredFields = filteredFields.concat(field.name);
                 } else {
                     filteredFields = filteredFields.filter(f => f !== field.name);
                 }
                 if (filteredFields.includes(field.name)) {
-                    html += `<option data-label="${field.label}" selected="selected" value='${field.label.replaceAll(" ", "_")}'>${field.label}</option>`;
+                    html += `<option data-label="${field.label}" selected="selected" value='${field.label.replaceAll(" ", "_").replaceAll('"', "")}'>${field.label}</option>`;
                 } else {
-                    html += `<option data-label="${field.label}" value='${field.label.replaceAll(" ", "_")}'>${field.label}</option>`;
+                    html += `<option data-label="${field.label}" value='${field.label.replaceAll(" ", "_").replaceAll('"', "")}'>${field.label}</option>`;
                 }
             }
         }
@@ -865,7 +867,7 @@ async function generateCommentElement(data: any | OctaneEntity | undefined, fiel
         let comments = await OctaneService.getInstance().getCommentsForEntity(data);
         getLogger('vs').debug("comments", comments);
         if (comments) {
-            const sortedComments = comments.sort((a: Comment, b: Comment) => new Date(b.creation_time ?? '').getTime() - new Date (a.creation_time ?? '').getTime());
+            const sortedComments = comments.sort((a: Comment, b: Comment) => new Date(b.creation_time ?? '').getTime() - new Date(a.creation_time ?? '').getTime());
             for (const comment of sortedComments) {
                 let time;
                 if (comment.creation_time && comment.creation_time !== '') {
@@ -925,7 +927,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
         // });
         for (const [key, field] of mapFields) {
             if (field) {
-                if (await isSelectedField(field.label.replaceAll(" ", "_"), activeFields)) {
+                if (await isSelectedField(field.label.replaceAll(" ", "_").replaceAll('"', ""), activeFields)) {
                     filteredFields = filteredFields.concat(field.name);
                 } else {
                     filteredFields = filteredFields.filter(f => f !== field.name);
@@ -1018,6 +1020,12 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                                         <label name="${field.name}">${field.label}</label>
                                         <select disabled id="${field.name}">
                                     `;
+                                } else if (field.name === 'merged_on_it') {
+                                    html += `
+                                    <div class="select-container-single" id="container_${field.label.replaceAll(" ", "_").replaceAll('"', "")}">
+                                        <label name="${field.name}">${field.label}</label>
+                                        <select id="${field.name}">
+                                    `;
                                 } else {
                                     html += `
                                     <div class="select-container-single" id="container_${field.label.replaceAll(" ", "_")}">
@@ -1098,7 +1106,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                                 html += `
                                 <div style="padding: unset;" class="container" id="container_${field.label.replaceAll(" ", "_")}">
                                     <label class="active" for="${field.label}">${field.label}</label>
-                                    <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" value='${getFieldValue(data, field.name)}' data-toggle="datetimepicker" class="datetimepicker-input" data-target="#${field.name}" disabled="!${field.editable}">
+                                    <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" value='${getFieldValue(data, field.name)}' data-toggle="datetimepicker" class="datetimepicker-input" data-target="#${field.name}" ${disableOrEnable(field)}>
                                 </div>
                             `;
                             } else if (field.field_type === 'boolean') {
@@ -1143,7 +1151,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                 if (filteredFields.includes(field.name)) {
                     html += `
                     <script>
-                        document.getElementById("container_${field.label.replaceAll(" ", "_")}").style.display = "flex";
+                        document.getElementById("container_${field.label.replaceAll(" ", "_").replaceAll('"', "")}").style.display = "flex";
                     </script>
                 `;
                 }
@@ -1155,6 +1163,10 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
         vscode.window.showErrorMessage('Error generating fields for entity.');
     }
     return html;
+}
+
+function disableOrEnable(field: any): string {
+    return field.editable ? '' : 'disabled';
 }
 
 function getFieldValue(data: any, fieldName: string): string | any[] {

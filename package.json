@@ -44,6 +44,20 @@
 				"id": "alm-octane"
 			}
 		],
+		"configuration": [
+			{
+				"title": "Visual Studio Code plugin for ALM Octane",
+				"properties": {
+					"visual-studio-code-plugin-for-alm-octane.logLevel": {
+						"type": "string",
+						"default": "info",
+						"description": "Specifies log level for extension logs.",
+						"enum": ["debug", "info", "error"],
+						"scope": "window"
+					}
+				}
+			}
+		],
 		"customEditors": [
 			{
 				"viewType": "visual-studio-code-plugin-for-alm-octane.octane",

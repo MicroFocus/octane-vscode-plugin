@@ -11,7 +11,7 @@ export class Keychain {
 		} catch (e: any) {
 			// Ignore
 			this.logger.error(`Setting token failed: ${e}`);
-			await vscode.window.showErrorMessage("Writing login information to the keychain failed with error '{0}'.", e.message);
+			await vscode.window.showErrorMessage("Writing login information to the keychain failed.");
 		}
 	}
 

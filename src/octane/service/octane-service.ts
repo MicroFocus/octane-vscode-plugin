@@ -104,6 +104,8 @@ export class OctaneService {
 
             this.session = await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: false }) as AlmOctaneAuthenticationSession;
 
+            this.octaneMap = new Map<string, any[]>();
+
             if (this.loginData?.url && this.loginData.space && this.loginData.workspace && this.loginData.user && this.session) {
                 this.octane = new Octane.Octane({
                     server: this.loginData.url,
