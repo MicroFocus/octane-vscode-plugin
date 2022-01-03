@@ -266,7 +266,7 @@ label {
     width: 2rem;
     height: 2rem;
     margin-top: 1rem;
-    background-color: #3c3c3c;
+    background-color: var(--vscode-button-background) !important;
 }
 
 .main-element {
