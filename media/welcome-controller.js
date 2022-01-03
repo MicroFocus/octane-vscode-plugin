@@ -165,6 +165,7 @@
         if (element) {
             element.style.display = "none";
         }
+        vscode.postMessage({ type: 'clearAllSavedLoginData' });
     }
 
 }());
