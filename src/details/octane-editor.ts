@@ -352,7 +352,8 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
             "Items_in_releases",
             "Progress",
             "Feature_type",
-            "Actual_story_points"
+            "Actual_story_points",
+            "Description"
         ];
 
         // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -420,7 +421,8 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
             "Last_modified",
             "Draft_run",
             "Environment",
-            "Backlog_Coverage"
+            "Backlog_Coverage",
+            "Description"
         ];
 
         let resetFilterValuesForEpic = [
