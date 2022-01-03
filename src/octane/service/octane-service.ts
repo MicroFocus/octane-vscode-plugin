@@ -750,6 +750,7 @@ const entityTypeApiEndpoint: Map<string, string> = new Map([
     ['defect', Octane.Octane.entityTypes.defects],
     ['epic', Octane.Octane.entityTypes.epics],
     ['feature', Octane.Octane.entityTypes.features],
+    ['flag_rule', Octane.Octane.entityTypes.flagRules],
     ['gherkin_test', Octane.Octane.entityTypes.gherkinTest],
     ['list_node', Octane.Octane.entityTypes.listNodes],
     ['manual_run', Octane.Octane.entityTypes.manualRuns],

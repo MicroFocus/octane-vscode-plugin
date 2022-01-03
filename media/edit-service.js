@@ -145,20 +145,25 @@
 
     function addOptionsForSelect(options, field, selectedName) {
         let fieldName = field[0].name;
-        let select = $('#' + fieldName);
-        console.log(options);
+        let select = document.getElementById(fieldName);
         if (options) {
             if (options.data) {
                 for (let option of options.data) {
                     if (option.type === 'workspace_user') {
-                        // ... 
                         if (option.full_name !== selectedName) {
-                            select.innerHTML += `<option data-label='${option.full_name}' value='${JSON.stringify(option)}'>${option.full_name}</option>`;
+                            if (select.innerHTML !== undefined) {
+                                select.innerHTML += `<option value='${JSON.stringify(option)}'>${option.full_name}</option>`;
+                            } else {
+                                select.innerHTML = `<option value='${JSON.stringify(option)}'>${option.full_name}</option>`;
+                            }
                         }
                     } else {
-                        // ... 
                         if (option.name !== selectedName) {
-                            select.innerHTML += `<option data-label='${option.name}' value='${JSON.stringify(option)}'>${option.name}</option>`;
+                            if (select.innerHTML !== undefined) {
+                                select.innerHTML += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
+                            } else {
+                                select.innerHTML = `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
+                            }
                         }
                     }
                 }
@@ -166,27 +171,28 @@
                 for (let option of options) {
                     if (option.type === 'workspace_user') {
                         if (option.full_name !== selectedName) {
-                            if (select.innerHTML) {
-                                select.innerHTML += `<option data-label='${option.full_name}' value='${JSON.stringify(option)}'>${option.full_name}</option>`;
+                            if (select.innerHTML !== undefined) {
+                                select.innerHTML += `<option value='${JSON.stringify(option)}'>${option.full_name}</option>`;
                             } else {
-                                select.innerHTML = `<option data-label='${option.full_name}' value='${JSON.stringify(option)}'>${option.full_name}</option>`;
+                                select.innerHTML = `<option value='${JSON.stringify(option)}'>${option.full_name}</option>`;
                             }
                         }
                     } else {
                         if (option.name !== selectedName) {
                             console.log(select.innerHTML);
                             if (select.innerHTML !== undefined) {
-                                select.innerHTML += `<option data-label='${option.name}' value='${JSON.stringify(option)}'>${option.name}</option>`;
+                                select.innerHTML += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
                             } else {
-                                select.innerHTML = `<option data-label='${option.name}' value='${JSON.stringify(option)}'>${option.name}</option>`;
+                                select.innerHTML = `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
                             }
                         }
                     }
                 }
             }
+            console.log(select);
+            selectDataPresent.push(fieldName);
+            $('#' + fieldName).multiselect('rebuild');
         }
-        selectDataPresent.push(fieldName);
-        $('#' + fieldName).multiselect('rebuild');
         // select.multiselect('rebuild');
     }
 
@@ -212,6 +218,7 @@
                     }
                 }
             }
+            console.log(select);
             selectDataPresent.push(fieldName);
             $('#' + fieldName).multiselect('rebuild');
         }

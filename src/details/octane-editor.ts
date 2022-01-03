@@ -1016,7 +1016,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                             if (field.editable) {
                                 if (field.name === 'author') {
                                     html += `
-                                    <div class="select-container-single" id="container_${field.label.replaceAll(" ", "_")}">
+                                    <div class="select-container-single" id="container_${field.label.replaceAll(" ", "_").replaceAll('"', "")}">
                                         <label name="${field.name}">${field.label}</label>
                                         <select disabled id="${field.name}">
                                     `;
@@ -1028,7 +1028,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                                     `;
                                 } else {
                                     html += `
-                                    <div class="select-container-single" id="container_${field.label.replaceAll(" ", "_")}">
+                                    <div class="select-container-single" id="container_${field.label.replaceAll(" ", "_").replaceAll('"', "")}">
                                         <label name="${field.name}">${field.label}</label>
                                         <select id="${field.name}">
                                     `;
