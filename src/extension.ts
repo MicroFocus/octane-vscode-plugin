@@ -417,6 +417,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.startWork', async (e: MyWorkItem) => {
 		myActiveItem = e;
 		entityStatusBarItem.text = `$(clock) ${e.entity?.label} ${e.id}`;
+		await context.workspaceState.update('activeItem', e);
 		clearActiveItemStatusBarItem.show();
 		copyCommitMessageStatusBarItem.show();
 	}));
@@ -430,6 +431,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.endWork', async () => {
 		myActiveItem = undefined;
 		entityStatusBarItem.text = `$(clock) No Active Item`;
+		await context.workspaceState.update('activeItem', undefined);
 		clearActiveItemStatusBarItem.hide();
 		copyCommitMessageStatusBarItem.hide();
 	}));
@@ -442,6 +444,11 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.copyCommitMessageClick', async () => {
 		vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.commitMessage', myActiveItem);
 	}));
+
+	let storedActiveItem = context.workspaceState.get('activeItem', undefined);
+	if (storedActiveItem !== undefined) {
+		vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.startWork', storedActiveItem);
+	}
 
 	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.dismissItem', async (e: MyWorkItem) => {
 		if (e.entity) {
