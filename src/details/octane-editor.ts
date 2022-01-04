@@ -695,7 +695,10 @@ async function generateSelectOptions(field: any, data: any | OctaneEntity | unde
     if (field && field.field_type_data && field.field_type_data.targets && data) {
         var options = [];
         for (const target of field.field_type_data.targets) {
-            options.push(...(await OctaneService.getInstance().getFullDataForEntity(target.type, field, data)).data);
+            let f = (await OctaneService.getInstance().getFullDataForEntity(target.type, field, data));
+            if(f && f.data) {
+                options.push(...(f.data));
+            }
         }
         return options;
     }
@@ -1001,9 +1004,6 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                     if (counter === 0) {
                         html += `<div class="information-container">`;
                     }
-                    if (field.label === 'Tags') {
-                        console.log("s");
-                    }
                     if (field.field_type === 'reference') {
                         if (field.field_type_data.multiple) {
                             html += `
@@ -1014,9 +1014,10 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                             let selectedListOfGivenCOntainer = getFieldValue(data, fieldNameMap.get(field.name) ?? field.name);
                             for (let option of selectedListOfGivenCOntainer) {
                                 html += `
-                                <option selected value='${JSON.stringify(option)}'>${option}</option>
+                                <option selected value='${option}'>${option}</option>
                             `;
                             }
+                            
                             html += `
                             </select>
                         </div>
@@ -1044,7 +1045,14 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                                 }
                                 let optionValue = getFieldValue(data, field.name);
                                 if (optionValue && optionValue !== null) {
-                                    html += `<option value="${optionValue}" selected>${optionValue}</option>`;
+                                    let dataOp = await OctaneService.getInstance().getFullDataForEntity(field.field_type_data.targets[0].type, field, data);
+                                    if(dataOp && dataOp.data) {
+                                        for (let option of dataOp.data) {
+                                            if((option.full_name === optionValue) || (option.name === optionValue))
+                                                html += `<option value='${JSON.stringify(option)}' selected>${optionValue}</option>`;
+                                        }
+                                    }
+                                    // html += `<option value="${optionValue}" selected>${optionValue}</option>`;
                                 }
                                 html += `
                                         </select>
