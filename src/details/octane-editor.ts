@@ -217,8 +217,8 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                             let data = await generateSelectOptions(field[0], document.entity);
                             if (data) {
                                 let selectedField;
-                                if (field.field_type_data && field.field_type_data.multiple) {
-                                    selectedField = getFieldValue(data, fieldNameMap.get(field.name) ?? field.name);
+                                if (field[0].field_type_data && field[0].field_type_data.multiple) {
+                                    selectedField = getFieldValue(document.entity, fieldNameMap.get(field[0].name) ?? field[0].name);
                                     webviewPanel.webview.postMessage({
                                         type: 'post-options-for-multiple-select',
                                         from: 'webview',
@@ -693,7 +693,14 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
 
 async function generateSelectOptions(field: any, data: any | OctaneEntity | undefined) {
     if (field && field.field_type_data && field.field_type_data.targets && data) {
-        return await OctaneService.getInstance().getFullDataForEntity(field.field_type_data.targets[0].type, field, data);
+        var options = [];
+        for (const target of field.field_type_data.targets) {
+            let f = (await OctaneService.getInstance().getFullDataForEntity(target.type, field, data));
+            if (f && f.data) {
+                options.push(...(f.data));
+            }
+        }
+        return options;
     }
     getLogger('vs').warn('Error generating select options for field.', field);
     return;
@@ -1004,6 +1011,24 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                             <label name="${field.name}">${field.label}</label>
                             <select multiple="multiple" id="${field.name}">
                         `;
+                            let selectedListOfGivenCOntainer = getFieldValue(data, fieldNameMap.get(field.name) ?? field.name);
+                            for (let optionValue of selectedListOfGivenCOntainer) {
+                                let dataOp = data[field.name];
+                                if (dataOp) {
+                                    if (dataOp.data) {
+                                        for (let option of dataOp.data) {
+                                            if ((option.full_name === optionValue) || (option.name === optionValue))
+                                                html += `<option value='${JSON.stringify(option)}' selected>${optionValue}</option>`;
+                                        }
+                                    } else {
+                                        html += `<option value='${JSON.stringify(dataOp)}' selected>${optionValue}</option>`;
+                                    }
+                                }
+                                //     html += `
+                                //     <option selected value='${option}'>${option}</option>
+                                // `;
+                            }
+
                             html += `
                             </select>
                         </div>
@@ -1012,7 +1037,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                             if (field.editable) {
                                 if (field.name === 'author') {
                                     html += `
-                                    <div class="select-container-single" id="container_${field.label.replaceAll(" ", "_")}">
+                                    <div class="select-container-single" id="container_${field.label.replaceAll(" ", "_").replaceAll('"', "")}">
                                         <label name="${field.name}">${field.label}</label>
                                         <select disabled id="${field.name}">
                                     `;
@@ -1024,12 +1049,27 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                                     `;
                                 } else {
                                     html += `
-                                    <div class="select-container-single" id="container_${field.label.replaceAll(" ", "_")}">
+                                    <div class="select-container-single" id="container_${field.label.replaceAll(" ", "_").replaceAll('"', "")}">
                                         <label name="${field.name}">${field.label}</label>
                                         <select id="${field.name}">
                                     `;
                                 }
-                                html += `<option value="none" selected="selected" disabled hidden>${getFieldValue(data, field.name)}</option>`;
+                                let optionValue = getFieldValue(data, field.name);
+                                if (optionValue && optionValue !== null) {
+                                    // let dataOp = await OctaneService.getInstance().getFullDataForEntity(field.field_type_data.targets[0].type, field, data);
+                                    let dataOp = data[field.name];
+                                    if (dataOp) {
+                                        if (dataOp.data) {
+                                            for (let option of dataOp.data) {
+                                                if ((option.full_name === optionValue) || (option.name === optionValue))
+                                                    html += `<option value='${JSON.stringify(option)}' selected>${optionValue}</option>`;
+                                            }
+                                        } else {
+                                            html += `<option value='${JSON.stringify(dataOp)}' selected>${optionValue}</option>`;
+                                        }
+                                    }
+
+                                }
                                 html += `
                                         </select>
                                     </div>`;

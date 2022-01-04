@@ -12,12 +12,14 @@
         console.log('initialize called...');
         $('.select-container-multiple select').multiselect({
             maxHeight: 400,
+            allSelectedText: false,
             onDropdownShow: function (event) {
                 getDataForEntity(this);
             }
         });
         $('.select-container-single select').multiselect({
             maxHeight: 400,
+            allSelectedText: false,
             onDropdownShow: function (event) {
                 getDataForEntity(this);
             }
@@ -131,7 +133,7 @@
 
     function getDataForEntity(entity) {
         let fieldName = entity.$select.find('#select').context.id;
-        console.log(fieldName);
+        // console.log("fieldName" , fieldName);
         if (fieldName && !selectDataPresent.includes(fieldName)) {
             vscode.postMessage({
                 type: 'get-data-for-select',
@@ -145,35 +147,75 @@
 
     function addOptionsForSelect(options, field, selectedName) {
         let fieldName = field[0].name;
-        let select = $('#' + fieldName);
-        if (options && options.data) {
-            for (let option of options.data) {
-                if (option.type === 'workspace_user') {
-                    if (option.full_name !== selectedName) {
-                        select.append(`<option data-label="${option.full_name}" value='${JSON.stringify(option)}'>${option.full_name}</option>`);
+        let select = document.getElementById(fieldName);
+        select.innerHTML = '';
+        if (options) {
+            if (options.data) {
+                for (let option of options.data) {
+                    if (option.type === 'workspace_user') {
+                        if (option.full_name !== selectedName) {
+                            select.innerHTML += `<option value='${JSON.stringify(option)}'>${option.full_name}</option>`;
+                        } else {
+                            select.innerHTML += `<option selected value='${JSON.stringify(option)}'>${option.full_name}</option>`;
+                        }
+                    } else {
+                        if (option.name !== selectedName) {
+                            select.innerHTML += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
+                        } else {
+                            select.innerHTML += `<option selected value='${JSON.stringify(option)}'>${option.name}</option>`;
+                        }
                     }
-                } else {
-                    if (option.name !== selectedName) {
-                        select.append(`<option data-label="${option.name}" value='${JSON.stringify(option)}'>${option.name}</option>`);
+                }
+            } else {
+                for (let option of options) {
+                    if (option.type === 'workspace_user') {
+                        if (option.full_name !== selectedName) {
+                            select.innerHTML += `<option value='${JSON.stringify(option)}'>${option.full_name}</option>`;
+                        } else {
+                            select.innerHTML += `<option selected value='${JSON.stringify(option)}'>${option.full_name}</option>`;
+                        }
+                    } else {
+                        if (option.name !== selectedName) {
+                            select.innerHTML += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
+                        } else {
+                            select.innerHTML += `<option selected value='${JSON.stringify(option)}'>${option.name}</option>`;
+                        }
                     }
                 }
             }
+            console.log(select);
+            selectDataPresent.push(fieldName);
+            $('#' + fieldName).multiselect('rebuild');
         }
-        selectDataPresent.push(fieldName);
-        select.multiselect('rebuild');
+        // select.multiselect('rebuild');
     }
 
     function addOptionsForMultipleSelect(options, field, selected) {
         let fieldName = field[0].name;
         let select = document.getElementById(fieldName);
-        if (options && options.data) {
-            for (let option of options.data) {
-                if (selected.includes(option.name)) {
-                    select.add(new Option(option.name, JSON.stringify(option), true));
-                } else {
-                    select.add(new Option(option.name, JSON.stringify(option)));
+        select.innerHTML = '';
+        // console.log(options, field, selected);
+        if (options) {
+            if (options.data) {
+                for (let option of options.data) {
+                    if (selected.includes(option.name)) {
+                        select.innerHTML += `<option selected value='${JSON.stringify(option)}'>${option.name}</option>`;
+                    } else {
+                        select.innerHTML += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
+                    }
+                }
+            } else {
+                for (let option of options) {
+                    if (selected.includes(option.name)) {
+                        select.innerHTML += `<option selected value='${JSON.stringify(option)}'>${option.name}</option>`;
+                    } else {
+                        select.innerHTML += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
+                    }
                 }
             }
+            console.log(select);
+            selectDataPresent.push(fieldName);
+            $('#' + fieldName).multiselect('rebuild');
         }
     }
 
@@ -408,6 +450,7 @@
 
             case 'post-options-for-multiple-select':
                 {
+                    console.log("e", e);
                     if (e && e.data && e.data.data) {
                         if (e.data.data.options) {
                             let options = e.data.data.options;

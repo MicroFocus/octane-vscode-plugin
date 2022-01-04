@@ -567,6 +567,14 @@ export class OctaneService {
                     .execute();
                 return result ?? undefined;
             }
+            if (entityTypes === 'story') {
+                const result = await this.octane.get(endPoint)
+                    // .query(
+                    //     Query.field('list_root').equal(Query.field('logical_name').equal(field.field_type_data.targets[0].logical_name))
+                    //         .build())
+                    .execute();
+                return result ?? undefined;
+            }
             if (entityTypes === 'product_area') {
                 const result = await this.octane.get(endPoint)
                     .execute();
@@ -742,6 +750,7 @@ const entityTypeApiEndpoint: Map<string, string> = new Map([
     ['defect', Octane.Octane.entityTypes.defects],
     ['epic', Octane.Octane.entityTypes.epics],
     ['feature', Octane.Octane.entityTypes.features],
+    ['flag_rule', Octane.Octane.entityTypes.flagRules],
     ['gherkin_test', Octane.Octane.entityTypes.gherkinTest],
     ['list_node', Octane.Octane.entityTypes.listNodes],
     ['manual_run', Octane.Octane.entityTypes.manualRuns],
