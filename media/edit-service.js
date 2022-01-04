@@ -191,7 +191,8 @@
     function addOptionsForMultipleSelect(options, field, selected) {
         let fieldName = field[0].name;
         let select = document.getElementById(fieldName);
-        console.log(options, field, selected);
+        select.innerHTML = '';
+        // console.log(options, field, selected);
         if (options) {
             if (options.data) {
                 for (let option of options.data) {
