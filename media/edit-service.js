@@ -146,24 +146,17 @@
     function addOptionsForSelect(options, field, selectedName) {
         let fieldName = field[0].name;
         let select = document.getElementById(fieldName);
+        select.innerHTML = '';
         if (options) {
             if (options.data) {
                 for (let option of options.data) {
                     if (option.type === 'workspace_user') {
                         if (option.full_name !== selectedName) {
-                            if (select.innerHTML !== undefined) {
-                                select.innerHTML += `<option value='${JSON.stringify(option)}'>${option.full_name}</option>`;
-                            } else {
-                                select.innerHTML = `<option value='${JSON.stringify(option)}'>${option.full_name}</option>`;
-                            }
+                            select.innerHTML += `<option value='${JSON.stringify(option)}'>${option.full_name}</option>`;
                         }
                     } else {
                         if (option.name !== selectedName) {
-                            if (select.innerHTML !== undefined) {
-                                select.innerHTML += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
-                            } else {
-                                select.innerHTML = `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
-                            }
+                            select.innerHTML += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
                         }
                     }
                 }
@@ -171,20 +164,11 @@
                 for (let option of options) {
                     if (option.type === 'workspace_user') {
                         if (option.full_name !== selectedName) {
-                            if (select.innerHTML !== undefined) {
-                                select.innerHTML += `<option value='${JSON.stringify(option)}'>${option.full_name}</option>`;
-                            } else {
-                                select.innerHTML = `<option value='${JSON.stringify(option)}'>${option.full_name}</option>`;
-                            }
+                            select.innerHTML += `<option value='${JSON.stringify(option)}'>${option.full_name}</option>`;
                         }
                     } else {
                         if (option.name !== selectedName) {
-                            console.log(select.innerHTML);
-                            if (select.innerHTML !== undefined) {
-                                select.innerHTML += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
-                            } else {
-                                select.innerHTML = `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
-                            }
+                            select.innerHTML += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
                         }
                     }
                 }
