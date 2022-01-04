@@ -1033,7 +1033,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                                         <select id="${field.name}">
                                     `;
                                 }
-                                // html += `<option value="none" selected>${getFieldValue(data, field.name)}</option>`;
+                                html += `<option value="${getFieldValue(data, field.name)}" selected>${getFieldValue(data, field.name)}</option>`;
                                 html += `
                                         </select>
                                     </div>`;

@@ -153,10 +153,14 @@
                     if (option.type === 'workspace_user') {
                         if (option.full_name !== selectedName) {
                             select.innerHTML += `<option value='${JSON.stringify(option)}'>${option.full_name}</option>`;
+                        } else {
+                            select.innerHTML += `<option selected value='${JSON.stringify(option)}'>${option.full_name}</option>`;
                         }
                     } else {
                         if (option.name !== selectedName) {
                             select.innerHTML += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
+                        } else {
+                            select.innerHTML += `<option selected value='${JSON.stringify(option)}'>${option.name}</option>`;
                         }
                     }
                 }
@@ -165,10 +169,14 @@
                     if (option.type === 'workspace_user') {
                         if (option.full_name !== selectedName) {
                             select.innerHTML += `<option value='${JSON.stringify(option)}'>${option.full_name}</option>`;
+                        } else {
+                            select.innerHTML += `<option selected value='${JSON.stringify(option)}'>${option.full_name}</option>`;
                         }
                     } else {
                         if (option.name !== selectedName) {
                             select.innerHTML += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
+                        } else {
+                            select.innerHTML += `<option selected value='${JSON.stringify(option)}'>${option.name}</option>`;
                         }
                     }
                 }
