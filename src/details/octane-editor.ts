@@ -1017,10 +1017,6 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                                 <option selected value='${JSON.stringify(option)}'>${option}</option>
                             `;
                             }
-                            // html += `
-                            //     <script>
-                            //         $('#${field.name}').multiselect('setAllSelectedText', 'szia, en');
-                            //     </script>`;
                             html += `
                             </select>
                         </div>

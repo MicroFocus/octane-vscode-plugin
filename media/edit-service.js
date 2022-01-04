@@ -12,12 +12,14 @@
         console.log('initialize called...');
         $('.select-container-multiple select').multiselect({
             maxHeight: 400,
+            allSelectedText: false,
             onDropdownShow: function (event) {
                 getDataForEntity(this);
             }
         });
         $('.select-container-single select').multiselect({
             maxHeight: 400,
+            allSelectedText: false,
             onDropdownShow: function (event) {
                 getDataForEntity(this);
             }
