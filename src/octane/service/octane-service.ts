@@ -89,53 +89,53 @@ export class OctaneService {
 
     public async initialize() {
 
-            this.loginData = await vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.getLoginData');
+        this.loginData = await vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.getLoginData');
 
-            // this.uri = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.url');
-            // if (this.uri !== undefined) {
-            //     let regExp = this.uri.match(/\?p=(\d+\/\d+)/);
-            //     if (regExp) {
-            //         this.uri = this.uri.split(regExp[0])[0];
-            //     }
-            // }
-            // this.space = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.space');
-            // this.workspace = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.workspace');
-            // this.user = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.user.userName');
+        // this.uri = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.url');
+        // if (this.uri !== undefined) {
+        //     let regExp = this.uri.match(/\?p=(\d+\/\d+)/);
+        //     if (regExp) {
+        //         this.uri = this.uri.split(regExp[0])[0];
+        //     }
+        // }
+        // this.space = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.space');
+        // this.workspace = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.workspace');
+        // this.user = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.user.userName');
 
-            this.session = await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: false }) as AlmOctaneAuthenticationSession;
+        this.session = await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: false }) as AlmOctaneAuthenticationSession;
 
-            this.octaneMap = new Map<string, any[]>();
+        this.octaneMap = new Map<string, any[]>();
 
-            if (this.loginData?.url && this.loginData.space && this.loginData.workspace && this.loginData.user && this.session) {
-                this.octane = new Octane.Octane({
-                    server: this.loginData.url,
-                    sharedSpace: this.loginData.space,
-                    workspace: this.loginData.workspace,
-                    user: this.loginData.user,
-                    password: this.session.type === AlmOctaneAuthenticationType.userNameAndPassword ? this.session.accessToken : undefined,
-                    headers: {
-                        // eslint-disable-next-line @typescript-eslint/naming-convention
-                        ALM_OCTANE_TECH_PREVIEW: true,
-                        // eslint-disable-next-line @typescript-eslint/naming-convention
-                        HPECLIENTTYPE: 'OCTANE_IDE_PLUGIN',
-                        // eslint-disable-next-line @typescript-eslint/naming-convention
-                        Cookie: this.session.type === AlmOctaneAuthenticationType.browser ? `${this.session.cookieName}=${this.session.accessToken}` : undefined
-                    }
-                });
-                const result: any = await this.octane.get(Octane.Octane.entityTypes.workspaceUsers)
-                    .query(Query.field('name').equal(this.loginData.user).build())
-                    .execute();
-                this.loggedInUserId = result.data[0].id;
-
-                {
-                    const result = await this.octane.get(Octane.Octane.entityTypes.transitions)
-                        .fields('id', 'entity', 'logical_name', 'is_primary', 'source_phase{name}', 'target_phase{name}')
-                        .execute();
-                    this.transitions = result.data.map((t: any) => new Transition(t));
-                    this.logger.debug(this.transitions);
+        if (this.loginData?.url && this.loginData.space && this.loginData.workspace && this.loginData.user && this.session) {
+            this.octane = new Octane.Octane({
+                server: this.loginData.url,
+                sharedSpace: this.loginData.space,
+                workspace: this.loginData.workspace,
+                user: this.loginData.user,
+                password: this.session.type === AlmOctaneAuthenticationType.userNameAndPassword ? this.session.accessToken : undefined,
+                headers: {
+                    // eslint-disable-next-line @typescript-eslint/naming-convention
+                    ALM_OCTANE_TECH_PREVIEW: true,
+                    // eslint-disable-next-line @typescript-eslint/naming-convention
+                    HPECLIENTTYPE: 'OCTANE_IDE_PLUGIN',
+                    // eslint-disable-next-line @typescript-eslint/naming-convention
+                    Cookie: this.session.type === AlmOctaneAuthenticationType.browser ? `${this.session.cookieName}=${this.session.accessToken}` : undefined
                 }
+            });
+            const result: any = await this.octane.get(Octane.Octane.entityTypes.workspaceUsers)
+                .query(Query.field('name').equal(this.loginData.user).build())
+                .execute();
+            this.loggedInUserId = result.data[0].id;
 
+            {
+                const result = await this.octane.get(Octane.Octane.entityTypes.transitions)
+                    .fields('id', 'entity', 'logical_name', 'is_primary', 'source_phase{name}', 'target_phase{name}')
+                    .execute();
+                this.transitions = result.data.map((t: any) => new Transition(t));
+                this.logger.debug(this.transitions);
             }
+
+        }
     }
 
     public async globalSearchWorkItems(subtype: string, criteria: string): Promise<OctaneEntity[]> {
@@ -632,13 +632,31 @@ export class OctaneService {
                 id: +e.id
             };
 
-            this.octane.create(Octane.Octane.entityTypes.userItems, entityModel).execute()
-                .then((res: any) => {
-                    vscode.window.showInformationMessage('Your item changes have been saved.');
-                }, (error: any) => {
-                    this.logger.error('While adding to MyWork.', e);
-                    vscode.window.showErrorMessage((error.response.body.description) ?? 'We couldn’t save your changes.');
-                });
+            let entityTypes = e.type || e.subtype;
+            if (entityTypes) {
+                let endpoint = entityTypeApiEndpoint.get(entityTypes);
+                const response = await this.octane.get(endpoint)
+                    .query(
+                        Query.field('user_item').equal(
+                            Query.field('user').equal(
+                                Query.field('id').equal(this.loggedInUserId)
+                            )
+                        ).and().field('id').equal(e.id)
+                            .build()
+                    )
+                    .execute();
+                if (response && response.data.length !== 0) {
+                    vscode.window.showWarningMessage(`Item was not added, it is already in "My work"`);
+                } else {
+                    this.octane.create(Octane.Octane.entityTypes.userItems, entityModel).execute()
+                        .then((res: any) => {
+                            vscode.window.showInformationMessage('Your item changes have been saved.');
+                        }, (error: any) => {
+                            this.logger.error('While adding to MyWork.', e);
+                            vscode.window.showErrorMessage((error.response.body.description) ?? 'We couldn’t save your changes.');
+                        });
+                }
+            }
         } catch (e) {
             this.logger.error('While adding to MyWork.', e);
             throw e;
