@@ -32,12 +32,8 @@ export abstract class MyWorkProvider implements vscode.TreeDataProvider<MyWorkIt
     abstract getRelevantEntities(): Promise<OctaneEntity[]>;
 
     getMyWorkItem(i: OctaneEntity): MyWorkItem {
-        const item = new MyWorkItem(new MyWorkItemLabel(i));
-        item.id = '' + i.id;
-        item.entity = i;
-        item.iconPath = MyWorkProvider.getIconForEntity(i);
-        item.contextValue = i.subtype && i.subtype !== '' ? i.subtype : i.type;
-        item.command = { command: 'vscode.openWith', title: 'Details', arguments: [vscode.Uri.parse(`octane:///octane/${i.type}/${i.subtype}/${i.id}`), OctaneEntityEditorProvider.viewType] };
+        const item = new MyWorkItem(i);
+        
         return item;
     }
 
@@ -91,9 +87,14 @@ export class MyWorkItem extends vscode.TreeItem implements OctaneEntityHolder {
     public entity?: OctaneEntity;
 
     constructor(
-        public readonly label: vscode.TreeItemLabel
+        entity: OctaneEntity
     ) {
-        super(label, vscode.TreeItemCollapsibleState.None);
+        super(new MyWorkItemLabel(entity), vscode.TreeItemCollapsibleState.None);
+        this.id = '' + entity.id;
+        this.entity = entity;
+        this.iconPath = MyWorkProvider.getIconForEntity(entity);
+        this.contextValue = entity.subtype && entity.subtype !== '' ? entity.subtype : entity.type;
+        this.command = { command: 'vscode.openWith', title: 'Details', arguments: [vscode.Uri.parse(`octane:///octane/${entity.type}/${entity.subtype}/${entity.id}`), OctaneEntityEditorProvider.viewType] };
     }
 
 }
