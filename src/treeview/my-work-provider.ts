@@ -3,6 +3,7 @@ import { OctaneService } from '../octane/service/octane-service';
 import { Comment } from "../octane/model/comment";
 import { OctaneEntity } from "../octane/model/octane-entity";
 import { OctaneEntityHolder } from '../octane/model/octane-entity-holder';
+import { OctaneEntityEditorProvider } from '../details/octane-editor';
 
 export abstract class MyWorkProvider implements vscode.TreeDataProvider<MyWorkItem> {
 
@@ -35,7 +36,8 @@ export abstract class MyWorkProvider implements vscode.TreeDataProvider<MyWorkIt
         item.id = '' + i.id;
         item.entity = i;
         item.iconPath = MyWorkProvider.getIconForEntity(i);
-        item.contextValue = i.subtype ?? i.type;
+        item.contextValue = i.subtype && i.subtype !== '' ? i.subtype : i.type;
+        item.command = { command: 'vscode.openWith', title: 'Details', arguments: [vscode.Uri.parse(`octane:///octane/${i.type}/${i.subtype}/${i.id}`), OctaneEntityEditorProvider.viewType] };
         return item;
     }
 
@@ -48,6 +50,12 @@ export abstract class MyWorkProvider implements vscode.TreeDataProvider<MyWorkIt
         }
         if (entity?.type === 'comment') {
             return vscode.Uri.file(`${__filename}/../../../media/treeIcons/M.svg`);
+        }
+        if (entity?.type === 'task') {
+            return vscode.Uri.file(`${__filename}/../../../media/treeIcons/T.svg`);
+        }
+        if (entity?.type === 'bdd_spec') {
+            return vscode.Uri.file(`${__filename}/../../../media/treeIcons/BSP.svg`);
         }
         return vscode.Uri.file('');
     }
@@ -86,8 +94,8 @@ export class MyWorkItem extends vscode.TreeItem implements OctaneEntityHolder {
         public readonly label: vscode.TreeItemLabel
     ) {
         super(label, vscode.TreeItemCollapsibleState.None);
-        this.command = { command: 'visual-studio-code-plugin-for-alm-octane.details', title: 'Details', arguments: [this] };
     }
+
 }
 
 export class MyWorkItemLabel implements vscode.TreeItemLabel {
@@ -102,6 +110,7 @@ export class MyWorkItemLabel implements vscode.TreeItemLabel {
             this.label = item.id + ' ' + item.name;
             // this.highlights = [[0, item.id.length]];
         }
+        this.highlights = [[0, item.id.length]];
     }
 
 }

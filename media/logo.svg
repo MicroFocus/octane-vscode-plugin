@@ -1,24 +1,18 @@
-<?xml version="1.0" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
- "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
-<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
- width="70.000000pt" height="70.000000pt" viewBox="0 0 70.000000 70.000000"
- preserveAspectRatio="xMidYMid meet">
-<metadata>
-Created by potrace 1.16, written by Peter Selinger 2001-2019
-</metadata>
-<g transform="translate(0.000000,70.000000) scale(0.100000,-0.100000)"
-fill="#000000" stroke="none">
-<path d="M0 350 l0 -350 350 0 350 0 0 350 0 350 -350 0 -350 0 0 -350z m456
-158 l94 -53 0 -112 0 -112 -100 -56 -100 -57 -100 57 -100 56 0 112 0 112 93
-52 c50 29 98 52 105 53 8 0 56 -24 108 -52z"/>
-<path d="M276 385 c-36 -63 -66 -117 -66 -120 0 -3 63 -5 140 -5 77 0 140 2
-140 5 0 13 -132 235 -140 235 -5 0 -38 -52 -74 -115z"/>
-<path d="M233 463 l-43 -24 0 -62 c0 -36 4 -57 9 -51 23 24 99 164 88 163 -7
--1 -31 -12 -54 -26z"/>
-<path d="M414 474 c9 -24 86 -154 91 -154 3 0 5 27 5 59 l0 59 -46 26 c-54 30
--58 31 -50 10z"/>
-<path d="M256 211 c5 -4 28 -19 51 -31 l43 -24 43 24 c69 38 66 40 -43 40 -58
-0 -100 -4 -94 -9z"/>
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- Generator: Adobe Illustrator 25.4.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1"
+	 id="svg16" inkscape:version="1.1 (c68e22c387, 2021-05-23)" sodipodi:docname="logo2.svg" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:svg="http://www.w3.org/2000/svg"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="24px" height="24px"
+	 viewBox="0 0 24 24" style="enable-background:new 0 0 24 24;" xml:space="preserve">
+<sodipodi:namedview  bordercolor="#666666" borderopacity="1.0" id="namedview18" inkscape:current-layer="svg16" inkscape:cx="46.604527" inkscape:cy="46.728806" inkscape:document-units="pt" inkscape:pagecheckerboard="0" inkscape:pageopacity="0.0" inkscape:pageshadow="2" inkscape:window-height="1025" inkscape:window-maximized="1" inkscape:window-width="1920" inkscape:window-x="1920" inkscape:window-y="27" inkscape:zoom="8.0464286" pagecolor="#ffffff" showgrid="false">
+	</sodipodi:namedview>
+<g>
+	<g>
+		<path style="fill:#474747;" d="M1.601,16.84v1.155L12,24l10.399-6.005V16.84H1.601z M19.066,18.279L12,22.352l-7.066-4.072H19.066
+			L19.066,18.279z"/>
+		<path id="XMLID_00000016037470458828027450000005960906059123887034_" style="fill:#474747;" d="M12,0L1.601,5.986v12.01
+			l1.023,0.606L12,2.33l9.396,16.233l1.004-0.568V5.986L12,0z M13.894,2.728l7.085,4.091v8.164L13.894,2.728z M10.144,2.709
+			L3.04,15.041V6.819L10.144,2.709z"/>
+	</g>
 </g>
 </svg>

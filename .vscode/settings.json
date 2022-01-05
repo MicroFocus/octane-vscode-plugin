@@ -7,5 +7,9 @@
         "out": true // set this to false to include "out" folder in search results
     },
     // Turn off tsc task auto detection since we have the necessary tasks as npm scripts
-    "typescript.tsc.autoDetect": "off"
+    "typescript.tsc.autoDetect": "off",
+    "visual-studio-code-plugin-for-alm-octane.server.url": "https://internal.almoctane.com/",
+    "visual-studio-code-plugin-for-alm-octane.server.space": "61004",
+    "visual-studio-code-plugin-for-alm-octane.server.workspace": "5002",
+    "visual-studio-code-plugin-for-alm-octane.user.userName": "hive@bee-tf.ro"
 }

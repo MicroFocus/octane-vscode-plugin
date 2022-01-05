@@ -2,6 +2,7 @@ import { User } from './user';
 import { BaseEntity } from './base-entity';
 
 
+
 export class OctaneEntity extends BaseEntity {
 
     public storyPoints?: string;
@@ -58,6 +59,36 @@ export class OctaneEntity extends BaseEntity {
                 break;
             case 'test_suite':
                 this.label = 'TS';
+                break;
+            case 'run_manual':
+                this.label = 'MR';
+                break;
+            case 'run_automated':
+                this.label = 'AR';
+                break;
+            case 'run_suite':
+                this.label = 'SR';
+                break;
+            case 'requirement_document':
+                this.label = 'RD';
+                break;
+            case 'requirement_folder':
+                this.label = 'RF';
+                break;
+            case 'gherkin_automated_run':
+                this.label = 'GAR';
+                break;
+
+            case '':
+            case undefined:
+                switch (this.type) {
+                    case 'task':
+                        this.label = 'T';
+                        break;
+                    case 'bdd_spec':
+                        this.label = 'BSP';
+                        break;
+                }
                 break;
         }
     }
