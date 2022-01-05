@@ -42,7 +42,7 @@ class OctaneEntityDocument implements vscode.CustomDocument {
     public readonly fields: any;
     public entity: any;
 
-    private constructor(
+    public constructor(
         uri: vscode.Uri,
         fields: any,
         entity: any
@@ -182,20 +182,19 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
 
     async openCustomDocument(uri: vscode.Uri, openContext: vscode.CustomDocumentOpenContext, token: vscode.CancellationToken): Promise<OctaneEntityDocument> {
         this.logger.debug('openCustomDocument called', uri, openContext);
-        const document: OctaneEntityDocument = await OctaneEntityDocument.create(uri);
-        return document;
+        return new OctaneEntityDocument(uri, undefined, undefined);
     }
 
-    async resolveCustomEditor(document: OctaneEntityDocument, webviewPanel: vscode.WebviewPanel, token: vscode.CancellationToken): Promise<void> {
-        this.logger.debug('resolveCustomEditor called', document, webviewPanel);
-
-        webviewPanel.iconPath = vscode.Uri.file(path.join(this.context.extensionPath, `media/treeIcons/${getDataForSubtype(document.entity)[0]}.svg`));
-
-        webviewPanel.webview.options = {
-            enableScripts: true,
-        };
-
+    async resolveCustomEditor(document_: OctaneEntityDocument, webviewPanel: vscode.WebviewPanel, token: vscode.CancellationToken): Promise<void> {
         try {
+
+            let document = await OctaneEntityDocument.create(document_.uri);
+            this.logger.debug('resolveCustomEditor called', document, webviewPanel);
+            webviewPanel.iconPath = vscode.Uri.file(path.join(this.context.extensionPath, `media/treeIcons/${getDataForSubtype(document.entity)[0]}.svg`));
+            webviewPanel.webview.options = {
+                enableScripts: true,
+            };
+
             let self = this;
 
             webviewPanel.webview.html = await this.getHtmlForWebview(webviewPanel.webview, this.context, document.entity, document.fields);
@@ -296,12 +295,20 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                 }
             });
 
-        } catch (e) {
-            this.logger.error(e);
-            throw e;
+            this.webviewPanels.add(document.uri, webviewPanel);
+        } catch (e: any) {
+            if(e && e.statusCode && e.statusCode === 404) {
+                let pathComponents = document_.uri.path.split('/');
+                let type: string = pathComponents[2];
+                let subType: string = pathComponents[3];
+                let id: string = pathComponents[4];
+                this.logger.error("Error: entity has been deleted.");
+                vscode.window.showErrorMessage(`Error: entity with id "${id}" and type "${subType === '' ? type : subType}" has been deleted.`);
+            } else {
+                this.logger.error(e);
+                throw e;
+            }
         }
-
-        this.webviewPanels.add(document.uri, webviewPanel);
     }
 
     private async getHtmlForWebview(webview: vscode.Webview, context: any, data: any | OctaneEntity | undefined, fields: any[]): Promise<string> {
