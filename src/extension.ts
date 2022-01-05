@@ -11,19 +11,16 @@ import { OctaneEntityEditorProvider } from './details/octane-editor';
 import { AlmOctaneAuthenticationProvider } from './auth/authentication-provider';
 import { WelcomeViewProvider } from './treeview/welcome';
 import { SearchProvider } from './treeview/search-provider';
-import { OctaneEntity } from './octane/model/octane-entity';
-import { OctaneQuickPickItem } from './octane/model/octane-quick-pick-item';
-import { MyWorkItem } from './treeview/my-work-provider';
 import { MyTasksProvider } from './treeview/tasks-provider';
 import { MyTestRunsProvider } from './treeview/test-runs-provider';
-import { debounce } from 'ts-debounce';
 import { getLogger } from 'log4js';
-import { Task } from './octane/model/task';
 import { registerCommand as registerCopyCommitMessageCommand } from './commands/copy-commit-message';
 import { registerCommand as registerOpenInBrowserCommand } from './commands/open-in-browser';
 import { registerCommand as registerDownloadTestCommand } from './commands/download-test';
 import { registerCommand as registerGlobalSearchCommand } from './commands/global-search';
 import { registerCommand as registerOpenDetailsCommands } from './commands/open-details';
+import { registerCommand as registerDismissItemCommand } from './commands/dismiss-item';
+import { register as registerActiveItemCommands } from './commands/active-item';
 import { initializeLog } from './log/log';
 import { setVisibilityRules } from './treeview/visibility-rules';
 
@@ -101,64 +98,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	registerOpenDetailsCommands(context);
 
-	let myActiveItem: MyWorkItem | undefined;
-	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.openActiveItem', async () => {
-		if (myActiveItem?.entity) {
-			await vscode.commands.executeCommand('vscode.openWith', vscode.Uri.parse(`octane:///octane/${myActiveItem.entity.type}/${myActiveItem.entity.subtype}/${myActiveItem.entity.id}`), OctaneEntityEditorProvider.viewType);
-		}
-	}));
+	registerActiveItemCommands(context);
 
-	const entityStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 102);
-	entityStatusBarItem.text = '$(clock) No active item';
-	entityStatusBarItem.command = 'visual-studio-code-plugin-for-alm-octane.openActiveItem';
-	entityStatusBarItem.show();
-	context.subscriptions.push(entityStatusBarItem);
-
-	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.startWork', async (e: MyWorkItem) => {
-		myActiveItem = e;
-		entityStatusBarItem.text = `$(clock) ${e.entity?.label} ${e.id}`;
-		await context.workspaceState.update('activeItem', e);
-		clearActiveItemStatusBarItem.show();
-		copyCommitMessageStatusBarItem.show();
-	}));
-
-	const clearActiveItemStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
-	clearActiveItemStatusBarItem.text = '$(stop-circle)';
-	clearActiveItemStatusBarItem.command = 'visual-studio-code-plugin-for-alm-octane.endWork';
-	clearActiveItemStatusBarItem.tooltip = "Stop work";
-	context.subscriptions.push(clearActiveItemStatusBarItem);
-
-	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.endWork', async () => {
-		myActiveItem = undefined;
-		entityStatusBarItem.text = `$(clock) No Active Item`;
-		await context.workspaceState.update('activeItem', undefined);
-		clearActiveItemStatusBarItem.hide();
-		copyCommitMessageStatusBarItem.hide();
-	}));
-
-	const copyCommitMessageStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 101);
-	copyCommitMessageStatusBarItem.text = '$(git-commit)';
-	copyCommitMessageStatusBarItem.tooltip = 'Copy commit message';
-	copyCommitMessageStatusBarItem.command = 'visual-studio-code-plugin-for-alm-octane.copyCommitMessageClick';
-	context.subscriptions.push(copyCommitMessageStatusBarItem);
-	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.copyCommitMessageClick', async () => {
-		vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.commitMessage', myActiveItem);
-	}));
-
-	let storedActiveItem = context.workspaceState.get('activeItem', undefined);
-	if (storedActiveItem !== undefined) {
-		vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.startWork', storedActiveItem);
-	}
-
-	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.dismissItem', async (e: MyWorkItem) => {
-		if (e.entity) {
-			await service.dismissFromMyWork(e.entity);
-			if (myActiveItem !== undefined && e.entity.id === myActiveItem.entity?.id && e.entity.type === myActiveItem.entity?.type) {
-				vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.endWork');
-			}
-			vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.refreshAll');
-		}
-	}));
+	registerDismissItemCommand(context);
 
 	vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.refreshAll');
 
