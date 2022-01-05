@@ -6,6 +6,14 @@ import { getLogger } from 'log4js';
 
 export class WelcomeViewProvider implements vscode.WebviewViewProvider {
 
+    public static initialize(context: vscode.ExtensionContext, authenticationProvider: AlmOctaneAuthenticationProvider) {
+        const welcomeViewProvider = new WelcomeViewProvider(context.extensionUri, authenticationProvider);
+        context.subscriptions.push(vscode.window.registerWebviewViewProvider('visual-studio-code-plugin-for-alm-octane.myWelcome', welcomeViewProvider));
+        context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.myWelcome.refreshEntry', () => {
+            welcomeViewProvider.refresh();
+        }));
+    }
+
     private logger = getLogger('vs');
 
     public static readonly viewType = 'visual-studio-code-plugin-for-alm-octane.myWelcome';

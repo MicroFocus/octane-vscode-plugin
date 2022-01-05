@@ -106,9 +106,9 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
 
     public static readonly viewType = 'visual-studio-code-plugin-for-alm-octane.octane';
 
-    public static register(context: vscode.ExtensionContext): vscode.Disposable {
+    public static register(context: vscode.ExtensionContext) {
 
-        return vscode.window.registerCustomEditorProvider(
+        context.subscriptions.push(vscode.window.registerCustomEditorProvider(
             OctaneEntityEditorProvider.viewType,
             new OctaneEntityEditorProvider(context),
             {
@@ -116,7 +116,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                     retainContextWhenHidden: false,
                 },
                 supportsMultipleEditorsPerDocument: false
-            });
+            }));
     }
 
     constructor(

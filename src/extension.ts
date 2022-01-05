@@ -34,17 +34,13 @@ export async function activate(context: vscode.ExtensionContext) {
 	initializeLog(context);
 	const logger = getLogger('vs');
 
-	registerCopyCommitMessageCommand(context);
+	setVisibilityRules();
 
+	
 	const service = OctaneService.getInstance();
 
 	const authProvider = new AlmOctaneAuthenticationProvider(context);
 	context.subscriptions.push(authProvider);
-
-	await service.initialize();
-
-	setVisibilityRules();
-
 	authProvider.onDidChangeSessions(async e => {
 		logger.info('Received session change');
 		if (e.removed !== undefined) {
@@ -56,14 +52,13 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.refreshAll');
 	});
 
-	const welcomeViewProvider = new WelcomeViewProvider(context.extensionUri, authProvider);
-	context.subscriptions.push(vscode.window.registerWebviewViewProvider('visual-studio-code-plugin-for-alm-octane.myWelcome', welcomeViewProvider));
-	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.myWelcome.refreshEntry', () => {
-		welcomeViewProvider.refresh();
-	}));
+	await service.initialize();
 
+	registerCopyCommitMessageCommand(context);
 
-	context.subscriptions.push(OctaneEntityEditorProvider.register(context));
+	WelcomeViewProvider.initialize(context, authProvider);
+	
+	OctaneEntityEditorProvider.register(context);
 
 	const myBacklogProvider = new BacklogProvider(service);
 	vscode.window.registerTreeDataProvider('myBacklog', myBacklogProvider);
