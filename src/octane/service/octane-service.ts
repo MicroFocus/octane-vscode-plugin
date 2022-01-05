@@ -663,22 +663,6 @@ export class OctaneService {
         }
     }
 
-    // public async getMyTestRuns(): Promise<OctaneEntity[]> {
-    //     const response = await this.octane.get(Octane.Octane.entityTypes.runs)
-    //         .fields('name', 'author{id,name,full_name}', 'run_by{full_name}')
-    //         .query(
-    //             Query.field('subtype').inComparison(['run_manual', 'run_suite']).and()
-
-    //                 .field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
-    //                 .build()
-    //         )
-    //         .orderBy('creation_time')
-    //         .execute();
-    //     let entities = response.data.map((r: any) => new OctaneEntity(r));
-    //     this.logger.debug(entities);
-    //     return entities;
-    // }
-
     public async dismissFromMyWork(e: OctaneEntity): Promise<void> {
         try {
             if (!this.loggedInUserId) {
