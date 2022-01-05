@@ -126,6 +126,53 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
         context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.details.closeAll', () => {
             this.webviewPanels.closeAll();
         }));
+
+        {
+            let saveLoginData = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.saveLoginData', async (loginData) => {
+                if (loginData) {
+                    await context.workspaceState.update('loginData', loginData);
+                }
+            });
+            context.subscriptions.push(saveLoginData);
+        }
+    
+        {
+            let getLoginData = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.getLoginData', () => {
+                let value: any = context.workspaceState.get('loginData');
+                if (value) {
+                    return value;
+                }
+            });
+            context.subscriptions.push(getLoginData);
+        }
+
+        {
+            let setFields = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.setFields', async (data, entityType) => {
+                if (data.fields) {
+                    this.logger.debug(data);
+                    await context.workspaceState.update(`visibleFields-${entityType}`,
+                        JSON.stringify(data)
+                    );
+                }
+            });
+            context.subscriptions.push(setFields);
+        }
+    
+        {
+            let getFields = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.getFields', (entityType) => {
+                if (entityType) {
+                    let value: any = context.workspaceState.get(`visibleFields-${entityType}`);
+                    if (value) {
+                        value = JSON.parse(value);
+                        if (value && value.fields) {
+                            return value.fields;
+                        }
+                    }
+                }
+                return;
+            });
+            context.subscriptions.push(getFields);
+        }
     }
 
     // onDidChangeCustomDocument: vscode.Event<vscode.CustomDocumentEditEvent<OctaneEntityDocument>> | vscode.Event<vscode.CustomDocumentContentChangeEvent<OctaneEntityDocument>>;
@@ -1024,8 +1071,9 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                                 if (dataOp) {
                                     if (dataOp.data) {
                                         for (let option of dataOp.data) {
-                                            if ((option.full_name === optionValue) || (option.name === optionValue))
+                                            if ((option.full_name === optionValue) || (option.name === optionValue)) {
                                                 html += `<option value='${JSON.stringify(option)}' selected>${optionValue}</option>`;
+                                            }
                                         }
                                     } else {
                                         html += `<option value='${JSON.stringify(dataOp)}' selected>${optionValue}</option>`;
@@ -1068,8 +1116,9 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                                     if (dataOp) {
                                         if (dataOp.data) {
                                             for (let option of dataOp.data) {
-                                                if ((option.full_name === optionValue) || (option.name === optionValue))
+                                                if ((option.full_name === optionValue) || (option.name === optionValue)) {
                                                     html += `<option value='${JSON.stringify(option)}' selected>${optionValue}</option>`;
+                                                }
                                             }
                                         } else {
                                             html += `<option value='${JSON.stringify(dataOp)}' selected>${optionValue}</option>`;
