@@ -12,8 +12,11 @@ export abstract class MyWorkProvider implements vscode.TreeDataProvider<MyWorkIt
 
     private user?: String;
 
-    constructor(protected service: OctaneService) {
+    constructor(context: vscode.ExtensionContext, protected service: OctaneService, refreshCommandId: string) {
         this.service = OctaneService.getInstance();
+        context.subscriptions.push(vscode.commands.registerCommand(refreshCommandId, () => {
+            this.refresh();
+        }));
     }
 
     getTreeItem(element: MyWorkItem): vscode.TreeItem | Thenable<vscode.TreeItem> {

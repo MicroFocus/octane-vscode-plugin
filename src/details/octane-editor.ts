@@ -128,25 +128,6 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
         }));
 
         {
-            let saveLoginData = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.saveLoginData', async (loginData) => {
-                if (loginData) {
-                    await context.workspaceState.update('loginData', loginData);
-                }
-            });
-            context.subscriptions.push(saveLoginData);
-        }
-    
-        {
-            let getLoginData = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.getLoginData', () => {
-                let value: any = context.workspaceState.get('loginData');
-                if (value) {
-                    return value;
-                }
-            });
-            context.subscriptions.push(getLoginData);
-        }
-
-        {
             let setFields = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.setFields', async (data, entityType) => {
                 if (data.fields) {
                     this.logger.debug(data);

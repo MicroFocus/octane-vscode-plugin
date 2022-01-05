@@ -16,27 +16,23 @@ import { OctaneQuickPickItem } from './octane/model/octane-quick-pick-item';
 import { MyWorkItem } from './treeview/my-work-provider';
 import { MyTasksProvider } from './treeview/tasks-provider';
 import { MyTestRunsProvider } from './treeview/test-runs-provider';
-import * as path from 'path';
-import * as fs from 'fs';
 import { debounce } from 'ts-debounce';
-import { TextEncoder } from 'util';
 import { getLogger } from 'log4js';
-import { OctaneEntityHolder } from './octane/model/octane-entity-holder';
-import { Comment } from './octane/model/comment';
 import { Task } from './octane/model/task';
-import { registerCommand as  registerCopyCommitMessageCommand} from './commands/copy-commit-message';
+import { registerCommand as registerCopyCommitMessageCommand } from './commands/copy-commit-message';
+import { registerCommand as registerOpenInBrowserCommand } from './commands/open-in-browser';
+import { registerCommand as registerDownloadTestCommand } from './commands/download-test';
 import { initializeLog } from './log/log';
 import { setVisibilityRules } from './treeview/visibility-rules';
 
 export async function activate(context: vscode.ExtensionContext) {
 
-	
+
 	initializeLog(context);
 	const logger = getLogger('vs');
 
 	setVisibilityRules();
 
-	
 	const service = OctaneService.getInstance();
 
 	const authProvider = new AlmOctaneAuthenticationProvider(context);
@@ -56,29 +52,29 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	registerCopyCommitMessageCommand(context);
 
-	WelcomeViewProvider.initialize(context, authProvider);
-	
+	context.subscriptions.push(vscode.window.registerWebviewViewProvider('visual-studio-code-plugin-for-alm-octane.myWelcome', new WelcomeViewProvider(context, authProvider)));
+
 	OctaneEntityEditorProvider.register(context);
 
-	const myBacklogProvider = new BacklogProvider(service);
+	const myBacklogProvider = new BacklogProvider(context, service, 'visual-studio-code-plugin-for-alm-octane.myBacklog.refreshEntry');
 	vscode.window.registerTreeDataProvider('myBacklog', myBacklogProvider);
 
-	const myTestsProvider = new MyTestsProvider(service);
+	const myTestsProvider = new MyTestsProvider(context, service, 'visual-studio-code-plugin-for-alm-octane.myTests.refreshEntry');
 	vscode.window.registerTreeDataProvider('myTests', myTestsProvider);
 
-	const myTestRunsProvider = new MyTestRunsProvider(service);
+	const myTestRunsProvider = new MyTestRunsProvider(context, service, 'visual-studio-code-plugin-for-alm-octane.myTestRuns.refreshEntry');
 	vscode.window.registerTreeDataProvider('myTestRuns', myTestRunsProvider);
 
-	const myFeaturesProvider = new MyFeatureProvider(service);
+	const myFeaturesProvider = new MyFeatureProvider(context, service, 'visual-studio-code-plugin-for-alm-octane.myFeatures.refreshEntry');
 	vscode.window.registerTreeDataProvider('myFeatures', myFeaturesProvider);
 
-	const myMentionsProvider = new MyMentionsProvider(service);
+	const myMentionsProvider = new MyMentionsProvider(context, service, 'visual-studio-code-plugin-for-alm-octane.myMentions.refreshEntry');
 	vscode.window.registerTreeDataProvider('myMentions', myMentionsProvider);
 
-	const myRequirementsProvider = new MyRequirementsProvider(service);
+	const myRequirementsProvider = new MyRequirementsProvider(context, service, 'visual-studio-code-plugin-for-alm-octane.myRequirements.refreshEntry');
 	vscode.window.registerTreeDataProvider('myRequirements', myRequirementsProvider);
 
-	const myTasksProvider = new MyTasksProvider(service);
+	const myTasksProvider = new MyTasksProvider(context, service, 'visual-studio-code-plugin-for-alm-octane.myTasks.refreshEntry');
 	vscode.window.registerTreeDataProvider('myTasks', myTasksProvider);
 
 	const mySearchProvider = new SearchProvider(context);
@@ -94,105 +90,11 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myTasks.refreshEntry');
 		vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myTestRuns.refreshEntry');
 	}));
-	{
-		let refreshCommand = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.myBacklog.refreshEntry', () => {
-			myBacklogProvider.refresh();
-		});
-		context.subscriptions.push(refreshCommand);
-	}
 
-	{
-		let refreshCommand = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.myTests.refreshEntry', () => {
-			myTestsProvider.refresh();
-		});
-		context.subscriptions.push(refreshCommand);
-	}
+	registerOpenInBrowserCommand(context);
 
-	{
-		let refreshCommand = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.myFeatures.refreshEntry', () => {
-			myFeaturesProvider.refresh();
-		});
-		context.subscriptions.push(refreshCommand);
-	}
+	registerDownloadTestCommand(context);
 
-	{
-		let refreshCommand = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.myMentions.refreshEntry', () => {
-			myMentionsProvider.refresh();
-		});
-		context.subscriptions.push(refreshCommand);
-	}
-
-	{
-		let refreshCommand = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.myRequirements.refreshEntry', () => {
-			myRequirementsProvider.refresh();
-		});
-		context.subscriptions.push(refreshCommand);
-	}
-
-	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.myTasks.refreshEntry', () => {
-		myTasksProvider.refresh();
-	}));
-
-	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.myTestRuns.refreshEntry', () => {
-		myTestRunsProvider.refresh();
-	}));
-
-	
-
-	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.openInBrowser', async (e: OctaneEntityHolder) => {
-		if (e.entity) {
-			if (e.entity instanceof Comment) {
-				if ((e.entity as Comment).ownerEntity) {
-					await vscode.env.openExternal(service.getBrowserUri((e.entity as Comment).ownerEntity));
-				}
-			} else {
-				await vscode.env.openExternal(service.getBrowserUri(e.entity));
-			}
-		}
-	}));
-
-	{
-		let downloadTestCommand = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.myTests.download', async (e: MyWorkItem) => {
-			logger.info('visual-studio-code-plugin-for-alm-octane.myTests.download called', e);
-
-			if (e.entity) {
-				const script = await service.downloadScriptForTest(e.entity);
-				if (vscode === undefined || vscode.workspace === undefined || vscode.workspace.workspaceFolders === undefined || vscode.workspace.workspaceFolders[0] === undefined) {
-					vscode.window.showErrorMessage('No workspace opened. Can not save test script.');
-					return;
-				}
-
-				logger.debug(`Trying to populate download script default location using ${vscode.workspace.workspaceFolders[0].uri}`);
-				let newFile;
-				try {
-					fs.accessSync(vscode.workspace.workspaceFolders[0].uri.path, fs.constants.W_OK);
-					newFile = vscode.Uri.parse(path.join(vscode.workspace.workspaceFolders[0].uri.path, `${e.entity.name}_${e.entity.id}.feature`));
-				} catch (error) {
-					logger.error('workspace folder is not writabel', error);
-					newFile = vscode.Uri.parse(`file://${e.entity.name}_${e.entity.id}.feature`);
-				}
-
-				const fileInfos = await vscode.window.showSaveDialog({ defaultUri: newFile });
-				if (fileInfos) {
-					try {
-						await vscode.workspace.fs.writeFile(vscode.Uri.file(fileInfos.path), new TextEncoder().encode(`${script}`));
-						try {
-							logger.log(`Script saved to: ${fileInfos.path}`);
-							await vscode.commands.executeCommand('vscode.open', vscode.Uri.file(fileInfos.path));
-						} catch (e) {
-							logger.error(e);
-						}
-						vscode.window.showInformationMessage('Script saved.');
-					} catch (error) {
-						logger.error('While saving script: ', e);
-						vscode.window.showErrorMessage('Access error occurred while saving script.');
-					}
-
-				}
-			}
-		});
-		context.subscriptions.push(downloadTestCommand);
-	}
 	{
 		context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.quickPick', async (value: OctaneQuickPickItem) => {
 			const quickPick = vscode.window.createQuickPick();

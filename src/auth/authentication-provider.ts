@@ -5,7 +5,7 @@ import { retryDecorator } from 'ts-retry-promise';
 import { v4 as uuid } from 'uuid';
 import { OctaneService } from '../octane/service/octane-service';
 import { create } from 'domain';
-import { getLogger} from 'log4js';
+import { getLogger } from 'log4js';
 import { LoginData } from './login-data';
 
 export const type = 'alm-octane.auth';
@@ -47,6 +47,19 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 		this.disposable = vscode.Disposable.from(
 			vscode.authentication.registerAuthenticationProvider(type, 'ALM Octane', this, { supportsMultipleAccounts: false })
 		);
+
+		context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.saveLoginData', async (loginData) => {
+			if (loginData) {
+				await context.workspaceState.update('loginData', loginData);
+			}
+		}));
+
+		context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.getLoginData', () => {
+			let value: any = context.workspaceState.get('loginData');
+			if (value) {
+				return value;
+			}
+		}));
 	}
 
 	dispose() {
@@ -110,7 +123,7 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 				const response = await idResult.json();
 				this.logger.debug(response);
 				const self = this;
-				const logWrapper = function(msg: string) {
+				const logWrapper = function (msg: string) {
 					self.logger.info(msg);
 				};
 				const browserResponse = await vscode.env.openExternal(vscode.Uri.parse(response?.authentication_url));

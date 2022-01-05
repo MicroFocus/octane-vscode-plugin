@@ -6,28 +6,26 @@ import { getLogger } from 'log4js';
 
 export class WelcomeViewProvider implements vscode.WebviewViewProvider {
 
-    public static initialize(context: vscode.ExtensionContext, authenticationProvider: AlmOctaneAuthenticationProvider) {
-        const welcomeViewProvider = new WelcomeViewProvider(context.extensionUri, authenticationProvider);
-        context.subscriptions.push(vscode.window.registerWebviewViewProvider('visual-studio-code-plugin-for-alm-octane.myWelcome', welcomeViewProvider));
-        context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.myWelcome.refreshEntry', () => {
-            welcomeViewProvider.refresh();
-        }));
-    }
-
     private logger = getLogger('vs');
 
     public static readonly viewType = 'visual-studio-code-plugin-for-alm-octane.myWelcome';
 
     private view?: vscode.WebviewView;
 
+    private readonly extensionUri: vscode.Uri;
+
     private wasDisposed = false;
 
-    constructor(private readonly extensionUri: vscode.Uri, private readonly authenticationProvider: AlmOctaneAuthenticationProvider) {
-        this.logger.info('WelcomeViewProvider constructed');
+    constructor(context: vscode.ExtensionContext, private readonly authenticationProvider: AlmOctaneAuthenticationProvider) {
+        this.logger.debug('WelcomeViewProvider constructed');
+        this.extensionUri = context.extensionUri;
+        context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.myWelcome.refreshEntry', () => {
+            this.refresh();
+        }));
     }
 
     public attemptAuthentication() {
-        this.logger.info('attemptAuthentication called.');
+        this.logger.debug('attemptAuthentication called.');
     }
 
     public async refresh() {
