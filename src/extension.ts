@@ -20,46 +20,22 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { debounce } from 'ts-debounce';
 import { TextEncoder } from 'util';
-import { configure, getLogger, Appender } from 'log4js';
+import { getLogger } from 'log4js';
 import { OctaneEntityHolder } from './octane/model/octane-entity-holder';
 import { Comment } from './octane/model/comment';
 import { Task } from './octane/model/task';
+import { registerCommand as  registerCopyCommitMessageCommand} from './commands/copy-commit-message';
+import { initializeLog } from './log/log';
 
 export async function activate(context: vscode.ExtensionContext) {
 
-	let logAppender: Appender = {
-		type: 'dateFile',
-		filename: `${context.logUri.path}/vs.log`,
-		compress: true,
-		alwaysIncludePattern: true
-	};
-	try {
-		fs.accessSync(context.logUri.path, fs.constants.W_OK);
-		console.debug('Log dir is writeable.');
-	} catch (error) {
-		console.warn('Log dir is not writeable.');
-		logAppender = {
-			type: 'console'
-		};
-	}
-
-	const logLevel: string = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.logLevel') ?? 'info';
-	configure({
-		appenders: { vs: logAppender },
-		categories: { default: { appenders: ['vs'], level: logLevel } }
-	});
-
+	
+	initializeLog(context);
 	const logger = getLogger('vs');
 
-	context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(async e => {
-		if (e.affectsConfiguration('visual-studio-code-plugin-for-alm-octane')) {
-			const logLevel: string = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.logLevel') ?? 'info';
-			configure({
-				appenders: { vs: logAppender },
-				categories: { default: { appenders: ['vs'], level: logLevel } }
-			});
-		}
-	}));
+	registerCopyCommitMessageCommand(context);
+
+	
 
 	const service = OctaneService.getInstance();
 	const authProvider = new AlmOctaneAuthenticationProvider(context);
@@ -233,25 +209,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		myTestRunsProvider.refresh();
 	}));
 
-	{
-		let commitMessageCommand = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.commitMessage', async (e: MyWorkItem) => {
-			let text = '';
-			if (e.entity && e.entity instanceof Task) {
-				let comment = e.entity as Task;
-				let labelKey = (comment.story?.subtype && comment.story?.subtype !== '') ? comment.story.subtype : comment.story?.type;
-				if (labelKey !== undefined) {
-					text = `${OctaneService.typeLabels.get(labelKey) ?? labelKey} #${comment.story?.id}: `;
-				}
-			}
-			let labelKey = (e.entity?.subtype && e.entity.subtype !== '') ? e.entity.subtype : e.entity?.type;
-			if (labelKey) {
-				text += `${OctaneService.typeLabels.get(labelKey) ?? labelKey} #${e.id}: `;
-				await vscode.env.clipboard.writeText(text);
-			}
-			vscode.window.showInformationMessage('Commit message copied to clipboard.');
-		});
-		context.subscriptions.push(commitMessageCommand);
-	}
+	
 
 	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.openInBrowser', async (e: OctaneEntityHolder) => {
 		if (e.entity) {
