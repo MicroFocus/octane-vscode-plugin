@@ -26,6 +26,7 @@ import { Comment } from './octane/model/comment';
 import { Task } from './octane/model/task';
 import { registerCommand as  registerCopyCommitMessageCommand} from './commands/copy-commit-message';
 import { initializeLog } from './log/log';
+import { setVisibilityRules } from './treeview/visibility-rules';
 
 export async function activate(context: vscode.ExtensionContext) {
 
@@ -35,82 +36,14 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	registerCopyCommitMessageCommand(context);
 
-	
-
 	const service = OctaneService.getInstance();
+
 	const authProvider = new AlmOctaneAuthenticationProvider(context);
 	context.subscriptions.push(authProvider);
 
-	{
-		let saveLoginData = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.saveLoginData', async (loginData) => {
-			if (loginData) {
-				await context.workspaceState.update('loginData', loginData);
-			}
-		});
-		context.subscriptions.push(saveLoginData);
-	}
-
-	{
-		let getLoginData = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.getLoginData', () => {
-			let value: any = context.workspaceState.get('loginData');
-			if (value) {
-				return value;
-			}
-		});
-		context.subscriptions.push(getLoginData);
-	}
-
-	{
-		let setFields = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.setFields', async (data, entityType) => {
-			if (data.fields) {
-				logger.debug(data);
-				await context.workspaceState.update(`visibleFields-${entityType}`,
-					JSON.stringify(data)
-				);
-			}
-		});
-		context.subscriptions.push(setFields);
-	}
-
-	{
-		let getFields = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.getFields', (entityType) => {
-			if (entityType) {
-				let value: any = context.workspaceState.get(`visibleFields-${entityType}`);
-				if (value) {
-					value = JSON.parse(value);
-					if (value && value.fields) {
-						return value.fields;
-					}
-				}
-			}
-			return;
-		});
-		context.subscriptions.push(getFields);
-	}
-
 	await service.initialize();
 
-	vscode.commands.executeCommand('setContext', 'visual-studio-code-plugin-for-alm-octane.supportedViews', [
-		'myBacklog',
-		'myTests',
-		'myTestRuns',
-		'myFeatures',
-		'myRequirements',
-		'myTasks',
-		'myMentions'
-	]);
-
-	vscode.commands.executeCommand('setContext', 'visual-studio-code-plugin-for-alm-octane.supportsStartWork', [
-		'task',
-		'story',
-		'defect',
-		'quality_story'
-	]);
-
-	vscode.commands.executeCommand('setContext', 'visual-studio-code-plugin-for-alm-octane.supportsDownloadScript', [
-		'gherkin_test',
-		'scenario_test'
-	]);
+	setVisibilityRules();
 
 	authProvider.onDidChangeSessions(async e => {
 		logger.info('Received session change');
