@@ -23,6 +23,7 @@ import { registerCommand as registerCopyCommitMessageCommand } from './commands/
 import { registerCommand as registerOpenInBrowserCommand } from './commands/open-in-browser';
 import { registerCommand as registerDownloadTestCommand } from './commands/download-test';
 import { registerCommand as registerGlobalSearchCommand } from './commands/global-search';
+import { registerCommand as registerOpenDetailsCommands } from './commands/open-details';
 import { initializeLog } from './log/log';
 import { setVisibilityRules } from './treeview/visibility-rules';
 
@@ -98,24 +99,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	registerGlobalSearchCommand(context);
 
-	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.details', async (e: MyWorkItem) => {
-		if (e.command && e.command.arguments) {
-			await vscode.commands.executeCommand(e.command.command, e.command.arguments[0], e.command.arguments[1]);
-		}
-	}));
-
-	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.parentDetails', async (e: MyWorkItem) => {
-		if (e.entity && e.entity instanceof Task) {
-			let task = e.entity as Task;
-			let story = task.story;
-			if (!story) {
-				logger.warn(`No story found for task: ${task.id}`);
-				return;
-			}
-			await vscode.commands.executeCommand('vscode.openWith', vscode.Uri.parse(`octane:///octane/${story.type}/${story.subtype}/${story.id}`), OctaneEntityEditorProvider.viewType);
-		}
-	}));
-
+	registerOpenDetailsCommands(context);
 
 	let myActiveItem: MyWorkItem | undefined;
 	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.openActiveItem', async () => {
