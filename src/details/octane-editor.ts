@@ -292,6 +292,14 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
         }
     }
 
+    /**
+    * Generating html code for webview panel
+    * @param webview Webview
+    * @param context Context for view
+    * @param data The current OctaneEntity.
+    * @param fields All fields for given OctaneEntity
+    * @return html code as string for webview panel
+    */
     private async getHtmlForWebview(webview: vscode.Webview, context: any, data: any | OctaneEntity | undefined, fields: any[]): Promise<string> {
         const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(
             context.extensionUri, 'media', 'vscode.css'));
@@ -476,7 +484,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                     </div>
                     <div id="comments-element-id" class="comments-element" currentAuthor='${''}'>
                         <div id="comments-sidebar-id" class="comments-sidebar">
-                            ${await generateCommentElement(data, fields)}
+                            ${await generateCommentElement(data)}
                         </div>
                     </div>
                 </div>
@@ -489,13 +497,19 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
     }
 }
 
+/**
+* Generating selected options for single select and multiselect
+* @param field A single field.
+* @param data The current OctaneEntity.
+* @return Options for given field.
+*/
 async function generateSelectOptions(field: any, data: any | OctaneEntity | undefined) {
     if (field && field.field_type_data && field.field_type_data.targets && data) {
         var options = [];
         for (const target of field.field_type_data.targets) {
-            let f = (await OctaneService.getInstance().getFullDataForEntity(target.type, field, data));
-            if (f && f.data) {
-                options.push(...(f.data));
+            let fullDataForEntity = (await OctaneService.getInstance().getFullDataForEntity(target.type, field, data));
+            if (fullDataForEntity && fullDataForEntity.data) {
+                options.push(...(fullDataForEntity.data));
             }
         }
         return options;
@@ -504,6 +518,11 @@ async function generateSelectOptions(field: any, data: any | OctaneEntity | unde
     return;
 }
 
+/**
+* Generating icon for given entity based on type or subtype
+* @param entity OctaneEntity
+* @return A pair of ["icon symbol", "color"]
+*/
 function getDataForSubtype(entity: OctaneEntity | undefined): [string, string] {
     if (entity?.type === 'task') {
         return ['T', '#1668c1'];
@@ -532,6 +551,14 @@ function getDataForSubtype(entity: OctaneEntity | undefined): [string, string] {
     return ['', ''];
 }
 
+/**
+* Generating html code for phase selection
+* @param data OctaneEntity
+* @param fields all fields for given OctaneEntity
+* @param activeFields all active fields for given OctaneEntity
+* @param currentDefaultFields all default fields for given OctaneEntity
+* @return html code as string
+*/
 async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, fields: any[], activeFields: string[] | undefined, currentDefaultFields: string[] | undefined): Promise<string> {
     let html: string = ``;
     try {
@@ -651,7 +678,12 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
     return html;
 }
 
-async function generateCommentElement(data: any | OctaneEntity | undefined, fields: any[]): Promise<string> {
+/**
+* Generating html code for comment section of view
+* @param data OctaneEntity
+* @return html code as string
+*/
+async function generateCommentElement(data: any | OctaneEntity | undefined): Promise<string> {
     let html: string = ``;
     try {
         html += `   <br>
@@ -709,6 +741,13 @@ async function isSelectedField(fieldName: string, activeFields: string[] | undef
     return false;
 }
 
+/**
+* Generating html code for main section of view
+* @param data OctaneEntity
+* @param fields all fields for given OctaneEntity
+* @param activeFields all active fields for given OctaneEntity
+* @return html code as string
+*/
 async function generateBodyElement(data: any | OctaneEntity | undefined, fields: any[], activeFields: string[] | undefined): Promise<string> {
     let html: string = ``;
     try {
@@ -1045,7 +1084,7 @@ const defaultFieldMap: Map<String, string[]> = new Map([
     ['bdd_spec', ["Description", "Creation_time", "Last_modified", "Author", "Owner", "Application_modules", "Automation_status", "Linked_backlog_items", "Code_alignment"]],
     ['scenario_test', ["Test_type", "Testing_tool_type", "Owner", "Estimated_duration_(minutes)", "Created", "Last_modified", "Backlog_Coverage", "Application_modules", "Automation_status", "BDD_Spec", "Description"]],
     ['test_automated', ["Framework", "Testing_tool_type", "Owner", "Test_level", "Test_type", "Branch", "Application_modules", "Backlog_Coverage", "Executable", "Description"]],
-    ['test_suite', ["Test_type","Testing_tool_type","Owner","Estimated_duration_(minutes)","Designer","Created","Last_modified","Backlog_Coverage","Application_modules","Description"]],
-    ['run_automated', ["Test_name","Draft_run","Run_by","Assigned_to_(On_it)","Component","Started","Duration","Backlog_Coverage"]],
-    ['gherkin_automated_run', ["Test_name","Native_status","Run_by","Started","Duration","Content","Last_modified","Backlog_Coverage"]]
+    ['test_suite', ["Test_type", "Testing_tool_type", "Owner", "Estimated_duration_(minutes)", "Designer", "Created", "Last_modified", "Backlog_Coverage", "Application_modules", "Description"]],
+    ['run_automated', ["Test_name", "Draft_run", "Run_by", "Assigned_to_(On_it)", "Component", "Started", "Duration", "Backlog_Coverage"]],
+    ['gherkin_automated_run', ["Test_name", "Native_status", "Run_by", "Started", "Duration", "Content", "Last_modified", "Backlog_Coverage"]]
 ]);
