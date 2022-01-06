@@ -138,7 +138,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
             });
             context.subscriptions.push(setFields);
         }
-    
+
         {
             let getFields = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.getFields', (entityType) => {
                 if (entityType) {
@@ -278,7 +278,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
 
             this.webviewPanels.add(document.uri, webviewPanel);
         } catch (e: any) {
-            if(e && e.statusCode && e.statusCode === 404) {
+            if (e && e.statusCode && e.statusCode === 404) {
                 let pathComponents = document_.uri.path.split('/');
                 let type: string = pathComponents[2];
                 let subType: string = pathComponents[3];
@@ -311,291 +311,54 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
         const bootstrapMultiselectJs = webview.asWebviewUri(vscode.Uri.joinPath(
             context.extensionUri, 'media', 'bootstrap-multiselect.min.js'));
 
-        let resetFilterValuesForDefect = [
-            "Application_modules",
-            "Blocked",
-            "Blocked_reason",
-            "Closed_on",
-            "Creation_time",
-            "Defect_type",
-            "Description",
-            "Detected_by",
-            "Detected_in_release",
-            "Environment",
-            "Feature",
-            "Last_modified",
-            "Owner",
-            "Priority",
-            "Release",
-            "Severity",
-            "Sprint",
-            "Story_points",
-            "Team"
-        ];
-
-        let resetFilterValuesForStory = [
-            "Application_modules",
-            "Author",
-            "Blocked",
-            "Blocked_reason",
-            "Creation_time",
-            "Description",
-            "Feature",
-            "Item_origin",
-            "Last_modified",
-            "Owner",
-            "Release",
-            "Sprint",
-            "Story_points",
-            "Team",
-            "Test_Coverage",
-        ];
-
-        let resetFilterValuesForQStory = [
-            "Application_modules",
-            "Author",
-            "Blocked",
-            "Blocked_reason",
-            "Creation_time",
-            "Description",
-            "Feature",
-            "Item_origin",
-            "Last_modified",
-            "Owner",
-            "Quality_story_type",
-            "Release",
-            "Sprint",
-            "Story_points",
-            "Team"
-        ];
-
-        let resetFilterValuesForFeature = [
-            "Owner",
-            "Author",
-            "Creation_time",
-            "Last_modified",
-            "Story_points",
-            "Item_origin",
-            "Test_Coverage",
-            "Epic",
-            "Priority",
-            "Application_modules",
-            "Release",
-            "Milestone",
-            "Team",
-            "Target_Sprint",
-            "Items_in_releases",
-            "Progress",
-            "Feature_type",
-            "Actual_story_points",
-            "Description"
-        ];
-
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        let resetFilterValuesForGT_MT = [
-            "Application_modules",
-            "Automation_status",
-            "Backlog_Coverage",
-            "Created",
-            "Description",
-            "Designer",
-            "Estimated_duration_(minutes)",
-            "Last_modified",
-            "Owner",
-            "Test_type",
-            "Testing_tool_type"
-        ];
-
-        let resetFilterValuesForRunSuite = [
-            "Content",
-            "Default_Environment",
-            "Description",
-            "Draft_run",
-            "Last_modified",
-            "Native_status",
-            "Release",
-            "Started",
-            "Suite_name"
-        ];
-
-        let resetFilterValuesForRD = [
-            "Author",
-            "Creation_time",
-            "Description",
-            "Release",
-            "Last_modified",
-            "Owner"
-        ];
-
-        let resetFilterValuesForTask = [
-            "Author",
-            "Story",
-            "Last_modified",
-            "Estimated_hours",
-            "Remaining_hours",
-            "Owner",
-            "Description",
-            "Creation_time",
-            "Invested_hours",
-            "Type"
-        ];
-
-        let resetFilterValuesForMR = [
-            "Test_name",
-            "Native_status",
-            "Author",
-            "Run_by",
-            "Started",
-            "Duration",
-            "Content",
-            "Release",
-            "Milestone",
-            "Sprint",
-            "Version_from_Release",
-            "Draft_run",
-            "Last_modified",
-            "Draft_run",
-            "Environment",
-            "Backlog_Coverage",
-            "Description"
-        ];
-
-        let resetFilterValuesForEpic = [
-            "Description",
-            "Owner",
-            "Creation_time",
-            "Last_modified",
-            "Milestone",
-            "Story_points",
-            "Author",
-            "Item_origin",
-            "Items_in_releases",
-            "Progress",
-            "Epic_type"
-        ];
-
-        let resetFilterValuesForBDDSpec = [
-            "Description",
-            "Creation_time",
-            "Last_modified",
-            "Author",
-            "Owner",
-            "Application_modules",
-            "Automation_status",
-            "Linked_backlog_items",
-            "Code_alignment"
-        ];
-
-        let resetFilterValuesForBDDScenario = [
-            "Test_type",
-            "Testing_tool_type",
-            "Owner",
-            "Estimated_duration_(minutes)",
-            "Created",
-            "Last_modified",
-            "Backlog_Coverage",
-            "Application_modules",
-            "Automation_status",
-            "BDD_Spec",
-            "Description"
-        ];
-
-        let resetFilterValuesForTestAutomated = [
-            "Framework",
-            "Testing_tool_type",
-            "Owner",
-            "Test_level",
-            "Test_type",
-            "Branch",
-            "Application_modules",
-            "Backlog_Coverage",
-            "Executable",
-            "Description"
-        ];
-
-        let resetFilterValuesForTestSuite = [
-            "Test_type",
-            "Testing_tool_type",
-            "Owner",
-            "Estimated_duration_(minutes)",
-            "Designer",
-            "Created",
-            "Last_modified",
-            "Backlog_Coverage",
-            "Application_modules",
-            "Description"
-        ];
-
-        let resetFilterValuesForAR = [
-            "Test_name",
-            "Draft_run",
-            "Run_by",
-            "Assigned_to_(On_it)",
-            "Component",
-            "Started",
-            "Duration",
-            "Backlog_Coverage"
-        ];
-
-        let resetFilterValuesForGAR = [
-            "Test_name",
-            "Native_status",
-            "Run_by",
-            "Started",
-            "Duration",
-            "Content",
-            "Last_modified",
-            "Backlog_Coverage"
-        ];
-
         var activeFields: string[] | undefined = [];
         if (data.subtype !== null && data.subtype !== undefined && data.subtype !== "") {
             activeFields = await getSavedFields(data.subtype);
             if (activeFields === undefined) {
                 if (data.subtype === 'defect') {
-                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForDefect }, data.subtype);
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: defaultFieldMap.get('defect') }, data.subtype);
                 }
                 if (data.subtype === 'story') {
-                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForStory }, data.subtype);
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: defaultFieldMap.get('story') }, data.subtype);
                 }
                 if (data.subtype === 'quality_story') {
-                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForQStory }, data.subtype);
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: defaultFieldMap.get('quality_story') }, data.subtype);
                 }
                 if (data.subtype === 'feature') {
-                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForFeature }, data.subtype);
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: defaultFieldMap.get('feature') }, data.subtype);
                 }
                 if (data.subtype === 'gherkin_test') {
-                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForGT_MT }, data.subtype);
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: defaultFieldMap.get('gherkin_test') }, data.subtype);
                 }
                 if (data.subtype === 'test_manual') {
-                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForGT_MT }, data.subtype);
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: defaultFieldMap.get('test_manual') }, data.subtype);
                 }
                 if (data.subtype === 'run_suite') {
-                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForRunSuite }, data.subtype);
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: defaultFieldMap.get('run_suite') }, data.subtype);
                 }
                 if (data.subtype === 'requirement_document') {
-                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForRD }, data.subtype);
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: defaultFieldMap.get('requirement_document') }, data.subtype);
                 }
                 if (data.subtype === 'run_manual') {
-                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForMR }, data.subtype);
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: defaultFieldMap.get('run_manual') }, data.subtype);
                 }
                 if (data.subtype === 'epic') {
-                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForEpic }, data.subtype);
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: defaultFieldMap.get('epic') }, data.subtype);
                 }
                 if (data.subtype === 'scenario_test') {
-                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForBDDScenario }, data.subtype);
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: defaultFieldMap.get('scenario_test') }, data.subtype);
                 }
                 if (data.subtype === 'test_automated') {
-                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForTestAutomated }, data.subtype);
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: defaultFieldMap.get('test_automated') }, data.subtype);
                 }
                 if (data.subtype === 'test_suite') {
-                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForTestSuite }, data.subtype);
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: defaultFieldMap.get('test_suite') }, data.subtype);
                 }
                 if (data.subtype === 'run_automated') {
-                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForAR }, data.subtype);
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: defaultFieldMap.get('run_automated') }, data.subtype);
                 }
                 if (data.subtype === 'gherkin_automated_run') {
-                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForGAR }, data.subtype);
+                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: defaultFieldMap.get('gherkin_automated_run') }, data.subtype);
                 }
                 activeFields = await getSavedFields(data.subtype);
             }
@@ -604,10 +367,10 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                 activeFields = await getSavedFields(data.type);
                 if (activeFields === undefined) {
                     if (data.type === 'task') {
-                        vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForTask }, data.type);
+                        vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: defaultFieldMap.get('task') }, data.type);
                     }
                     if (data.type === 'bdd_spec') {
-                        vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: resetFilterValuesForBDDSpec }, data.type);
+                        vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: defaultFieldMap.get('bdd_spec') }, data.type);
                     }
                     activeFields = await getSavedFields(data.type);
                 }
@@ -617,60 +380,60 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
         var currentDefaultFields: string[] | undefined = [];
         if (data.subtype !== null && data.subtype !== undefined && data.subtype !== "") {
             if (data.subtype === 'defect') {
-                currentDefaultFields = resetFilterValuesForDefect;
+                currentDefaultFields = defaultFieldMap.get('defect');
             }
             if (data.subtype === 'story') {
-                currentDefaultFields = resetFilterValuesForStory;
+                currentDefaultFields = defaultFieldMap.get('story');
             }
             if (data.subtype === 'quality_story') {
-                currentDefaultFields = resetFilterValuesForQStory;
+                currentDefaultFields = defaultFieldMap.get('quality_story');
             }
             if (data.subtype === 'feature') {
-                currentDefaultFields = resetFilterValuesForFeature;
+                currentDefaultFields = defaultFieldMap.get('feature');
             }
             if (data.subtype === 'gherkin_test') {
-                currentDefaultFields = resetFilterValuesForGT_MT;
+                currentDefaultFields = defaultFieldMap.get('gherkin_test');
             }
             if (data.subtype === 'test_manual') {
-                currentDefaultFields = resetFilterValuesForGT_MT;
+                currentDefaultFields = defaultFieldMap.get('test_manual');
             }
             if (data.subtype === 'run_suite') {
-                currentDefaultFields = resetFilterValuesForRunSuite;
+                currentDefaultFields = defaultFieldMap.get('run_suite');
             }
             if (data.subtype === 'requirement_document') {
-                currentDefaultFields = resetFilterValuesForRD;
+                currentDefaultFields = defaultFieldMap.get('requirement_document');
             }
             if (data.subtype === 'run_manual') {
-                currentDefaultFields = resetFilterValuesForMR;
+                currentDefaultFields = defaultFieldMap.get('run_manual');
             }
             if (data.subtype === 'epic') {
-                currentDefaultFields = resetFilterValuesForEpic;
+                currentDefaultFields = defaultFieldMap.get('epic');
             }
             if (data.subtype === 'scenario_test') {
-                currentDefaultFields = resetFilterValuesForBDDScenario;
+                currentDefaultFields = defaultFieldMap.get('scenario_test');
             }
             if (data.subtype === 'test_automated') {
-                currentDefaultFields = resetFilterValuesForTestAutomated;
+                currentDefaultFields = defaultFieldMap.get('test_automated');
             }
             if (data.subtype === 'test_suite') {
-                currentDefaultFields = resetFilterValuesForTestSuite;
+                currentDefaultFields = defaultFieldMap.get('test_suite');
             }
             if (data.subtype === 'run_automated') {
-                currentDefaultFields = resetFilterValuesForAR;
+                currentDefaultFields = defaultFieldMap.get('run_automated');
             }
             if (data.subtype === 'gherkin_automated_run') {
-                currentDefaultFields = resetFilterValuesForGAR;
+                currentDefaultFields = defaultFieldMap.get('gherkin_automated_run');
             }
         } else {
             if (data.type !== null && data.type !== undefined) {
                 if (data.type === 'task') {
-                    currentDefaultFields = resetFilterValuesForTask;
+                    currentDefaultFields = defaultFieldMap.get('task');
                 }
                 if (data.type === 'bdd_spec') {
-                    currentDefaultFields = resetFilterValuesForBDDSpec;
+                    currentDefaultFields = defaultFieldMap.get('bdd_spec');
                 }
             } else {
-                currentDefaultFields = resetFilterValuesForDefect;
+                currentDefaultFields = defaultFieldMap.get('defect');
             }
         }
 
@@ -1265,4 +1028,24 @@ function getFieldValue(data: any, fieldName: string): string | any[] {
 
 const fieldNameMap: Map<String, String> = new Map([
     ['application_module', 'product_areas']
+]);
+
+const defaultFieldMap: Map<String, string[]> = new Map([
+    ['defect', ["Application_modules", "Blocked", "Blocked_reason", "Closed_on", "Creation_time", "Defect_type", "Description", "Detected_by", "Detected_in_release", "Environment", "Feature", "Last_modified", "Owner", "Priority", "Release", "Severity", "Sprint", "Story_points", "Team"]],
+    ['story', ["Application_modules", "Author", "Blocked", "Blocked_reason", "Creation_time", "Description", "Feature", "Item_origin", "Last_modified", "Owner", "Release", "Sprint", "Story_points", "Team", "Test_Coverage"]],
+    ['quality_story', ["Application_modules", "Author", "Blocked", "Blocked_reason", "Creation_time", "Description", "Feature", "Item_origin", "Last_modified", "Owner", "Quality_story_type", "Release", "Sprint", "Story_points"]],
+    ['feature', ["Owner", "Author", "Creation_time", "Last_modified", "Story_points", "Item_origin", "Test_Coverage", "Epic", "Priority", "Application_modules", "Release", "Milestone", "Team", "Target_Sprint", "Items_in_releases", "Progress", "Feature_type", "Actual_story_points", "Description"]],
+    ['gherkin_test', ["Application_modules", "Automation_status", "Backlog_Coverage", "Created", "Description", "Designer", "Estimated_duration_(minutes)", "Last_modified", "Owner", "Test_type", "Testing_tool_type"]],
+    ['test_manual', ["Application_modules", "Automation_status", "Backlog_Coverage", "Created", "Description", "Designer", "Estimated_duration_(minutes)", "Last_modified", "Owner", "Test_type", "Testing_tool_type"]],
+    ['run_suite', ["Content", "Default_Environment", "Description", "Draft_run", "Last_modified", "Native_status", "Release", "Started", "Suite_name"]],
+    ['requirement_document', ["Author", "Creation_time", "Description", "Release", "Last_modified", "Owner"]],
+    ['task', ["Author", "Story", "Last_modified", "Estimated_hours", "Remaining_hours", "Owner", "Description", "Creation_time", "Invested_hours", "Type"]],
+    ['run_manual', ["Test_name", "Native_status", "Author", "Run_by", "Started", "Duration", "Content", "Release", "Milestone", "Sprint", "Version_from_Release", "Draft_run", "Last_modified", "Draft_run", "Environment", "Backlog_Coverage", "Description"]],
+    ['epic', ["Description", "Owner", "Creation_time", "Last_modified", "Milestone", "Story_points", "Author", "Item_origin", "Items_in_releases", "Progress", "Epic_type"]],
+    ['bdd_spec', ["Description", "Creation_time", "Last_modified", "Author", "Owner", "Application_modules", "Automation_status", "Linked_backlog_items", "Code_alignment"]],
+    ['scenario_test', ["Test_type", "Testing_tool_type", "Owner", "Estimated_duration_(minutes)", "Created", "Last_modified", "Backlog_Coverage", "Application_modules", "Automation_status", "BDD_Spec", "Description"]],
+    ['test_automated', ["Framework", "Testing_tool_type", "Owner", "Test_level", "Test_type", "Branch", "Application_modules", "Backlog_Coverage", "Executable", "Description"]],
+    ['test_suite', ["Test_type","Testing_tool_type","Owner","Estimated_duration_(minutes)","Designer","Created","Last_modified","Backlog_Coverage","Application_modules","Description"]],
+    ['run_automated', ["Test_name","Draft_run","Run_by","Assigned_to_(On_it)","Component","Started","Duration","Backlog_Coverage"]],
+    ['gherkin_automated_run', ["Test_name","Native_status","Run_by","Started","Duration","Content","Last_modified","Backlog_Coverage"]]
 ]);
