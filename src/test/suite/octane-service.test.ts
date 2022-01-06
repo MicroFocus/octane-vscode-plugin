@@ -23,7 +23,9 @@ suite('OctaneService test suite', () => {
 	test('initialize with empty stored access details should cause no login', async () => {
 		let service = OctaneService.getInstance();
 		const commands = stubObject(vscode.commands);
-		commands.executeCommand.returns(undefined);
+		commands.executeCommand.returns(new Promise((resolve) => {
+			resolve(undefined);
+		}));
 		await service.initialize();
 		assert.strictEqual(false, service.isLoggedIn());
 	}).timeout(5000);
