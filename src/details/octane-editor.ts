@@ -752,12 +752,6 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                                         <label name="${field.name}">${field.label}</label>
                                         <select disabled id="${field.name}">
                                     `;
-                                } else if (field.name === 'merged_on_it') {
-                                    html += `
-                                    <div class="select-container-single" id="container_${field.label.replaceAll(" ", "_").replaceAll('"', "")}">
-                                        <label name="${field.name}">${field.label}</label>
-                                        <select id="${field.name}">
-                                    `;
                                 } else {
                                     html += `
                                     <div class="select-container-single" id="container_${field.label.replaceAll(" ", "_").replaceAll('"', "")}">
