@@ -533,6 +533,7 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
                 `;
 
         let filteredFields: string[] = [];
+        //mapFields: all fields exept for id, name, and phase
         let mapFields = new Map<string, any>();
         fields.forEach((field): any => {
             if (field.name !== "id" && field.name !== "phase" && field.name !== "name") {
@@ -573,7 +574,7 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
             `;
         }
     } catch (e: any) {
-        vscode.window.showErrorMessage('Error generating phase select for entity.');
+        vscode.window.showErrorMessage('Error generating phase or filter select for entity.');
     }
     return html;
 }
@@ -652,7 +653,6 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
         let counter: number = 0;
         const columnCount: number = 2;
         let filteredFields: string[] = [];
-        let mainFields: string[] = ['name'];
         let mapFields = new Map<string, any>();
         fields.forEach((field): any => {
             if (field.name !== "id" && field.name !== "phase" && field.name !== "name") {
@@ -672,26 +672,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
         html += `
                     <div class="information-container">
             `;
-        mainFields.forEach(async (key): Promise<any> => {
-            const field = mapFields.get(key);
-            if (!field) { return; }
-            html += `
-                    <div class="main-container input-field col s6" id="container_${field.label}">
-                        <label class="active">${field.label}</label>
-                        <input id="${field.name}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
-                    </div>
-                    <script>
-                            document.getElementById("${field.name}").readOnly = !${field.editable};
-                    </script>
-                    `;
-            if (!await isSelectedField(field.label.replaceAll(" ", "_"), activeFields)) {
-                html += `
-                        <script>
-                            document.getElementById("container_${field.label.replaceAll(" ", "_")}").style.display = "none";
-                        </script>
-                    `;
-            }
-        });
+
         const phaseField = mapFields.get('phase');
         if (phaseField) {
             html += `
@@ -732,7 +713,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
         }
         for (const [key, field] of mapFields) {
             if (field) {
-                if (!['description', 'phase', ...mainFields].includes(key)) {
+                if (!['description', 'phase', 'name'].includes(key)) {
                     if (counter === 0) {
                         html += `<div class="information-container">`;
                     }
