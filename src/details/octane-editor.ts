@@ -319,129 +319,43 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
         const bootstrapMultiselectJs = webview.asWebviewUri(vscode.Uri.joinPath(
             context.extensionUri, 'media', 'bootstrap-multiselect.min.js'));
 
+        //load default fields at first opening of the given entity
         var activeFields: string[] | undefined = [];
         if (data.subtype !== null && data.subtype !== undefined && data.subtype !== "") {
             activeFields = await getSavedFields(data.subtype);
             if (activeFields === undefined) {
-                if (data.subtype === 'defect') {
-                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: defaultFieldMap.get('defect') }, data.subtype);
-                }
-                if (data.subtype === 'story') {
-                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: defaultFieldMap.get('story') }, data.subtype);
-                }
-                if (data.subtype === 'quality_story') {
-                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: defaultFieldMap.get('quality_story') }, data.subtype);
-                }
-                if (data.subtype === 'feature') {
-                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: defaultFieldMap.get('feature') }, data.subtype);
-                }
-                if (data.subtype === 'gherkin_test') {
-                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: defaultFieldMap.get('gherkin_test') }, data.subtype);
-                }
-                if (data.subtype === 'test_manual') {
-                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: defaultFieldMap.get('test_manual') }, data.subtype);
-                }
-                if (data.subtype === 'run_suite') {
-                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: defaultFieldMap.get('run_suite') }, data.subtype);
-                }
-                if (data.subtype === 'requirement_document') {
-                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: defaultFieldMap.get('requirement_document') }, data.subtype);
-                }
-                if (data.subtype === 'run_manual') {
-                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: defaultFieldMap.get('run_manual') }, data.subtype);
-                }
-                if (data.subtype === 'epic') {
-                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: defaultFieldMap.get('epic') }, data.subtype);
-                }
-                if (data.subtype === 'scenario_test') {
-                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: defaultFieldMap.get('scenario_test') }, data.subtype);
-                }
-                if (data.subtype === 'test_automated') {
-                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: defaultFieldMap.get('test_automated') }, data.subtype);
-                }
-                if (data.subtype === 'test_suite') {
-                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: defaultFieldMap.get('test_suite') }, data.subtype);
-                }
-                if (data.subtype === 'run_automated') {
-                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: defaultFieldMap.get('run_automated') }, data.subtype);
-                }
-                if (data.subtype === 'gherkin_automated_run') {
-                    vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: defaultFieldMap.get('gherkin_automated_run') }, data.subtype);
-                }
+                saveDefaultFieldsForEntityType(data.subtype);
                 activeFields = await getSavedFields(data.subtype);
             }
         } else {
             if (data.type !== null && data.type !== undefined) {
                 activeFields = await getSavedFields(data.type);
                 if (activeFields === undefined) {
-                    if (data.type === 'task') {
-                        vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: defaultFieldMap.get('task') }, data.type);
-                    }
-                    if (data.type === 'bdd_spec') {
-                        vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: defaultFieldMap.get('bdd_spec') }, data.type);
-                    }
+                    saveDefaultFieldsForEntityType(data.type);
                     activeFields = await getSavedFields(data.type);
                 }
             }
         }
 
+        //load default fielsd at reset of the fields in the field selector
         var currentDefaultFields: string[] | undefined = [];
         if (data.subtype !== null && data.subtype !== undefined && data.subtype !== "") {
-            if (data.subtype === 'defect') {
-                currentDefaultFields = defaultFieldMap.get('defect');
-            }
-            if (data.subtype === 'story') {
-                currentDefaultFields = defaultFieldMap.get('story');
-            }
-            if (data.subtype === 'quality_story') {
-                currentDefaultFields = defaultFieldMap.get('quality_story');
-            }
-            if (data.subtype === 'feature') {
-                currentDefaultFields = defaultFieldMap.get('feature');
-            }
-            if (data.subtype === 'gherkin_test') {
-                currentDefaultFields = defaultFieldMap.get('gherkin_test');
-            }
-            if (data.subtype === 'test_manual') {
-                currentDefaultFields = defaultFieldMap.get('test_manual');
-            }
-            if (data.subtype === 'run_suite') {
-                currentDefaultFields = defaultFieldMap.get('run_suite');
-            }
-            if (data.subtype === 'requirement_document') {
-                currentDefaultFields = defaultFieldMap.get('requirement_document');
-            }
-            if (data.subtype === 'run_manual') {
-                currentDefaultFields = defaultFieldMap.get('run_manual');
-            }
-            if (data.subtype === 'epic') {
-                currentDefaultFields = defaultFieldMap.get('epic');
-            }
-            if (data.subtype === 'scenario_test') {
-                currentDefaultFields = defaultFieldMap.get('scenario_test');
-            }
-            if (data.subtype === 'test_automated') {
-                currentDefaultFields = defaultFieldMap.get('test_automated');
-            }
-            if (data.subtype === 'test_suite') {
-                currentDefaultFields = defaultFieldMap.get('test_suite');
-            }
-            if (data.subtype === 'run_automated') {
-                currentDefaultFields = defaultFieldMap.get('run_automated');
-            }
-            if (data.subtype === 'gherkin_automated_run') {
-                currentDefaultFields = defaultFieldMap.get('gherkin_automated_run');
+            let defaultFIelds = defaultFieldMap.get(data.subtype);
+            if (defaultFIelds) {
+                currentDefaultFields = defaultFIelds;
+            } else {
+                currentDefaultFields = defaultFieldMap.get('default');
             }
         } else {
             if (data.type !== null && data.type !== undefined) {
-                if (data.type === 'task') {
-                    currentDefaultFields = defaultFieldMap.get('task');
-                }
-                if (data.type === 'bdd_spec') {
-                    currentDefaultFields = defaultFieldMap.get('bdd_spec');
+                let defaultFIelds = defaultFieldMap.get(data.type);
+                if (defaultFIelds) {
+                    currentDefaultFields = defaultFIelds;
+                } else {
+                    currentDefaultFields = defaultFieldMap.get('default');
                 }
             } else {
-                currentDefaultFields = defaultFieldMap.get('defect');
+                currentDefaultFields = defaultFieldMap.get('default');
             }
         }
 
@@ -1065,6 +979,17 @@ function getFieldValue(data: any, fieldName: string): string | any[] {
     return field;
 }
 
+/**
+* Save selected fields in memory
+* @param type OctaneEntity type or subtype
+*/
+function saveDefaultFieldsForEntityType(type: string): void {
+    let defaultFields = defaultFieldMap.get(type);
+    if (defaultFields) {
+        vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: defaultFields }, type);
+    }
+}
+
 const fieldNameMap: Map<String, String> = new Map([
     ['application_module', 'product_areas']
 ]);
@@ -1086,5 +1011,6 @@ const defaultFieldMap: Map<String, string[]> = new Map([
     ['test_automated', ["Framework", "Testing_tool_type", "Owner", "Test_level", "Test_type", "Branch", "Application_modules", "Backlog_Coverage", "Executable", "Description"]],
     ['test_suite', ["Test_type", "Testing_tool_type", "Owner", "Estimated_duration_(minutes)", "Designer", "Created", "Last_modified", "Backlog_Coverage", "Application_modules", "Description"]],
     ['run_automated', ["Test_name", "Draft_run", "Run_by", "Assigned_to_(On_it)", "Component", "Started", "Duration", "Backlog_Coverage"]],
-    ['gherkin_automated_run', ["Test_name", "Native_status", "Run_by", "Started", "Duration", "Content", "Last_modified", "Backlog_Coverage"]]
+    ['gherkin_automated_run', ["Test_name", "Native_status", "Run_by", "Started", "Duration", "Content", "Last_modified", "Backlog_Coverage"]],
+    ['default', ["Description"]]
 ]);
