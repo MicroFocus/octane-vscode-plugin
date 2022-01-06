@@ -122,7 +122,6 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
     constructor(
         private readonly context: vscode.ExtensionContext
     ) {
-        // this.onDidChangeCustomDocument = new vscode.EventEmitter<vscode.CustomDocumentEditEvent<OctaneEntityDocument>>().event;
         context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.details.closeAll', () => {
             this.webviewPanels.closeAll();
         }));
@@ -155,8 +154,6 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
             context.subscriptions.push(getFields);
         }
     }
-
-    // onDidChangeCustomDocument: vscode.Event<vscode.CustomDocumentEditEvent<OctaneEntityDocument>> | vscode.Event<vscode.CustomDocumentContentChangeEvent<OctaneEntityDocument>>;
 
     static emitter = new vscode.EventEmitter<string>();
     static onDidFilterChange: vscode.Event<string> = OctaneEntityEditorProvider.emitter.event;
@@ -197,7 +194,6 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                     OctaneService.getInstance().updateEntity(document.entity.type, document.entity.subtype, m.data);
                 }
                 if (m.type === 'refresh') {
-                    // document.entity = await OctaneService.getInstance().getDataFromOctaneForTypeAndId(document.entity.type, document.entity.subtype, document.entity.id);
                     await document.updated();
                     webviewPanel.webview.html = await this.getHtmlForWebview(webviewPanel.webview, this.context, document.entity, document.fields);
                     webviewPanel.webview.postMessage({
@@ -209,14 +205,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                     let comment: Comment = new Comment(m.data);
                     comment.ownerEntity = document.entity;
                     OctaneService.getInstance().postCommentForEntity(comment);
-                    // this.fullData = await OctaneService.getInstance().getDataFromOctaneForTypeAndId(data.type, data.subtype, data.id);
-                    // webviewPanel.webview.html = await self.getHtmlForWebview(webviewPanel.webview, self.context, document.entity, document.fields);
                 }
-                // if (m.type === 'saveToMemento') {
-                //     OctaneEntityEditorProvider.emitter.fire('test');
-                //     // vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.refreshWebviewPanel');
-                //     vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFilterSelection', m.data);
-                // }
                 if (m.type === 'saveToMemento') {
                     if (document.entity) {
                         if (document.entity.subtype !== null && document.entity.subtype !== undefined && document.entity.subtype !== "") {
@@ -269,7 +258,6 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                                 }
                             }
 
-                            console.log("data", data);
                         }
                     }
 
@@ -487,12 +475,6 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
             let transitions: Transition[] = OctaneService.getInstance().getPhaseTransitionForEntity(data.phase.id);
             html += `<div style="margin-top: 1rem;">
             <select id="select_phase" name="action" class="action">`;
-            // html += `
-            //     <option value="none">${getFieldValue(data, 'phase')}</option>
-            // `;
-            // html += `
-            //     <option value="none"></option>
-            // `;
             transitions.forEach((target: any) => {
                 if (!target) { return; }
                 html += `
@@ -627,8 +609,7 @@ async function generateCommentElement(data: any | OctaneEntity | undefined): Pro
                 `;
             }
         }
-        // html += `   <br>
-        //             <hr>`;
+
     } catch (e: any) {
         vscode.window.showErrorMessage('Error generating comments for entity.');
     }
@@ -647,7 +628,6 @@ async function getSavedFields(entityType: string) {
 
 async function isSelectedField(fieldName: string, activeFields: string[] | undefined) {
     if (fieldName) {
-        // let resFilterSelection = await vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.getFilterSelection', fieldName);
         if (activeFields && activeFields.includes(fieldName)) {
             return true;
         }
@@ -676,9 +656,6 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
             }
         });
         mapFields = new Map([...mapFields].sort((a, b) => String(a[0]).localeCompare(b[0])));
-        // ['ID', 'Name', 'Description'].forEach(f => {
-        //     vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFilterSelection', JSON.parse(`{"filterName": "${f}", "message": true}`));
-        // });
         for (const [key, field] of mapFields) {
             if (field) {
                 if (await isSelectedField(field.label.replaceAll(" ", "_").replaceAll('"', ""), activeFields)) {
@@ -776,9 +753,6 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                                         html += `<option value='${JSON.stringify(dataOp)}' selected>${optionValue}</option>`;
                                     }
                                 }
-                                //     html += `
-                                //     <option selected value='${option}'>${option}</option>
-                                // `;
                             }
 
                             html += `
@@ -808,7 +782,6 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                                 }
                                 let optionValue = getFieldValue(data, field.name);
                                 if (optionValue && optionValue !== null) {
-                                    // let dataOp = await OctaneService.getInstance().getFullDataForEntity(field.field_type_data.targets[0].type, field, data);
                                     let dataOp = data[field.name];
                                     if (dataOp) {
                                         if (dataOp.data) {
