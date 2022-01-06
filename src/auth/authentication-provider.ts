@@ -4,7 +4,6 @@ import fetch from 'node-fetch';
 import { retryDecorator } from 'ts-retry-promise';
 import { v4 as uuid } from 'uuid';
 import { OctaneService } from '../octane/service/octane-service';
-import { create } from 'domain';
 import { getLogger } from 'log4js';
 import { LoginData } from './login-data';
 
@@ -33,7 +32,6 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 	public static readonly type = 'alm-octane.auth';
 
 	private sessionChangeEmitter = new vscode.EventEmitter<vscode.AuthenticationProviderAuthenticationSessionsChangeEvent>();
-	private disposable: vscode.Disposable;
 	private keychain: Keychain;
 
 	get onDidChangeSessions(): vscode.Event<vscode.AuthenticationProviderAuthenticationSessionsChangeEvent> {
@@ -44,9 +42,7 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 
 		this.keychain = new Keychain(context, `${type}.auth`);
 
-		this.disposable = vscode.Disposable.from(
-			vscode.authentication.registerAuthenticationProvider(type, 'ALM Octane', this, { supportsMultipleAccounts: false })
-		);
+		context.subscriptions.push(vscode.authentication.registerAuthenticationProvider(type, 'ALM Octane', this, { supportsMultipleAccounts: false }));
 
 		context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.saveLoginData', async (loginData) => {
 			if (loginData) {
@@ -63,7 +59,6 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 	}
 
 	dispose() {
-		this.disposable.dispose();
 	}
 
 	async getSessions(scopes?: string[]): Promise<AlmOctaneAuthenticationSession[]> {

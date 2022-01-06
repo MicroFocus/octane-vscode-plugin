@@ -91,17 +91,6 @@ export class OctaneService {
 
         this.loginData = await vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.getLoginData');
 
-        // this.uri = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.url');
-        // if (this.uri !== undefined) {
-        //     let regExp = this.uri.match(/\?p=(\d+\/\d+)/);
-        //     if (regExp) {
-        //         this.uri = this.uri.split(regExp[0])[0];
-        //     }
-        // }
-        // this.space = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.space');
-        // this.workspace = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.server.workspace');
-        // this.user = vscode.workspace.getConfiguration().get('visual-studio-code-plugin-for-alm-octane.user.userName');
-
         this.session = await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: false }) as AlmOctaneAuthenticationSession;
 
         this.octaneMap = new Map<string, any[]>();
@@ -486,7 +475,6 @@ export class OctaneService {
         if (!this.octaneMap.get(type) || !this.octaneMap.get(type)?.length) {
             await this.getRemoteFieldsForType(type);
         }
-        // logger.debug('Application modules: ', this.octaneMap.get(type)?.filter(f => f.name === 'application_modules'));
         return this.octaneMap.get(type);
     }
 
@@ -569,9 +557,6 @@ export class OctaneService {
             }
             if (entityTypes === 'story') {
                 const result = await this.octane.get(endPoint)
-                    // .query(
-                    //     Query.field('list_root').equal(Query.field('logical_name').equal(field.field_type_data.targets[0].logical_name))
-                    //         .build())
                     .execute();
                 return result ?? undefined;
             }
@@ -613,7 +598,6 @@ export class OctaneService {
             if (!this.loggedInUserId) {
                 return;
             }
-            // let type = e.subtype ? e.subtype : e.type;
             let type = e.type;
             let entityModel: any = {
                 origin: 1,
@@ -698,14 +682,6 @@ export class OctaneService {
                         .then(result => this.logger.debug(result))
                         .catch(error => this.logger.error('error', error));
 
-
-                    // await this.octane.update(Octane.Octane.entityTypes.comments, entityModel).at(`${e.id}/dismiss`)
-                    //     .execute()
-                    //     .then((res: any) => {
-                    //         vscode.window.showInformationMessage('Item dismissed.');
-                    //     }, (error: any) => {
-                    //         vscode.window.showErrorMessage('Item dismissal failed.' + error);
-                    //     });
                 }
             } else {
                 let field = 'my_follow_items_work_item';
@@ -756,8 +732,6 @@ function setValueForMap(map: any, key: any, value: any) {
     }
     map.get(key).push(value);
 }
-
-
 
 const entityTypeApiEndpoint: Map<string, string> = new Map([
     ['application_module', Octane.Octane.entityTypes.applicationModules],

@@ -668,11 +668,11 @@ async function generateCommentElement(data: any | OctaneEntity | undefined, fiel
         let comments = await OctaneService.getInstance().getCommentsForEntity(data);
         getLogger('vs').debug("comments", comments);
         if (comments) {
-            const sortedComments = comments.sort((a: Comment, b: Comment) => new Date(b.creation_time ?? '').getTime() - new Date(a.creation_time ?? '').getTime());
+            const sortedComments = comments.sort((a: Comment, b: Comment) => new Date(b.creationTime ?? '').getTime() - new Date(a.creationTime ?? '').getTime());
             for (const comment of sortedComments) {
                 let time;
-                if (comment.creation_time && comment.creation_time !== '') {
-                    time = new Date(comment.creation_time).toLocaleString();
+                if (comment.creationTime && comment.creationTime !== '') {
+                    time = new Date(comment.creationTime).toLocaleString();
                 }
                 html += `
                     <div class="information-container" style="font-family: Roboto,Arial,sans-serif; word-break: break-word; display: block; border-color: var(--vscode-foreground); border-bottom: 1px solid; margin: 0rem 0rem 1rem 0rem;">

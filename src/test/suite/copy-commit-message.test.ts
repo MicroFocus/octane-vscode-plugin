@@ -4,7 +4,7 @@ import * as assert from 'assert';
 // as well as import your extension to test it
 import * as vscode from 'vscode';
 import { Task } from '../../octane/model/task';
-import { MyWorkItem, MyWorkItemLabel } from '../../treeview/my-work-provider';
+import { MyWorkItem } from '../../treeview/my-work-provider';
 // import * as myExtension from '../../extension';
 
 suite('Copy Commit message Test Suite', () => {
