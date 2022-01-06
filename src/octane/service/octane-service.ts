@@ -283,7 +283,7 @@ export class OctaneService {
     }
 
     public isLoggedIn(): boolean {
-        return this.loggedInUserId !== null;
+        return this.loggedInUserId !== undefined;
     }
 
     private async refreshMyWork(subtype: string | string[]): Promise<OctaneEntity[]> {
@@ -453,6 +453,9 @@ export class OctaneService {
     }
 
     private async getRemoteFieldsForType(type: string) {
+        if (!this.isLoggedIn()) {
+            throw new Error('Please log in to query Octane entities.');
+        }
         try {
             const result = await this.octane.get(Octane.Octane.entityTypes.fieldsMetadata)
                 .query(Query.field('entity_name').inComparison([type])
