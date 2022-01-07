@@ -1,3 +1,5 @@
+import { AbstractFieldGenerator } from "./abstract-field-generator";
+
 export class BooleanInputGenerator extends AbstractFieldGenerator {
 
     constructor(field: any, value: boolean) {

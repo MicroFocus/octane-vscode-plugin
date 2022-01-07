@@ -1,4 +1,4 @@
-
+import { AbstractFieldGenerator } from "./abstract-field-generator";
 export class ReferenceInputGenerator extends AbstractFieldGenerator {
 
     protected multiple: boolean;
@@ -10,11 +10,12 @@ export class ReferenceInputGenerator extends AbstractFieldGenerator {
 
     generate(): string {
         return `
-            <div class="select-container-${this.multiple ? 'multiple' : 'single'}" id="container_${this.fieldId}">
+            <div class="${this.generateContainerClass}" id="container_${this.fieldId}">
                 <label name="${this.field.name}">${this.field.label}</label>
                 <select id="${this.field.name}" ${this.generateMultiple(this.multiple)} ${this.generateDisable(this.field)}>
                     ${this.generateSelectOptions(this.value)}
                 </select>
+            </div>
         `;
     }
 
@@ -22,10 +23,33 @@ export class ReferenceInputGenerator extends AbstractFieldGenerator {
         let selectOptions: string = ``;
         if (values !== undefined) {
             for (let value of values) {
-                selectOptions += `<option value='${JSON.stringify(value)}' selected>${value.name ? value.name : value.full_name}</option>`;
+                selectOptions += `<option value='${JSON.stringify(value)}' selected>${this.generateOptionName(value)}</option>`;
             }
         }
         return selectOptions;
     }
 
+    private generateContainerClass() {
+        if (this.multiple) {
+            return 'select-container-multiple';
+        }
+        return 'select-container-single';
+    }
+
+    private generateSelected(isSelected: boolean): string {
+        return isSelected ? 'selected="selected"' : '';
+    }
+
+    private generateMultiple(isMultiple: boolean): string {
+        return isMultiple ? 'multiple="multiple"' : '';
+    }
+
+    private generateOptionName(value: any) {
+        if (value.name) {
+            return value.name;
+        } else if (value.full_name) {
+            return value.full_name;
+        }
+        return value;
+    }
 }
