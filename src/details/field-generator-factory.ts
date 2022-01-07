@@ -1,11 +1,12 @@
 
 import { TextInputGenerator } from './fields/text-input-generator';
 import { BooleanInputGenerator } from './fields/boolean-input-generator';
+import { FieldGenerator } from './fields/field-generator';
 
 class FieldGeneratorFactory {
 
     public static generate(field: any, data: any) {
-        let generator: AbstractFieldGenerator;
+        let generator: FieldGenerator;
         switch (field.field_type) {
             case 'boolean':
                 generator = new BooleanInputGenerator(field, FieldGeneratorFactory.getFieldBooleanValue(data, field.name));

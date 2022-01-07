@@ -1,5 +1,5 @@
 
-interface FieldGenerator {
+export interface FieldGenerator {
 
     generate(): string;
     
