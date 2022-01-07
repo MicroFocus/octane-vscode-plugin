@@ -11,4 +11,19 @@ abstract class AbstractFieldGenerator implements FieldGenerator {
     protected generateReadonly() {
         return this.field.editable ? '' : 'readonly';
     }
+
+    protected generateSelected(isSelected: boolean) : string {
+        return isSelected ? 'selected="selected"' : '';
+    }
+
+    protected generateMultiple(isMultiple: boolean) : string {
+        return isMultiple ? 'multiple="multiple"' : '';
+    }
+
+    protected generateDisable(field: any): string {
+        if (field.name === 'author') {
+            return 'disabled';
+        }
+        return field.editable ? '' : 'disabled';
+    }
 }

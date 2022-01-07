@@ -1,6 +1,7 @@
 
 import { TextInputGenerator } from './fields/text-input-generator';
 import { BooleanInputGenerator } from './fields/boolean-input-generator';
+import { ReferenceInputGenerator } from './fields/reference-input-generator';
 
 class FieldGeneratorFactory {
 
@@ -13,6 +14,10 @@ class FieldGeneratorFactory {
 
             case 'integer':
                 generator = new TextInputGenerator(field, FieldGeneratorFactory.getFieldStringValue(data, field.name), 'number');
+                break;
+
+            case 'reference':
+                generator = new ReferenceInputGenerator(field, FieldGeneratorFactory.getFieldObjectValue(data, fieldNameMap.get(field.name) ?? field.name), field.field_type_data.multiple);
                 break;
 
             default:
@@ -34,7 +39,6 @@ class FieldGeneratorFactory {
 
     private static getFieldValue(data: any, fieldName: string): string | any[] {
         const fieldValue = FieldGeneratorFactory.getFieldSimpleValue(data, fieldName);
-       
         if (fieldValue['data']) {
             const ref: string[] = [];
             fieldValue['data'].forEach((r: any) => {
@@ -42,7 +46,6 @@ class FieldGeneratorFactory {
             });
             return ref.length ? ref : '';
         }
-        
         if (fieldValue === null || fieldValue === undefined) {
             return '';
         }
@@ -64,6 +67,17 @@ class FieldGeneratorFactory {
         return fieldValue;
     }
 
+    private static getFieldObjectValue(data: any, fieldName: string): undefined | any[] {
+        const fieldValue = FieldGeneratorFactory.getFieldSimpleValue(data, fieldName);
+        if (fieldValue['data']) {
+            return fieldValue['data'];
+        }
+        if (fieldValue === null || fieldValue === undefined) {
+            return undefined;
+        }
+        return [fieldValue];
+    }
+
     private static getFieldSimpleValue(data: any, fieldName: string): string | any | undefined {
         const fieldValue = data[fieldName];
         if (fieldValue === null || fieldValue === undefined) {
@@ -79,3 +93,7 @@ class FieldGeneratorFactory {
     }
 
 }
+
+const fieldNameMap: Map<String, String> = new Map([
+    ['application_module', 'product_areas']
+]);
