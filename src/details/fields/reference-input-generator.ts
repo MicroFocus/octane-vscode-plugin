@@ -10,7 +10,7 @@ export class ReferenceInputGenerator extends AbstractFieldGenerator {
 
     generate(): string {
         return `
-            <div class="${this.generateContainerClass}" id="container_${this.fieldId}">
+            <div class="${this.generateContainerClass()}" id="container_${this.fieldId}">
                 <label name="${this.field.name}">${this.field.label}</label>
                 <select id="${this.field.name}" ${this.generateMultiple(this.multiple)} ${this.generateDisable(this.field)}>
                     ${this.generateSelectOptions(this.value)}

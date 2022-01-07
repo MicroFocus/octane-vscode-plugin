@@ -7,6 +7,7 @@ import { stripHtml } from 'string-strip-html';
 import * as path from 'path';
 import { getLogger, Logger } from 'log4js';
 import { Comment } from '../octane/model/comment';
+import {FieldGeneratorFactory} from './field-generator-factory';
 
 class OctaneEntityDocument implements vscode.CustomDocument {
 
@@ -619,30 +620,6 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
         }
         html += `
                     <div class="information-container">
-            `;
-
-        const phaseField = mapFields.get('phase');
-        if (phaseField) {
-            html += `
-                <div class="main-container input-field col s6" id="container_${phaseField.label}">
-                    <label class="active">${phaseField.label}</label>
-                    <input id="${phaseField.name}" type="${phaseField.field_type}" value="${getFieldValue(data, phaseField.name)}">
-                </div>
-                <script>
-                        document.getElementById("${phaseField.name}").readOnly = !false;
-                </script>
-            `;
-            if (!isSelectedField(phaseField.label.replaceAll(" ", "_"), activeFields)) {
-                html += `
-                    <script>
-                        document.getElementById("container_${phaseField.label.replaceAll(" ", "_")}").style.display = "none";
-                    </script>
-                `;
-            }
-        }
-
-        html += `   </div>
-                    <div class="information-container">
                         <div class="description-container" id="container_Description">
                             <label name="description">Description</label>
                             <textarea id="description" class="description" type="text">${stripHtml(getFieldValue(data, 'description').toString()).result}</textarea>
@@ -666,6 +643,10 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                     if (counter === 0) {
                         html += `<div class="information-container">`;
                     }
+                    // Refactored code
+                    // html += FieldGeneratorFactory.generate(field, data);
+
+                    // Code to be refactored
                     if (field.field_type === 'reference') {
                         if (field.field_type_data.multiple) {
                             html += `

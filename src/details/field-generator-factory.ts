@@ -7,7 +7,7 @@ import { DateTimeInputGenerator } from './fields/date-time-input-generator';
 
 export class FieldGeneratorFactory {
 
-    public static generate(field: any, data: any) {
+    public static generate(field: any, data: any) : string {
         let generator: FieldGenerator;
         switch (field.field_type) {
 
@@ -32,8 +32,9 @@ export class FieldGeneratorFactory {
                 break;
         }
         if (generator !== undefined) {
-            generator.generate();
+            return generator.generate();
         }
+        return '';
     }
 
     private static getFieldBooleanValue(data: any, fieldName: string): boolean {
@@ -61,6 +62,9 @@ export class FieldGeneratorFactory {
 
     private static getFieldStringValue(data: any, fieldName: string): string {
         const fieldValue = FieldGeneratorFactory.getFieldSimpleValue(data, fieldName);
+        if (fieldValue === null || fieldValue === undefined) {
+            return '';
+        }
         if (fieldValue['data']) {
             let ref: string = '';
             fieldValue['data'].forEach((r: any) => {
@@ -68,19 +72,16 @@ export class FieldGeneratorFactory {
             });
             return ref;
         }
-        if (fieldValue === null || fieldValue === undefined) {
-            return '';
-        }
         return fieldValue;
     }
 
     private static getFieldReferencedValue(data: any, fieldName: string): undefined | any[] {
         const fieldValue = FieldGeneratorFactory.getFieldSimpleValue(data, fieldName);
-        if (fieldValue['data']) {
-            return fieldValue['data'];
-        }
         if (fieldValue === null || fieldValue === undefined) {
             return undefined;
+        }
+        if (fieldValue['data']) {
+            return fieldValue['data'];
         }
         return [fieldValue];
     }
