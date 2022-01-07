@@ -208,14 +208,10 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                 }
                 if (m.type === 'saveToMemento') {
                     if (document.entity) {
-                        if (document.entity.subtype !== null && document.entity.subtype !== undefined && document.entity.subtype !== "") {
-                            vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', m.data, document.entity.subtype);
+                        let mementoKey = this.getMementoKeyForFields(document.entity);
+                        if (mementoKey && mementoKey !== '') {
+                            vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', m.data, mementoKey);
                             OctaneEntityEditorProvider.emitter.fire('test');
-                        } else {
-                            if (document.entity.type !== null && document.entity.type !== undefined) {
-                                vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', m.data, document.entity.type);
-                                OctaneEntityEditorProvider.emitter.fire('test');
-                            }
                         }
                     }
                 }
@@ -282,6 +278,12 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
             vscode.window.showErrorMessage(errorMessage);
             webviewPanel.webview.html = errorMessage;
         }
+
+        
+    }
+
+    private getMementoKeyForFields(entity: OctaneEntity) {
+        return (entity.subtype && entity.subtype !== '') ? entity.subtype : entity.type;
     }
 
     /**
@@ -313,42 +315,22 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
 
         //load default fields at first opening of the given entity
         var activeFields: string[] | undefined = [];
-        if (data.subtype !== null && data.subtype !== undefined && data.subtype !== "") {
-            activeFields = await getSavedFields(data.subtype);
+        let mementoKey = this.getMementoKeyForFields(data);
+        if (mementoKey && mementoKey !== '') {
+            activeFields = await getSavedFields(mementoKey);
             if (activeFields === undefined) {
-                saveDefaultFieldsForEntityType(data.subtype);
-                activeFields = await getSavedFields(data.subtype);
-            }
-        } else {
-            if (data.type !== null && data.type !== undefined) {
-                activeFields = await getSavedFields(data.type);
-                if (activeFields === undefined) {
-                    saveDefaultFieldsForEntityType(data.type);
-                    activeFields = await getSavedFields(data.type);
-                }
+                saveDefaultFieldsForEntityType(mementoKey);
+                activeFields = await getSavedFields(mementoKey);
             }
         }
 
-        //load default fielsd at reset of the fields in the field selector
+        //load default fields at reset of the fields in the field selector
         var currentDefaultFields: string[] | undefined = [];
-        if (data.subtype !== null && data.subtype !== undefined && data.subtype !== "") {
-            let defaultFIelds = defaultFieldMap.get(data.subtype);
-            if (defaultFIelds) {
-                currentDefaultFields = defaultFIelds;
-            } else {
-                currentDefaultFields = defaultFieldMap.get('default');
-            }
-        } else {
-            if (data.type !== null && data.type !== undefined) {
-                let defaultFIelds = defaultFieldMap.get(data.type);
-                if (defaultFIelds) {
-                    currentDefaultFields = defaultFIelds;
-                } else {
-                    currentDefaultFields = defaultFieldMap.get('default');
-                }
-            } else {
-                currentDefaultFields = defaultFieldMap.get('default');
-            }
+        if (mementoKey && mementoKey !== '') {
+            currentDefaultFields = defaultFieldMap.get(mementoKey);
+        }
+        if (!currentDefaultFields) {
+            currentDefaultFields = defaultFieldMap.get('default');
         }
 
         return `
