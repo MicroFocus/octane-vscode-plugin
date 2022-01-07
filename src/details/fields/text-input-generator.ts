@@ -1,3 +1,4 @@
+import { AbstractFieldGenerator } from './abstract-field-generator'; 
 export class TextInputGenerator extends AbstractFieldGenerator {
 
     constructor(field: any, value: string, private fieldType?: string) {
@@ -11,9 +12,16 @@ export class TextInputGenerator extends AbstractFieldGenerator {
         return `
         <div style="padding: unset;" class="container" id="container_${this.fieldId}">
             <label class="active" for="${this.field.label}">${this.field.label}</label>
-            <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${this.field.name}" type="${this.fieldType}" value='${this.value}' ${this.generateReadonly()}>
+            <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${this.field.name}" ${this.generateType()} value='${this.value}' ${this.generateReadonly()} ${this.generateAdditionalAttributes()}>
         </div>
         `;
     }
 
+    protected generateType() {
+        return `type="${this.fieldType}"`;
+    }
+
+    protected generateAdditionalAttributes() {
+        return '';
+    }
 }

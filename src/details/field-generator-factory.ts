@@ -2,12 +2,18 @@
 import { TextInputGenerator } from './fields/text-input-generator';
 import { BooleanInputGenerator } from './fields/boolean-input-generator';
 import { FieldGenerator } from './fields/field-generator';
+import { DateTimeInputGenerator } from './fields/date-time-input-generator';
 
 export class FieldGeneratorFactory {
 
     public static generate(field: any, data: any) {
         let generator: FieldGenerator;
         switch (field.field_type) {
+
+            case 'date_time':
+                generator = new DateTimeInputGenerator(field, FieldGeneratorFactory.getFieldStringValue(data, field.name));
+                break;
+
             case 'boolean':
                 generator = new BooleanInputGenerator(field, FieldGeneratorFactory.getFieldBooleanValue(data, field.name));
                 break;
