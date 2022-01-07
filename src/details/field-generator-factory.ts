@@ -3,7 +3,7 @@ import { TextInputGenerator } from './fields/text-input-generator';
 import { BooleanInputGenerator } from './fields/boolean-input-generator';
 import { FieldGenerator } from './fields/field-generator';
 
-class FieldGeneratorFactory {
+export class FieldGeneratorFactory {
 
     public static generate(field: any, data: any) {
         let generator: FieldGenerator;
@@ -65,7 +65,7 @@ class FieldGeneratorFactory {
         return fieldValue;
     }
 
-    private static getFieldSimpleValue(data: any, fieldName: string): string | undefined {
+    private static getFieldSimpleValue(data: any, fieldName: string): any | undefined {
         const fieldValue = data[fieldName];
         if (fieldValue === null || fieldValue === undefined) {
             return undefined;
