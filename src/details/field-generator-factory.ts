@@ -2,12 +2,19 @@
 import { TextInputGenerator } from './fields/text-input-generator';
 import { BooleanInputGenerator } from './fields/boolean-input-generator';
 import { ReferenceInputGenerator } from './fields/reference-input-generator';
+import { FieldGenerator } from './fields/field-generator';
+import { DateTimeInputGenerator } from './fields/date-time-input-generator';
 
-class FieldGeneratorFactory {
+export class FieldGeneratorFactory {
 
     public static generate(field: any, data: any) {
-        let generator: AbstractFieldGenerator;
+        let generator: FieldGenerator;
         switch (field.field_type) {
+
+            case 'date_time':
+                generator = new DateTimeInputGenerator(field, FieldGeneratorFactory.getFieldStringValue(data, field.name));
+                break;
+
             case 'boolean':
                 generator = new BooleanInputGenerator(field, FieldGeneratorFactory.getFieldBooleanValue(data, field.name));
                 break;
@@ -17,7 +24,7 @@ class FieldGeneratorFactory {
                 break;
 
             case 'reference':
-                generator = new ReferenceInputGenerator(field, FieldGeneratorFactory.getFieldObjectValue(data, fieldNameMap.get(field.name) ?? field.name), field.field_type_data.multiple);
+                generator = new ReferenceInputGenerator(field, FieldGeneratorFactory.getFieldReferencedValue(data, fieldNameMap.get(field.name) ?? field.name), field.field_type_data.multiple);
                 break;
 
             default:
@@ -67,7 +74,7 @@ class FieldGeneratorFactory {
         return fieldValue;
     }
 
-    private static getFieldObjectValue(data: any, fieldName: string): undefined | any[] {
+    private static getFieldReferencedValue(data: any, fieldName: string): undefined | any[] {
         const fieldValue = FieldGeneratorFactory.getFieldSimpleValue(data, fieldName);
         if (fieldValue['data']) {
             return fieldValue['data'];
@@ -78,7 +85,7 @@ class FieldGeneratorFactory {
         return [fieldValue];
     }
 
-    private static getFieldSimpleValue(data: any, fieldName: string): string | any | undefined {
+    private static getFieldSimpleValue(data: any, fieldName: string): any | undefined {
         const fieldValue = data[fieldName];
         if (fieldValue === null || fieldValue === undefined) {
             return undefined;
