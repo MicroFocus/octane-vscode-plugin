@@ -64,7 +64,7 @@ class FieldGeneratorFactory {
         return fieldValue;
     }
 
-    private static getFieldSimpleValue(data: any, fieldName: string): string | undefined {
+    private static getFieldSimpleValue(data: any, fieldName: string): string | any | undefined {
         const fieldValue = data[fieldName];
         if (fieldValue === null || fieldValue === undefined) {
             return undefined;
