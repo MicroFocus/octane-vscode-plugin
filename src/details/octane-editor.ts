@@ -295,23 +295,6 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
     * @return html code as string for webview panel
     */
     private async getHtmlForWebview(webview: vscode.Webview, context: any, data: any | OctaneEntity | undefined, fields: any[]): Promise<string> {
-        const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(
-            context.extensionUri, 'media', 'vscode.css'));
-        const myStyle = webview.asWebviewUri(vscode.Uri.joinPath(
-            context.extensionUri, 'media', 'my-css.css'));
-        const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(
-            context.extensionUri, 'media', 'edit-service.js'));
-
-        const jqueryJs = webview.asWebviewUri(vscode.Uri.joinPath(
-            context.extensionUri, 'media', 'jquery.min.js'));
-        const bootstrapCss = webview.asWebviewUri(vscode.Uri.joinPath(
-            context.extensionUri, 'media', 'bootstrap.min.css'));
-        const bootstrapJs = webview.asWebviewUri(vscode.Uri.joinPath(
-            context.extensionUri, 'media', 'bootstrap.bundle.min.js'));
-        const bootstrapMultiselectCss = webview.asWebviewUri(vscode.Uri.joinPath(
-            context.extensionUri, 'media', 'bootstrap-multiselect.min.css'));
-        const bootstrapMultiselectJs = webview.asWebviewUri(vscode.Uri.joinPath(
-            context.extensionUri, 'media', 'bootstrap-multiselect.min.js'));
 
         //load default fields at first opening of the given entity
         var activeFields: string[] | undefined = [];
@@ -337,19 +320,19 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
             <!DOCTYPE html>
             <head>
                 <!-- Include Twitter Bootstrap and jQuery: -->
-                <link rel="stylesheet" href="${bootstrapCss}" type="text/css"/>
+                <link rel="stylesheet" href="${webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, 'media', 'bootstrap.min.css'))}" type="text/css"/>
                 <link rel="stylesheet" href="${webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, 'media', 'font-awesome.css'))}" type="text/css"/>
-                <script type="text/javascript" src="${jqueryJs}"></script>
+                <script type="text/javascript" src="${webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, 'media', 'jquery.min.js'))}"></script>
                 <script type="text/javascript" src="${webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, 'media', 'moment.min.js'))}"></script>
-                <script type="text/javascript" src="${bootstrapJs}"></script>
+                <script type="text/javascript" src="${webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, 'media', 'bootstrap.bundle.min.js'))}"></script>
                 <script type="text/javascript" src="${webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, 'media', 'bootstrap-datetimepicker.min.js'))}"></script>
                 
                 <!-- Include the plugin's CSS and JS: -->
-                <script type="text/javascript" src="${bootstrapMultiselectJs}"></script>
-                <link rel="stylesheet" href="${bootstrapMultiselectCss}" type="text/css"/>
+                <script type="text/javascript" src="${webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, 'media', 'bootstrap-multiselect.min.js'))}"></script>
+                <link rel="stylesheet" href="${webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, 'media', 'bootstrap-multiselect.min.css'))}" type="text/css"/>
                 <link rel="stylesheet" href="${webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, 'media', 'bootstrap-datetimepicker.css'))}" type="text/css"/>
-                <link href="${styleVSCodeUri}" rel="stylesheet" />
-                <link href="${myStyle}" rel="stylesheet" />
+                <link href="${webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, 'media', 'vscode.css'))}" rel="stylesheet" />
+                <link href="${webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, 'media', 'my-css.css'))}" rel="stylesheet" />
             </head>
             <body>
                 <form id="mainform">
@@ -361,7 +344,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                         <h6 style="margin: 0rem 0.5rem 0rem 0rem;">${data?.id ?? ''}</h6> <input style="background: transparent; font-size: 1rem;" id="name" type="text" value="${data?.name ?? ''}">
                     </div>
                     <div class="action-container">
-                        ${await generatePhaseSelectElement(data, fields, activeFields, currentDefaultFields)}
+                        ${await generateActionBarElement(data, fields, activeFields, currentDefaultFields)}
                     </div>
                 </div>
                 <div class="main-element">
@@ -377,7 +360,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                     </div>
                 </div>
                 
-                <script src="${scriptUri}"></script>
+                <script src="${webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, 'media', 'edit-service.js'))}"></script>
                 </form>
             </body>
     
@@ -447,7 +430,7 @@ function getDataForSubtype(entity: OctaneEntity | undefined): [string, string] {
 * @param currentDefaultFields all default fields for given OctaneEntity
 * @return html code as string
 */
-async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, fields: any[], activeFields: string[] | undefined, currentDefaultFields: string[] | undefined): Promise<string> {
+async function generateActionBarElement(data: any | OctaneEntity | undefined, fields: any[], activeFields: string[] | undefined, currentDefaultFields: string[] | undefined): Promise<string> {
     let html: string = ``;
     try {
         if (data.phase) {
@@ -456,8 +439,6 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
                     <h6 style="margin:1.3rem 0.5rem 0rem 0rem">Current phase: ${getFieldValue(data.phase, 'name')} |  Move to </h6>
                 </div>
             `;
-        }
-        if (data.phase) {
             let transitions: Transition[] = OctaneService.getInstance().getPhaseTransitionForEntity(data.phase.id);
             html += `<div style="margin-top: 1rem;">
             <select id="select_phase" name="action" class="action">`;
@@ -467,16 +448,16 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
                 <option value='${JSON.stringify(target.targetPhase)}'>${target.targetPhase.name}</option>
             `;
             });
-        }
-        html += `</select>
-                <script type="text/javascript">
-                    $(document).ready(function() {
-                        $('#select_phase').multiselect({
-                            maxHeight: 400
-                        });
+            html += `</select>
+            <script type="text/javascript">
+                $(document).ready(function() {
+                    $('#select_phase').multiselect({
+                        maxHeight: 400
                     });
-                </script>
-                </div>
+                });
+            </script>`;
+        }
+        html += `</div>
                     <button title="Save" id="saveId" class="save" type="button">
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm2 16H5V5h11.17L19 7.83V19zm-7-7c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zM6 6h9v4H6z"/></svg>
                     </button>
@@ -530,33 +511,27 @@ async function generatePhaseSelectElement(data: any | OctaneEntity | undefined, 
         for (const [key, field] of mapFields) {
 
             if (field) {
-                if (await isSelectedField(field.label.replaceAll(" ", "_").replaceAll('"', ""), activeFields)) {
+                const getFieldId = field.label.replaceAll(" ", "_").replaceAll('"', "");
+                if (await isSelectedField(getFieldId, activeFields)) {
                     filteredFields = filteredFields.concat(field.name);
                 } else {
                     filteredFields = filteredFields.filter(f => f !== field.name);
                 }
-                if (filteredFields.includes(field.name)) {
-                    html += `<option data-label="${field.label}" selected="selected" value='${field.label.replaceAll(" ", "_").replaceAll('"', "")}'>${field.label}</option>`;
-                } else {
-                    html += `<option data-label="${field.label}" value='${field.label.replaceAll(" ", "_").replaceAll('"', "")}'>${field.label}</option>`;
-                }
+                html += `<option data-label="${field.label}" ${selected(filteredFields.includes(field.name))} value='${getFieldId}'>${field.label}</option>`;
             }
         }
-        if (data.subtype && OctaneService.entitiesToOpenExternally.includes(data.subtype)) {
-            html += `
+        html += `
                 </select>
             </div>`;
-        } else {
+        if (data.subtype && !OctaneService.entitiesToOpenExternally.includes(data.subtype)) {
             html += `
-                </select>
-            </div>
             <button title="Add to MyWork" id="addToMyWork" type="button">
                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
             </button>
             `;
         }
     } catch (e: any) {
-        vscode.window.showErrorMessage('Error generating phase or filter select for entity.');
+        getLogger('vs').error('Error generating action bar for entity.', e);
     }
     return html;
 }
@@ -890,6 +865,10 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
 
 function disableOrEnable(field: any): string {
     return field.editable ? '' : 'disabled';
+}
+
+function selected(isSelected: boolean) : string {
+    return isSelected ? 'selected="selected"' : '';
 }
 
 function getFieldValue(data: any, fieldName: string): string | any[] {
