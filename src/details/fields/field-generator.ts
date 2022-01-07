@@ -1,0 +1,6 @@
+
+interface FieldGenerator {
+
+    generate(): string;
+    
+}

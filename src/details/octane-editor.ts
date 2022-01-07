@@ -632,7 +632,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                         document.getElementById("${phaseField.name}").readOnly = !false;
                 </script>
             `;
-            if (!await isSelectedField(phaseField.label.replaceAll(" ", "_"), activeFields)) {
+            if (!isSelectedField(phaseField.label.replaceAll(" ", "_"), activeFields)) {
                 html += `
                     <script>
                         document.getElementById("container_${phaseField.label.replaceAll(" ", "_")}").style.display = "none";
@@ -902,6 +902,7 @@ const fieldNameMap: Map<String, String> = new Map([
     ['application_module', 'product_areas']
 ]);
 
+//TODO extract to json
 const defaultFieldMap: Map<String, string[]> = new Map([
     ['defect', ["Application_modules", "Blocked", "Blocked_reason", "Closed_on", "Creation_time", "Defect_type", "Description", "Detected_by", "Detected_in_release", "Environment", "Feature", "Last_modified", "Owner", "Priority", "Release", "Severity", "Sprint", "Story_points", "Team"]],
     ['story', ["Application_modules", "Author", "Blocked", "Blocked_reason", "Creation_time", "Description", "Feature", "Item_origin", "Last_modified", "Owner", "Release", "Sprint", "Story_points", "Team", "Test_Coverage"]],
