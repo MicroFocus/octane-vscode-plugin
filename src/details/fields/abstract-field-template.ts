@@ -17,11 +17,11 @@ export abstract class AbstractFieldTemplate implements FieldTemplate {
 
     abstract generateInputField(): string;
 
-    protected generateContainerClass() {
+    protected generateContainerClass(): string {
         return 'container';
     }
 
-    protected generateReadonly() {
+    protected generateReadonly(): string {
         return this.field.editable ? '' : 'readonly';
     }
 
