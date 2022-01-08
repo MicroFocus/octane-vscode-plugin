@@ -644,7 +644,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                         html += `<div class="information-container">`;
                     }
                     // Refactored code
-                    // html += FieldGeneratorFactory.generate(field, data);
+                    // html += FieldGeneratorFactory.getTemplate(field, data).generate();
 
                     // Code to be refactored
                     if (field.field_type === 'reference') {

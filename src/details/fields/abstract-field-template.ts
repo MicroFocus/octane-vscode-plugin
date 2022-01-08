@@ -7,7 +7,18 @@ export abstract class AbstractFieldTemplate implements FieldTemplate {
         this.fieldId = field.label.replaceAll(" ", "_").replaceAll('"', "");
     }
 
-    abstract generate(): string;
+    public generate(): string {
+        return `<div class="${this.generateContainerClass()}" id="container_${this.fieldId}">
+                    <label name="${this.field.name}">${this.field.label}</label>
+                    ${this.generateInputField()}
+                </div>`;
+    }
+
+    abstract generateInputField(): string;
+
+    protected generateContainerClass() {
+        return 'container';
+    }
 
     protected generateReadonly() {
         return this.field.editable ? '' : 'readonly';

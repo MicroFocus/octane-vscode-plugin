@@ -8,14 +8,11 @@ export class ReferenceInputTemplate extends AbstractFieldTemplate {
         this.multiple = multiple;
     }
 
-    generate(): string {
+    generateInputField(): string {
         return `
-            <div class="${this.generateContainerClass()}" id="container_${this.fieldId}">
-                <label name="${this.field.name}">${this.field.label}</label>
                 <select id="${this.field.name}" ${this.generateMultiple(this.multiple)} ${this.generateDisable(this.field)}>
                     ${this.generateSelectOptions(this.value)}
                 </select>
-            </div>
         `;
     }
 
@@ -29,7 +26,7 @@ export class ReferenceInputTemplate extends AbstractFieldTemplate {
         return selectOptions;
     }
 
-    private generateContainerClass() {
+    protected generateContainerClass() {
         if (this.multiple) {
             return 'select-container-multiple';
         }
