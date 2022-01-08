@@ -5,36 +5,38 @@ import { ReferenceInputTemplate } from './fields/reference-input-template';
 import { FieldTemplate } from './fields/field-template';
 import { DateTimeInputTemplate } from './fields/date-time-input-template';
 
+const fieldNameToAttributeMap: Map<String, String> = new Map([
+    ['application_module', 'product_areas']
+]);
 export class FieldTemplateFactory {
 
-    public static generate(field: any, data: any) : string {
-        let generator: FieldTemplate;
+    public static getTemplate(field: any, data: any) : FieldTemplate {
+        let template: FieldTemplate;
         switch (field.field_type) {
 
             case 'date_time':
-                generator = new DateTimeInputTemplate(field, FieldTemplateFactory.getFieldStringValue(data, field.name));
+                template = new DateTimeInputTemplate(field, FieldTemplateFactory.getFieldStringValue(data, field.name));
                 break;
 
             case 'boolean':
-                generator = new BooleanInputTemplate(field, FieldTemplateFactory.getFieldBooleanValue(data, field.name));
+                template = new BooleanInputTemplate(field, FieldTemplateFactory.getFieldBooleanValue(data, field.name));
                 break;
 
             case 'integer':
-                generator = new TextInputTemplate(field, FieldTemplateFactory.getFieldStringValue(data, field.name), 'number');
+                template = new TextInputTemplate(field, FieldTemplateFactory.getFieldStringValue(data, field.name), 'number');
                 break;
 
             case 'reference':
-                generator = new ReferenceInputTemplate(field, FieldTemplateFactory.getFieldReferencedValue(data, fieldNameMap.get(field.name) ?? field.name), field.field_type_data.multiple);
+                // application_module needs remapping to product_areas
+                let fieldName = fieldNameToAttributeMap.get(field.name) ?? field.name;
+                template = new ReferenceInputTemplate(field, FieldTemplateFactory.getFieldReferencedValue(data, fieldName), field.field_type_data.multiple);
                 break;
 
             default:
-                generator = new TextInputTemplate(field, FieldTemplateFactory.getFieldStringValue(data, field.name));
+                template = new TextInputTemplate(field, FieldTemplateFactory.getFieldStringValue(data, field.name));
                 break;
         }
-        if (generator !== undefined) {
-            return generator.generate();
-        }
-        return '';
+        return template;
     }
 
     private static getFieldBooleanValue(data: any, fieldName: string): boolean {
@@ -102,6 +104,3 @@ export class FieldTemplateFactory {
 
 }
 
-const fieldNameMap: Map<String, String> = new Map([
-    ['application_module', 'product_areas']
-]);
