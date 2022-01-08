@@ -1,11 +1,17 @@
+import { threadId } from 'worker_threads';
 import { AbstractFieldTemplate } from './abstract-field-template'; 
 export class TextInputTemplate extends AbstractFieldTemplate {
 
-    constructor(field: any, value: string, private fieldType?: string) {
-        super(field, value);
-        if (fieldType === undefined) {
-            this.fieldType = this.field.field_type;
+    protected value: string;
+    protected fieldType: string;
+
+    constructor(field: any, entity: any) {
+        super(field, entity);
+        this.fieldType = this.field.field_type;
+        if (this.fieldType === 'integer') {
+            this.fieldType = 'number';
         }
+        this.value = this.getFieldStringValue(entity, field.name);
     }
 
     generateInputField(): string {

@@ -2,8 +2,11 @@ import { AbstractFieldTemplate } from "./abstract-field-template";
 
 export class BooleanInputTemplate extends AbstractFieldTemplate {
 
-    constructor(field: any, value: boolean) {
-        super(field, value);
+    private value: boolean;
+
+    constructor(field: any, entity: any) {
+        super(field, entity);
+        this.value = this.getFieldBooleanValue(entity, field.name);
     }
 
     generateInputField(): string {

@@ -1,11 +1,21 @@
 import { AbstractFieldTemplate } from "./abstract-field-template";
+
+const fieldNameToAttributeMap: Map<String, String> = new Map([
+    ['application_module', 'product_areas']
+]);
 export class ReferenceInputTemplate extends AbstractFieldTemplate {
 
     protected multiple: boolean;
+    protected value: any | undefined;
 
-    constructor(field: any, value: any[] | undefined, multiple: boolean) {
-        super(field, value);
-        this.multiple = multiple;
+    constructor(field: any, entity: any[]) {
+        super(field, entity);
+
+        // application_module needs remapping to product_areas
+        let fieldName = fieldNameToAttributeMap.get(field.name) ?? field.name;
+        this.value = this.getFieldReferencedValue(entity, fieldName);
+        
+        this.multiple = field.field_type_data.multiple;
     }
 
     generateInputField(): string {
