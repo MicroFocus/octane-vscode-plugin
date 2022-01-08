@@ -18,4 +18,7 @@ export class BooleanInputTemplate extends AbstractFieldTemplate {
         `;
     }
 
+    protected generateContainerClass() {
+        return 'select-container-single';
+    }
 }

@@ -98,6 +98,7 @@ textarea {
     max-width: unset;
     display: none;
     position: relative;
+    padding: unset;
 }
 
 .main-container {
