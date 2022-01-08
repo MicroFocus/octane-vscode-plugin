@@ -16,7 +16,7 @@ export class TextInputTemplate extends AbstractFieldTemplate {
 
     generateInputField(): string {
         return `
-            <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${this.field.name}" ${this.generateTooltip()} ${this.generateType()} value='${this.value}' ${this.generateReadonly()} ${this.generateAdditionalAttributes()}>
+            <input id="${this.field.name}" ${this.generateTooltip()} ${this.generateType()} value='${this.value}' ${this.generateReadonly()} ${this.generateAdditionalAttributes()}>
         `;
     }
 
