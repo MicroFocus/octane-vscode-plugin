@@ -1,6 +1,6 @@
-import { TextInputGenerator } from './text-input-generator';
+import { TextInputTemplate } from './text-input-template';
 
-export class DateTimeInputGenerator extends TextInputGenerator {
+export class DateTimeInputTemplate extends TextInputTemplate {
 
     constructor(field: any, value: string) {
         super(field, value);

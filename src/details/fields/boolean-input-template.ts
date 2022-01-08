@@ -1,6 +1,6 @@
-import { AbstractFieldGenerator } from "./abstract-field-generator";
+import { AbstractFieldTemplate } from "./abstract-field-template";
 
-export class BooleanInputGenerator extends AbstractFieldGenerator {
+export class BooleanInputTemplate extends AbstractFieldTemplate {
 
     constructor(field: any, value: boolean) {
         super(field, value);

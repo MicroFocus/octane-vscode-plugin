@@ -7,7 +7,7 @@ import { stripHtml } from 'string-strip-html';
 import * as path from 'path';
 import { getLogger, Logger } from 'log4js';
 import { Comment } from '../octane/model/comment';
-import {FieldGeneratorFactory} from './field-generator-factory';
+import {FieldTemplateFactory} from './field-template-factory';
 
 class OctaneEntityDocument implements vscode.CustomDocument {
 

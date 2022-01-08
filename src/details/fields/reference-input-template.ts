@@ -1,5 +1,5 @@
-import { AbstractFieldGenerator } from "./abstract-field-generator";
-export class ReferenceInputGenerator extends AbstractFieldGenerator {
+import { AbstractFieldTemplate } from "./abstract-field-template";
+export class ReferenceInputTemplate extends AbstractFieldTemplate {
 
     protected multiple: boolean;
 

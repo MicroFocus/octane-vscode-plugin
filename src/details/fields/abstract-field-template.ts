@@ -1,5 +1,5 @@
-import { FieldGenerator} from './field-generator';
-export abstract class AbstractFieldGenerator implements FieldGenerator {
+import { FieldTemplate} from './field-template';
+export abstract class AbstractFieldTemplate implements FieldTemplate {
  
     protected fieldId: string;
 

@@ -1,5 +1,5 @@
-import { AbstractFieldGenerator } from './abstract-field-generator'; 
-export class TextInputGenerator extends AbstractFieldGenerator {
+import { AbstractFieldTemplate } from './abstract-field-template'; 
+export class TextInputTemplate extends AbstractFieldTemplate {
 
     constructor(field: any, value: string, private fieldType?: string) {
         super(field, value);

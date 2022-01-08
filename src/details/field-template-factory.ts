@@ -1,34 +1,34 @@
 
-import { TextInputGenerator } from './fields/text-input-generator';
-import { BooleanInputGenerator } from './fields/boolean-input-generator';
-import { ReferenceInputGenerator } from './fields/reference-input-generator';
-import { FieldGenerator } from './fields/field-generator';
-import { DateTimeInputGenerator } from './fields/date-time-input-generator';
+import { TextInputTemplate } from './fields/text-input-template';
+import { BooleanInputTemplate } from './fields/boolean-input-template';
+import { ReferenceInputTemplate } from './fields/reference-input-template';
+import { FieldTemplate } from './fields/field-template';
+import { DateTimeInputTemplate } from './fields/date-time-input-template';
 
-export class FieldGeneratorFactory {
+export class FieldTemplateFactory {
 
     public static generate(field: any, data: any) : string {
-        let generator: FieldGenerator;
+        let generator: FieldTemplate;
         switch (field.field_type) {
 
             case 'date_time':
-                generator = new DateTimeInputGenerator(field, FieldGeneratorFactory.getFieldStringValue(data, field.name));
+                generator = new DateTimeInputTemplate(field, FieldTemplateFactory.getFieldStringValue(data, field.name));
                 break;
 
             case 'boolean':
-                generator = new BooleanInputGenerator(field, FieldGeneratorFactory.getFieldBooleanValue(data, field.name));
+                generator = new BooleanInputTemplate(field, FieldTemplateFactory.getFieldBooleanValue(data, field.name));
                 break;
 
             case 'integer':
-                generator = new TextInputGenerator(field, FieldGeneratorFactory.getFieldStringValue(data, field.name), 'number');
+                generator = new TextInputTemplate(field, FieldTemplateFactory.getFieldStringValue(data, field.name), 'number');
                 break;
 
             case 'reference':
-                generator = new ReferenceInputGenerator(field, FieldGeneratorFactory.getFieldReferencedValue(data, fieldNameMap.get(field.name) ?? field.name), field.field_type_data.multiple);
+                generator = new ReferenceInputTemplate(field, FieldTemplateFactory.getFieldReferencedValue(data, fieldNameMap.get(field.name) ?? field.name), field.field_type_data.multiple);
                 break;
 
             default:
-                generator = new TextInputGenerator(field, FieldGeneratorFactory.getFieldStringValue(data, field.name));
+                generator = new TextInputTemplate(field, FieldTemplateFactory.getFieldStringValue(data, field.name));
                 break;
         }
         if (generator !== undefined) {
@@ -46,7 +46,7 @@ export class FieldGeneratorFactory {
     }
 
     private static getFieldValue(data: any, fieldName: string): string | any[] {
-        const fieldValue = FieldGeneratorFactory.getFieldSimpleValue(data, fieldName);
+        const fieldValue = FieldTemplateFactory.getFieldSimpleValue(data, fieldName);
         if (fieldValue['data']) {
             const ref: string[] = [];
             fieldValue['data'].forEach((r: any) => {
@@ -61,7 +61,7 @@ export class FieldGeneratorFactory {
     }
 
     private static getFieldStringValue(data: any, fieldName: string): string {
-        const fieldValue = FieldGeneratorFactory.getFieldSimpleValue(data, fieldName);
+        const fieldValue = FieldTemplateFactory.getFieldSimpleValue(data, fieldName);
         if (fieldValue === null || fieldValue === undefined) {
             return '';
         }
@@ -76,7 +76,7 @@ export class FieldGeneratorFactory {
     }
 
     private static getFieldReferencedValue(data: any, fieldName: string): undefined | any[] {
-        const fieldValue = FieldGeneratorFactory.getFieldSimpleValue(data, fieldName);
+        const fieldValue = FieldTemplateFactory.getFieldSimpleValue(data, fieldName);
         if (fieldValue === null || fieldValue === undefined) {
             return undefined;
         }
