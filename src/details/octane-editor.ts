@@ -558,7 +558,7 @@ async function generateCommentElement(data: any | OctaneEntity | undefined): Pro
         html += `   <br>
                     <hr>
                     Comments
-                    <div id="addCommentContainer" class="information-container">
+                    <div id="addCommentContainer" class="information-container-full">
                         <div class="comments-container">
 
                             <input id="comments-text" type="text">
@@ -576,7 +576,7 @@ async function generateCommentElement(data: any | OctaneEntity | undefined): Pro
                     time = new Date(comment.creationTime).toLocaleString();
                 }
                 html += `
-                    <div class="information-container" style="font-family: Roboto,Arial,sans-serif; word-break: break-word; display: block; border-color: var(--vscode-foreground); border-bottom: 1px solid; margin: 0rem 0rem 1rem 0rem;">
+                    <div class="information-container-full" style="font-family: Roboto,Arial,sans-serif; word-break: break-word; display: block; border-color: var(--vscode-foreground); border-bottom: 1px solid; margin: 0rem 0rem 1rem 0rem;">
                     ${time ?? ''} <b>${comment.author?.fullName ?? ''}</b>: <div style="margin: 0.5rem 0rem 0.5rem 0rem; background-color: transparent; padding-left: 1rem;">${comment.text}</div>
                     </div>
                 `;
@@ -619,7 +619,7 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
             }
         }
         html += `
-                    <div class="information-container">
+                    <div class="information-container-full">
                         <div class="description-container" id="container_Description">
                             <label name="description">Description</label>
                             <textarea id="description" class="description" type="text">${stripHtml(getFieldValue(data, 'description').toString()).result}</textarea>
@@ -636,13 +636,11 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                 </script>
             `;
         }
+        html += `<div class="information-container">`;
         for (const [key, field] of mapFields) {
             if (field) {
                 let fieldId = field.label.replaceAll(" ", "_").replaceAll('"', "");
                 if (!['description', 'phase', 'name'].includes(key)) {
-                    if (counter === 0) {
-                        html += `<div class="information-container">`;
-                    }
                     // Refactored code
                     html += FieldTemplateFactory.getTemplate(field, data).generate();
 
@@ -806,10 +804,6 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                     //         }
                     //     }
                     // }
-                    if (counter === columnCount) {
-                        html += `</div>`;
-                    }
-                    counter = counter === columnCount ? 0 : counter + 1;
                 }
                 if (filteredFields.includes(field.name)) {
                     html += `

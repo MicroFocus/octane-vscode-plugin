@@ -5,10 +5,16 @@
     /* width: 75%; */
 }
 
-.information-container {
+.information-container-full {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+}
+
+.information-container {
+    display: grid;
+    grid-auto-flow: row;
+    grid-template-columns: repeat(3, 1fr);
 }
 
 #filterContainer {
@@ -101,7 +107,7 @@ textarea {
     max-width: unset;
     display: none;
     position: relative;
-    padding: unset;
+    padding: 0 4px 0 0px;
 }
 
 .main-container {
@@ -340,6 +346,7 @@ label {
     border: 0.5px solid !important;
     border-color: var(--vscode-dropdown-border) !important;
     color: var(--vscode-input-foreground) !important;
+    border-radius: unset;
 }
 
 .dropdown-item {
