@@ -72,6 +72,7 @@ input {
     height: 2rem;
     border: 0.5px solid; 
     border-color: var(--vscode-dropdown-border);
+    cursor: pointer;
 }
 
 textarea {

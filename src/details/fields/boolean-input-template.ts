@@ -11,11 +11,17 @@ export class BooleanInputTemplate extends AbstractFieldTemplate {
 
     generateInputField(): string {
         return `
-            <select id="${this.field.name}">
-                <option value="true" ${this.value ? 'selected' : ''}>Yes</option>
-                <option value="false" ${this.value ? '' : 'selected'}>No</option>
-            </select>
+            <span data-toggle="tooltip" ${this.generateTooltip()} data-html="true">
+                <select id="${this.field.name}">
+                    <option value="true" ${this.value ? 'selected' : ''}>Yes</option>
+                    <option value="false" ${this.value ? '' : 'selected'}>No</option>
+                </select>
+            </span>
         `;
+    }
+
+    protected generateTooltip(): string {
+        return `title="${this.value ? 'Yes' : 'No'}"`;
     }
 
     protected generateContainerClass() {

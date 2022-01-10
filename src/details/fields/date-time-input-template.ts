@@ -14,4 +14,7 @@ export class DateTimeInputTemplate extends TextInputTemplate {
         return `data-toggle="datetimepicker" class="datetimepicker-input" data-target="#${this.field.name}"`;
     }
 
+    protected generateTooltip(): string {
+        return `title="${new Date(this.value).toLocaleString()}"`;
+    }
 }

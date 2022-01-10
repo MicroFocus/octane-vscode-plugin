@@ -20,10 +20,20 @@ export class ReferenceInputTemplate extends AbstractFieldTemplate {
 
     generateInputField(): string {
         return `
-                <select id="${this.field.name}" ${this.generateMultiple(this.multiple)} ${this.generateDisable(this.field)}>
-                    ${this.generateSelectOptions(this.value)}
-                </select>
+                <span data-toggle="tooltip" ${this.generateTooltip()} data-html="true">
+                    <select id="${this.field.name}" ${this.generateMultiple(this.multiple)} ${this.generateDisable(this.field)}>
+                        ${this.generateSelectOptions(this.value)}
+                    </select>
+                </span>
         `;
+    }
+
+    protected generateTooltip(): string {
+        let title = '';
+        if (this.value !== undefined && this.value.length) {
+            title = this.value.map((v: any) => this.generateOptionName(v)).reduce((p: string, c: string) => p + ', ' + c);
+        }
+        return `title="${title}"`;
     }
 
     generateSelectOptions(values: any[] | undefined): string {

@@ -92,7 +92,7 @@
             }
         });
         initDateTimeFields();
-
+        $('[data-toggle="tooltip"]').tooltip();
     }
 
     function initDateTimeFields() {

@@ -22,7 +22,7 @@ export class ProgressInputTemplate extends TextInputTemplate {
     }
 
     protected generateTooltip(): string {
-        return 'Progress \n ' + (this.valueObject?.tasksInvestedHoursSumTotal ?? 0) + ' Invested hours \n ' + (this.valueObject?.tasksRemainingHoursSumTotal ?? 0) + ' Remaining hours \n ' + (this.valueObject?.tasksEstimatedHoursSumTotal ?? 0) + ' Estimated hours \n ';;
+        return 'title="<em>Progress</em> <br/> ' + (this.valueObject?.tasksInvestedHoursSumTotal ?? 0) + ' Invested hours <br /> ' + (this.valueObject?.tasksRemainingHoursSumTotal ?? 0) + ' Remaining hours <br /> ' + (this.valueObject?.tasksEstimatedHoursSumTotal ?? 0) + ' Estimated hours <br />" ';
     }
 
     protected generateReadonly(): string {

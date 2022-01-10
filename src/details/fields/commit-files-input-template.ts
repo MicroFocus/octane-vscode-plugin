@@ -22,7 +22,7 @@ export class CommitFilesInputTemplate extends TextInputTemplate {
     }
 
     protected generateTooltip(): string {
-        return this.value;
+        return `title="${this.value}"`;
     }
 
     protected generateReadonly(): string {

@@ -22,7 +22,7 @@ export class TestCoverageInputTemplate extends TextInputTemplate {
     }
 
     protected generateTooltip(): string {
-        return 'Test coverage \n ' + (this.valueObject?.passed ?? 0) + ' Passed \n ' + (this.valueObject?.failed ?? 0) + ' Failed \n ' + (this.valueObject?.needsAttention ?? 0) + ' Require Attention \n ' + (this.valueObject?.planned ?? 0) + ' Planned \n ' + (this.valueObject?.testNoRun ?? 0) + ' Tests did not run \n';
+        return 'title="<em>Test coverage</em><br> ' + (this.valueObject?.passed ?? 0) + ' Passed <br/> ' + (this.valueObject?.failed ?? 0) + ' Failed <br /> ' + (this.valueObject?.needsAttention ?? 0) + ' Require Attention <br /> ' + (this.valueObject?.planned ?? 0) + ' Planned <br />' + (this.valueObject?.testNoRun ?? 0) + ' Tests did not run"';
     }
 
     protected generateReadonly(): string {
