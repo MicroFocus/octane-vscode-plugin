@@ -7,6 +7,7 @@ import { DateTimeInputTemplate } from './fields/date-time-input-template';
 import { TestCoverageInputTemplate } from './fields/test-coverage-input-template';
 import { ProgressInputTemplate } from './fields/progress-input-template';
 import { CommitFilesInputTemplate } from './fields/commit-files-input-template';
+import { DescriptionFieldInputTemplate } from './fields/description-field-input-template';
 export class FieldTemplateFactory {
 
     public static getTemplate(field: any, data: any): FieldTemplate {
@@ -36,6 +37,11 @@ export class FieldTemplateFactory {
                     }
                 }
                 return new TextInputTemplate(field, data);
+
+            case 'memo': 
+                if(field.type === 'field_metadata') {
+                    return new DescriptionFieldInputTemplate(field, data);
+                }
 
             case 'integer':
             default:

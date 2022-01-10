@@ -7,7 +7,7 @@ import { stripHtml } from 'string-strip-html';
 import * as path from 'path';
 import { getLogger, Logger } from 'log4js';
 import { Comment } from '../octane/model/comment';
-import {FieldTemplateFactory} from './field-template-factory';
+import { FieldTemplateFactory } from './field-template-factory';
 
 class OctaneEntityDocument implements vscode.CustomDocument {
 
@@ -616,17 +616,10 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                 }
             }
         }
-        html += `
-                    <div class="information-container-full">
-                        <div class="description-container" id="container_Description">
-                            <label name="description">Description</label>
-                            <textarea id="description" class="description" type="text">${stripHtml(getFieldValue(data, 'description').toString()).result}</textarea>
-                        </div>
-                        <script>
-                            document.getElementById("description").readOnly = !false;
-                        </script>
-                    </div>
-        `;
+        html += `<div class="information-container-full">`;
+        html += FieldTemplateFactory.getTemplate(mapFields.get('description'), data).generate();
+        html += `</div>`;
+
         if (!await isSelectedField("Description", activeFields)) {
             html += `
                 <script>
