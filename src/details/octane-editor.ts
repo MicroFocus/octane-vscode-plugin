@@ -599,8 +599,6 @@ async function generateCommentElement(data: any | OctaneEntity | undefined): Pro
 async function generateBodyElement(data: any | OctaneEntity | undefined, fields: any[], activeFields: string[] | undefined): Promise<string> {
     let html: string = ``;
     try {
-        let counter: number = 0;
-        const columnCount: number = 2;
         let filteredFields: string[] = [];
         let mapFields = new Map<string, any>();
         fields.forEach((field): any => {
