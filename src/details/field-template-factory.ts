@@ -11,9 +11,10 @@ import { DescriptionFieldInputTemplate } from './fields/description-field-input-
 import { CommentInputTemplate } from './fields/comment-input-template';
 import { NameInputTemplate } from './fields/name-input-template';
 import { PhaseInputTemplate } from './fields/phase-input-template';
+import { FieldsSelectInputTemplate } from './fields/fields-select-input-template';
 export class FieldTemplateFactory {
 
-    public static getTemplate(field: any, data: any): FieldTemplate {
+    public static getTemplate(field: any, data: any, additionalArg?: any): FieldTemplate {
         switch (field.field_type) {
 
             case 'date_time':
@@ -56,6 +57,9 @@ export class FieldTemplateFactory {
 
             case 'comment':
                 return new CommentInputTemplate(field, data);
+
+            case 'fields_select': 
+                return new FieldsSelectInputTemplate(field, data, additionalArg);
 
             case 'integer':
             default:

@@ -510,25 +510,26 @@ async function generateActionBarElement(data: any | OctaneEntity | undefined, fi
             }
         });
         mapFields = new Map([...mapFields].sort((a, b) => String(a[0]).localeCompare(b[0])));
-        html += `
-                <div style="margin: 0rem 0rem 0rem 0.5rem;" id="container_filter_multiselect" class="dropleft">
-                    <select multiple="multiple" id="filter_multiselect" data-display="static" defaultFields="${(<any>JSON.stringify(currentDefaultFields ?? '')).replaceAll('"', '\'')}">
-                `;
-        for (const [key, field] of mapFields) {
+        html += FieldTemplateFactory.getTemplate({ field_type: 'fields_select' }, mapFields, {defaultFields: currentDefaultFields, activeFields: activeFields}).generate();
+        // html += `
+        //         <div style="margin: 0rem 0rem 0rem 0.5rem;" id="container_filter_multiselect" class="dropleft">
+        //             <select multiple="multiple" id="filter_multiselect" data-display="static" defaultFields="${(<any>JSON.stringify(currentDefaultFields ?? '')).replaceAll('"', '\'')}">
+        //         `;
+        // for (const [key, field] of mapFields) {
 
-            if (field) {
-                const getFieldId = field.label.replaceAll(" ", "_").replaceAll('"', "");
-                if (isSelectedField(getFieldId, activeFields)) {
-                    filteredFields = filteredFields.concat(field.name);
-                } else {
-                    filteredFields = filteredFields.filter(f => f !== field.name);
-                }
-                html += `<option data-label="${field.label}" ${selected(filteredFields.includes(field.name))} value='${getFieldId}'>${field.label}</option>`;
-            }
-        }
-        html += `
-                </select>
-            </div>`;
+        //     if (field) {
+        //         const getFieldId = field.label.replaceAll(" ", "_").replaceAll('"', "");
+        //         if (isSelectedField(getFieldId, activeFields)) {
+        //             filteredFields = filteredFields.concat(field.name);
+        //         } else {
+        //             filteredFields = filteredFields.filter(f => f !== field.name);
+        //         }
+        //         html += `<option data-label="${field.label}" ${selected(filteredFields.includes(field.name))} value='${getFieldId}'>${field.label}</option>`;
+        //     }
+        // }
+        // html += `
+        //         </select>
+        //     </div>`;
         if (data.subtype && !OctaneService.entitiesToOpenExternally.includes(data.subtype)) {
             html += `
             <button title="Add to MyWork" id="addToMyWork" type="button">
