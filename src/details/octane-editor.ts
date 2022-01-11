@@ -368,15 +368,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
     }
 }
 
-async function getSavedFields(entityType: string) {
-    try {
-        let res: string[] | undefined = await vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.getFields', entityType);
-        return res;
-    } catch (e: any) {
-        vscode.window.showErrorMessage('Error in retrieving saved fields data.');
-        return undefined;
-    }
-}
+
 
 /**
 * Generating selected options for single select and multiselect
@@ -469,7 +461,6 @@ async function generateActionBarElement(data: any | OctaneEntity | undefined, fi
                     </button>
                 `;
 
-        let filteredFields: string[] = [];
         //mapFields: all fields exept for id, name, and phase
         let mapFields = new Map<string, any>();
         fields.forEach((field): any => {
@@ -619,6 +610,16 @@ function saveDefaultFieldsForEntityType(type: string): void {
     let defaultFields = getDefaultFields(type);
     if (defaultFields) {
         vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: defaultFields }, type);
+    }
+}
+
+async function getSavedFields(entityType: string) {
+    try {
+        let res: string[] | undefined = await vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.getFields', entityType);
+        return res;
+    } catch (e: any) {
+        vscode.window.showErrorMessage('Error in retrieving saved fields data.');
+        return undefined;
     }
 }
 
