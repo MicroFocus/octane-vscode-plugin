@@ -91,6 +91,9 @@
 
             }
         });
+        $('#select_phase').multiselect({
+            maxHeight: 400
+        });
         initDateTimeFields();
         $('[data-toggle="tooltip"]').tooltip();
     }

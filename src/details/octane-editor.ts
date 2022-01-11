@@ -9,7 +9,8 @@ import { getLogger, Logger } from 'log4js';
 import { Comment } from '../octane/model/comment';
 import { FieldTemplateFactory } from './field-template-factory';
 import * as entitiesToOpenExternally from '../configurations/entities-to-open-externally.json';
-import * as entityIcons from './entity-icons.json';
+import * as defaultFieldsMap from '../configurations/default-fields.json';
+import * as entityIcons from '../configurations/entity-icons.json';
 
 
 class OctaneEntityDocument implements vscode.CustomDocument {
@@ -314,10 +315,10 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
         //load default fields at reset of the fields in the field selector
         var currentDefaultFields: string[] | undefined = [];
         if (mementoKey && mementoKey !== '') {
-            currentDefaultFields = defaultFieldMap.get(mementoKey);
+            currentDefaultFields = getDefaultFields(mementoKey);
         }
         if (!currentDefaultFields) {
-            currentDefaultFields = defaultFieldMap.get('default');
+            currentDefaultFields = getDefaultFields('default');
         }
 
         let mapFields = new Map<string, any>();
@@ -443,14 +444,6 @@ async function generateActionBarElement(data: any | OctaneEntity | undefined, fi
                 mapFields.set(field.label, field);
             });
             html += FieldTemplateFactory.getTemplate(mapFields.get('Phase'), data).generate();
-            html += `</select>
-            <script type="text/javascript">
-                $(document).ready(function() {
-                    $('#select_phase').multiselect({
-                        maxHeight: 400
-                    });
-                });
-            </script>`;
         }
         html += `
                     <button title="Save" id="saveId" class="save" type="button">
@@ -483,11 +476,6 @@ async function generateActionBarElement(data: any | OctaneEntity | undefined, fi
                     <button title="Comments" id="commentsId" type="button">
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M15 4v7H5.17l-.59.59-.58.58V4h11m1-2H3c-.55 0-1 .45-1 1v14l4-4h10c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1zm5 4h-2v9H6v2c0 .55.45 1 1 1h11l4 4V7c0-.55-.45-1-1-1z"/></svg>
                     </button>
-                    <script>
-                                $(document).ready(function() {
-                                    $('[data-toggle="tooltip"]').tooltip();
-                                });
-                    </script>
                 `;
 
         let filteredFields: string[] = [];
@@ -499,6 +487,7 @@ async function generateActionBarElement(data: any | OctaneEntity | undefined, fi
             }
         });
         mapFields = new Map([...mapFields].sort((a, b) => String(a[0]).localeCompare(b[0])));
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         html += FieldTemplateFactory.getTemplate({ field_type: 'fields_select' }, mapFields, {defaultFields: currentDefaultFields, activeFields: activeFields}).generate();
 
         if (data.subtype && !entitiesToOpenExternally.includes(data.subtype)) {
@@ -636,35 +625,20 @@ function getFieldValue(data: any, fieldName: string): string | any[] {
 * @param type OctaneEntity type or subtype
 */
 function saveDefaultFieldsForEntityType(type: string): void {
-    let defaultFields = defaultFieldMap.get(type);
+    let defaultFields = getDefaultFields(type);
     if (defaultFields) {
         vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.setFields', { fields: defaultFields }, type);
     }
+}
+
+function getDefaultFields(type: string): string[] {
+    if (type in defaultFieldsMap) {
+        return defaultFieldsMap[type as keyof typeof defaultFieldsMap];
+    }
+    return defaultFieldsMap.default;
 }
 
 const fieldNameMap: Map<String, String> = new Map([
     ['application_module', 'product_areas']
 ]);
 
-//TODO extract to json
-const defaultFieldMap: Map<String, string[]> = new Map([
-    ['defect', ["Application_modules", "Blocked", "Blocked_reason", "Closed_on", "Creation_time", "Defect_type", "Description", "Detected_by", "Detected_in_release", "Environment", "Feature", "Last_modified", "Owner", "Priority", "Release", "Severity", "Sprint", "Story_points", "Team"]],
-    ['story', ["Application_modules", "Author", "Blocked", "Blocked_reason", "Creation_time", "Description", "Feature", "Item_origin", "Last_modified", "Owner", "Release", "Sprint", "Story_points", "Team", "Test_Coverage"]],
-    ['quality_story', ["Application_modules", "Author", "Blocked", "Blocked_reason", "Creation_time", "Description", "Feature", "Item_origin", "Last_modified", "Owner", "Quality_story_type", "Release", "Sprint", "Story_points"]],
-    ['feature', ["Owner", "Author", "Creation_time", "Last_modified", "Story_points", "Item_origin", "Test_Coverage", "Epic", "Priority", "Application_modules", "Release", "Milestone", "Team", "Target_Sprint", "Items_in_releases", "Progress", "Feature_type", "Actual_story_points", "Description"]],
-    ['gherkin_test', ["Application_modules", "Automation_status", "Backlog_Coverage", "Created", "Description", "Designer", "Estimated_duration_(minutes)", "Last_modified", "Owner", "Test_type", "Testing_tool_type"]],
-    ['test_manual', ["Application_modules", "Automation_status", "Backlog_Coverage", "Created", "Description", "Designer", "Estimated_duration_(minutes)", "Last_modified", "Owner", "Test_type", "Testing_tool_type"]],
-    ['run_suite', ["Content", "Default_Environment", "Description", "Draft_run", "Last_modified", "Native_status", "Release", "Started", "Suite_name"]],
-    ['requirement_document', ["Author", "Creation_time", "Description", "Release", "Last_modified", "Owner"]],
-    ['task', ["Author", "Story", "Last_modified", "Estimated_hours", "Remaining_hours", "Owner", "Description", "Creation_time", "Invested_hours", "Type"]],
-    ['run_manual', ["Test_name", "Native_status", "Author", "Run_by", "Started", "Duration", "Content", "Release", "Milestone", "Sprint", "Version_from_Release", "Draft_run", "Last_modified", "Draft_run", "Environment", "Backlog_Coverage", "Description"]],
-    ['epic', ["Description", "Owner", "Creation_time", "Last_modified", "Milestone", "Story_points", "Author", "Item_origin", "Items_in_releases", "Progress", "Epic_type"]],
-    ['bdd_spec', ["Description", "Creation_time", "Last_modified", "Author", "Owner", "Application_modules", "Automation_status", "Linked_backlog_items", "Code_alignment"]],
-    ['scenario_test', ["Test_type", "Testing_tool_type", "Owner", "Estimated_duration_(minutes)", "Created", "Last_modified", "Backlog_Coverage", "Application_modules", "Automation_status", "BDD_Spec", "Description"]],
-    ['test_automated', ["Framework", "Testing_tool_type", "Owner", "Test_level", "Test_type", "Branch", "Application_modules", "Backlog_Coverage", "Executable", "Description"]],
-    ['test_suite', ["Test_type", "Testing_tool_type", "Owner", "Estimated_duration_(minutes)", "Designer", "Created", "Last_modified", "Backlog_Coverage", "Application_modules", "Description"]],
-    ['run_automated', ["Test_name", "Draft_run", "Run_by", "Assigned_to_(On_it)", "Component", "Started", "Duration", "Backlog_Coverage"]],
-    ['gherkin_automated_run', ["Test_name", "Native_status", "Run_by", "Started", "Duration", "Content", "Last_modified", "Backlog_Coverage"]],
-    ['requirement_folder', ["Author", "Owner", "Release", "Creation_time", "Last_modified"]],
-    ['default', ["Description"]]
-]);
