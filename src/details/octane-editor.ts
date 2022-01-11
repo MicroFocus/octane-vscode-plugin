@@ -317,6 +317,11 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
             currentDefaultFields = defaultFieldMap.get('default');
         }
 
+        let mapFields = new Map<string, any>();
+        fields.forEach((field): any => {
+            mapFields.set(field.label, field);
+        });
+
         return `
             <!DOCTYPE html>
             <head>
@@ -341,9 +346,8 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                     <div class="icon-container" style="background-color: ${getDataForSubtype(data)[1]}">
                         <span class="label">${getDataForSubtype(data)[0]}</span>
                     </div>
-                    <div class="name-container">
-                        <h6 style="margin: 0rem 0.5rem 0rem 0rem;">${data?.id ?? ''}</h6> <input style="background: transparent; font-size: 1rem;" id="name" type="text" value="${data?.name ?? ''}">
-                    </div>
+                    <h6 style="margin: 2.8rem 0rem 0rem 0.5rem;">${data?.id ?? ''}</h6>
+                    ${FieldTemplateFactory.getTemplate(mapFields.get('Name'), data).generate()}
                     <div class="action-container">
                         ${await generateActionBarElement(data, fields, activeFields, currentDefaultFields)}
                     </div>

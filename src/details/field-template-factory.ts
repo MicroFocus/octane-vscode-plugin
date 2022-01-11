@@ -9,6 +9,7 @@ import { ProgressInputTemplate } from './fields/progress-input-template';
 import { CommitFilesInputTemplate } from './fields/commit-files-input-template';
 import { DescriptionFieldInputTemplate } from './fields/description-field-input-template';
 import { CommentInputTemplate } from './fields/comment-input-template';
+import { NameInputTemplate } from './fields/name-input-template';
 export class FieldTemplateFactory {
 
     public static getTemplate(field: any, data: any): FieldTemplate {
@@ -35,6 +36,9 @@ export class FieldTemplateFactory {
 
                         case 'commit_files':
                             return new CommitFilesInputTemplate(field, data);
+
+                        case 'name':
+                            return new NameInputTemplate(field, data);
                     }
                 }
                 return new TextInputTemplate(field, data);

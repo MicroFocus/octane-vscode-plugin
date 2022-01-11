@@ -409,3 +409,8 @@ label {
     background-color: transparent; 
     padding-left: 1rem;
 }
+
+.name-input-style {
+    background: transparent !important; 
+    font-size: 1rem;
+}
