@@ -559,6 +559,7 @@ async function generateCommentElement(data: any | OctaneEntity | undefined): Pro
         getLogger('vs').debug("comments", comments);
         if (comments) {
             const sortedComments = comments.sort((a: Comment, b: Comment) => new Date(b.creationTime ?? '').getTime() - new Date(a.creationTime ?? '').getTime());
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             html += FieldTemplateFactory.getTemplate({ field_type: 'comment' }, sortedComments).generate();
         }
     } catch (e: any) {
