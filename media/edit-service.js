@@ -92,7 +92,7 @@
             }
         });
         initDateTimeFields();
-
+        $('[data-toggle="tooltip"]').tooltip();
     }
 
     function initDateTimeFields() {
@@ -271,7 +271,7 @@
             inf_cont.style.borderBlockColor = "var(--vscode-foreground)";
             inf_cont.style.borderBottom = "1px solid";
             inf_cont.style.margin = "0rem 0rem 1rem 0rem";
-            inf_cont.classList.add("information-container");
+            inf_cont.classList.add("information-container-full");
             inf_cont.style.fontFamily = "Roboto,Arial,sans-serif";
             document.getElementById("addCommentContainer").after(inf_cont);
         }

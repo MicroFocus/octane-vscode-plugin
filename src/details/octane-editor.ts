@@ -7,6 +7,7 @@ import { stripHtml } from 'string-strip-html';
 import * as path from 'path';
 import { getLogger, Logger } from 'log4js';
 import { Comment } from '../octane/model/comment';
+import { FieldTemplateFactory } from './field-template-factory';
 
 class OctaneEntityDocument implements vscode.CustomDocument {
 
@@ -279,7 +280,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
             webviewPanel.webview.html = errorMessage;
         }
 
-        
+
     }
 
     private getMementoKeyForFields(entity: OctaneEntity) {
@@ -316,6 +317,11 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
             currentDefaultFields = defaultFieldMap.get('default');
         }
 
+        let mapFields = new Map<string, any>();
+        fields.forEach((field): any => {
+            mapFields.set(field.label, field);
+        });
+
         return `
             <!DOCTYPE html>
             <head>
@@ -340,9 +346,8 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                     <div class="icon-container" style="background-color: ${getDataForSubtype(data)[1]}">
                         <span class="label">${getDataForSubtype(data)[0]}</span>
                     </div>
-                    <div class="name-container">
-                        <h6 style="margin: 0rem 0.5rem 0rem 0rem;">${data?.id ?? ''}</h6> <input style="background: transparent; font-size: 1rem;" id="name" type="text" value="${data?.name ?? ''}">
-                    </div>
+                    <h6 style="margin: 2.8rem 0rem 0rem 0.5rem;">${data?.id ?? ''}</h6>
+                    ${FieldTemplateFactory.getTemplate(mapFields.get('Name'), data).generate()}
                     <div class="action-container">
                         ${await generateActionBarElement(data, fields, activeFields, currentDefaultFields)}
                     </div>
@@ -444,20 +449,11 @@ async function generateActionBarElement(data: any | OctaneEntity | undefined, fi
     let html: string = ``;
     try {
         if (data.phase) {
-            html += `
-                <div>
-                    <h6 style="margin:1.3rem 0.5rem 0rem 0rem">Current phase: ${getFieldValue(data.phase, 'name')} |  Move to </h6>
-                </div>
-            `;
-            let transitions: Transition[] = OctaneService.getInstance().getPhaseTransitionForEntity(data.phase.id);
-            html += `<div style="margin-top: 1rem;">
-            <select id="select_phase" name="action" class="action">`;
-            transitions.forEach((target: any) => {
-                if (!target) { return; }
-                html += `
-                <option value='${JSON.stringify(target.targetPhase)}'>${target.targetPhase.name}</option>
-            `;
+            let mapFields = new Map<string, any>();
+            fields.forEach((field): any => {
+                mapFields.set(field.label, field);
             });
+            html += FieldTemplateFactory.getTemplate(mapFields.get('Phase'), data).generate();
             html += `</select>
             <script type="text/javascript">
                 $(document).ready(function() {
@@ -467,7 +463,7 @@ async function generateActionBarElement(data: any | OctaneEntity | undefined, fi
                 });
             </script>`;
         }
-        html += `</div>
+        html += `
                     <button title="Save" id="saveId" class="save" type="button">
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm2 16H5V5h11.17L19 7.83V19zm-7-7c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zM6 6h9v4H6z"/></svg>
                     </button>
@@ -554,34 +550,13 @@ async function generateActionBarElement(data: any | OctaneEntity | undefined, fi
 async function generateCommentElement(data: any | OctaneEntity | undefined): Promise<string> {
     let html: string = ``;
     try {
-        html += `   <br>
-                    <hr>
-                    Comments
-                    <div id="addCommentContainer" class="information-container">
-                        <div class="comments-container">
-
-                            <input id="comments-text" type="text">
-                            <button id="comments" type="button">Comment</button>
-                        </div>
-                    </div>
-                    <br>`;
         let comments = await OctaneService.getInstance().getCommentsForEntity(data);
         getLogger('vs').debug("comments", comments);
         if (comments) {
             const sortedComments = comments.sort((a: Comment, b: Comment) => new Date(b.creationTime ?? '').getTime() - new Date(a.creationTime ?? '').getTime());
-            for (const comment of sortedComments) {
-                let time;
-                if (comment.creationTime && comment.creationTime !== '') {
-                    time = new Date(comment.creationTime).toLocaleString();
-                }
-                html += `
-                    <div class="information-container" style="font-family: Roboto,Arial,sans-serif; word-break: break-word; display: block; border-color: var(--vscode-foreground); border-bottom: 1px solid; margin: 0rem 0rem 1rem 0rem;">
-                    ${time ?? ''} <b>${comment.author?.fullName ?? ''}</b>: <div style="margin: 0.5rem 0rem 0.5rem 0rem; background-color: transparent; padding-left: 1rem;">${comment.text}</div>
-                    </div>
-                `;
-            }
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            html += FieldTemplateFactory.getTemplate({ field_type: 'comment' }, sortedComments).generate();
         }
-
     } catch (e: any) {
         getLogger('vs').error('Error generating comments for entity.', e);
     }
@@ -598,8 +573,6 @@ async function generateCommentElement(data: any | OctaneEntity | undefined): Pro
 async function generateBodyElement(data: any | OctaneEntity | undefined, fields: any[], activeFields: string[] | undefined): Promise<string> {
     let html: string = ``;
     try {
-        let counter: number = 0;
-        const columnCount: number = 2;
         let filteredFields: string[] = [];
         let mapFields = new Map<string, any>();
         fields.forEach((field): any => {
@@ -617,41 +590,10 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                 }
             }
         }
-        html += `
-                    <div class="information-container">
-            `;
+        html += `<div class="information-container-full">`;
+        html += FieldTemplateFactory.getTemplate(mapFields.get('description'), data).generate();
+        html += `</div>`;
 
-        const phaseField = mapFields.get('phase');
-        if (phaseField) {
-            html += `
-                <div class="main-container input-field col s6" id="container_${phaseField.label}">
-                    <label class="active">${phaseField.label}</label>
-                    <input id="${phaseField.name}" type="${phaseField.field_type}" value="${getFieldValue(data, phaseField.name)}">
-                </div>
-                <script>
-                        document.getElementById("${phaseField.name}").readOnly = !false;
-                </script>
-            `;
-            if (!await isSelectedField(phaseField.label.replaceAll(" ", "_"), activeFields)) {
-                html += `
-                    <script>
-                        document.getElementById("container_${phaseField.label.replaceAll(" ", "_")}").style.display = "none";
-                    </script>
-                `;
-            }
-        }
-
-        html += `   </div>
-                    <div class="information-container">
-                        <div class="description-container" id="container_Description">
-                            <label name="description">Description</label>
-                            <textarea id="description" class="description" type="text">${stripHtml(getFieldValue(data, 'description').toString()).result}</textarea>
-                        </div>
-                        <script>
-                            document.getElementById("description").readOnly = !false;
-                        </script>
-                    </div>
-        `;
         if (!await isSelectedField("Description", activeFields)) {
             html += `
                 <script>
@@ -659,176 +601,13 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
                 </script>
             `;
         }
+        html += `<div class="information-container">`;
         for (const [key, field] of mapFields) {
             if (field) {
                 let fieldId = field.label.replaceAll(" ", "_").replaceAll('"', "");
                 if (!['description', 'phase', 'name'].includes(key)) {
-                    if (counter === 0) {
-                        html += `<div class="information-container">`;
-                    }
-                    if (field.field_type === 'reference') {
-                        if (field.field_type_data.multiple) {
-                            html += `
-                        <div class="select-container-multiple" id="container_${fieldId}">
-                            <label name="${field.name}">${field.label}</label>
-                            <select multiple="multiple" id="${field.name}">
-                        `;
-                            let selectedListOfGivenCOntainer = getFieldValue(data, fieldNameMap.get(field.name) ?? field.name);
-                            for (let optionValue of selectedListOfGivenCOntainer) {
-                                let dataOp = data[field.name];
-                                if (dataOp) {
-                                    if (dataOp.data) {
-                                        for (let option of dataOp.data) {
-                                            if ((option.full_name === optionValue) || (option.name === optionValue)) {
-                                                html += `<option value='${JSON.stringify(option)}' selected>${optionValue}</option>`;
-                                            }
-                                        }
-                                    } else {
-                                        html += `<option value='${JSON.stringify(dataOp)}' selected>${optionValue}</option>`;
-                                    }
-                                }
-                            }
-
-                            html += `
-                            </select>
-                        </div>
-                        `;
-                        } else {
-                            if (field.editable) {
-                                html += `
-                                <div class="select-container-single" id="container_${fieldId}">
-                                    <label name="${field.name}">${field.label}</label>
-                                    <select ${disableOrEnable(field)} id="${field.name}">
-                                `;
-                                let optionValue = getFieldValue(data, field.name);
-                                if (optionValue && optionValue !== null) {
-                                    let dataOp = data[field.name];
-                                    if (dataOp) {
-                                        if (dataOp.data) {
-                                            for (let option of dataOp.data) {
-                                                if ((option.full_name === optionValue) || (option.name === optionValue)) {
-                                                    html += `<option value='${JSON.stringify(option)}' selected>${optionValue}</option>`;
-                                                }
-                                            }
-                                        } else {
-                                            html += `<option value='${JSON.stringify(dataOp)}' selected>${optionValue}</option>`;
-                                        }
-                                    }
-
-                                }
-                                html += `
-                                        </select>
-                                    </div>`;
-                            } else {
-                                html += `
-                                <div style="padding: unset;" class="container" id="container_${fieldId}">
-                                    <label class="active" for="${field.label}">${field.label}</label>
-                                    <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" type="${field.field_type}" value="${getFieldValue(data, field.name)}">
-                                    <script>
-                                        document.getElementById("${field.name}").readOnly = !${field.editable};
-                                    </script>
-                                </div>
-                            `;
-                            }
-                        }
-                    } else {
-                        if ((field.field_type === 'string' && field.type === 'field_metadata') && (field.name === 'test_status' || field.name === 'last_runs' || field.name === 'progress' || field.name === 'commit_files')) {
-                            let val: any = getFieldValue(data, field.name);
-                            let containerValue = '';
-                            let tooltip = '';
-                            if (typeof (val) === 'string' && val !== '') {
-                                try {
-                                    val = JSON.parse(val);
-                                } catch (e: any) {
-                                    getLogger('vs').error(`While evaluating JSON value: ${val} `, e);
-                                }
-
-                                if (field.name === 'last_runs' || field.name === 'test_status') {
-                                    //label - Test Coverage
-                                    tooltip = 'Test coverage \n ' + (val?.passed ?? 0) + ' Passed \n ' + (val?.failed ?? 0) + ' Failed \n ' + (val?.needsAttention ?? 0) + ' Require Attention \n ' + (val?.planned ?? 0) + ' Planned \n ' + (val?.testNoRun ?? 0) + ' Tests did not run \n';
-                                    containerValue = (val?.passed ?? 0) + ' Passed, ' + (val?.failed ?? 0) + ' Failed, ' + (val?.needsAttention ?? 0) + ' Require Attention, ' + (val?.planned ?? 0) + ' Planned, ' + (val?.testNoRun ?? 0) + ' Tests did not run';
-                                }
-                                if (field.name === 'progress') {
-                                    //label - Progress
-                                    tooltip = 'Progress \n ' + (val?.tasksInvestedHoursSumTotal ?? 0) + ' Invested hours \n ' + (val?.tasksRemainingHoursSumTotal ?? 0) + ' Remaining hours \n ' + (val?.tasksEstimatedHoursSumTotal ?? 0) + ' Estimated hours \n ';
-                                    containerValue = (val?.tasksInvestedHoursSumTotal ?? 0) + ' Invested hours, ' + (val?.tasksRemainingHoursSumTotal ?? 0) + ' Remaining hours, ' + (val?.tasksEstimatedHoursSumTotal ?? 0) + ' Estimated hours';
-                                }
-                                if (field.name === 'commit_files') {
-                                    //label - COmmit files
-                                    containerValue = (val?.deleted ?? 0) + ' Deleted, ' + (val?.added ?? 0) + ' Added, ' + (val?.edited ?? 0) + ' Edited';
-                                }
-
-                            }
-                            html += `
-                            <div style="padding: unset;" class="container" id="container_${fieldId}">
-                                <label class="active" for="${field.label}">${field.label}</label>
-                                <input 
-                                    title="${tooltip}"
-                                    style="border: 0.5px solid; border-color: var(--vscode-dropdown-border); cursor: pointer;" id="${field.name}" type="${field.field_type}" value='${containerValue}'>
-                                <script>
-                                    document.getElementById("${field.name}").readOnly = !${field.editable};
-                                    $(document).ready(function() {
-                                        $('[data-toggle="tooltip"]').tooltip();
-                                    });
-                                </script>
-                            </div>
-                            `;
-                        } else {
-                            if (field.name === 'is_in_filter') {
-                                html += `
-                                    <div style="padding: unset;" class="container" id="container_${fieldId}">
-                                        <label class="active" for="${field.label}">${field.label}</label>
-                                        <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" type="string" value='${getFieldValue(data, field.name) ? 'Yes' : 'No'}'>
-                                        <script>
-                                            document.getElementById("${field.name}").readOnly = !${field.editable};
-                                        </script>
-                                    </div>
-                                `;
-                            } else if (field.field_type === 'date_time') {
-                                html += `
-                                <div style="padding: unset;" class="container" id="container_${fieldId}">
-                                    <label class="active" for="${field.label}">${field.label}</label>
-                                    <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" value='${getFieldValue(data, field.name)}' data-toggle="datetimepicker" class="datetimepicker-input" data-target="#${field.name}" ${disableOrEnable(field)}>
-                                </div>
-                            `;
-                            } else if (field.field_type === 'boolean') {
-                                html += `
-                                <div class="select-container-single" id="container_${fieldId}">
-                                    <label name="${field.name}">${field.label}</label>
-                                    <select id="${field.name}">
-                                `;
-                                html += `<option value="true" ${getFieldValue(data, field.name) ? 'selected' : ''}>Yes</option>`;
-                                html += `<option value="false" ${getFieldValue(data, field.name) ? '' : 'selected'}>No</option>`;
-                                html += `
-                                    </select>
-                                </div>`;
-                            } else if (field.field_type === 'integer') {
-                                html += `
-                                    <div style="padding: unset;" class="container" id="container_${fieldId}">
-                                        <label class="active" for="${field.label}">${field.label}</label>
-                                        <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" type="number" value='${getFieldValue(data, field.name)}' min="0" oninput="validity.valid || (value='');">
-                                        <script>
-                                            document.getElementById("${field.name}").readOnly = !${field.editable};
-                                        </script>
-                                    </div>
-                                `;
-                            } else {
-                                html += `
-                                <div style="padding: unset;" class="container" id="container_${fieldId}">
-                                    <label class="active" for="${field.label}">${field.label}</label>
-                                    <input style="border: 0.5px solid; border-color: var(--vscode-dropdown-border);" id="${field.name}" type="${field.field_type}" value='${getFieldValue(data, field.name)}'>
-                                    <script>
-                                        document.getElementById("${field.name}").readOnly = !${field.editable};
-                                    </script>
-                                </div>
-                            `;
-                            }
-                        }
-                    }
-                    if (counter === columnCount) {
-                        html += `</div>`;
-                    }
-                    counter = counter === columnCount ? 0 : counter + 1;
+                    // Refactored code
+                    html += FieldTemplateFactory.getTemplate(field, data).generate();
                 }
                 if (filteredFields.includes(field.name)) {
                     html += `
@@ -855,14 +634,7 @@ function isSelectedField(fieldName: string, activeFields: string[] | undefined) 
     return false;
 }
 
-function disableOrEnable(field: any): string {
-    if (field.name === 'author') {
-        return 'disabled';
-    }
-    return field.editable ? '' : 'disabled';
-}
-
-function selected(isSelected: boolean) : string {
+function selected(isSelected: boolean): string {
     return isSelected ? 'selected="selected"' : '';
 }
 
@@ -902,6 +674,7 @@ const fieldNameMap: Map<String, String> = new Map([
     ['application_module', 'product_areas']
 ]);
 
+//TODO extract to json
 const defaultFieldMap: Map<String, string[]> = new Map([
     ['defect', ["Application_modules", "Blocked", "Blocked_reason", "Closed_on", "Creation_time", "Defect_type", "Description", "Detected_by", "Detected_in_release", "Environment", "Feature", "Last_modified", "Owner", "Priority", "Release", "Severity", "Sprint", "Story_points", "Team"]],
     ['story', ["Application_modules", "Author", "Blocked", "Blocked_reason", "Creation_time", "Description", "Feature", "Item_origin", "Last_modified", "Owner", "Release", "Sprint", "Story_points", "Team", "Test_Coverage"]],
