@@ -1,11 +1,8 @@
 import * as vscode from 'vscode';
 import { OctaneService } from '../octane/service/octane-service';
-import { MyWorkProvider } from '../treeview/my-work-provider';
 import { OctaneEntity } from '../octane/model/octane-entity';
-import { Transition } from '../octane/model/transition';
-import { stripHtml } from 'string-strip-html';
 import * as path from 'path';
-import { getLogger, Logger } from 'log4js';
+import { getLogger } from 'log4js';
 import { Comment } from '../octane/model/comment';
 import { FieldTemplateFactory } from './field-template-factory';
 import * as entitiesToOpenExternally from '../configurations/entities-to-open-externally.json';
