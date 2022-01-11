@@ -6,6 +6,7 @@ import { OctaneQuickPickItem } from '../octane/model/octane-quick-pick-item';
 import { OctaneEntity } from '../octane/model/octane-entity';
 import { debounce } from 'ts-debounce';
 import { OctaneEntityEditorProvider } from '../details/octane-editor';
+import * as entitiesToOpenExternally from '../configurations/entities-to-open-externally.json';
 
 export function registerCommand(context: ExtensionContext) {
 	const logger = getLogger('vs');
@@ -33,7 +34,7 @@ export function registerCommand(context: ExtensionContext) {
 					return;
 				}
 				try {
-					if (item.entity.type && OctaneService.entitiesToOpenExternally.includes(item.entity.type)) {
+					if (item.entity.type && entitiesToOpenExternally.includes(item.entity.type)) {
 						await vscode.env.openExternal(service.getBrowserUri(item.entity));
 					} else {
 						await vscode.commands.executeCommand('vscode.openWith', vscode.Uri.parse(`octane:///octane/${item.entity.type}/${item.entity.subtype}/${item.entity.id}`), OctaneEntityEditorProvider.viewType);

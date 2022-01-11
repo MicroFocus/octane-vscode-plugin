@@ -14,12 +14,6 @@ export class OctaneService {
     private logger = getLogger('vs');
     private static _instance: OctaneService;
 
-    public static entitiesToOpenExternally = [
-        'epic',
-        'test_suite',
-        'test_automated'
-    ];
-
     public static typeLabels: Map<string, string> = new Map([
         ['story', 'user story'],
         ['quality_story', 'quality story']
