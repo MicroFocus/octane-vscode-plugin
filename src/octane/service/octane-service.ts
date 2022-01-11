@@ -5,10 +5,9 @@ import { OctaneEntity } from '../model/octane-entity';
 import { Task } from '../model/task';
 import { Transition } from '../model/transition';
 import { Comment } from '../model/comment';
-import { AlmOctaneAuthenticationProvider, AlmOctaneAuthenticationSession, AlmOctaneAuthenticationType } from '../../auth/authentication-provider';
+import { AlmOctaneAuthenticationSession, AlmOctaneAuthenticationType } from '../../auth/authentication-provider';
 import fetch, { Headers, RequestInit } from 'node-fetch';
 import { getLogger } from 'log4js';
-import { LoginData } from '../../auth/login-data';
 
 export class OctaneService {
 
@@ -28,7 +27,6 @@ export class OctaneService {
 
     private octane?: any;
 
-    private loginData: LoginData | undefined;
     private loggedInUserId?: number;
     private transitions?: Transition[];
     private phases = new Map<string, string>();
@@ -87,20 +85,22 @@ export class OctaneService {
         return this.password;
     }
 
-    public async initialize() {
+    public async initialize(session: AlmOctaneAuthenticationSession | undefined) {
 
-        this.loginData = await vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.getLoginData');
-
-        this.session = await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: false }) as AlmOctaneAuthenticationSession;
+        this.session = session;
 
         this.octaneMap = new Map<string, any[]>();
 
-        if (this.loginData?.url && this.loginData.space && this.loginData.workspace && this.loginData.user && this.session) {
+        await this.initializeOctaneInstance();
+    }
+
+    public async initializeOctaneInstance() {
+        if (this.session && this.session.account.uri && this.session.account.space && this.session.account.workSpace && this.session.account.user) {
             this.octane = new Octane.Octane({
-                server: this.loginData.url,
-                sharedSpace: this.loginData.space,
-                workspace: this.loginData.workspace,
-                user: this.loginData.user,
+                server: this.session.account.uri,
+                sharedSpace: this.session.account.space,
+                workspace: this.session.account.workSpace,
+                user: this.session.account.user,
                 password: this.session.type === AlmOctaneAuthenticationType.userNameAndPassword ? this.session.accessToken : undefined,
                 headers: {
                     // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -112,7 +112,7 @@ export class OctaneService {
                 }
             });
             const result: any = await this.octane.get(Octane.Octane.entityTypes.workspaceUsers)
-                .query(Query.field('name').equal(this.loginData.user).build())
+                .query(Query.field('name').equal(this.session.account.user).build())
                 .execute();
             this.loggedInUserId = result.data[0].id;
 
@@ -658,14 +658,14 @@ export class OctaneService {
             let type = e.type;
             if (e.type === 'comment') {
 
-                if (this.loginData?.uri && this.loginData.space && this.loginData.workspace && this.loginData.user && this.session) {
+                if (this.session) {
                     var myHeaders = new Headers();
                     myHeaders.append('ALM_OCTANE_TECH_PREVIEW', 'true');
                     myHeaders.append('HPECLIENTTYPE', 'OCTANE_IDE_PLUGIN');
                     if (this.session.type === AlmOctaneAuthenticationType.browser) {
                         myHeaders.append('Cookie', `${this.session.cookieName}=${this.session.accessToken}`);
                     } else {
-                        myHeaders.set('Authorization', 'Basic ' + Buffer.from(this.loginData.user + ":" + this.session.accessToken).toString('base64'));
+                        myHeaders.set('Authorization', 'Basic ' + Buffer.from(this.session.account.user + ":" + this.session.accessToken).toString('base64'));
                     }
                     myHeaders.append('Content-Type', 'application/json');
 
@@ -680,7 +680,7 @@ export class OctaneService {
                         redirect: 'follow'
                     };
 
-                    await fetch(`${this.loginData.url}internal-api/shared_spaces/${this.loginData.space}/workspaces/${this.loginData.workspace}/comments/${e.id}/dismiss`, requestOptions)
+                    await fetch(`${this.session.account.uri}internal-api/shared_spaces/${this.session.account.space}/workspaces/${this.session.account.workSpace}/comments/${e.id}/dismiss`, requestOptions)
                         .then(response => response.text())
                         .then(result => this.logger.debug(result))
                         .catch(error => this.logger.error('error', error));
@@ -724,7 +724,7 @@ export class OctaneService {
     }
 
     public getBrowserUri(entity: any): vscode.Uri {
-        return vscode.Uri.parse(`${this.loginData?.url}ui/?p=${this.loginData?.space}%2F${this.loginData?.workspace}#/entity-navigation?entityType=${entity.type}&id=${entity.id}`);
+        return vscode.Uri.parse(`${this.session?.account.uri}ui/?p=${this.session?.account.space}%2F${this.session?.account.workSpace}#/entity-navigation?entityType=${entity.type}&id=${entity.id}`);
     }
 }
 

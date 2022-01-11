@@ -8,7 +8,7 @@ import { MyTestsProvider } from './treeview/tests-provider';
 import { MyFeatureProvider } from './treeview/feature-provider';
 import { MyRequirementsProvider } from './treeview/requirements-provider';
 import { OctaneEntityEditorProvider } from './details/octane-editor';
-import { AlmOctaneAuthenticationProvider } from './auth/authentication-provider';
+import { AlmOctaneAuthenticationProvider, AlmOctaneAuthenticationSession } from './auth/authentication-provider';
 import { WelcomeViewProvider } from './treeview/welcome';
 import { SearchProvider } from './treeview/search-provider';
 import { MyTasksProvider } from './treeview/tasks-provider';
@@ -43,11 +43,11 @@ export async function activate(context: vscode.ExtensionContext) {
 			vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.details.closeAll');
 			await context.workspaceState.update('visual-studio-code-plugin-for-alm-octane.quickPick.history', []);
 		}
-		await service.initialize();
+		await service.initialize(await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: false }) as AlmOctaneAuthenticationSession);
 		vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.refreshAll');
 	});
 
-	await service.initialize();
+	await service.initialize(await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: false }) as AlmOctaneAuthenticationSession);
 
 	context.subscriptions.push(vscode.window.registerWebviewViewProvider('visual-studio-code-plugin-for-alm-octane.myWelcome', new WelcomeViewProvider(context, authProvider)));
 

@@ -14,11 +14,15 @@ export enum AlmOctaneAuthenticationType {
 	browser = 'browser'
 }
 
+export class AlmOctaneAuthenticationSessionAccountInformation implements vscode.AuthenticationSessionAccountInformation {
+	constructor(public id: string, public label: string, public uri: string, public space: string | undefined, public workSpace: string | undefined, public user: string) {
+	}
+}
 export class AlmOctaneAuthenticationSession implements vscode.AuthenticationSession {
 
 	constructor(public id: string,
 		public accessToken: string,
-		public account: vscode.AuthenticationSessionAccountInformation,
+		public account: AlmOctaneAuthenticationSessionAccountInformation,
 		public scopes: readonly string[],
 		public type: AlmOctaneAuthenticationType,
 		public cookieName: string = '') {
@@ -80,7 +84,11 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 					id: uuid(),
 					account: {
 						label: authTestResult,
-						id: user
+						id: user,
+						user: user,
+						uri: uri,
+						space: space,
+						workSpace: workspace,
 					},
 					scopes: ['default'],
 					accessToken: password,
@@ -101,19 +109,21 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 
 		let loginData: LoginData | undefined = await this.context.workspaceState.get('loginData');
 
-		const uri: string | undefined = loginData?.url;
+		let uri: string | undefined = loginData?.url;
 		const user: string | undefined = loginData?.user;
 		const space: string | undefined = loginData?.space;
 		const workspace: string | undefined = loginData?.workspace;
 		if (uri === undefined || user === undefined || uri === '' || user === '') {
 			throw new Error('Username cannot be blank. Password cannot be blank.');
 		}
+		uri = uri.endsWith('/') ? uri : uri + '/';
+
 		let session: AlmOctaneAuthenticationSession | undefined;
 		const password = OctaneService.getInstance().getPasswordForAuthentication();
 		if (password !== undefined) {
 			session = await this.createManualSession(uri, space, workspace, user, password);
 		} else {
-			const idResult = await fetch(`${uri.endsWith('/') ? uri : uri + '/'}authentication/tokens`, { method: 'POST' });
+			const idResult = await fetch(`${uri}authentication/tokens`, { method: 'POST' });
 			if (idResult.ok) {
 				const response = await idResult.json();
 				this.logger.debug(response);
@@ -135,7 +145,11 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 						id: uuid(),
 						account: {
 							label: authTestResult,
-							id: user
+							id: user,
+							user: user,
+							uri: uri,
+							space: space,
+							workSpace: workspace
 						},
 						scopes: scopes,
 						accessToken: token.access_token,
