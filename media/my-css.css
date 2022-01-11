@@ -395,3 +395,17 @@ label {
 .align-items-center {
     justify-content: flex-end;
 }
+
+.comment-style {
+    font-family: Roboto,Arial,sans-serif; 
+    word-break: break-word; display: block; 
+    border-color: var(--vscode-foreground); 
+    border-bottom: 1px solid; 
+    margin: 0rem 0rem 1rem 0rem;
+}
+
+.comment-content-style {
+    margin: 0.5rem 0rem 0.5rem 0rem; 
+    background-color: transparent; 
+    padding-left: 1rem;
+}

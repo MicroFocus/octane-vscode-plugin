@@ -27,8 +27,8 @@ export class CommentInputTemplate extends AbstractFieldTemplate {
                 time = new Date(comment.creationTime).toLocaleString();
             }
             html += `
-                <div class="information-container-full" style="font-family: Roboto,Arial,sans-serif; word-break: break-word; display: block; border-color: var(--vscode-foreground); border-bottom: 1px solid; margin: 0rem 0rem 1rem 0rem;">
-                ${time ?? ''} <b>${comment.author?.fullName ?? ''}</b>: <div style="margin: 0.5rem 0rem 0.5rem 0rem; background-color: transparent; padding-left: 1rem;">${comment.text}</div>
+                <div class="information-container-full comment-style">
+                ${time ?? ''} <b>${comment.author?.fullName ?? ''}</b>: <div class="comment-content-style">${comment.text}</div>
                 </div>
             `;
         }
