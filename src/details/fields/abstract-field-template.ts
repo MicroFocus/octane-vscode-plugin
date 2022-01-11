@@ -5,7 +5,11 @@ export abstract class AbstractFieldTemplate implements FieldTemplate {
     protected fieldId: string;
 
     constructor(protected field: any, protected entity: any) {
-        this.fieldId = field.label.replaceAll(" ", "_").replaceAll('"', "");
+        if(field.label) {
+            this.fieldId = field.label.replaceAll(" ", "_").replaceAll('"', "");
+        } else {
+         this.fieldId = field;   
+        }
     }
 
     public generate(): string {

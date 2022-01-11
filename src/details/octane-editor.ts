@@ -280,7 +280,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
             webviewPanel.webview.html = errorMessage;
         }
 
-        
+
     }
 
     private getMementoKeyForFields(entity: OctaneEntity) {
@@ -555,34 +555,12 @@ async function generateActionBarElement(data: any | OctaneEntity | undefined, fi
 async function generateCommentElement(data: any | OctaneEntity | undefined): Promise<string> {
     let html: string = ``;
     try {
-        html += `   <br>
-                    <hr>
-                    Comments
-                    <div id="addCommentContainer" class="information-container-full">
-                        <div class="comments-container">
-
-                            <input id="comments-text" type="text">
-                            <button id="comments" type="button">Comment</button>
-                        </div>
-                    </div>
-                    <br>`;
         let comments = await OctaneService.getInstance().getCommentsForEntity(data);
         getLogger('vs').debug("comments", comments);
         if (comments) {
             const sortedComments = comments.sort((a: Comment, b: Comment) => new Date(b.creationTime ?? '').getTime() - new Date(a.creationTime ?? '').getTime());
-            for (const comment of sortedComments) {
-                let time;
-                if (comment.creationTime && comment.creationTime !== '') {
-                    time = new Date(comment.creationTime).toLocaleString();
-                }
-                html += `
-                    <div class="information-container-full" style="font-family: Roboto,Arial,sans-serif; word-break: break-word; display: block; border-color: var(--vscode-foreground); border-bottom: 1px solid; margin: 0rem 0rem 1rem 0rem;">
-                    ${time ?? ''} <b>${comment.author?.fullName ?? ''}</b>: <div style="margin: 0.5rem 0rem 0.5rem 0rem; background-color: transparent; padding-left: 1rem;">${comment.text}</div>
-                    </div>
-                `;
-            }
+            html += FieldTemplateFactory.getTemplate({ field_type: 'comment' }, sortedComments).generate();
         }
-
     } catch (e: any) {
         getLogger('vs').error('Error generating comments for entity.', e);
     }
@@ -660,7 +638,7 @@ function isSelectedField(fieldName: string, activeFields: string[] | undefined) 
     return false;
 }
 
-function selected(isSelected: boolean) : string {
+function selected(isSelected: boolean): string {
     return isSelected ? 'selected="selected"' : '';
 }
 

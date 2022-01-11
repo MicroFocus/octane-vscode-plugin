@@ -8,6 +8,7 @@ import { TestCoverageInputTemplate } from './fields/test-coverage-input-template
 import { ProgressInputTemplate } from './fields/progress-input-template';
 import { CommitFilesInputTemplate } from './fields/commit-files-input-template';
 import { DescriptionFieldInputTemplate } from './fields/description-field-input-template';
+import { CommentInputTemplate } from './fields/comment-input-template';
 export class FieldTemplateFactory {
 
     public static getTemplate(field: any, data: any): FieldTemplate {
@@ -42,6 +43,9 @@ export class FieldTemplateFactory {
                 if(field.type === 'field_metadata') {
                     return new DescriptionFieldInputTemplate(field, data);
                 }
+
+            case 'comment':
+                return new CommentInputTemplate(field, data);
 
             case 'integer':
             default:
