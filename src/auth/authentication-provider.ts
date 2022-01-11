@@ -15,7 +15,12 @@ export enum AlmOctaneAuthenticationType {
 }
 
 export class AlmOctaneAuthenticationSessionAccountInformation implements vscode.AuthenticationSessionAccountInformation {
-	constructor(public id: string, public label: string, public uri: string, public space: string | undefined, public workSpace: string | undefined, public user: string) {
+	constructor(public id: string, 
+		public label: string, 
+		public uri: string, 
+		public space: string | undefined, 
+		public workSpace: string | undefined, 
+		public user: string) {
 	}
 }
 export class AlmOctaneAuthenticationSession implements vscode.AuthenticationSession {
@@ -135,7 +140,6 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 				if (browserResponse) {
 					const decoratedFetchToken = retryDecorator(this.fetchToken, { retries: 100, delay: 1000, logger: logWrapper });
 					const token = await decoratedFetchToken(uri, user, response);
-					// const token = await this.fetchToken(uri, user, response);
 					this.logger.debug('Fetchtoken returned: ', token);
 					const authTestResult = await OctaneService.getInstance().testAuthentication(uri, space, workspace, user, undefined, token.cookie_name, token.access_token);
 					if (authTestResult === undefined) {
@@ -217,20 +221,13 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 				return [];
 			}
 
-			let loginData: LoginData | undefined = await this.context.workspaceState.get('loginData');
-
-			let uri: string | undefined = loginData?.url;
-			const space: string | undefined = loginData?.space;
-			const workspace: string | undefined = loginData?.workspace;
-			const user: string | undefined = loginData?.user;
-
-			if (uri === undefined || user === undefined || sessionData.account.id !== user) {
+			if (sessionData.account.uri === undefined || sessionData.account.user === undefined) {
 				await this.keychain.deleteToken();
 				this.sessionChangeEmitter.fire({ added: [], removed: [{ id: sessionData.id, accessToken: '', account: { id: '', label: '' }, scopes: [] }], changed: [] });
 				return [];
 			}
 
-			const authTestResult = await OctaneService.getInstance().testAuthentication(uri, space, workspace, user, sessionData.accessToken, sessionData.cookieName, sessionData.accessToken);
+			const authTestResult = await OctaneService.getInstance().testAuthentication(sessionData.account.uri, sessionData.account.space, sessionData.account.workSpace, sessionData.account.user, sessionData.accessToken, sessionData.cookieName, sessionData.accessToken);
 			if (authTestResult === undefined) {
 				await this.keychain.deleteToken();
 				this.sessionChangeEmitter.fire({ added: [], removed: [{ id: sessionData.id, accessToken: '', account: { id: '', label: '' }, scopes: [] }], changed: [] });
