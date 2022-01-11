@@ -128,33 +128,27 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
             this.webviewPanels.closeAll();
         }));
 
-        {
-            let setFields = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.setFields', async (data, entityType) => {
-                if (data.fields) {
-                    this.logger.debug(data);
-                    await context.workspaceState.update(`visibleFields-${entityType}`,
-                        JSON.stringify(data)
-                    );
-                }
-            });
-            context.subscriptions.push(setFields);
-        }
+        context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.setFields', async (data, entityType) => {
+            if (data.fields) {
+                this.logger.debug(data);
+                await context.workspaceState.update(`visibleFields-${entityType}`,
+                    JSON.stringify(data)
+                );
+            }
+        }));
 
-        {
-            let getFields = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.getFields', (entityType) => {
-                if (entityType) {
-                    let value: any = context.workspaceState.get(`visibleFields-${entityType}`);
-                    if (value) {
-                        value = JSON.parse(value);
-                        if (value && value.fields) {
-                            return value.fields;
-                        }
+        context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.getFields', (entityType) => {
+            if (entityType) {
+                let value: any = context.workspaceState.get(`visibleFields-${entityType}`);
+                if (value) {
+                    value = JSON.parse(value);
+                    if (value && value.fields) {
+                        return value.fields;
                     }
                 }
-                return;
-            });
-            context.subscriptions.push(getFields);
-        }
+            }
+            return;
+        }));
     }
 
     static emitter = new vscode.EventEmitter<string>();
@@ -485,7 +479,7 @@ async function generateActionBarElement(data: any | OctaneEntity | undefined, fi
         });
         mapFields = new Map([...mapFields].sort((a, b) => String(a[0]).localeCompare(b[0])));
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        html += FieldTemplateFactory.getTemplate({ field_type: 'fields_select' }, mapFields, {defaultFields: currentDefaultFields, activeFields: activeFields}).generate();
+        html += FieldTemplateFactory.getTemplate({ field_type: 'fields_select' }, mapFields, { defaultFields: currentDefaultFields, activeFields: activeFields }).generate();
 
         if (data.subtype && !entitiesToOpenExternally.includes(data.subtype)) {
             html += `
