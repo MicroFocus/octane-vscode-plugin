@@ -1,0 +1,20 @@
+{
+    "task": ["T", "#1668c1"],
+    "bdd_spec": ["BSP", "#118c4f"],
+    "defect": ["D", "#b21646"],
+    "story": ["US", "#ffb000"],
+    "quality_story": ["QS", "#33c180"],
+    "feature": ["F", "#e57828"],
+    "scenario_test": ["BSC", "#75da4d"],
+    "test_manual": ["MT", "#00abf3"],
+    "test_automated": ["AT", "#9b1e83"],
+    "gherkin_test": ["GT", "#00a989"],
+    "test_suite": ["TS", "#271782"],
+    "requirement_document": ["RD", "#0b8eac"],
+    "requirement_folder": ["RF", "#bbb"],
+    "run_suite": ["SR", "#5216ac"],
+    "run_manual": ["MR", "#29ceff"],
+    "epic": ["E", "#7425AD"],
+    "run_automated": ["AR", "#ba47ee"],
+    "gherkin_automated_run": ["GAR", "#ba47e2"]
+}

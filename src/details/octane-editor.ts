@@ -9,6 +9,7 @@ import { getLogger, Logger } from 'log4js';
 import { Comment } from '../octane/model/comment';
 import { FieldTemplateFactory } from './field-template-factory';
 import * as entitiesToOpenExternally from '../configurations/entities-to-open-externally.json';
+import * as entityIcons from './entity-icons.json';
 
 class OctaneEntityDocument implements vscode.CustomDocument {
 
@@ -411,29 +412,15 @@ async function generateSelectOptions(field: any, data: any | OctaneEntity | unde
 * @return A pair of ["icon symbol", "color"]
 */
 function getDataForSubtype(entity: OctaneEntity | undefined): [string, string] {
-    if (entity?.type === 'task') {
-        return ['T', '#1668c1'];
+    if (entity === undefined) {
+        return ['', ''];
     }
-    if (entity?.type === 'bdd_spec') {
-        return ['BSP', '#118c4f'];
+    let icon;
+    if (entity.type && entity.type in entityIcons) {
+        return entityIcons[entity.type as keyof typeof entityIcons] as [string, string];
     }
-    if (entity?.subtype) {
-        if (entity?.subtype === 'defect') { return ["D", "#b21646"]; }
-        if (entity?.subtype === 'story') { return ["US", "#ffb000"]; }
-        if (entity?.subtype === 'quality_story') { return ["QS", "#33c180"]; }
-        if (entity?.subtype === 'feature') { return ["F", "#e57828"]; }
-        if (entity?.subtype === 'scenario_test') { return ["BSC", "#75da4d"]; }
-        if (entity?.subtype === 'test_manual') { return ["MT", "#00abf3"]; }
-        if (entity?.subtype === 'test_automated') { return ["AT", "#9b1e83"]; }
-        if (entity?.subtype === 'gherkin_test') { return ["GT", "#00a989"]; }
-        if (entity?.subtype === 'test_suite') { return ["TS", "#271782"]; }
-        if (entity?.subtype === 'requirement_document') { return ["RD", "#0b8eac"]; }
-        if (entity?.subtype === 'requirement_folder') { return ["RF", "#bbb"]; }
-        if (entity?.subtype === 'run_suite') { return ["SR", "#5216ac"]; }
-        if (entity?.subtype === 'run_manual') { return ["MR", "#29ceff"]; }
-        if (entity?.subtype === 'epic') { return ["E", "#7425AD"]; }
-        if (entity?.subtype === 'run_automated') { return ["AR", "#ba47ee"]; }
-        if (entity?.subtype === 'gherkin_automated_run') { return ["GAR", "#ba47e2"]; }
+    if (entity.subtype && entity.subtype in entityIcons) {
+        return entityIcons[entity.subtype as keyof typeof entityIcons] as [string, string];
     }
     return ['', ''];
 }
