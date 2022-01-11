@@ -414,3 +414,11 @@ label {
     background: transparent !important; 
     font-size: 1rem;
 }
+
+.current-phase {
+    margin:1.3rem 0.5rem 0rem 0rem;
+}
+
+.phase-select {
+    margin-top: 1rem;
+}

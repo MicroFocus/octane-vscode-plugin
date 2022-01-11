@@ -10,6 +10,7 @@ import { CommitFilesInputTemplate } from './fields/commit-files-input-template';
 import { DescriptionFieldInputTemplate } from './fields/description-field-input-template';
 import { CommentInputTemplate } from './fields/comment-input-template';
 import { NameInputTemplate } from './fields/name-input-template';
+import { PhaseInputTemplate } from './fields/phase-input-template';
 export class FieldTemplateFactory {
 
     public static getTemplate(field: any, data: any): FieldTemplate {
@@ -22,7 +23,12 @@ export class FieldTemplateFactory {
                 return new BooleanInputTemplate(field, data);
 
             case 'reference':
-                return new ReferenceInputTemplate(field, data);
+                switch (field.name) {
+                    case 'phase':
+                        return new PhaseInputTemplate(field, data);
+                    default:
+                        return new ReferenceInputTemplate(field, data);
+                }
 
             case 'string':
                 if (field.type === 'field_metadata') {
@@ -43,8 +49,8 @@ export class FieldTemplateFactory {
                 }
                 return new TextInputTemplate(field, data);
 
-            case 'memo': 
-                if(field.type === 'field_metadata') {
+            case 'memo':
+                if (field.type === 'field_metadata') {
                     return new DescriptionFieldInputTemplate(field, data);
                 }
 

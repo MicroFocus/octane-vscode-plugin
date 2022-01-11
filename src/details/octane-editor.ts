@@ -449,20 +449,25 @@ async function generateActionBarElement(data: any | OctaneEntity | undefined, fi
     let html: string = ``;
     try {
         if (data.phase) {
-            html += `
-                <div>
-                    <h6 style="margin:1.3rem 0.5rem 0rem 0rem">Current phase: ${getFieldValue(data.phase, 'name')} |  Move to </h6>
-                </div>
-            `;
-            let transitions: Transition[] = OctaneService.getInstance().getPhaseTransitionForEntity(data.phase.id);
-            html += `<div style="margin-top: 1rem;">
-            <select id="select_phase" name="action" class="action">`;
-            transitions.forEach((target: any) => {
-                if (!target) { return; }
-                html += `
-                <option value='${JSON.stringify(target.targetPhase)}'>${target.targetPhase.name}</option>
-            `;
+            // html += `
+            //     <div>
+            //         <h6 style="margin:1.3rem 0.5rem 0rem 0rem">Current phase: ${getFieldValue(data.phase, 'name')} |  Move to </h6>
+            //     </div>
+            // `;
+            // let transitions: Transition[] = OctaneService.getInstance().getPhaseTransitionForEntity(data.phase.id);
+            // html += `<div style="margin-top: 1rem;">
+            // <select id="select_phase" name="action" class="action">`;
+            // transitions.forEach((target: any) => {
+            //     if (!target) { return; }
+            //     html += `
+            //     <option value='${JSON.stringify(target.targetPhase)}'>${target.targetPhase.name}</option>
+            // `;
+            // });
+            let mapFields = new Map<string, any>();
+            fields.forEach((field): any => {
+                mapFields.set(field.label, field);
             });
+            html += FieldTemplateFactory.getTemplate(mapFields.get('Phase'), data).generate();
             html += `</select>
             <script type="text/javascript">
                 $(document).ready(function() {
@@ -472,7 +477,7 @@ async function generateActionBarElement(data: any | OctaneEntity | undefined, fi
                 });
             </script>`;
         }
-        html += `</div>
+        html += `
                     <button title="Save" id="saveId" class="save" type="button">
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm2 16H5V5h11.17L19 7.83V19zm-7-7c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zM6 6h9v4H6z"/></svg>
                     </button>
