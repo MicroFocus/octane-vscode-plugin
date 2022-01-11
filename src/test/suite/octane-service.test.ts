@@ -1,33 +1,72 @@
 import * as assert from 'assert';
 
-// You can import and use all API from the 'vscode' module
-// as well as import your extension to test it
-import * as vscode from 'vscode';
 import { OctaneService } from '../../octane/service/octane-service';
-import { MyWorkItem } from '../../treeview/my-work-provider';
-import sinon, { stubInterface, stubObject } from 'ts-sinon';
+import { AlmOctaneAuthenticationSession, AlmOctaneAuthenticationType } from '../../auth/authentication-provider';
+import  * as accessDetails from './octane-access-details.json';
+
+
+function getValidSession(): AlmOctaneAuthenticationSession {
+	return {
+		accessToken: accessDetails.password,
+		id: 'test',
+		scopes: ['default'],
+		type: AlmOctaneAuthenticationType.userNameAndPassword,
+		account: {
+			id: 'test',
+			label: 'test',
+			space: accessDetails.space,
+			workSpace: accessDetails.workspace,
+			uri: accessDetails.serverUri,
+			user: accessDetails.user
+		},
+		cookieName: ''
+	};
+}
 
 suite('OctaneService test suite', () => {
 
 	test('Password authentication should fail with empty credentials', async () => {
 		let service = OctaneService.getInstance();
-		assert.rejects(service.testAuthentication('https://internal.almoctane.com/', '61004', '5002', '', '', undefined, undefined));
+		assert.rejects(service.testAuthentication(accessDetails.serverUri, accessDetails.space, accessDetails.workspace, '', '', undefined, undefined));
+	}).timeout(5000);
+
+
+	test('Password authentication should succeed with correct credentials', async () => {
+		let service = OctaneService.getInstance();
+		assert.rejects(service.testAuthentication(accessDetails.serverUri, accessDetails.space, accessDetails.workspace, accessDetails.user, accessDetails.password, undefined, undefined));
 	}).timeout(5000);
 
 	test('SSO authentication test test', async () => {
 		let service = OctaneService.getInstance();
-		let success = await service.testConnectionOnBrowserAuthentication('https://internal.almoctane.com/');
+		let success = await service.testConnectionOnBrowserAuthentication(accessDetails.serverUri);
 		assert.strictEqual(success, true, 'Unsuccessful authentication test');
 	}).timeout(5000);
 
 	test('initialize with empty stored access details should cause no login', async () => {
 		let service = OctaneService.getInstance();
-		const commands = stubObject(vscode.commands);
-		commands.executeCommand.returns(new Promise((resolve) => {
-			resolve(undefined);
-		}));
-		await service.initialize();
+		await service.initialize(undefined);
 		assert.strictEqual(false, service.isLoggedIn());
 	}).timeout(5000);
 
+	test('initialize with correct stored access details should cause login', async () => {
+		let service = OctaneService.getInstance();
+		await service.initialize(getValidSession());
+		assert.strictEqual(true, service.isLoggedIn());
+	}).timeout(5000);
+
+	suite('Octane integration tests', () => {
+
+		OctaneService.getInstance().initialize(getValidSession());
+	
+		test('My backlog call should not fail', async () => {
+			assert.rejects(OctaneService.getInstance().getMyBacklog());
+		}).timeout(5000);
+
+		test('My backlog should contain at least 1 element', async () => {
+			let myBacklog = await OctaneService.getInstance().getMyBacklog();
+			assert.strictEqual(myBacklog && myBacklog.length > 0, true);
+		}).timeout(5000);
+	});
+	
 });
+
