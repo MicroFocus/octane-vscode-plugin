@@ -449,20 +449,6 @@ async function generateActionBarElement(data: any | OctaneEntity | undefined, fi
     let html: string = ``;
     try {
         if (data.phase) {
-            // html += `
-            //     <div>
-            //         <h6 style="margin:1.3rem 0.5rem 0rem 0rem">Current phase: ${getFieldValue(data.phase, 'name')} |  Move to </h6>
-            //     </div>
-            // `;
-            // let transitions: Transition[] = OctaneService.getInstance().getPhaseTransitionForEntity(data.phase.id);
-            // html += `<div style="margin-top: 1rem;">
-            // <select id="select_phase" name="action" class="action">`;
-            // transitions.forEach((target: any) => {
-            //     if (!target) { return; }
-            //     html += `
-            //     <option value='${JSON.stringify(target.targetPhase)}'>${target.targetPhase.name}</option>
-            // `;
-            // });
             let mapFields = new Map<string, any>();
             fields.forEach((field): any => {
                 mapFields.set(field.label, field);
