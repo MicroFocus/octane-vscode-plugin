@@ -18,7 +18,6 @@ export class OctaneService {
 
     private loggedInUserId?: number;
     private transitions?: Transition[];
-    private phases = new Map<string, string>();
 
     private octaneMap = new Map<string, any[]>();
 
@@ -116,28 +115,28 @@ export class OctaneService {
         }
     }
 
-    public async globalSearchWorkItems(subtype: string, criteria: string): Promise<OctaneEntity[]> {
+    public async globalSearch(endPoint: string, subtype: string | string[] | undefined, criteria: string, fields: string[]): Promise<OctaneEntity[]> {
         try {
-            const response = await this.octane.get(Octane.Octane.entityTypes.workItems)
-                .fields('name', 'story_points', 'phase', 'owner{id,name,full_name}',
-                    'invested_hours', 'estimated_hours', 'remaining_hours',
-                    'detected_by{id,name,full_name}', 'severity', 'author{id,name,full_name}', 'global_text_search_result')
-                .query(
-                    Query.field('subtype').equal(subtype).build()
-                )
-                .limit(`5&text_search={"type":"global","text":"${criteria}"}`)
-                .execute();
+            let request = this.octane.get(endPoint).fields([...fields, 'global_text_search_result']);
+            if (subtype !== undefined) {
+                if (Array.isArray(subtype)) {
+                    request = request.query(
+                        Query.field('subtype').inComparison(subtype).build()
+                    );
+                } else {
+                    request = request.query(
+                        Query.field('subtype').equal(subtype).build()
+                    );
+                }
+            }
+            request = request.limit(`5&text_search={"type":"global","text":"${criteria}"}`);
+
+            const response = await request.execute();
             this.logger.debug('Global search response', response);
             if (response.data && response.data.length) {
-                let responseWithFields = await this.octane.get(Octane.Octane.entityTypes.workItems)
-                    .fields('name', 'story_points', 'phase', 'owner{id,name,full_name}',
-                        'invested_hours', 'estimated_hours', 'remaining_hours',
-                        'detected_by{id,name,full_name}', 'severity', 'author{id,name,full_name}')
-                    .query(
-                        Query.field('subtype').equal(subtype)
-                            .and().field('id').inComparison(response.data.map((r: any) => r.id)).build()
-                    )
-                    .execute();
+                let detailsRequest = this.octane.get(endPoint).fields(fields)
+                    .query(Query.field('id').inComparison(response.data.map((r: any) => r.id)).build());
+                let responseWithFields = await detailsRequest.execute();
 
                 let entities = responseWithFields.data.map((r: any) => {
                     let gsr = response.data.find((re: { id: any; }) => re.id === r.id);
@@ -152,6 +151,18 @@ export class OctaneService {
                 return entities;
             }
             return [];
+        } catch (e) {
+            this.logger.error('While global searching', e);
+            return [];
+        }
+    }
+
+    public async globalSearchWorkItems(subtype: string, criteria: string): Promise<OctaneEntity[]> {
+        try {
+            const fields = ['name', 'story_points', 'phase', 'owner{id,name,full_name}',
+                'invested_hours', 'estimated_hours', 'remaining_hours',
+                'detected_by{id,name,full_name}', 'severity', 'author{id,name,full_name}'];
+            return this.globalSearch(Octane.Octane.entityTypes.workItems, subtype, criteria, fields);
         } catch (e) {
             this.logger.error('While global searching work items.', e);
             return [];
@@ -160,37 +171,8 @@ export class OctaneService {
 
     public async globalSearchRequirements(criteria: string): Promise<OctaneEntity[]> {
         try {
-            const response = await this.octane.get(Octane.Octane.entityTypes.requirements)
-                .fields('name', 'phase', 'owner{id,name,full_name}', 'author{id,name,full_name}', 'global_text_search_result')
-                .query(
-                    Query.field('subtype').inComparison(['requirement_document']).build()
-                )
-                .limit(`5&text_search={"type":"global","text":"${criteria}"}`)
-                .execute();
-            this.logger.debug('Global search response', response);
-            if (response.data && response.data.length) {
-                let responseWithFields = await this.octane.get(Octane.Octane.entityTypes.requirements)
-                    .fields('name', 'phase', 'owner{id,name,full_name}', 'author{id,name,full_name}')
-                    .query(
-                        Query.field('subtype').equal('requirement_document')
-                            .and().field('id').inComparison(response.data.map((r: any) => r.id))
-                            .build()
-                    )
-                    .execute();
-
-                let entities = responseWithFields.data.map((r: any) => {
-                    let gsr = response.data.find((re: { id: any; }) => re.id === r.id);
-                    if (gsr && gsr.global_text_search_result) {
-                        r.global_text_search_result = gsr?.global_text_search_result.description;
-                    }
-                    let oe = new OctaneEntity(r);
-                    this.logger.debug('Extended oe', oe);
-                    return oe;
-                });
-                this.logger.debug('Global search results: ', entities);
-                return entities;
-            }
-            return [];
+            const fields = ['name', 'phase', 'owner{id,name,full_name}', 'author{id,name,full_name}'];
+            return this.globalSearch(Octane.Octane.entityTypes.requirements, 'requirement_document', criteria, fields);
         } catch (e) {
             this.logger.error('While global searching requirements.', e);
             return [];
@@ -199,33 +181,8 @@ export class OctaneService {
 
     public async globalSearchTasks(criteria: string): Promise<OctaneEntity[]> {
         try {
-            const response = await this.octane.get(Octane.Octane.entityTypes.tasks)
-                .fields('id', 'name', 'author{id,name,full_name}', 'owner{id,name,full_name}', 'phase', 'global_text_search_result')
-                .limit(`5&text_search={"type":"global","text":"${criteria}"}`)
-                .execute();
-            this.logger.debug('Global search response', response);
-            if (response.data && response.data.length) {
-                let responseWithFields = await this.octane.get(Octane.Octane.entityTypes.tasks)
-                    .fields('id', 'name', 'author{id,name,full_name}', 'owner{id,name,full_name}', 'phase')
-                    .query(
-                        Query.field('id').inComparison(response.data.map((r: any) => r.id))
-                            .build()
-                    )
-                    .execute();
-
-                let entities = responseWithFields.data.map((r: any) => {
-                    let gsr = response.data.find((re: { id: any; }) => re.id === r.id);
-                    if (gsr && gsr.global_text_search_result) {
-                        r.global_text_search_result = gsr?.global_text_search_result.description;
-                    }
-                    let oe = new OctaneEntity(r);
-                    this.logger.debug('Extended oe', oe);
-                    return oe;
-                });
-                this.logger.debug('Global search results: ', entities);
-                return entities;
-            }
-            return [];
+            let fields = ['id', 'name', 'author{id,name,full_name}', 'owner{id,name,full_name}', 'phase'];
+            return this.globalSearch(Octane.Octane.entityTypes.tasks, undefined, criteria, fields);
         } catch (e) {
             this.logger.error('While global searching tasks.', e);
             return [];
@@ -234,37 +191,8 @@ export class OctaneService {
 
     public async globalSearchTests(criteria: string): Promise<OctaneEntity[]> {
         try {
-            const response = await this.octane.get(Octane.Octane.entityTypes.tests)
-                .fields('name', 'owner{id,name,full_name}', 'author{id,name,full_name}', 'phase', 'global_text_search_result')
-                .query(
-                    Query.field('subtype').inComparison(['test_manual', 'test_suite', 'gherkin_test', 'test_automated', 'scenario_test']).build()
-                )
-                .orderBy('id')
-                .limit(`5&text_search={"type":"global","text":"${criteria}"}`)
-                .execute();
-            this.logger.debug('Global search response', response);
-            if (response.data && response.data.length) {
-                let responseWithFields = await this.octane.get(Octane.Octane.entityTypes.tests)
-                    .fields('name', 'owner{id,name,full_name}', 'author{id,name,full_name}', 'phase')
-                    .query(
-                        Query.field('subtype').inComparison(['test_manual', 'test_suite', 'gherkin_test', 'test_automated', 'scenario_test'])
-                            .and().field('id').inComparison(response.data.map((r: any) => r.id)).build()
-                    )
-                    .execute();
-
-                let entities = responseWithFields.data.map((r: any) => {
-                    let gsr = response.data.find((re: { id: any; }) => re.id === r.id);
-                    if (gsr && gsr.global_text_search_result) {
-                        r.global_text_search_result = gsr?.global_text_search_result.description;
-                    }
-                    let oe = new OctaneEntity(r);
-                    this.logger.debug('Extended oe', oe);
-                    return oe;
-                });
-                this.logger.debug('Global search results: ', entities);
-                return entities;
-            }
-            return [];
+            let fields = ['name', 'owner{id,name,full_name}', 'author{id,name,full_name}', 'phase'];
+            return this.globalSearch(Octane.Octane.entityTypes.tests, ['test_manual', 'test_suite', 'gherkin_test', 'test_automated', 'scenario_test'], criteria, fields);
         } catch (e) {
             this.logger.error('While global searching tests.', e);
             return [];
@@ -450,8 +378,6 @@ export class OctaneService {
                 .query(Query.field('entity_name').inComparison([type])
                     .and()
                     .field('visible_in_ui').equal('true')
-                    // .and()
-                    // .field('deprecated').equal(Query.NULL)
                     .build())
                 .execute();
 
