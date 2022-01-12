@@ -130,7 +130,7 @@
         });
     }
 
-    document.getElementById("openInBrowser").addEventListener('click', e => {
+    document.getElementById("openInBrowserId").addEventListener('click', e => {
         openInBrowser();
     });
 

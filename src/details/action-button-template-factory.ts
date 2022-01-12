@@ -3,6 +3,7 @@ import { FieldsSelectButtonTemplate } from "./action-buttons/fields-select-butto
 import { CommentButtonTemplate } from "./action-buttons/comment-button-template";
 import { SaveButtonTemplate } from "./action-buttons/save-button-template";
 import { RefreshButtonTemplate } from "./action-buttons/refresh-button-template";
+import { OpenInBrowserButtonTemplate } from "./action-buttons/open-in-browser-button-template";
 
 export class ActionButtonTemplateFactory {
 
@@ -17,6 +18,9 @@ export class ActionButtonTemplateFactory {
 
             case 'refresh':
                 return new RefreshButtonTemplate(actionName);
+
+            case 'openInBrowser':
+                return new OpenInBrowserButtonTemplate(actionName);
 
             default:
                 return new SaveButtonTemplate(actionName);

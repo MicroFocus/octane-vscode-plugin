@@ -10,7 +10,7 @@ export abstract class AbstractButtonTemplate implements ButtonTemplate {
 
     generate(): string {
         return `
-            <button class="${this.generateContainerClass()}" id="${this.buttonId}" type="button">
+            <button class="${this.generateContainerClass()}" id="${this.buttonId}" type="button" ${this.generateTitle()}>
                 ${this.generateButtonContent()}
             </button>
         `;
