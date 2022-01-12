@@ -9,6 +9,7 @@ import * as entitiesToOpenExternally from '../configurations/entities-to-open-ex
 import * as defaultFieldsMap from '../configurations/default-fields.json';
 import * as entityIcons from '../configurations/entity-icons.json';
 import { ActionButtonTemplateFactory } from './action-button-template-factory';
+import { FieldsSelectButtonTemplate } from './action-buttons/fields-select-button-template';
 
 
 class OctaneEntityDocument implements vscode.CustomDocument {
@@ -429,13 +430,9 @@ async function generateActionBarElement(data: any | OctaneEntity | undefined, fi
             });
             html += FieldTemplateFactory.getTemplate(mapFields.get('Phase'), data, true).generate();
         }
+        html += ActionButtonTemplateFactory.getTemplate('save').generate();
+        html += ActionButtonTemplateFactory.getTemplate('refresh').generate();
         html += `
-                    <button title="Save" id="saveId" class="save" type="button">
-                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm2 16H5V5h11.17L19 7.83V19zm-7-7c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zM6 6h9v4H6z"/></svg>
-                    </button>
-                    <button title="Refresh" id="refresh" type="button">
-                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
-                    </button>
                     <button title="Open in browser" id="openInBrowser" type="button">
                     <svg style="margin: 0rem 0rem 0rem 0.22rem;" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="16px" height="16px" viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve">  <image id="image0" width="16" height="16" x="0" y="0"
                             href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAABGdBTUEAALGPC/xhBQAAACBjSFJN
@@ -459,7 +456,7 @@ async function generateActionBarElement(data: any | OctaneEntity | undefined, fi
                     </button>
                     
                 `;
-            html += ActionButtonTemplateFactory.getTemplate('comments', undefined, undefined, true).generate();
+            html += ActionButtonTemplateFactory.getTemplate('comments').generate();
 
         //mapFields: all fields exept for id, name, and phase
         let mapFields = new Map<string, any>();
@@ -470,7 +467,7 @@ async function generateActionBarElement(data: any | OctaneEntity | undefined, fi
         });
         mapFields = new Map([...mapFields].sort((a, b) => String(a[0]).localeCompare(b[0])));
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        html += ActionButtonTemplateFactory.getTemplate('fields_select', { field_type: 'fields_select' }, mapFields, true, { defaultFields: currentDefaultFields, activeFields: activeFields }).generate();
+        html += new FieldsSelectButtonTemplate({ field_type: 'fields_select' }, mapFields, true, { defaultFields: currentDefaultFields, activeFields: activeFields }).generate();
 
         if (data.subtype && !entitiesToOpenExternally.includes(data.subtype)) {
             html += `

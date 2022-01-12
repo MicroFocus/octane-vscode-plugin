@@ -115,7 +115,7 @@
         getData();
     });
 
-    document.getElementById("refresh").addEventListener('click', e => {
+    document.getElementById("refreshId").addEventListener('click', e => {
         refreshPanel();
     });
 

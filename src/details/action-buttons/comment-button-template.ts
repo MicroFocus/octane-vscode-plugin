@@ -2,8 +2,8 @@ import { AbstractButtonTemplate } from "./abstract-button-template";
 
 export class CommentButtonTemplate extends AbstractButtonTemplate {
     
-    constructor(actionName: string, field: any, data: any, visible:boolean, additionalArg: any) {
-        super(actionName, field, data, visible);
+    constructor(actionName: string) {
+        super(actionName);
     }
 
     generateButtonContent(): string {

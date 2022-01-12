@@ -4,13 +4,13 @@ export abstract class AbstractButtonTemplate implements ButtonTemplate {
     
     protected buttonId: string;
 
-    constructor(protected actionName: string, protected field: any, protected entity: any, protected visible: boolean) {
+    constructor(protected actionName: string) {
         this.buttonId = `${actionName}Id`;
     }
 
     generate(): string {
         return `
-            <button ${this.generateTitle()} id="${this.buttonId}" ${this.generateType()}>
+            <button class="${this.generateContainerClass()}" id="${this.buttonId}" type="button">
                 ${this.generateButtonContent()}
             </button>
         `;
@@ -22,8 +22,8 @@ export abstract class AbstractButtonTemplate implements ButtonTemplate {
         return '';
     }
 
-    protected generateType(): string {
-        return `type="button"`;
+    protected generateContainerClass(): string {
+        return '';
     }
 
 }
