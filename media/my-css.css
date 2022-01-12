@@ -265,7 +265,7 @@ label {
     margin-top: 1rem;
 }
 
-#refreshId, #addToMyWork, #filterId, #commentsId, #openInBrowserId, #filterBUttonId {
+#refreshId, #addToMyWorkId, #filterId, #commentsId, #openInBrowserId, #filterBUttonId {
     display: flex;
     align-items: center;
     margin: 0 0 0 0.5rem;

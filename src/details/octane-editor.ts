@@ -447,11 +447,7 @@ async function generateActionBarElement(data: any | OctaneEntity | undefined, fi
         html += new FieldsSelectButtonTemplate({ field_type: 'fields_select' }, mapFields, true, { defaultFields: currentDefaultFields, activeFields: activeFields }).generate();
 
         if (data.subtype && !entitiesToOpenExternally.includes(data.subtype)) {
-            html += `
-            <button title="Add to MyWork" id="addToMyWork" type="button">
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-            </button>
-            `;
+            html += ActionButtonTemplateFactory.getTemplate('addToMyWork').generate();
         }
     } catch (e: any) {
         getLogger('vs').error('Error generating action bar for entity.', e);

@@ -123,7 +123,7 @@
         postCommentForEntity();
     });
 
-    var addToMyWorkButton = document.getElementById("addToMyWork");
+    var addToMyWorkButton = document.getElementById("addToMyWorkId");
     if (addToMyWorkButton) {
         addToMyWorkButton.addEventListener('click', e => {
             addToMyWork();
