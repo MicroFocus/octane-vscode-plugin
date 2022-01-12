@@ -105,7 +105,6 @@ textarea {
     flex: 1;
     min-width: 200px;
     max-width: unset;
-    display: none;
     position: relative;
     padding: 0 4px 0 0px;
 }

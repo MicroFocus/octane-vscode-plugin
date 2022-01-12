@@ -8,8 +8,8 @@ export class ReferenceInputTemplate extends AbstractFieldTemplate {
     protected multiple: boolean;
     protected value: any | undefined;
 
-    constructor(field: any, entity: any[]) {
-        super(field, entity);
+    constructor(field: any, entity: any[], visible: boolean) {
+        super(field, entity, visible);
 
         // application_module needs remapping to product_areas
         let fieldName = fieldNameToAttributeMap.get(field.name) ?? field.name;

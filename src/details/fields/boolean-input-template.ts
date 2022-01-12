@@ -4,8 +4,8 @@ export class BooleanInputTemplate extends AbstractFieldTemplate {
 
     private value: boolean;
 
-    constructor(field: any, entity: any) {
-        super(field, entity);
+    constructor(field: any, entity: any, visible: boolean) {
+        super(field, entity, visible);
         this.value = this.getFieldBooleanValue(entity, field.name);
     }
 

@@ -14,21 +14,21 @@ import { PhaseInputTemplate } from './fields/phase-input-template';
 import { FieldsSelectInputTemplate } from './fields/fields-select-input-template';
 export class FieldTemplateFactory {
 
-    public static getTemplate(field: any, data: any, additionalArg?: any): FieldTemplate {
+    public static getTemplate(field: any, data: any, visible: boolean, additionalArg?: any): FieldTemplate {
         switch (field.field_type) {
 
             case 'date_time':
-                return new DateTimeInputTemplate(field, data);
+                return new DateTimeInputTemplate(field, data, visible);
 
             case 'boolean':
-                return new BooleanInputTemplate(field, data);
+                return new BooleanInputTemplate(field, data, visible);
 
             case 'reference':
                 switch (field.name) {
                     case 'phase':
-                        return new PhaseInputTemplate(field, data);
+                        return new PhaseInputTemplate(field, data, visible);
                     default:
-                        return new ReferenceInputTemplate(field, data);
+                        return new ReferenceInputTemplate(field, data, visible);
                 }
 
             case 'string':
@@ -36,34 +36,34 @@ export class FieldTemplateFactory {
                     switch (field.name) {
                         case 'test_status':
                         case 'last_runs':
-                            return new TestCoverageInputTemplate(field, data);
+                            return new TestCoverageInputTemplate(field, data, visible);
 
                         case 'progress':
-                            return new ProgressInputTemplate(field, data);
+                            return new ProgressInputTemplate(field, data, visible);
 
                         case 'commit_files':
-                            return new CommitFilesInputTemplate(field, data);
+                            return new CommitFilesInputTemplate(field, data, visible);
 
                         case 'name':
-                            return new NameInputTemplate(field, data);
+                            return new NameInputTemplate(field, data, visible);
                     }
                 }
-                return new TextInputTemplate(field, data);
+                return new TextInputTemplate(field, data, visible);
 
             case 'memo':
                 if (field.type === 'field_metadata') {
-                    return new DescriptionFieldInputTemplate(field, data);
+                    return new DescriptionFieldInputTemplate(field, data, visible);
                 }
 
             case 'comment':
-                return new CommentInputTemplate(field, data);
+                return new CommentInputTemplate(field, data, visible);
 
             case 'fields_select': 
-                return new FieldsSelectInputTemplate(field, data, additionalArg);
+                return new FieldsSelectInputTemplate(field, data, visible, additionalArg);
 
             case 'integer':
             default:
-                return new TextInputTemplate(field, data);
+                return new TextInputTemplate(field, data, visible);
         }
     }
 

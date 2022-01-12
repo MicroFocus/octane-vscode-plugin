@@ -5,8 +5,8 @@ export class TextInputTemplate extends AbstractFieldTemplate {
     protected value: string;
     protected fieldType: string;
 
-    constructor(field: any, entity: any) {
-        super(field, entity);
+    constructor(field: any, entity: any, visible: boolean) {
+        super(field, entity, visible);
         this.fieldType = this.field.field_type;
         if (this.fieldType === 'integer') {
             this.fieldType = 'number';

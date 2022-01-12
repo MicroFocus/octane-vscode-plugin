@@ -5,8 +5,8 @@ export class ProgressInputTemplate extends TextInputTemplate {
 
     private valueObject: any | undefined;
 
-    constructor(field: any, value: string) {
-        super(field, value);
+    constructor(field: any, value: string, visible: boolean) {
+        super(field, value, visible);
         if (this.value !== '') {
             try {
                 this.valueObject = JSON.parse(this.value);

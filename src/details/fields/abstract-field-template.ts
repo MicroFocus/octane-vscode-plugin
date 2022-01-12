@@ -4,7 +4,7 @@ export abstract class AbstractFieldTemplate implements FieldTemplate {
  
     protected fieldId: string;
 
-    constructor(protected field: any, protected entity: any) {
+    constructor(protected field: any, protected entity: any, protected visible: boolean) {
         if(field.label) {
             this.fieldId = field.label.replaceAll(" ", "_").replaceAll('"', "");
         } else {
@@ -13,7 +13,7 @@ export abstract class AbstractFieldTemplate implements FieldTemplate {
     }
 
     public generate(): string {
-        return `<div class="${this.generateContainerClass()}" id="container_${this.fieldId}">
+        return `<div class="${this.generateContainerClass()} ${this.generateVisibility()}" id="container_${this.fieldId}">
                     <label name="${this.field.name}">${this.field.label}</label>
                     ${this.generateInputField()}
                 </div>`;
@@ -23,6 +23,10 @@ export abstract class AbstractFieldTemplate implements FieldTemplate {
 
     protected generateContainerClass(): string {
         return 'container';
+    }
+
+    protected generateVisibility(): string {
+        return this.visible ? '' : 'd-none';
     }
 
     protected generateReadonly(): string {

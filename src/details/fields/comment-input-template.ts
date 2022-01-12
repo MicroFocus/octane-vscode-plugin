@@ -2,8 +2,8 @@ import { AbstractFieldTemplate } from "./abstract-field-template";
 
 export class CommentInputTemplate extends AbstractFieldTemplate {
 
-    constructor(field: any, entity: any) {
-        super(field, entity);
+    constructor(field: any, entity: any, visible: boolean) {
+        super(field, entity, visible);
     }
 
     public generate(): string {

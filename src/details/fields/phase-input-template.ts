@@ -8,8 +8,8 @@ export class PhaseInputTemplate extends AbstractFieldTemplate {
     protected value: string;
     protected transitions: Transition[];
 
-    constructor(field: any, entity: any[]) {
-        super(field, entity);
+    constructor(field: any, entity: any[], visible: boolean) {
+        super(field, entity, visible);
         this.value = this.getFieldStringValue(entity, field.name);
         this.transitions = OctaneService.getInstance().getPhaseTransitionForEntity(this.entity.phase.id);
     }

@@ -4,10 +4,10 @@ export class FieldsSelectInputTemplate extends AbstractFieldTemplate {
 
     protected defaultFields: string[];
     protected values: any | undefined;
-    protected activeFields: string[] | undefined
+    protected activeFields: string[] | undefined;
 
-    constructor(field: any, data: any, additionalArg: any) {
-        super(field, data);
+    constructor(field: any, data: any, visible:boolean, additionalArg: any) {
+        super(field, data, visible);
         this.defaultFields = additionalArg.defaultFields;
         this.activeFields = additionalArg.activeFields;
         this.values = data;

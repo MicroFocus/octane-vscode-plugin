@@ -3,8 +3,8 @@ import { stripHtml } from 'string-strip-html';
 
 export class DescriptionFieldInputTemplate extends TextInputTemplate {
 
-    constructor(field: any, entity: any) {
-        super(field, entity);
+    constructor(field: any, entity: any, visible: boolean) {
+        super(field, entity, visible);
         this.value = this.getFieldStringValue(this.entity, this.field.name);
     }
 

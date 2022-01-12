@@ -342,7 +342,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                         <span class="label">${getDataForSubtype(data)[0]}</span>
                     </div>
                     <h6 style="margin: 2.8rem 0rem 0rem 0.5rem;">${data?.id ?? ''}</h6>
-                    ${FieldTemplateFactory.getTemplate(mapFields.get('Name'), data).generate()}
+                    ${FieldTemplateFactory.getTemplate(mapFields.get('Name'), data, true).generate()}
                     <div class="action-container">
                         ${await generateActionBarElement(data, fields, activeFields, currentDefaultFields)}
                     </div>
@@ -426,7 +426,7 @@ async function generateActionBarElement(data: any | OctaneEntity | undefined, fi
             fields.forEach((field): any => {
                 mapFields.set(field.label, field);
             });
-            html += FieldTemplateFactory.getTemplate(mapFields.get('Phase'), data).generate();
+            html += FieldTemplateFactory.getTemplate(mapFields.get('Phase'), data, true).generate();
         }
         html += `
                     <button title="Save" id="saveId" class="save" type="button">
@@ -470,7 +470,7 @@ async function generateActionBarElement(data: any | OctaneEntity | undefined, fi
         });
         mapFields = new Map([...mapFields].sort((a, b) => String(a[0]).localeCompare(b[0])));
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        html += FieldTemplateFactory.getTemplate({ field_type: 'fields_select' }, mapFields, { defaultFields: currentDefaultFields, activeFields: activeFields }).generate();
+        html += FieldTemplateFactory.getTemplate({ field_type: 'fields_select' }, mapFields, true, { defaultFields: currentDefaultFields, activeFields: activeFields }).generate();
 
         if (data.subtype && !entitiesToOpenExternally.includes(data.subtype)) {
             html += `
@@ -498,7 +498,7 @@ async function generateCommentElement(data: any | OctaneEntity | undefined): Pro
         if (comments) {
             const sortedComments = comments.sort((a: Comment, b: Comment) => new Date(b.creationTime ?? '').getTime() - new Date(a.creationTime ?? '').getTime());
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            html += FieldTemplateFactory.getTemplate({ field_type: 'comment' }, sortedComments).generate();
+            html += FieldTemplateFactory.getTemplate({ field_type: 'comment' }, sortedComments, true).generate();
         }
     } catch (e: any) {
         getLogger('vs').error('Error generating comments for entity.', e);
@@ -534,30 +534,16 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
             }
         }
         html += `<div class="information-container-full">`;
-        html += FieldTemplateFactory.getTemplate(mapFields.get('description'), data).generate();
+        html += FieldTemplateFactory.getTemplate(mapFields.get('description'), data, isSelectedField("Description", activeFields)).generate();
         html += `</div>`;
 
-        if (!await isSelectedField("Description", activeFields)) {
-            html += `
-                <script>
-                    document.getElementById("container_Description").style.display = "none";
-                </script>
-            `;
-        }
         html += `<div class="information-container">`;
         for (const [key, field] of mapFields) {
             if (field) {
                 let fieldId = field.label.replaceAll(" ", "_").replaceAll('"', "");
                 if (!['description', 'phase', 'name'].includes(key)) {
                     // Refactored code
-                    html += FieldTemplateFactory.getTemplate(field, data).generate();
-                }
-                if (filteredFields.includes(field.name)) {
-                    html += `
-                    <script>
-                        document.getElementById("container_${fieldId}").style.display = "flex";
-                    </script>
-                `;
+                    html += FieldTemplateFactory.getTemplate(field, data, filteredFields.includes(field.name)).generate();
                 }
             }
         }
