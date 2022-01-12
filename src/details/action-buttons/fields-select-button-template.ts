@@ -1,6 +1,6 @@
 import { AbstractButtonTemplate } from "./abstract-button-template";
 
-export class FieldsSelectInputTemplate extends AbstractButtonTemplate {
+export class FieldsSelectButtonTemplate extends AbstractButtonTemplate {
     
     protected fieldId: string;
     protected defaultFields: string[];

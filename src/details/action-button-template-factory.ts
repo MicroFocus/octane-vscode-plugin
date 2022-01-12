@@ -1,6 +1,5 @@
-import { FieldsSelectInputTemplate } from "./action-buttons/fields-select-input-template";
 import { FieldTemplate } from "./fields/field-template";
-
+import { FieldsSelectButtonTemplate } from "./action-buttons/fields-select-button-template";
 
 export class ActionButtonTemplateFactory {
 
@@ -8,9 +7,9 @@ export class ActionButtonTemplateFactory {
         
         switch (actionName) {
             case 'fields_select': 
-                return new FieldsSelectInputTemplate(actionName, field, data, visible, additionalArg);
+                return new FieldsSelectButtonTemplate(actionName, field, data, visible, additionalArg);
             default:
-                return new FieldsSelectInputTemplate(actionName, field, data, visible, additionalArg);
+                return new FieldsSelectButtonTemplate(actionName, field, data, visible, additionalArg);
         }
 
     }
