@@ -1,13 +1,19 @@
-import { AbstractFieldTemplate } from "./abstract-field-template";
+import { AbstractFieldTemplate } from "../fields/abstract-field-template";
 
-export class FieldsSelectInputTemplate extends AbstractFieldTemplate {
-
+export class FieldsSelectButtonTemplate extends AbstractFieldTemplate {
+    
+    protected fieldId: string;
     protected defaultFields: string[];
     protected values: any | undefined;
     protected activeFields: string[] | undefined;
 
     constructor(field: any, data: any, visible:boolean, additionalArg: any) {
         super(field, data, visible);
+        if(field.label) {
+            this.fieldId = field.label.replaceAll(" ", "_").replaceAll('"', "");
+        } else {
+         this.fieldId = field;   
+        }
         this.defaultFields = additionalArg.defaultFields;
         this.activeFields = additionalArg.activeFields;
         this.values = data;

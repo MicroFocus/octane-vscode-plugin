@@ -115,7 +115,7 @@
         getData();
     });
 
-    document.getElementById("refresh").addEventListener('click', e => {
+    document.getElementById("refreshId").addEventListener('click', e => {
         refreshPanel();
     });
 
@@ -123,14 +123,14 @@
         postCommentForEntity();
     });
 
-    var addToMyWorkButton = document.getElementById("addToMyWork");
+    var addToMyWorkButton = document.getElementById("addToMyWorkId");
     if (addToMyWorkButton) {
         addToMyWorkButton.addEventListener('click', e => {
             addToMyWork();
         });
     }
 
-    document.getElementById("openInBrowser").addEventListener('click', e => {
+    document.getElementById("openInBrowserId").addEventListener('click', e => {
         openInBrowser();
     });
 
