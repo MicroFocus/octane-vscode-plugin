@@ -563,10 +563,6 @@ function isSelectedField(fieldName: string, activeFields: string[] | undefined) 
     return false;
 }
 
-function selected(isSelected: boolean): string {
-    return isSelected ? 'selected="selected"' : '';
-}
-
 function getFieldValue(data: any, fieldName: string): string | any[] {
     const field = data[fieldName];
     if (field === null || field === undefined) {

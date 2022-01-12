@@ -130,7 +130,6 @@ textarea {
     margin: .5rem;
     flex: 1;
     min-width: 200px;
-    display: none;
 }
 
 .select-container-single {
@@ -139,7 +138,6 @@ textarea {
     margin: 0.1rem 0.1rem 0rem 0.1rem;
     flex: 1;
     min-width: 200px;
-    display: none;
 }
 
 .select-container-multiple {
@@ -148,7 +146,6 @@ textarea {
     margin: 0.1rem 0.1rem 0rem 0.1rem;
     flex: 1;
     min-width: 200px;
-    display: none;
 }
 
 /* .multi-select-container {
