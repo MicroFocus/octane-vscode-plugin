@@ -457,10 +457,9 @@ async function generateActionBarElement(data: any | OctaneEntity | undefined, fi
                         MjEtMTItMDJUMTM6NDU6NDUrMDM6MDBOaBmXAAAAAElFTkSuQmCC" />
                     </svg>
                     </button>
-                    <button title="Comments" id="commentsId" type="button">
-                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M15 4v7H5.17l-.59.59-.58.58V4h11m1-2H3c-.55 0-1 .45-1 1v14l4-4h10c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1zm5 4h-2v9H6v2c0 .55.45 1 1 1h11l4 4V7c0-.55-.45-1-1-1z"/></svg>
-                    </button>
+                    
                 `;
+            html += ActionButtonTemplateFactory.getTemplate('comments', undefined, undefined, true).generate();
 
         //mapFields: all fields exept for id, name, and phase
         let mapFields = new Map<string, any>();
