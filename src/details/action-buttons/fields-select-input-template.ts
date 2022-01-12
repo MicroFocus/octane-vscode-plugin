@@ -1,13 +1,19 @@
-import { AbstractFieldTemplate } from "./abstract-field-template";
+import { AbstractButtonTemplate } from "./abstract-button-template";
 
-export class FieldsSelectInputTemplate extends AbstractFieldTemplate {
-
+export class FieldsSelectInputTemplate extends AbstractButtonTemplate {
+    
+    protected fieldId: string;
     protected defaultFields: string[];
     protected values: any | undefined;
     protected activeFields: string[] | undefined;
 
-    constructor(field: any, data: any, visible:boolean, additionalArg: any) {
-        super(field, data, visible);
+    constructor(actionName: string, field: any, data: any, visible:boolean, additionalArg: any) {
+        super(actionName, field, data, visible);
+        if(field.label) {
+            this.fieldId = field.label.replaceAll(" ", "_").replaceAll('"', "");
+        } else {
+         this.fieldId = field;   
+        }
         this.defaultFields = additionalArg.defaultFields;
         this.activeFields = additionalArg.activeFields;
         this.values = data;
@@ -15,11 +21,11 @@ export class FieldsSelectInputTemplate extends AbstractFieldTemplate {
 
     public generate(): string {
         return `<div class="${this.generateContainerClass()}" id="container_${this.fieldId}">
-                    ${this.generateInputField()}
+                    ${this.generateButtonContent()}
                 </div>`;
     }
 
-    generateInputField(): string {
+    generateButtonContent(): string {
         return `<select ${this.generateMultiple()} id="filter_multiselect" ${this.generateAdditionalAttributes()}>
                     ${this.generateSelectOptions()}
                 </select>`;

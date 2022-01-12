@@ -8,6 +8,7 @@ import { FieldTemplateFactory } from './field-template-factory';
 import * as entitiesToOpenExternally from '../configurations/entities-to-open-externally.json';
 import * as defaultFieldsMap from '../configurations/default-fields.json';
 import * as entityIcons from '../configurations/entity-icons.json';
+import { ActionButtonTemplateFactory } from './action-button-template-factory';
 
 
 class OctaneEntityDocument implements vscode.CustomDocument {
@@ -470,7 +471,7 @@ async function generateActionBarElement(data: any | OctaneEntity | undefined, fi
         });
         mapFields = new Map([...mapFields].sort((a, b) => String(a[0]).localeCompare(b[0])));
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        html += FieldTemplateFactory.getTemplate({ field_type: 'fields_select' }, mapFields, true, { defaultFields: currentDefaultFields, activeFields: activeFields }).generate();
+        html += ActionButtonTemplateFactory.getTemplate('fields_select', { field_type: 'fields_select' }, mapFields, true, { defaultFields: currentDefaultFields, activeFields: activeFields }).generate();
 
         if (data.subtype && !entitiesToOpenExternally.includes(data.subtype)) {
             html += `

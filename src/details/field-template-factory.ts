@@ -11,7 +11,6 @@ import { DescriptionFieldInputTemplate } from './fields/description-field-input-
 import { CommentInputTemplate } from './fields/comment-input-template';
 import { NameInputTemplate } from './fields/name-input-template';
 import { PhaseInputTemplate } from './fields/phase-input-template';
-import { FieldsSelectInputTemplate } from './fields/fields-select-input-template';
 export class FieldTemplateFactory {
 
     public static getTemplate(field: any, data: any, visible: boolean, additionalArg?: any): FieldTemplate {
@@ -57,9 +56,6 @@ export class FieldTemplateFactory {
 
             case 'comment':
                 return new CommentInputTemplate(field, data, visible);
-
-            case 'fields_select': 
-                return new FieldsSelectInputTemplate(field, data, visible, additionalArg);
 
             case 'integer':
             default:
