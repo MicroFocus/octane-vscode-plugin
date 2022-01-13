@@ -79,7 +79,7 @@ export abstract class AbstractFieldTemplate implements FieldTemplate {
     }
 
     protected getFieldReferencedValue(data: any, fieldName: string): undefined | any[] {
-        const fieldValue = this.getFieldSimpleValue(data, fieldName);
+        const fieldValue = data[fieldName];
         if (fieldValue === null || fieldValue === undefined) {
             return undefined;
         }
