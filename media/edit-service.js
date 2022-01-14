@@ -152,6 +152,7 @@
         let fieldName = field[0].name;
         let select = document.getElementById(fieldName);
         select.innerHTML = '';
+        select.innerHTML += `<option value='none-selected'>None selected</option>`;
         if (options) {
             if (options.data) {
                 for (let option of options.data) {
@@ -186,7 +187,6 @@
                     }
                 }
             }
-            console.log(select);
             selectDataPresent.push(fieldName);
             $('#' + fieldName).multiselect('rebuild');
         }
@@ -382,7 +382,7 @@
                                             } else {
                                                 val = d?.value;
                                             }
-                                            if (val && val !== 'none' && val !== '-') {
+                                            if (val && val !== 'none' && val !== '-' && val !== 'none-selected') {
                                                 if (field.field_type === 'integer') {
                                                     updatedData[fieldNameMap.get(field.name) ?? field.name] = parseFloat(val);
                                                 } else if (field.field_type === 'boolean') {
@@ -397,6 +397,11 @@
                                                     } else {
                                                         updatedData[fieldNameMap.get(field.name) ?? field.name] = val;
                                                     }
+                                                }
+                                            } else {
+                                                //in case of selecting none for a reference
+                                                if(val === 'none-selected') {
+                                                    updatedData[fieldNameMap.get(field.name) ?? field.name] = null;
                                                 }
                                             }
                                         });
