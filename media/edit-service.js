@@ -2,9 +2,7 @@
 
 (function () {
     const vscode = acquireVsCodeApi();
-    const filterOpened = false;
     const selectDataPresent = [];
-    var currentDefaultFields;
 
     $(document).ready(initialize());
 
@@ -98,7 +96,7 @@
 
     $('#commentsId').on('click', e => {
         getComments();
-        document.getElementById("comments-element-id").scrollIntoView({ behavior: "smooth" });
+        $('#comments-element-id')[0].scrollIntoView({ behavior: "smooth" });
     });
 
     $('#saveId').on('click', e => {
