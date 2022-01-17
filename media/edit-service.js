@@ -2,14 +2,11 @@
 
 (function () {
     const vscode = acquireVsCodeApi();
-    const filterOpened = false;
     const selectDataPresent = [];
-    var currentDefaultFields;
 
     $(document).ready(initialize());
 
     function initialize() {
-        console.log('initialize called...');
         $('.select-container-multiple select').multiselect({
             maxHeight: 400,
             allSelectedText: false,
@@ -24,32 +21,23 @@
                 getDataForEntity(this);
             }
         });
-        let currentDefaultFields = document.getElementById("filter_multiselect").getAttribute('defaultFields');
+        let currentDefaultFields = $('#filter_multiselect').attr('defaultFields');
         var filter = $('#filter_multiselect').multiselect({
             maxHeight: 400,
             enableFiltering: true,
-            // includeResetOption: true,
-            // resetText: "None",
-            // enableResetButton: true,
-            // includeResetDivider: true,
-            // includeSelectAllOption: true,
             dropRight: true,
             enableCaseInsensitiveFiltering: true,
             onDropdownHide: function (event) {
-                // console.log("filterfilter",filter);
-                var select = document.getElementById("filter_multiselect");
-                // console.log("selectselect",select)
-                if (select && select.selectedOptions) {
-                    // console.log(select.selectedOptions);
+                var selectedOptions = $("#filter_multiselect :selected");
+                if (selectedOptions) {
                     let options = [];
-                    for (let s of select.selectedOptions) {
+                    for (let s of selectedOptions) {
                         if (s !== null && s.label) {
                             options.push(
                                 s.label.replaceAll(" ", "_").replaceAll('"', "")
                             );
                         }
                     }
-                    // console.log("options", options);
                     setFields(options);
                 }
             },
@@ -106,37 +94,36 @@
         });
     }
 
-    document.getElementById("commentsId").addEventListener('click', e => {
+    $('#commentsId').on('click', e => {
         getComments();
-        document.getElementById("comments-element-id").scrollIntoView({ behavior: "smooth" });
+        $('#comments-element-id')[0].scrollIntoView({ behavior: "smooth" });
     });
 
-    document.getElementById("saveId").addEventListener('click', e => {
+    $('#saveId').on('click', e => {
         getData();
     });
 
-    document.getElementById("refreshId").addEventListener('click', e => {
+    $('#refreshId').on('click', e => {
         refreshPanel();
     });
 
-    document.getElementById("comments").addEventListener('click', e => {
+    $('#comments').on('click', e => {
         postCommentForEntity();
     });
 
-    var addToMyWorkButton = document.getElementById("addToMyWorkId");
+    var addToMyWorkButton = $('#addToMyWorkId');
     if (addToMyWorkButton) {
-        addToMyWorkButton.addEventListener('click', e => {
+        addToMyWorkButton.on('click', e => {
             addToMyWork();
         });
     }
 
-    document.getElementById("openInBrowserId").addEventListener('click', e => {
+    $('#openInBrowserId').on('click', e => {
         openInBrowser();
     });
 
     function getDataForEntity(entity) {
         let fieldName = entity.$select.find('#select').context.id;
-        // console.log("fieldName" , fieldName);
         if (fieldName && !selectDataPresent.includes(fieldName)) {
             vscode.postMessage({
                 type: 'get-data-for-select',
@@ -150,23 +137,24 @@
 
     function addOptionsForSelect(options, field, selectedName) {
         let fieldName = field[0].name;
-        let select = document.getElementById(fieldName);
-        select.innerHTML = '';
-        select.innerHTML += `<option value='none-selected'>None selected</option>`;
+        let select = $('#' + fieldName);
+        let html = ``;
+        select.html(html);
+        html += `<option value='none-selected'>None selected</option>`;
         if (options) {
             if (options.data) {
                 for (let option of options.data) {
                     if (option.type === 'workspace_user') {
                         if (option.full_name !== selectedName) {
-                            select.innerHTML += `<option value='${JSON.stringify(option)}'>${option.full_name}</option>`;
+                            html += `<option value='${JSON.stringify(option)}'>${option.full_name}</option>`;
                         } else {
-                            select.innerHTML += `<option selected value='${JSON.stringify(option)}'>${option.full_name}</option>`;
+                            html += `<option selected value='${JSON.stringify(option)}'>${option.full_name}</option>`;
                         }
                     } else {
                         if (option.name !== selectedName) {
-                            select.innerHTML += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
+                            html += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
                         } else {
-                            select.innerHTML += `<option selected value='${JSON.stringify(option)}'>${option.name}</option>`;
+                            html += `<option selected value='${JSON.stringify(option)}'>${option.name}</option>`;
                         }
                     }
                 }
@@ -174,78 +162,74 @@
                 for (let option of options) {
                     if (option.type === 'workspace_user') {
                         if (option.full_name !== selectedName) {
-                            select.innerHTML += `<option value='${JSON.stringify(option)}'>${option.full_name}</option>`;
+                            html += `<option value='${JSON.stringify(option)}'>${option.full_name}</option>`;
                         } else {
-                            select.innerHTML += `<option selected value='${JSON.stringify(option)}'>${option.full_name}</option>`;
+                            html += `<option selected value='${JSON.stringify(option)}'>${option.full_name}</option>`;
                         }
                     } else {
                         if (option.name !== selectedName) {
-                            select.innerHTML += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
+                            html += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
                         } else {
-                            select.innerHTML += `<option selected value='${JSON.stringify(option)}'>${option.name}</option>`;
+                            html += `<option selected value='${JSON.stringify(option)}'>${option.name}</option>`;
                         }
                     }
                 }
             }
+            select.html(html);
             selectDataPresent.push(fieldName);
             $('#' + fieldName).multiselect('rebuild');
         }
-        // select.multiselect('rebuild');
     }
 
     function addOptionsForMultipleSelect(options, field, selected) {
         let fieldName = field[0].name;
-        let select = document.getElementById(fieldName);
-        select.innerHTML = '';
-        // console.log(options, field, selected);
+        let select = $('#' + fieldName);
+        let html = ``;
+        select.html(html);
         if (options) {
             if (options.data) {
                 for (let option of options.data) {
                     if (selected.includes(option.name)) {
-                        select.innerHTML += `<option selected value='${JSON.stringify(option)}'>${option.name}</option>`;
+                        html += `<option selected value='${JSON.stringify(option)}'>${option.name}</option>`;
                     } else {
-                        select.innerHTML += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
+                        html += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
                     }
                 }
             } else {
                 for (let option of options) {
                     if (selected.includes(option.name)) {
-                        select.innerHTML += `<option selected value='${JSON.stringify(option)}'>${option.name}</option>`;
+                        html += `<option selected value='${JSON.stringify(option)}'>${option.name}</option>`;
                     } else {
-                        select.innerHTML += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
+                        html += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
                     }
                 }
             }
-            console.log(select);
+            select.html(html);
             selectDataPresent.push(fieldName);
             $('#' + fieldName).multiselect('rebuild');
         }
     }
 
     function getComments() {
-        let button = document.getElementById("commentsId");
-        let comments = document.getElementById("comments-element-id");
-        let main = document.getElementById("element-id");
-        let sidebar = document.getElementById("comments-sidebar-id");
+        let button = $('#commentsId');
+        let comments = $('#comments-element-id');
+        let sidebar = $('#comments-sidebar-id');
+
         if (comments) {
-            if (comments.style && comments.style.display && comments.style.display !== "none") {
-                comments.style.display = "none";
-                button.style.backgroundColor = "#3c3c3c";
-                // comments.style.width = "0vw";
-                // main.style.width = "100vw";
-                sidebar.style.display = "none";
+            if (comments.css("display") && comments.css("display") !== "none") {
+                comments.css("display", "none");
+                button.css("background-color", "#3c3c3c");
+                sidebar.css("display", "none");
             } else {
-                comments.style.display = "flex";
-                button.style.backgroundColor = "#777474";
-                // comments.style.width = "30vw";
-                // main.style.width = "100vw";
-                sidebar.style.display = "flex";
+                comments.css("display", "flex");
+                button.css("background-color", "#777474");
+                sidebar.css("display", "flex");
             }
         }
     }
 
     function postCommentForEntity() {
-        let message = document.getElementById('comments-text').value;
+        let message = $('#comments-text').val();
         if (message && message !== '') {
             let text = `
             <html>
@@ -261,24 +245,24 @@
                     'text': text
                 }
             });
-            let button = document.getElementById("commentsId");
-            let comments = document.getElementById("comments-element-id");
-            let sidebar = document.getElementById("comments-sidebar-id");
-            let auth = comments.getAttribute("currentAuthor") ?? '';
-            comments.style.display = "flex";
-            button.style.backgroundColor = "#777474";
-            sidebar.style.display = "flex";
-            let inf_cont = document.createElement('div');
-            inf_cont.innerHTML = `${new Date().toLocaleString() ?? ''} <b>${auth}</b>: <div style="margin: 0.5rem 0rem 0.5rem 0rem; background-color: transparent; padding-left: 1rem;">${message}</div>`;
-            inf_cont.style.display = "block";
-            inf_cont.style.borderBlockColor = "var(--vscode-foreground)";
-            inf_cont.style.borderBottom = "1px solid";
-            inf_cont.style.margin = "0rem 0rem 1rem 0rem";
-            inf_cont.classList.add("information-container-full");
-            inf_cont.style.fontFamily = "Roboto,Arial,sans-serif";
-            document.getElementById("addCommentContainer").after(inf_cont);
+            let button = $('#commentsId');
+            let comments = $('#comments-element-id');
+            let sidebar = $('#comments-sidebar-id');
+            let auth = comments.attr("currentAuthor") ?? '';
+            comments.css("display", "flex");
+            button.css("background-color", "#777474");
+            button.css("display", "flex");
+            let inf_cont = $('<div></div>');
+            inf_cont.html(`${new Date().toLocaleString() ?? ''} <b>${auth}</b>: <div style="margin: 0.5rem 0rem 0.5rem 0rem; background-color: transparent; padding-left: 1rem;">${message}</div>`);
+            inf_cont.css("display", "block");
+            inf_cont.css("border-block-color", "var(--vscode-foreground)");
+            inf_cont.css("border-bottom", "1px solid");
+            inf_cont.css("margin", "0rem 0rem 1rem 0rem");
+            inf_cont.addClass("information-container-full");
+            inf_cont.css("font-family", "Roboto,Arial,sans-serif");
+            inf_cont.insertAfter($('#addCommentContainer'));
         }
-        document.getElementById('comments-text').value = '';
+        $('#comments-text').val("");
     }
 
     function addToMyWork() {
@@ -349,28 +333,25 @@
                         const fieldNameMap = new Map([
                             ['application_modules', 'product_areas']
                         ]);
-                        console.log('fullData', fullData);
                         if (fields && fullData) {
                             let mapFields = new Map();
-                            // console.log(fields);
                             fields
                                 .filter(f => (f.name !== 'author') && (f.name !== 'sprint'))
                                 .filter(f => (f.editable && !f.final && f.access_level !== 'PRIVATE'))
                                 .forEach(field => {
                                     mapFields.set(fieldNameMap.get(field.name) ?? field.name, field);
                                 });
-                            console.log('mapFields', mapFields);
                             updatedData['id'] = fullData['id'];
                             mapFields.forEach((field, key) => {
                                 let data = {};
                                 data['data'] = [];
                                 let doc;
                                 if (field.name === 'phase') {
-                                    doc = document.getElementById('select_phase');
+                                    doc = $('#select_phase');
                                 } else {
-                                    doc = document.getElementById(fieldNameMap.get(field.name) ?? field.name);
+                                    doc = $('#' + fieldNameMap.get(field.name) ?? field.name);
                                     if (!doc) {
-                                        doc = document.getElementById(field.full_name);
+                                        doc = $('#' + field.full_name);
                                     }
                                 }
                                 if (doc) {
@@ -458,7 +439,6 @@
 
             case 'post-options-for-multiple-select':
                 {
-                    console.log("e", e);
                     if (e && e.data && e.data.data) {
                         if (e.data.data.options) {
                             let options = e.data.data.options;
