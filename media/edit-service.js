@@ -231,7 +231,7 @@
     }
 
     function postCommentForEntity() {
-        let message = $('#comments-text').value;
+        let message = $('#comments-text').val();
         if (message && message !== '') {
             let text = `
             <html>
@@ -250,21 +250,21 @@
             let button = $('#commentsId');
             let comments = $('#comments-element-id');
             let sidebar = $('#comments-sidebar-id');
-            let auth = comments.getAttribute("currentAuthor") ?? '';
-            comments.style.display = "flex";
-            button.style.backgroundColor = "#777474";
-            sidebar.style.display = "flex";
-            let inf_cont = document.createElement('div');
-            inf_cont.innerHTML = `${new Date().toLocaleString() ?? ''} <b>${auth}</b>: <div style="margin: 0.5rem 0rem 0.5rem 0rem; background-color: transparent; padding-left: 1rem;">${message}</div>`;
-            inf_cont.style.display = "block";
-            inf_cont.style.borderBlockColor = "var(--vscode-foreground)";
-            inf_cont.style.borderBottom = "1px solid";
-            inf_cont.style.margin = "0rem 0rem 1rem 0rem";
-            inf_cont.classList.add("information-container-full");
-            inf_cont.style.fontFamily = "Roboto,Arial,sans-serif";
-            $('#addCommentContainer').after(inf_cont);
+            let auth = comments.attr("currentAuthor") ?? '';
+            comments.css("display", "flex");
+            button.css("background-color", "#777474");
+            button.css("display", "flex");
+            let inf_cont = $('<div></div>');
+            inf_cont.html(`${new Date().toLocaleString() ?? ''} <b>${auth}</b>: <div style="margin: 0.5rem 0rem 0.5rem 0rem; background-color: transparent; padding-left: 1rem;">${message}</div>`);
+            inf_cont.css("display", "block");
+            inf_cont.css("border-block-color", "var(--vscode-foreground)");
+            inf_cont.css("border-bottom", "1px solid");
+            inf_cont.css("margin", "0rem 0rem 1rem 0rem");
+            inf_cont.addClass("information-container-full");
+            inf_cont.css("font-family", "Roboto,Arial,sans-serif");
+            inf_cont.insertAfter($('#addCommentContainer'));
         }
-        $('#comments-text').value = '';
+        $('#comments-text').val("");
     }
 
     function addToMyWork() {
