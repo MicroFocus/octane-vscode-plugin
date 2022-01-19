@@ -350,6 +350,8 @@ label {
     font-weight: unset;
     font-size: 13px;
     height: 22px;
+    background-color: #d3d3d3;
+    color: #000;
 }
 
 .dropdown-menu.show {
