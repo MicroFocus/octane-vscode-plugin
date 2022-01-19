@@ -16,6 +16,6 @@
     "test_suite": ["Test_type", "Testing_tool_type", "Owner", "Estimated_duration_(minutes)", "Designer", "Created", "Last_modified", "Backlog_Coverage", "Application_modules", "Description"],
     "run_automated": ["Test_name", "Draft_run", "Run_by", "Assigned_to_(On_it)", "Component", "Started", "Duration", "Backlog_Coverage"],
     "gherkin_automated_run": ["Test_name", "Native_status", "Run_by", "Started", "Duration", "Content", "Last_modified", "Backlog_Coverage"],
-    "requirement_folder": ["Author", "Owner", "Release", "Creation_time", "Last_modified"],
+    "requirement_folder": ["Author", "Owner", "Release", "Creation_time", "Last_modified", "Description"],
     "default": ["Description"]
 }
