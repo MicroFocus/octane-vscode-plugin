@@ -8,6 +8,7 @@ import { Comment } from '../model/comment';
 import { AlmOctaneAuthenticationSession, AlmOctaneAuthenticationType } from '../../auth/authentication-provider';
 import fetch, { Headers, RequestInit } from 'node-fetch';
 import { getLogger } from 'log4js';
+import { AuthError } from '../../auth/auth-error';
 
 export class OctaneService {
 
@@ -60,8 +61,7 @@ export class OctaneService {
             this.logger.debug('Successful auth test.', result.data);
             return result.data && result.data[0] ? (result.data[0].full_name ? result.data[0].full_name : username) : username;
         } catch (e: any) {
-            this.logger.error('Error while testing auth.', e);
-            throw e;
+            throw new AuthError("Error while testing auth.");
         }
     }
 

@@ -6,6 +6,7 @@ import { v4 as uuid } from 'uuid';
 import { OctaneService } from '../octane/service/octane-service';
 import { getLogger } from 'log4js';
 import { LoginData } from './login-data';
+import { AuthError } from './auth-error';
 
 export const type = 'alm-octane.auth';
 
@@ -235,8 +236,12 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 			}
 
 			return [sessionData];
-		} catch (e) {
-			this.logger.error(`Error reading token: ${e}`);
+		} catch (e: any) {
+			if(e instanceof AuthError) {
+				this.logger.error(`Error while testing auth.`);
+			} else {
+				this.logger.error(`Error reading token: ${e}`);
+			}
 			return [];
 		}
 	}
