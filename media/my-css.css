@@ -2,7 +2,6 @@
 .information {
     display: flex;
     flex-direction: column;
-    /* width: 75%; */
 }
 
 .information-container-full {
@@ -148,31 +147,6 @@ textarea {
     min-width: 200px;
 }
 
-/* .multi-select-container {
-    display: flex;
-    flex-direction: column;
-    margin: .5rem;
-    flex: 1;
-    min-width: 200px;
-} */
-
-/* #checkboxes {
-    display: none;
-    border: 1px #dadada solid;
-}
-
-#checkboxes label {
-    display: block;
-}
-
-#checkboxes label:hover {
-    background-color: #1e90ff;
-} */
-
-/* .select-box {
-    position: relative;
-} */
-
 hr {
     width: 100%;
     border-color: #0e639c;
@@ -294,8 +268,6 @@ label {
 #comments-sidebar-id {
     display: none;
     flex-direction: column;
-    /* margin-left: 1rem; */
-    /* width: 25%; */
 }
 
 .select-wrapper input.select-dropdown { 
@@ -313,18 +285,9 @@ label {
     fill: var(--vscode-input-foreground);
 }
 
-/* [type="checkbox"]:checked+span:not(.lever):before {
-    border-right: 2px solid var(--vscode-button-background);
-    border-bottom: 2px solid var(--vscode-button-background);
-} */
-
 .dropdown-content li>a, .dropdown-content li>span {
     color: var(--vscode-button-background);
 }
-
-/* .input-field.col label {
-    left: unset;
-} */
 
 .multiselect-container {
     color: var(--vscode-button-background);
@@ -337,8 +300,6 @@ label {
 
 .custom-select {
     background-color: var(--vscode-input-background) !important;
-    /* background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='white' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") !important; */
-    /* background-image: url("/media/data_image_svg+xml\,….svg") !important; */
     border: 0.5px solid !important;
     border-color: var(--vscode-dropdown-border) !important;
     color: var(--vscode-input-foreground) !important;
@@ -360,7 +321,6 @@ label {
 
 .form-check {
     display: flex !important;
-    /* align-items: center !important; */
     justify-content: flex-start !important;
 }
 
