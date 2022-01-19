@@ -1,6 +1,7 @@
 {
 	"name": "visual-studio-code-plugin-for-alm-octane",
 	"displayName": "Visual Studio Code plugin for ALM Octane",
+	"icon": "media/logo.png",
 	"publisher": "MicroFocus",
 	"description": "With the ALM Octane Visual Studio Code plugin, you can do your ALM Octane work (on stories, defects, tasks, and so on) directly within the Visual Studio Code development framework.",
 	"version": "16.0.200",
