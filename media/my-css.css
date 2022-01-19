@@ -386,6 +386,11 @@ label {
 
 .dropdown-menu {
     background-clip: unset;
+    font-size: var(--vscode-font-size);
+    background-color: var(--vscode-input-background) !important;
+    border: 0.5px solid !important;
+    border-color: var(--vscode-dropdown-border) !important;
+    color: var(--vscode-input-foreground) !important;
 }
 
 .align-items-center {
@@ -421,4 +426,13 @@ label {
 
 .select-fields {
     margin: 0rem 0rem 0rem 0.5rem;
+}
+
+.datepicker, .timepicker, .table {
+    color: var(--vscode-input-foreground) !important;
+}
+
+.bootstrap-datetimepicker-widget.dropdown-menu.top:after {
+    border-color: var(--vscode-dropdown-border) !important;;
+    border-top: 6px solid var(--vscode-dropdown-border);
 }

@@ -17,4 +17,5 @@ export class DateTimeInputTemplate extends TextInputTemplate {
     protected generateTooltip(): string {
         return `title="${new Date(this.value).toLocaleString()}"`;
     }
+
 }
