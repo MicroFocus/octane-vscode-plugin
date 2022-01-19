@@ -28,29 +28,11 @@
     flex-wrap: inherit;
 }
 
-#filtertext {
+#filtertext, #filterhr, #filterbr {
     display: none;
 }
 
-#filterhr {
-    display: none;
-}
-
-#filterbr {
-    display: none;
-}
-
-#allId {
-    width: 5rem;
-    background-color: #3c3c3c;
-}
-
-#noneId {
-    width: 5rem;
-    background-color: #3c3c3c;
-}
-
-#resetId {
+#allId, #noneId, #resetId {
     width: 5rem;
     background-color: #3c3c3c;
 }
@@ -98,7 +80,6 @@ textarea {
 }
 
 .container {
-    /* display: flex; */
     flex-direction: column;
     margin: 0.1rem 0.1rem 0rem 0.1rem;
     flex: 1;
@@ -108,7 +89,7 @@ textarea {
     padding: 0 4px 0 0px;
 }
 
-.main-container {
+.main-container, .select-container {
     display: flex;
     flex-direction: column;
     margin: .5rem;
@@ -123,23 +104,7 @@ textarea {
     min-width: 200px;
 }
 
-.select-container {
-    display: flex;
-    flex-direction: column;
-    margin: .5rem;
-    flex: 1;
-    min-width: 200px;
-}
-
-.select-container-single {
-    display: flex;
-    flex-direction: column;
-    margin: 0.1rem 0.1rem 0rem 0.1rem;
-    flex: 1;
-    min-width: 200px;
-}
-
-.select-container-multiple {
+.select-container-single, .select-container-multiple {
     display: flex;
     flex-direction: column;
     margin: 0.1rem 0.1rem 0rem 0.1rem;
@@ -216,14 +181,7 @@ label {
     height: 1.8rem;
 }
 
-.reference-select {
-    background-color: #3c3c3c;
-    color: #cccccc;
-    margin-top: 0.5rem;
-    height: 2.8rem;
-}
-
-.reference-select-single {
+.reference-select, .reference-select-single {
     background-color: #3c3c3c;
     color: #cccccc;
     margin-top: 0.5rem;
@@ -255,7 +213,7 @@ label {
     margin-bottom: 3rem;
 }
 
-#comments-element-id {
+#comments-element-id, #comments-sidebar-id {
     display: none;
     flex-direction: column;
 }
@@ -265,17 +223,11 @@ label {
     flex-direction: column;
 }
 
-#comments-sidebar-id {
-    display: none;
-    flex-direction: column;
-}
-
 .select-wrapper input.select-dropdown { 
     background-color: var(--vscode-input-background) !important;
     position: initial !important;
     height: 2rem !important;
     font-size: unset !important;
-    /* border-bottom: unset !important; */
     border-color: var(--vscode-dropdown-border) !important;
     border: 0.5px solid;
     margin-top: 0rem;
