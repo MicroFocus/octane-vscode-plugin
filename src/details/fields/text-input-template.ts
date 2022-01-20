@@ -16,7 +16,9 @@ export class TextInputTemplate extends AbstractFieldTemplate {
 
     generateInputField(): string {
         return `
-            <input id="${this.field.name}" data-toggle="tooltip" ${this.generateTooltip()} data-html="true" ${this.generateType()} value='${this.value}' ${this.generateReadonly()} ${this.generateAdditionalAttributes()}>
+        <span data-toggle="tooltip" ${this.generateTooltip()} data-html="true">
+            <input id="${this.field.name}" ${this.generateType()} value='${this.value}' ${this.generateReadonly()} ${this.generateAdditionalAttributes()}>
+        </span>
         `;
     }
 
