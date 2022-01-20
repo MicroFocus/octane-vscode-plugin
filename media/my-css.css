@@ -313,3 +313,23 @@ label {
     border-color: var(--vscode-dropdown-border) !important;
     border-top: 6px solid var(--vscode-dropdown-border);
 }
+
+.table td, .table th {
+    vertical-align: top;
+    border-top: unset !important;
+}
+
+.table thead th {
+    vertical-align: bottom;
+    border-bottom: unset !important;
+}
+
+.bootstrap-datetimepicker-widget table td span:hover, 
+.bootstrap-datetimepicker-widget table thead tr:first-child th:hover,
+.bootstrap-datetimepicker-widget table td.day:hover, .bootstrap-datetimepicker-widget table td.hour:hover, .bootstrap-datetimepicker-widget table td.minute:hover, .bootstrap-datetimepicker-widget table td.second:hover {
+    background: #6e7174 !important;
+}
+
+.bootstrap-datetimepicker-widget .timepicker .timepicker-picker a.btn {
+    color: var(--vscode-input-foreground) !important;
+}
