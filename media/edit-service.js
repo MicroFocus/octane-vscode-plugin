@@ -346,17 +346,21 @@
                                 let data = {};
                                 data['data'] = [];
                                 let doc;
+                                var selectedOptions;
                                 if (field.name === 'phase') {
-                                    doc = $('#select_phase');
+                                    doc = $('#select_phase')[0];
+                                    selectedOptions = $(`#select_phase :selected`);
                                 } else {
-                                    doc = $('#' + fieldNameMap.get(field.name) ?? field.name);
+                                    doc = $(`#${fieldNameMap.get(field.name) ?? field.name}`)[0];
+                                    selectedOptions = $(`#${fieldNameMap.get(field.name) ?? field.name} :selected`);
                                     if (!doc) {
-                                        doc = $('#' + field.full_name);
+                                        doc = $(`#${field.full_name}`)[0];
+                                        selectedOptions = $(`#${field.full_name} :selected`);
                                     }
                                 }
                                 if (doc) {
-                                    if (doc.selectedOptions) {
-                                        Array.from(doc.selectedOptions).forEach(d => {
+                                    if (selectedOptions && selectedOptions.length !== 0) {
+                                        Array.from(selectedOptions).forEach(d => {
                                             var val;
                                             if (d?.value.startsWith("{") && d?.value.endsWith("}")) {
                                                 val = JSON.parse(d?.value);
