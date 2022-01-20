@@ -89,7 +89,7 @@
     function initDateTimeFields() {
         $('.datetimepicker-input').each(function () {
             $(this).datetimepicker({
-                date: this.value, format: 'll HH:mm:ss', debug:true
+                date: this.value, format: 'll HH:mm:ss'
             });
         });
     }
