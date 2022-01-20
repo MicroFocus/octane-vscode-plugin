@@ -5,7 +5,7 @@ import * as path from 'path';
 import { getLogger } from 'log4js';
 import { Comment } from '../octane/model/comment';
 import { FieldTemplateFactory } from './field-template-factory';
-import * as entitiesToOpenExternally from '../configurations/entities-to-open-externally.json';
+import * as entitiesInMyWork from '../configurations/entities-in-my-work.json';
 import * as defaultFieldsMap from '../configurations/default-fields.json';
 import * as entityIcons from '../configurations/entity-icons.json';
 import { ActionButtonTemplateFactory } from './action-button-template-factory';
@@ -446,7 +446,8 @@ async function generateActionBarElement(data: any | OctaneEntity | undefined, fi
         // eslint-disable-next-line @typescript-eslint/naming-convention
         html += new FieldsSelectButtonTemplate({ field_type: 'fields_select' }, mapFields, true, { defaultFields: currentDefaultFields, activeFields: activeFields }).generate();
 
-        if (data.subtype && !entitiesToOpenExternally.includes(data.subtype)) {
+        let typeForGeneratingButton = data.subtype ? data.subtype : data.type;
+        if (typeForGeneratingButton && entitiesInMyWork.includes(typeForGeneratingButton)) {
             html += ActionButtonTemplateFactory.getTemplate('addToMyWork').generate();
         }
     } catch (e: any) {

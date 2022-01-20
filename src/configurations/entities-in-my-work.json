@@ -1,0 +1,14 @@
+[
+    "defect",
+    "story",
+    "quality_story",
+    "epic",
+    "feature",
+    "task",
+    "requirement_document",
+    "test_manual",
+    "test_suite",
+    "gherkin_test",
+    "test_automated",
+    "scenario_test"
+]
