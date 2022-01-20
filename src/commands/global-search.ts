@@ -22,11 +22,7 @@ export function registerCommand(context: ExtensionContext) {
 		logger.debug('history: ', history);
 
 		quickPick.onDidChangeSelection(async selection => {
-			if (quickPick.value && history.find(e => e.searchString === quickPick.value) === undefined) {
-				history = [new OctaneQuickPickItem(undefined, quickPick.value, false)].concat(history).slice(0, 5);
-				await context.workspaceState.update('visual-studio-code-plugin-for-alm-octane.quickPick.history', history);
-				vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.mySearch.refreshEntry');
-			}
+			history = await saveHistoryState(quickPick, history);
 			let item: OctaneQuickPickItem = selection[0] as OctaneQuickPickItem;
 			if (item) {
 				if (item.entity === undefined) {
@@ -83,4 +79,13 @@ export function registerCommand(context: ExtensionContext) {
 		// quickPick.buttons = [{ iconPath: new vscode.ThemeIcon('request-changes') }];
 		quickPick.show();
 	}));
+
+	async function saveHistoryState(quickPick: vscode.QuickPick<vscode.QuickPickItem>, history: OctaneQuickPickItem[]) {
+		if (quickPick.value) {
+			history = [new OctaneQuickPickItem(undefined, quickPick.value, false)].concat(history.filter(e => e.searchString !== quickPick.value)).slice(0, 5);
+			await context.workspaceState.update('visual-studio-code-plugin-for-alm-octane.quickPick.history', history);
+			vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.mySearch.refreshEntry');
+		}
+		return history;
+	}
 }
