@@ -448,6 +448,8 @@ async function generateActionBarElement(data: any | OctaneEntity | undefined, fi
 
         if (data.subtype && !entitiesToOpenExternally.includes(data.subtype)) {
             html += ActionButtonTemplateFactory.getTemplate('addToMyWork').generate();
+        } else if(data.type && !entitiesToOpenExternally.includes(data.type)) {
+            html += ActionButtonTemplateFactory.getTemplate('addToMyWork').generate();
         }
     } catch (e: any) {
         getLogger('vs').error('Error generating action bar for entity.', e);
