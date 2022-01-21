@@ -27,13 +27,13 @@ suite('OctaneService test suite', () => {
 
 	test('Password authentication should fail with empty credentials', async () => {
 		let service = OctaneService.getInstance();
-		assert.rejects(service.testAuthentication(accessDetails.serverUri, accessDetails.space, accessDetails.workspace, '', '', undefined, undefined));
+		await assert.rejects(service.testAuthentication(accessDetails.serverUri, accessDetails.space, accessDetails.workspace, '', '', undefined, undefined));
 	}).timeout(5000);
 
 
 	test('Password authentication should succeed with correct credentials', async () => {
 		let service = OctaneService.getInstance();
-		assert.rejects(service.testAuthentication(accessDetails.serverUri, accessDetails.space, accessDetails.workspace, accessDetails.user, accessDetails.password, undefined, undefined));
+		await service.testAuthentication(accessDetails.serverUri, accessDetails.space, accessDetails.workspace, accessDetails.user, accessDetails.password, undefined, undefined);
 	}).timeout(5000);
 
 	test('SSO authentication test test', async () => {
@@ -54,18 +54,22 @@ suite('OctaneService test suite', () => {
 		assert.strictEqual(true, service.isLoggedIn());
 	}).timeout(5000);
 
-	suite('Octane integration tests', () => {
+	suite('Octane integration tests', async () => {
 
-		OctaneService.getInstance().initialize(getValidSession());
-	
+		setup(async () => {
+			await OctaneService.getInstance().initialize(getValidSession());
+		});
+		
+
 		test('My backlog call should not fail', async () => {
-			assert.rejects(OctaneService.getInstance().getMyBacklog());
+			await OctaneService.getInstance().getMyBacklog();
 		}).timeout(5000);
 
 		test('My backlog should contain at least 1 element', async () => {
 			let myBacklog = await OctaneService.getInstance().getMyBacklog();
 			assert.strictEqual(myBacklog && myBacklog.length > 0, true);
 		}).timeout(5000);
+
 	});
 	
 });

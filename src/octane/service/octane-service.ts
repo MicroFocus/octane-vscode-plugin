@@ -112,6 +112,8 @@ export class OctaneService {
                 this.logger.debug(this.transitions);
             }
 
+        } else {
+            this.loggedInUserId = undefined;
         }
     }
 
