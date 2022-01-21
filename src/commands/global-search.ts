@@ -30,7 +30,8 @@ export function registerCommand(context: ExtensionContext) {
 					return;
 				}
 				try {
-					if (item.entity.type && !entitiesInMyWork.includes(item.entity.type)) {
+					let entityWithTypeOrSubType = item.entity.subtype ? item.entity.subtype : item.entity.type;
+					if (entityWithTypeOrSubType && !entitiesInMyWork.includes(entityWithTypeOrSubType)) {
 						await vscode.env.openExternal(service.getBrowserUri(item.entity));
 					} else {
 						await vscode.commands.executeCommand('vscode.openWith', vscode.Uri.parse(`octane:///octane/${item.entity.type}/${item.entity.subtype}/${item.entity.id}`), OctaneEntityEditorProvider.viewType);
