@@ -552,13 +552,13 @@ export class OctaneService {
                 if (response && response.data.length !== 0) {
                     vscode.window.showWarningMessage(`Item was not added, it is already in "My work"`);
                 } else {
-                    this.octane.create(Octane.Octane.entityTypes.userItems, entityModel).execute()
-                        .then((res: any) => {
-                            vscode.window.showInformationMessage('Your item changes have been saved.');
-                        }, (error: any) => {
-                            this.logger.error('While adding to MyWork.', e);
-                            vscode.window.showErrorMessage((error.response.body.description) ?? 'We couldn’t save your changes.');
-                        });
+                    try {
+                        await this.octane.create(Octane.Octane.entityTypes.userItems, entityModel).execute();
+                        vscode.window.showInformationMessage('Your item changes have been saved.');
+                    } catch (e: any) {
+                        this.logger.error('While adding to MyWork.', e);
+                        vscode.window.showErrorMessage((e.error?.errors[0]?.description) ?? 'We couldn’t save your changes.');
+                    }
                 }
             }
         } catch (e) {
@@ -597,11 +597,12 @@ export class OctaneService {
                         redirect: 'follow'
                     };
 
-                    await fetch(`${this.session.account.uri}internal-api/shared_spaces/${this.session.account.space}/workspaces/${this.session.account.workSpace}/comments/${e.id}/dismiss`, requestOptions)
-                        .then(response => response.text())
-                        .then(result => this.logger.debug(result))
-                        .catch(error => this.logger.error('error', error));
-
+                    try {
+                        let result = await fetch(`${this.session.account.uri}internal-api/shared_spaces/${this.session.account.space}/workspaces/${this.session.account.workSpace}/comments/${e.id}/dismiss`, requestOptions);
+                        this.logger.debug(result);
+                    } catch (e: any) {
+                        vscode.window.showErrorMessage((e.error?.errors[0]?.description) ?? 'Item dismissal failed');
+                    }
                 }
             } else {
                 let field = 'my_follow_items_work_item';
@@ -620,19 +621,20 @@ export class OctaneService {
                         break;
                 }
 
-                await this.octane.delete(Octane.Octane.entityTypes.userItems)
-                    .query(Query.field(field).equal(Query.field('id').equal(e.id))
-                        .and()
-                        .field('user').equal(Query.field('id').equal(this.loggedInUserId))
-                        .and()
-                        .field('entity_type').equal(type)
-                        .build())
-                    .execute()
-                    .then((res: any) => {
-                        vscode.window.showInformationMessage('Item dismissed.');
-                    }, (error: any) => {
-                        vscode.window.showErrorMessage((error.response.body.description) ?? 'Item dismissal failed');
-                    });
+                try {
+                    await this.octane.delete(Octane.Octane.entityTypes.userItems)
+                        .query(Query.field(field).equal(Query.field('id').equal(e.id))
+                            .and()
+                            .field('user').equal(Query.field('id').equal(this.loggedInUserId))
+                            .and()
+                            .field('entity_type').equal(type)
+                            .build())
+                        .execute();
+                    vscode.window.showInformationMessage('Item dismissed.');
+                } catch (e: any) {
+                    this.logger.error('While dismiss entity', e);
+                    vscode.window.showErrorMessage((e.error?.errors[0]?.description) ?? 'Item dismissal failed');
+                }
             }
         } catch (e) {
             this.logger.error('While dismissing entity from MyWork.', e);
