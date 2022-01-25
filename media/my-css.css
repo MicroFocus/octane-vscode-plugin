@@ -84,8 +84,9 @@ hr {
 }
 
 .description {
-    height: 7rem;
+    height: 10rem;
     resize: vertical;
+    overflow: auto;
 }
 
 .top-container {
@@ -333,4 +334,9 @@ label {
 
 .bootstrap-datetimepicker-widget .timepicker .timepicker-picker a.btn {
     color: var(--vscode-input-foreground) !important;
+}
+
+.description-style {
+    background-color: var(--vscode-input-background) !important;
+    padding: var(--input-padding-vertical) var(--input-padding-horizontal);
 }

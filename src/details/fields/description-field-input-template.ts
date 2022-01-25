@@ -10,7 +10,9 @@ export class DescriptionFieldInputTemplate extends TextInputTemplate {
 
     generateInputField(): string {
         return `
-            <textarea id="${this.field.name}" class="description" ${this.generateType()} ${this.generateReadonly()}>${this.generateValueFromHTML()}</textarea>
+            <div id="${this.field.name}" class="description description-style">
+                ${this.generateValueFromHTML()}
+            </div>
         `;
     }
 
@@ -20,13 +22,17 @@ export class DescriptionFieldInputTemplate extends TextInputTemplate {
 
     protected generateValueFromHTML(): string {
         if (this.value) {
-            return stripHtml(this.value.toString()).result;
+            return this.value;
         }
         return '';
     }
 
     protected generateContainerClass() {
         return 'description-container';
+    }
+
+    protected generateReadonly(): string {
+       return 'readonly';
     }
 
 }
