@@ -336,7 +336,7 @@
                         if (fields && fullData) {
                             let mapFields = new Map();
                             fields
-                                .filter(f => (f.name !== 'author') && (f.name !== 'sprint'))
+                                .filter(f => (f.name !== 'author') && (f.name !== 'sprint') && (f.name !== 'waste_category'))
                                 .filter(f => (f.editable && !f.final && f.access_level !== 'PRIVATE'))
                                 .forEach(field => {
                                     mapFields.set(fieldNameMap.get(field.name) ?? field.name, field);
@@ -392,7 +392,7 @@
                                         });
                                     } else {
                                         var val;
-                                        if (doc?.value.startsWith("{") && doc?.value.endsWith("}")) {
+                                        if (doc?.value?.startsWith("{") && doc?.value?.endsWith("}")) {
                                             val = JSON.parse(d?.value);
                                         } else {
                                             val = doc?.value;
