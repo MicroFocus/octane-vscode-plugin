@@ -3,10 +3,27 @@
 (function () {
     const vscode = acquireVsCodeApi();
     const selectDataPresent = [];
+    var inputIsDirty = false;
+    var fieldsToSave = new Set();
 
     $(document).ready(initialize());
 
     function initialize() {
+        var inputs = $('.main-element').find('input, select');
+        inputs.each(function () {
+            $(this).on('change', e => {
+                inputIsDirty = true;
+                fieldsToSave.add(this.id);
+            });
+        });
+        $('#select_phase').on('change', e => {
+            inputIsDirty = true;
+            fieldsToSave.add('phase');
+        });
+        $('#name').on('change', e => {
+            inputIsDirty = true;
+            fieldsToSave.add('name');
+        });
         $('.select-container-multiple select').multiselect({
             maxHeight: 400,
             allSelectedText: false,
@@ -327,100 +344,106 @@
             case 'post':
                 {
                     try {
-                        const fields = e.data.data.fields;
-                        const fullData = e.data.data.fullData;
-                        const updatedData = {};
-                        const fieldNameMap = new Map([
-                            ['application_modules', 'product_areas']
-                        ]);
-                        if (fields && fullData) {
-                            let mapFields = new Map();
-                            fields
-                                .filter(f => (f.name !== 'author') && (f.name !== 'sprint'))
-                                .filter(f => (f.editable && !f.final && f.access_level !== 'PRIVATE'))
-                                .forEach(field => {
-                                    mapFields.set(fieldNameMap.get(field.name) ?? field.name, field);
-                                });
-                            updatedData['id'] = fullData['id'];
-                            mapFields.forEach((field, key) => {
-                                let data = {};
-                                data['data'] = [];
-                                let doc;
-                                var selectedOptions;
-                                if (field.name === 'phase') {
-                                    doc = $('#select_phase')[0];
-                                    selectedOptions = $(`#select_phase :selected`);
-                                } else {
-                                    doc = $(`#${fieldNameMap.get(field.name) ?? field.name}`)[0];
-                                    selectedOptions = $(`#${fieldNameMap.get(field.name) ?? field.name} :selected`);
-                                    if (!doc) {
-                                        doc = $(`#${field.full_name}`)[0];
-                                        selectedOptions = $(`#${field.full_name} :selected`);
+                        if (inputIsDirty) {
+                            const fields = e.data.data.fields;
+                            const fullData = e.data.data.fullData;
+                            const updatedData = {};
+                            const fieldNameMap = new Map([
+                                ['application_modules', 'product_areas']
+                            ]);
+                            if (fields && fullData) {
+                                let mapFields = new Map();
+
+                                fields
+                                    .filter(f => (f.name !== 'sprint') && (f.name !== 'waste_category'))
+                                    .filter(f => (f.editable && !f.final && f.access_level !== 'PRIVATE'))
+                                    .forEach(field => {
+                                        let nameOfField = fieldNameMap.get(field.name) ?? field.name;
+                                        if (nameOfField && fieldsToSave.has(nameOfField)) {
+                                            mapFields.set(nameOfField, field);
+                                        }
+                                    });
+                                updatedData['id'] = fullData['id'];
+                                mapFields.forEach((field, key) => {
+                                    let data = {};
+                                    data['data'] = [];
+                                    let doc;
+                                    var selectedOptions;
+                                    if (field.name === 'phase') {
+                                        doc = $('#select_phase')[0];
+                                        selectedOptions = $(`#select_phase :selected`);
+                                    } else {
+                                        doc = $(`#${fieldNameMap.get(field.name) ?? field.name}`)[0];
+                                        selectedOptions = $(`#${fieldNameMap.get(field.name) ?? field.name} :selected`);
+                                        if (!doc) {
+                                            doc = $(`#${field.full_name}`)[0];
+                                            selectedOptions = $(`#${field.full_name} :selected`);
+                                        }
                                     }
-                                }
-                                if (doc) {
-                                    if (selectedOptions && selectedOptions.length !== 0) {
-                                        Array.from(selectedOptions).forEach(d => {
+                                    if (doc) {
+                                        if (selectedOptions && selectedOptions.length !== 0) {
+                                            Array.from(selectedOptions).forEach(d => {
+                                                var val;
+                                                if (d?.value.startsWith("{") && d?.value.endsWith("}")) {
+                                                    val = JSON.parse(d?.value);
+                                                } else {
+                                                    val = d?.value;
+                                                }
+                                                if (val && val !== 'none' && val !== '-' && val !== 'none-selected') {
+                                                    if (field.field_type === 'integer') {
+                                                        updatedData[fieldNameMap.get(field.name) ?? field.name] = parseFloat(val);
+                                                    } else if (field.field_type === 'boolean') {
+                                                        updatedData[fieldNameMap.get(field.name) ?? field.name] = val === 'true';
+                                                    } else {
+                                                        if (field.field_type_data?.multiple) {
+                                                            data['data'].push({
+                                                                'type': val.type,
+                                                                'id': val.id,
+                                                                'name': val.name
+                                                            });
+                                                        } else {
+                                                            updatedData[fieldNameMap.get(field.name) ?? field.name] = val;
+                                                        }
+                                                    }
+                                                } else {
+                                                    //in case of selecting none for a reference
+                                                    if (val === 'none-selected') {
+                                                        updatedData[fieldNameMap.get(field.name) ?? field.name] = null;
+                                                    }
+                                                }
+                                            });
+                                        } else {
                                             var val;
-                                            if (d?.value.startsWith("{") && d?.value.endsWith("}")) {
+                                            if (doc?.value?.startsWith("{") && doc?.value?.endsWith("}")) {
                                                 val = JSON.parse(d?.value);
                                             } else {
-                                                val = d?.value;
+                                                val = doc?.value;
                                             }
-                                            if (val && val !== 'none' && val !== '-' && val !== 'none-selected') {
+                                            if (val && val !== 'none' && val !== '-') {
                                                 if (field.field_type === 'integer') {
                                                     updatedData[fieldNameMap.get(field.name) ?? field.name] = parseFloat(val);
                                                 } else if (field.field_type === 'boolean') {
                                                     updatedData[fieldNameMap.get(field.name) ?? field.name] = val === 'true';
+                                                } else if (field.field_type === 'date_time') {
+                                                    updatedData[fieldNameMap.get(field.name) ?? field.name] = new Date(val).toISOString();
                                                 } else {
-                                                    if (field.field_type_data?.multiple) {
-                                                        data['data'].push({
-                                                            'type': val.type,
-                                                            'id': val.id,
-                                                            'name': val.name
-                                                        });
-                                                    } else {
-                                                        updatedData[fieldNameMap.get(field.name) ?? field.name] = val;
-                                                    }
-                                                }
-                                            } else {
-                                                //in case of selecting none for a reference
-                                                if(val === 'none-selected') {
-                                                    updatedData[fieldNameMap.get(field.name) ?? field.name] = null;
+                                                    updatedData[fieldNameMap.get(field.name) ?? field.name] = val;
                                                 }
                                             }
-                                        });
-                                    } else {
-                                        var val;
-                                        if (doc?.value.startsWith("{") && doc?.value.endsWith("}")) {
-                                            val = JSON.parse(d?.value);
-                                        } else {
-                                            val = doc?.value;
                                         }
-                                        if (val && val !== 'none' && val !== '-') {
-                                            if (field.field_type === 'integer') {
-                                                updatedData[fieldNameMap.get(field.name) ?? field.name] = parseFloat(val);
-                                            } else if (field.field_type === 'boolean') {
-                                                updatedData[fieldNameMap.get(field.name) ?? field.name] = val === 'true';
-                                            } else if (field.field_type === 'date_time') {
-                                                updatedData[fieldNameMap.get(field.name) ?? field.name] = new Date(val).toISOString();
-                                            } else {
-                                                updatedData[fieldNameMap.get(field.name) ?? field.name] = val;
-                                            }
+
+                                        if (field.field_type_data?.multiple) {
+                                            updatedData[fieldNameMap.get(field.name) ?? field.name] = data;
                                         }
                                     }
+                                });
 
-                                    if (field.field_type_data?.multiple) {
-                                        updatedData[fieldNameMap.get(field.name) ?? field.name] = data;
-                                    }
-                                }
-                            });
-
-                            vscode.postMessage({
-                                type: 'update',
-                                from: 'edit-service',
-                                data: updatedData
-                            });
+                                vscode.postMessage({
+                                    type: 'update',
+                                    from: 'edit-service',
+                                    data: updatedData
+                                });
+                            }
                         }
                     } catch (e) {
                         console.log(e);

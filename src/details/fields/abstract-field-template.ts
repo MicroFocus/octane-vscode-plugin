@@ -34,7 +34,7 @@ export abstract class AbstractFieldTemplate implements FieldTemplate {
     }
 
     protected generateDisable(field: any): string {
-        if (field.name === 'author') {
+        if (field.name === 'author' || field.name === 'waste_category') {
             return 'disabled';
         }
         return field.editable ? '' : 'disabled';
