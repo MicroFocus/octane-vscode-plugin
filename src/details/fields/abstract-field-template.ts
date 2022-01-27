@@ -1,9 +1,9 @@
 import { Blob } from 'node-fetch';
 import { OctaneService } from '../../octane/service/octane-service';
-import { FieldTemplate} from './field-template';
+import { FieldTemplate } from './field-template';
 
 export abstract class AbstractFieldTemplate implements FieldTemplate {
- 
+
     protected fieldId: string;
 
     protected fs = require('fs');
@@ -11,10 +11,10 @@ export abstract class AbstractFieldTemplate implements FieldTemplate {
     protected service = OctaneService.getInstance();
 
     constructor(protected field: any, protected entity: any, protected visible: boolean) {
-        if(field.label) {
+        if (field.label) {
             this.fieldId = field.label.replaceAll(" ", "_").replaceAll('"', "");
         } else {
-         this.fieldId = field;   
+            this.fieldId = field;
         }
     }
 
@@ -110,18 +110,23 @@ export abstract class AbstractFieldTemplate implements FieldTemplate {
     }
 
     protected async generateAttachmentContent(html: string): Promise<string> {
-        let matchImage = html.match(/<img [^>]*src="([^"]+)"[^>]*>/);
-        console.log(matchImage);
-        if (matchImage && matchImage[1]) {
-            let src = matchImage[1];
-            let idOfAttachment = src.match(/(attachments\/)([0-9]+)\//);
-            if (idOfAttachment && idOfAttachment[2]) {
-                let content = await this.service.downloadAttachmentContent(parseInt(idOfAttachment[2]));
-                let base64Content = Buffer.from(content, 'binary').toString('base64');
-                console.log(`base64: ${base64Content}`);
-                return `<img src="data:image/jpeg;base64,${base64Content}" />`;
+        let returnHtml = ``;
+        let matchAllImage = html.match(/<img [^>]*src="([^"]+)"[^>]*>/g);
+        if (matchAllImage) {
+            for (let image of matchAllImage) {
+                console.log(image);
+                let matchImage = image.match(/<img [^>]*src="([^"]+)"[^>]*>/);
+                if (matchImage && matchImage[1]) {
+                    let src = matchImage[1];
+                    let idOfAttachment = src.match(/(attachments\/)([0-9]+)\//);
+                    if (idOfAttachment && idOfAttachment[2]) {
+                        let content = await this.service.fetchAttachment(parseInt(idOfAttachment[2]));
+                        returnHtml += `<img src="${content}" />`;
+                    }
+                }
             }
         }
-        return '';
+
+        return returnHtml;
     }
 }
