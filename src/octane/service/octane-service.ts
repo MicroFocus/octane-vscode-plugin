@@ -515,6 +515,18 @@ export class OctaneService {
         };
     }
 
+    public async generateAttachmentContent(html: string): Promise<string> {
+        let matchImage = html.match(/<img [^>]*src="([^"]+)"[^>]*>/);
+        if (matchImage && matchImage[1]) {
+            let src = matchImage[1];
+            let idOfAttachment = src.match(/(attachments\/)([0-9]+)\//);
+            if (idOfAttachment && idOfAttachment[2]) {
+                return await this.downloadAttachmentContent(parseInt(idOfAttachment[2]));
+            }
+        }
+        return '';
+    }
+
     public async downloadScriptForTest(e: OctaneEntity): Promise<string> {
         try {
             const script = await this.octane.get(Octane.Octane.entityTypes.tests).at(e.id).script().execute();

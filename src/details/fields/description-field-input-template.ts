@@ -24,15 +24,10 @@ export class DescriptionFieldInputTemplate extends TextInputTemplate {
     }
 
     protected generateValueFromHTML(): string {
+        let description: string = ``;
         if (this.value) {
-            let matchImage = this.value.match(/<img [^>]*src="([^"]+)"[^>]*>/);
-            if (matchImage && matchImage[1]) {
-                let src = matchImage[1];
-                let idOfAttachment = src.match(/(attachments\/)([0-9]+)\//);
-                if (idOfAttachment && idOfAttachment[2]) {
-                    // let content = await this.service.downloadAttachmentContent(parseInt(idOfAttachment[2]));
-                }
-            }
+            let image = this.service.generateAttachmentContent(this.value);
+            // description += image;
             return this.value;
         }
         return '';
