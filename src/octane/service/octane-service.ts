@@ -503,6 +503,18 @@ export class OctaneService {
         }
     }
 
+    public async downloadAttachmentContent(id: number): Promise<any> {
+        try {
+            if (id) {
+                return await this.octane.getAttachmentContent(Octane.Octane.entityTypes.attachments).at(id).execute();
+            }
+            this.logger.error('While getting attachment content: incorrect id');
+            return;
+        } catch (e: any) {
+            this.logger.error('While getting attachment content ()', e);
+        };
+    }
+
     public async downloadScriptForTest(e: OctaneEntity): Promise<string> {
         try {
             const script = await this.octane.get(Octane.Octane.entityTypes.tests).at(e.id).script().execute();
