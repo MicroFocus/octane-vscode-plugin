@@ -1,6 +1,6 @@
 
 export interface FieldTemplate {
 
-    generate(): string;
+    generate(): Promise<string>;
     
 }

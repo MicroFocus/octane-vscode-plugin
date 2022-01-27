@@ -19,13 +19,13 @@ export class FieldsSelectButtonTemplate extends AbstractFieldTemplate {
         this.values = data;
     }
 
-    public generate(): string {
+    public async generate(): Promise<string> {
         return `<div class="${this.generateContainerClass()}" id="container_${this.fieldId}">
-                    ${this.generateInputField()}
+                    ${await this.generateInputField()}
                 </div>`;
     }
 
-    generateInputField(): string {
+    async generateInputField(): Promise<string> {
         return `<select ${this.generateMultiple()} id="filter_multiselect" ${this.generateAdditionalAttributes()}>
                     ${this.generateSelectOptions()}
                 </select>`;

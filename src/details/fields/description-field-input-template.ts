@@ -4,33 +4,21 @@ import { OctaneService } from "../../octane/service/octane-service";
 
 export class DescriptionFieldInputTemplate extends TextInputTemplate {
 
-    protected service = OctaneService.getInstance();
-
     constructor(field: any, entity: any, visible: boolean) {
         super(field, entity, visible);
         this.value = this.getFieldStringValue(this.entity, this.field.name);
     }
 
-    generateInputField(): string {
+    async generateInputField(): Promise<string> {
         return `
             <div id="${this.field.name}" class="description description-style">
-                ${this.generateValueFromHTML()}
+                ${await this.generateAttachmentContent(this.value)}
             </div>
         `;
     }
 
     protected generateType() {
         return `type="text"`;
-    }
-
-    protected generateValueFromHTML(): string {
-        let description: string = ``;
-        if (this.value) {
-            let image = this.service.generateAttachmentContent(this.value);
-            // description += image;
-            return this.value;
-        }
-        return '';
     }
 
     protected generateContainerClass() {

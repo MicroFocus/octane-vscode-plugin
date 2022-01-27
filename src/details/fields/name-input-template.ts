@@ -10,13 +10,13 @@ export class NameInputTemplate extends AbstractFieldTemplate {
         this.value = this.getFieldStringValue(entity, field.name);
     }
 
-    public generate(): string {
+    public async generate(): Promise<string> {
         return `<div class="${this.generateContainerClass()}" id="container_${this.fieldId}">
-                    ${this.generateInputField()}
+                    ${await this.generateInputField()}
                 </div>`;
     }
 
-    generateInputField(): string {
+    async generateInputField(): Promise<string> {
         return `
             <input class="name-input-style" id="${this.field.name}" type="text" value="${this.value}">
         `;

@@ -1,8 +1,14 @@
+import { Blob } from 'node-fetch';
+import { OctaneService } from '../../octane/service/octane-service';
 import { FieldTemplate} from './field-template';
 
 export abstract class AbstractFieldTemplate implements FieldTemplate {
  
     protected fieldId: string;
+
+    protected fs = require('fs');
+
+    protected service = OctaneService.getInstance();
 
     constructor(protected field: any, protected entity: any, protected visible: boolean) {
         if(field.label) {
@@ -12,14 +18,14 @@ export abstract class AbstractFieldTemplate implements FieldTemplate {
         }
     }
 
-    public generate(): string {
+    public async generate(): Promise<string> {
         return `<div class="${this.generateContainerClass()} ${this.generateVisibility()}" id="container_${this.fieldId}">
                     <label name="${this.field.name}">${this.field.label}</label>
-                    ${this.generateInputField()}
+                    ${await this.generateInputField()}
                 </div>`;
     }
 
-    abstract generateInputField(): string;
+    abstract generateInputField(): Promise<string>;
 
     protected generateContainerClass(): string {
         return 'container';
@@ -101,5 +107,21 @@ export abstract class AbstractFieldTemplate implements FieldTemplate {
             return fieldValue['full_name'];
         }
         return fieldValue;
+    }
+
+    protected async generateAttachmentContent(html: string): Promise<string> {
+        let matchImage = html.match(/<img [^>]*src="([^"]+)"[^>]*>/);
+        console.log(matchImage);
+        if (matchImage && matchImage[1]) {
+            let src = matchImage[1];
+            let idOfAttachment = src.match(/(attachments\/)([0-9]+)\//);
+            if (idOfAttachment && idOfAttachment[2]) {
+                let content = await this.service.downloadAttachmentContent(parseInt(idOfAttachment[2]));
+                let base64Content = Buffer.from(content).toString('base64');
+                console.log(base64Content);
+                return `<img src="data:image/jpeg;base64,${base64Content}" />`;
+            }
+        }
+        return '';
     }
 }

@@ -6,7 +6,7 @@ export class CommentInputTemplate extends AbstractFieldTemplate {
         super(field, entity, visible);
     }
 
-    public generate(): string {
+    public async generate(): Promise<string> {
         return `<br>
                 <hr>
                 Comments
@@ -35,7 +35,7 @@ export class CommentInputTemplate extends AbstractFieldTemplate {
         return html;
     }
 
-    generateInputField(): string {
+    async generateInputField(): Promise<string> {
         return `
             <input id="comments-text" ${this.generateType()}>
             <button id="comments" type="button">Comment</button>

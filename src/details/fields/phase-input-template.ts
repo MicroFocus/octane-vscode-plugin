@@ -14,16 +14,16 @@ export class PhaseInputTemplate extends AbstractFieldTemplate {
         this.transitions = OctaneService.getInstance().getPhaseTransitionForEntity(this.entity.phase.id);
     }
 
-    public generate(): string {
+    public async generate(): Promise<string> {
         return `${this.generateCurrentPhase()}
                 <div class="${this.generateContainerClass()}">
                     <div class="phase-select">
-                        ${this.generateInputField()}
+                        ${await this.generateInputField()}
                     </div>
                 </div>`;
     }
 
-    generateInputField(): string {
+    async generateInputField(): Promise<string> {
         return `
             <select id="select_phase" name="action" class="action">
                 ${this.generateSelectOptions()}

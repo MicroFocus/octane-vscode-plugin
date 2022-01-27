@@ -9,7 +9,7 @@ export class BooleanInputTemplate extends AbstractFieldTemplate {
         this.value = this.getFieldBooleanValue(entity, field.name);
     }
 
-    generateInputField(): string {
+    async generateInputField(): Promise<string> {
         return `
             <span data-toggle="tooltip" ${this.generateTooltip()} data-html="true">
                 <select id="${this.field.name}">

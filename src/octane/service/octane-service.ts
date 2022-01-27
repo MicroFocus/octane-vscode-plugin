@@ -6,7 +6,7 @@ import { Task } from '../model/task';
 import { Transition } from '../model/transition';
 import { Comment } from '../model/comment';
 import { AlmOctaneAuthenticationSession, AlmOctaneAuthenticationType } from '../../auth/authentication-provider';
-import fetch, { Headers, RequestInit } from 'node-fetch';
+import fetch, { Blob, Headers, RequestInit } from 'node-fetch';
 import { getLogger } from 'log4js';
 import { AuthError } from '../../auth/auth-error';
 
@@ -503,28 +503,16 @@ export class OctaneService {
         }
     }
 
-    public async downloadAttachmentContent(id: number): Promise<any> {
+    public async downloadAttachmentContent(id: number): Promise<Blob> {
         try {
             if (id) {
-                return await this.octane.getAttachmentContent(Octane.Octane.entityTypes.attachments).at(id).execute();
+                return (await this.octane.getAttachmentContent(Octane.Octane.entityTypes.attachments).at(id).execute()) as Blob;
             }
             this.logger.error('While getting attachment content: incorrect id');
-            return;
         } catch (e: any) {
             this.logger.error('While getting attachment content ()', e);
         };
-    }
-
-    public async generateAttachmentContent(html: string): Promise<string> {
-        let matchImage = html.match(/<img [^>]*src="([^"]+)"[^>]*>/);
-        if (matchImage && matchImage[1]) {
-            let src = matchImage[1];
-            let idOfAttachment = src.match(/(attachments\/)([0-9]+)\//);
-            if (idOfAttachment && idOfAttachment[2]) {
-                return await this.downloadAttachmentContent(parseInt(idOfAttachment[2]));
-            }
-        }
-        return '';
+        return new Blob();
     }
 
     public async downloadScriptForTest(e: OctaneEntity): Promise<string> {
