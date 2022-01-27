@@ -503,6 +503,36 @@ export class OctaneService {
         }
     }
 
+    public async fetchAttachment(id: number): Promise<string> {
+        if (this.session) {
+            var myHeaders = new Headers();
+            myHeaders.append('ALM_OCTANE_TECH_PREVIEW', 'true');
+            myHeaders.append('HPECLIENTTYPE', 'OCTANE_IDE_PLUGIN');
+            if (this.session.type === AlmOctaneAuthenticationType.browser) {
+                myHeaders.append('Cookie', `${this.session.cookieName}=${this.session.accessToken}`);
+            } else {
+                myHeaders.set('Authorization', 'Basic ' + Buffer.from(this.session.account.user + ":" + this.session.accessToken).toString('base64'));
+            }
+            myHeaders.append('Content-Type', 'application/octet-stream');
+
+            var requestOptions: RequestInit = {
+                method: 'GET',
+                headers: myHeaders,
+                redirect: 'follow'
+            };
+
+            try {
+                let result = await fetch(`${this.session.account.uri}api/shared_spaces/${this.session.account.space}/workspaces/${this.session.account.workSpace}/attachments/${id}`, requestOptions);
+                const buffer = await result.buffer();
+                return `data:${result.headers.get('Content-Type')};base64,` + buffer.toString('base64');
+            } catch (e: any) {
+                this.logger.error('While downloading attachment ', e);
+                vscode.window.showErrorMessage((e.error?.errors[0]?.description) ?? 'Attachment download failed.');
+            }
+        }
+        return '';
+    }
+
     public async downloadAttachmentContent(id: number): Promise<string> {
         try {
             if (id) {
