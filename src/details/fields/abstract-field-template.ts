@@ -117,8 +117,8 @@ export abstract class AbstractFieldTemplate implements FieldTemplate {
             let idOfAttachment = src.match(/(attachments\/)([0-9]+)\//);
             if (idOfAttachment && idOfAttachment[2]) {
                 let content = await this.service.downloadAttachmentContent(parseInt(idOfAttachment[2]));
-                let base64Content = Buffer.from(content).toString('base64');
-                console.log(base64Content);
+                let base64Content = Buffer.from(content, 'binary').toString('base64');
+                console.log(`base64: ${base64Content}`);
                 return `<img src="data:image/jpeg;base64,${base64Content}" />`;
             }
         }
