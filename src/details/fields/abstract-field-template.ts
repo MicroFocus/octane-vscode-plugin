@@ -110,23 +110,24 @@ export abstract class AbstractFieldTemplate implements FieldTemplate {
     }
 
     protected async generateAttachmentContent(html: string): Promise<string> {
-        let returnHtml = ``;
+        let returnHtml: string = html;
         let matchAllImage = html.match(/<img [^>]*src="([^"]+)"[^>]*>/g);
         if (matchAllImage) {
             for (let image of matchAllImage) {
-                console.log(image);
-                let matchImage = image.match(/<img [^>]*src="([^"]+)"[^>]*>/);
-                if (matchImage && matchImage[1]) {
-                    let src = matchImage[1];
-                    let idOfAttachment = src.match(/(attachments\/)([0-9]+)\//);
-                    if (idOfAttachment && idOfAttachment[2]) {
-                        let content = await this.service.fetchAttachment(parseInt(idOfAttachment[2]));
-                        returnHtml += `<img src="${content}" />`;
+                if (image) {
+                    let matchImage = image.match(/<img [^>]*src="([^"]+)"[^>]*>/);
+                    if (matchImage && matchImage[1]) {
+                        let src = matchImage[1];
+                        let idOfAttachment = src.match(/(attachments\/)([0-9]+)\//);
+                        if (idOfAttachment && idOfAttachment[2]) {
+                            let content = await this.service.fetchAttachment(parseInt(idOfAttachment[2]));
+                            if(content && content !== '')
+                                returnHtml = returnHtml.replace(image, `<img src="${content}" />`)
+                        }
                     }
                 }
             }
         }
-
         return returnHtml;
     }
 }
