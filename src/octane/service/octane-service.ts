@@ -61,7 +61,7 @@ export class OctaneService {
             this.logger.debug('Successful auth test.', result.data);
             return result.data && result.data[0] ? (result.data[0].full_name ? result.data[0].full_name : username) : username;
         } catch (e: any) {
-            throw new AuthError("Error while testing auth.");
+            throw e;
         }
     }
 

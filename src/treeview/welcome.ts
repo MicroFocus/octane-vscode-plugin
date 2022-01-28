@@ -143,7 +143,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                                 authTestResult = e;
                             }
                             if (authTestResult.error) {
-                                if (authTestResult.statusCode === 403) {
+                                if (authTestResult.statusCode === 403 || authTestResult.statusCode === 404) {
                                     webviewView.webview.postMessage({
                                         type: 'workspaceIdDoesNotExist',
                                         message: 'Current user is not authorized to perform this operation.'
