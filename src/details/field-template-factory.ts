@@ -11,6 +11,8 @@ import { DescriptionFieldInputTemplate } from './fields/description-field-input-
 import { CommentInputTemplate } from './fields/comment-input-template';
 import { NameInputTemplate } from './fields/name-input-template';
 import { PhaseInputTemplate } from './fields/phase-input-template';
+import { BuildAndTestJobInputTemplate } from './fields/build-and-test-job-input-template';
+import { PipelineLinksTemplate } from './fields/pipeline-links-template';
 export class FieldTemplateFactory {
 
     public static getTemplate(field: any, data: any, visible: boolean, additionalArg?: any): FieldTemplate {
@@ -37,6 +39,9 @@ export class FieldTemplateFactory {
                         case 'last_runs':
                             return new TestCoverageInputTemplate(field, data, visible);
 
+                        case 'build_and_test_job':
+                            return new BuildAndTestJobInputTemplate(field, data, visible);
+
                         case 'progress':
                             return new ProgressInputTemplate(field, data, visible);
 
@@ -45,6 +50,9 @@ export class FieldTemplateFactory {
 
                         case 'name':
                             return new NameInputTemplate(field, data, visible);
+
+                        case 'pipeline_links':
+                            return new PipelineLinksTemplate(field, data, visible);
                     }
                 }
                 return new TextInputTemplate(field, data, visible);
