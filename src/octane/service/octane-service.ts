@@ -505,22 +505,12 @@ export class OctaneService {
 
     public async fetchAttachment(id: number): Promise<string> {
         if (this.session) {
-            var myHeaders = new Headers();
-            myHeaders.append('ALM_OCTANE_TECH_PREVIEW', 'true');
-            myHeaders.append('HPECLIENTTYPE', 'OCTANE_IDE_PLUGIN');
-            if (this.session.type === AlmOctaneAuthenticationType.browser) {
-                myHeaders.append('Cookie', `${this.session.cookieName}=${this.session.accessToken}`);
-            } else {
-                myHeaders.set('Authorization', 'Basic ' + Buffer.from(this.session.account.user + ":" + this.session.accessToken).toString('base64'));
-            }
-            myHeaders.append('Content-Type', 'application/octet-stream');
-
+            let myHeaders = this.setHeaders(this.session);
             var requestOptions: RequestInit = {
                 method: 'GET',
                 headers: myHeaders,
                 redirect: 'follow'
             };
-
             try {
                 let result = await fetch(`${this.session.account.uri}api/shared_spaces/${this.session.account.space}/workspaces/${this.session.account.workSpace}/attachments/${id}`, requestOptions);
                 const buffer = await result.buffer();
@@ -533,18 +523,17 @@ export class OctaneService {
         return '';
     }
 
-    public async downloadAttachmentContent(id: number): Promise<string> {
-        try {
-            if (id) {
-                let content = await this.octane.getAttachmentContent(Octane.Octane.entityTypes.attachments).at(id).execute();
-                this.logger.info('Getting attachment content', content as string);
-                return (content) as string;
-            }
-            this.logger.error('While getting attachment content: incorrect id');
-        } catch (e: any) {
-            this.logger.error('While getting attachment content ()', e);
-        };
-        return '';
+    public setHeaders(session: any): Headers {
+        var myHeaders = new Headers();
+        myHeaders.append('ALM_OCTANE_TECH_PREVIEW', 'true');
+        myHeaders.append('HPECLIENTTYPE', 'OCTANE_IDE_PLUGIN');
+        if (session.type === AlmOctaneAuthenticationType.browser) {
+            myHeaders.append('Cookie', `${session.cookieName}=${session.accessToken}`);
+        } else {
+            myHeaders.set('Authorization', 'Basic ' + Buffer.from(session.account.user + ":" + session.accessToken).toString('base64'));
+        }
+        myHeaders.append('Content-Type', 'application/octet-stream');
+        return myHeaders;
     }
 
     public async downloadScriptForTest(e: OctaneEntity): Promise<string> {
@@ -620,15 +609,7 @@ export class OctaneService {
             if (e.type === 'comment') {
 
                 if (this.session) {
-                    var myHeaders = new Headers();
-                    myHeaders.append('ALM_OCTANE_TECH_PREVIEW', 'true');
-                    myHeaders.append('HPECLIENTTYPE', 'OCTANE_IDE_PLUGIN');
-                    if (this.session.type === AlmOctaneAuthenticationType.browser) {
-                        myHeaders.append('Cookie', `${this.session.cookieName}=${this.session.accessToken}`);
-                    } else {
-                        myHeaders.set('Authorization', 'Basic ' + Buffer.from(this.session.account.user + ":" + this.session.accessToken).toString('base64'));
-                    }
-                    myHeaders.append('Content-Type', 'application/json');
+                    let myHeaders = this.setHeaders(this.session);
 
                     let entityModel: string = JSON.stringify({
                         id: `${e.id}`

@@ -1,6 +1,6 @@
-import { Blob } from 'node-fetch';
 import { OctaneService } from '../../octane/service/octane-service';
 import { FieldTemplate } from './field-template';
+import { getLogger } from 'log4js';
 
 export abstract class AbstractFieldTemplate implements FieldTemplate {
 
@@ -112,22 +112,27 @@ export abstract class AbstractFieldTemplate implements FieldTemplate {
     protected async generateAttachmentContent(html: string): Promise<string> {
         let returnHtml: string = html;
         let matchAllImage = html.match(/<img [^>]*src="([^"]+)"[^>]*>/g);
-        if (matchAllImage) {
-            for (let image of matchAllImage) {
-                if (image) {
-                    let matchImage = image.match(/<img [^>]*src="([^"]+)"[^>]*>/);
-                    if (matchImage && matchImage[1]) {
-                        let src = matchImage[1];
-                        let idOfAttachment = src.match(/(attachments\/)([0-9]+)\//);
-                        if (idOfAttachment && idOfAttachment[2]) {
-                            let content = await this.service.fetchAttachment(parseInt(idOfAttachment[2]));
-                            if(content && content !== '')
-                                returnHtml = returnHtml.replace(image, `<img src="${content}" />`)
+        try {
+            if (matchAllImage) {
+                for (let image of matchAllImage) {
+                    if (image) {
+                        let matchImage = image.match(/<img [^>]*src="([^"]+)"[^>]*>/);
+                        if (matchImage && matchImage[1]) {
+                            let src = matchImage[1];
+                            let idOfAttachment = src.match(/(attachments\/)([0-9]+)\//);
+                            if (idOfAttachment && idOfAttachment[2]) {
+                                let content = await this.service.fetchAttachment(parseInt(idOfAttachment[2]));
+                                if (content && content !== '')
+                                    returnHtml = returnHtml.replace(image, `<img src="${content}" />`)
+                            }
                         }
                     }
                 }
             }
+        } catch (e: any) {
+            getLogger('vs').error('While generating attachment content', e);
+        } finally {
+            return returnHtml;
         }
-        return returnHtml;
     }
 }
