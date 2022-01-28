@@ -1,14 +1,13 @@
-import { FieldTemplate } from "./fields/field-template";
-import { FieldsSelectButtonTemplate } from "./action-buttons/fields-select-button-template";
 import { CommentButtonTemplate } from "./action-buttons/comment-button-template";
 import { SaveButtonTemplate } from "./action-buttons/save-button-template";
 import { RefreshButtonTemplate } from "./action-buttons/refresh-button-template";
 import { OpenInBrowserButtonTemplate } from "./action-buttons/open-in-browser-button-template";
 import { AddToMyWorkButtonTemplate } from "./action-buttons/add-to-my-work-button-template";
+import { ButtonTemplate } from "./action-buttons/button-template";
 
 export class ActionButtonTemplateFactory {
 
-    public static getTemplate(actionName: string): FieldTemplate {
+    public static getTemplate(actionName: string): ButtonTemplate {
 
         switch (actionName) {
             case 'comments':

@@ -6,20 +6,20 @@ export class CommentInputTemplate extends AbstractFieldTemplate {
         super(field, entity, visible);
     }
 
-    public generate(): string {
+    public async generate(): Promise<string> {
         return `<br>
                 <hr>
                 Comments
                 <div id="addCommentContainer" class="information-container-full">
                     <div class="${this.generateContainerClass()}">
-                        ${this.generateInputField()}
+                        ${await this.generateInputField()}
                     </div>
                 </div>
                 <br>
-                ${this.generateComments()}`;
+                ${await this.generateComments()}`;
     }
 
-    protected generateComments(): string {
+    protected async generateComments(): Promise<string> {
         let html = ``;
         for (const comment of this.entity) {
             let time;
@@ -28,14 +28,14 @@ export class CommentInputTemplate extends AbstractFieldTemplate {
             }
             html += `
                 <div class="information-container-full comment-style">
-                ${time ?? ''} <b>${comment.author?.fullName ?? ''}</b>: <div class="comment-content-style">${comment.text}</div>
+                ${time ?? ''} <b>${comment.author?.fullName ?? ''}</b>: <div class="comment-content-style">${await this.generateAttachmentContent(comment.text)}</div>
                 </div>
             `;
         }
         return html;
     }
 
-    generateInputField(): string {
+    async generateInputField(): Promise<string> {
         return `
             <input id="comments-text" ${this.generateType()}>
             <button id="comments" type="button">Comment</button>

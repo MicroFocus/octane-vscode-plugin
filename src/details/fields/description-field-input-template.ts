@@ -1,5 +1,6 @@
 import { TextInputTemplate } from "./text-input-template";
 import { stripHtml } from 'string-strip-html';
+import { OctaneService } from "../../octane/service/octane-service";
 
 export class DescriptionFieldInputTemplate extends TextInputTemplate {
 
@@ -8,10 +9,10 @@ export class DescriptionFieldInputTemplate extends TextInputTemplate {
         this.value = this.getFieldStringValue(this.entity, this.field.name);
     }
 
-    generateInputField(): string {
+    async generateInputField(): Promise<string> {
         return `
             <div id="${this.field.name}" class="description description-style">
-                ${this.generateValueFromHTML()}
+                ${await this.generateAttachmentContent(this.value)}
             </div>
         `;
     }
@@ -20,19 +21,12 @@ export class DescriptionFieldInputTemplate extends TextInputTemplate {
         return `type="text"`;
     }
 
-    protected generateValueFromHTML(): string {
-        if (this.value) {
-            return this.value;
-        }
-        return '';
-    }
-
     protected generateContainerClass() {
         return 'description-container';
     }
 
     protected generateReadonly(): string {
-       return 'readonly';
+        return 'readonly';
     }
 
 }

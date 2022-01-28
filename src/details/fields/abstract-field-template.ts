@@ -1,25 +1,31 @@
-import { FieldTemplate} from './field-template';
+import { OctaneService } from '../../octane/service/octane-service';
+import { FieldTemplate } from './field-template';
+import { getLogger } from 'log4js';
 
 export abstract class AbstractFieldTemplate implements FieldTemplate {
- 
+
     protected fieldId: string;
 
+    protected fs = require('fs');
+
+    protected service = OctaneService.getInstance();
+
     constructor(protected field: any, protected entity: any, protected visible: boolean) {
-        if(field.label) {
+        if (field.label) {
             this.fieldId = field.label.replaceAll(" ", "_").replaceAll('"', "");
         } else {
-         this.fieldId = field;   
+            this.fieldId = field;
         }
     }
 
-    public generate(): string {
+    public async generate(): Promise<string> {
         return `<div class="${this.generateContainerClass()} ${this.generateVisibility()}" id="container_${this.fieldId}">
                     <label name="${this.field.name}">${this.field.label}</label>
-                    ${this.generateInputField()}
+                    ${await this.generateInputField()}
                 </div>`;
     }
 
-    abstract generateInputField(): string;
+    abstract generateInputField(): Promise<string>;
 
     protected generateContainerClass(): string {
         return 'container';
@@ -101,5 +107,32 @@ export abstract class AbstractFieldTemplate implements FieldTemplate {
             return fieldValue['full_name'];
         }
         return fieldValue;
+    }
+
+    protected async generateAttachmentContent(html: string): Promise<string> {
+        let returnHtml: string = html;
+        let matchAllImage = html.match(/<img [^>]*src="([^"]+)"[^>]*>/g);
+        try {
+            if (matchAllImage) {
+                for (let image of matchAllImage) {
+                    if (image) {
+                        let matchImage = image.match(/<img [^>]*src="([^"]+)"[^>]*>/);
+                        if (matchImage && matchImage[1]) {
+                            let src = matchImage[1];
+                            let idOfAttachment = src.match(/(attachments\/)([0-9]+)\//);
+                            if (idOfAttachment && idOfAttachment[2]) {
+                                let content = await this.service.fetchAttachment(parseInt(idOfAttachment[2]));
+                                if (content && content !== '')
+                                    returnHtml = returnHtml.replace(image, `<img src="${content}" />`)
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (e: any) {
+            getLogger('vs').error('While generating attachment content', e);
+        } finally {
+            return returnHtml;
+        }
     }
 }

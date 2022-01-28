@@ -18,7 +18,7 @@ export class ReferenceInputTemplate extends AbstractFieldTemplate {
         this.multiple = field.field_type_data.multiple;
     }
 
-    generateInputField(): string {
+    async generateInputField(): Promise<string> {
         return `
                 <span data-toggle="tooltip" ${this.generateTooltip()} data-html="true">
                     <select id="${this.field.name}" ${this.generateMultiple(this.multiple)} ${this.generateDisable(this.field)}>
