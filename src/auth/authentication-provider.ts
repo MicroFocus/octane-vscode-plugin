@@ -16,11 +16,11 @@ export enum AlmOctaneAuthenticationType {
 }
 
 export class AlmOctaneAuthenticationSessionAccountInformation implements vscode.AuthenticationSessionAccountInformation {
-	constructor(public id: string, 
-		public label: string, 
-		public uri: string, 
-		public space: string | undefined, 
-		public workSpace: string | undefined, 
+	constructor(public id: string,
+		public label: string,
+		public uri: string,
+		public space: string | undefined,
+		public workSpace: string | undefined,
 		public user: string) {
 	}
 }
@@ -106,7 +106,6 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 				throw new Error('Authentication failed. Please try again.');
 			}
 		} catch (e) {
-			this.logger.error(e);
 			throw e;
 		}
 	}
@@ -237,11 +236,7 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 
 			return [sessionData];
 		} catch (e: any) {
-			if(e instanceof AuthError) {
-				this.logger.error(`Error while testing auth.`);
-			} else {
-				this.logger.error(`Error reading token: ${e}`);
-			}
+			this.logger.error(`Error while testing auth.`);
 			return [];
 		}
 	}
