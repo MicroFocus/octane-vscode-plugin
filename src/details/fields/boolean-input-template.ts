@@ -12,7 +12,7 @@ export class BooleanInputTemplate extends AbstractFieldTemplate {
     async generateInputField(): Promise<string> {
         return `
             <span data-toggle="tooltip" ${this.generateTooltip()} data-html="true">
-                <select id="${this.field.name}">
+                <select id="${this.field.name}" ${this.generateDisable(this.field)}>
                     <option value="true" ${this.value ? 'selected' : ''}>Yes</option>
                     <option value="false" ${this.value ? '' : 'selected'}>No</option>
                 </select>

@@ -223,7 +223,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                 if (m.type === 'get-data-for-select') {
                     if (m.data && m.data.field) {
                         let field = document.fields.filter((f: any) => f.name === m.data.field);
-                        if (field) {
+                        if (field && field[0] && field[0].field_type !== 'boolean') {
                             let data = await generateSelectOptions(field[0], document.entity);
                             if (data) {
                                 let selectedField;
