@@ -104,7 +104,7 @@ export class OctaneService {
                 .query(Query.field('name').equal(this.session.account.user).build())
                 .execute();
             this.loggedInUserId = result.data[0].id;
-            this.loggedInUserName = result.data[0].full_name ?? result.data[0].first_name;
+            this.loggedInUserName = result.data[0].full_name ?? result.data[0].email;
 
             {
                 const result = await this.octane.get(Octane.Octane.entityTypes.transitions)
