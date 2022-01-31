@@ -28,6 +28,10 @@ export class OctaneService {
     private constructor() {
     }
 
+    public getAuthSession(): AlmOctaneAuthenticationSession | undefined {
+        return this.session;
+    }
+
     public async testConnectionOnBrowserAuthentication(uri: string) {
         try {
             const fetchResult = await fetch(`${uri}authentication/tokens`, { method: 'POST' });
