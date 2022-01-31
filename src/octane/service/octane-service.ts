@@ -18,6 +18,7 @@ export class OctaneService {
     private octane?: any;
 
     private loggedInUserId?: number;
+    private loggedInUserName?: string;
     private transitions?: Transition[];
 
     private octaneMap = new Map<string, any[]>();
@@ -26,10 +27,6 @@ export class OctaneService {
     private session?: AlmOctaneAuthenticationSession;
 
     private constructor() {
-    }
-
-    public getAuthSession(): AlmOctaneAuthenticationSession | undefined {
-        return this.session;
     }
 
     public async testConnectionOnBrowserAuthentication(uri: string) {
@@ -107,6 +104,7 @@ export class OctaneService {
                 .query(Query.field('name').equal(this.session.account.user).build())
                 .execute();
             this.loggedInUserId = result.data[0].id;
+            this.loggedInUserName = result.data[0].full_name ?? result.data[0].first_name;
 
             {
                 const result = await this.octane.get(Octane.Octane.entityTypes.transitions)
@@ -118,6 +116,7 @@ export class OctaneService {
 
         } else {
             this.loggedInUserId = undefined;
+            this.loggedInUserName = undefined;
         }
     }
 
@@ -207,6 +206,10 @@ export class OctaneService {
 
     public isLoggedIn(): boolean {
         return this.loggedInUserId !== undefined;
+    }
+
+    public getLoggedInUserName(): string {
+        return this.loggedInUserName ?? '';
     }
 
     private async refreshMyWork(subtype: string | string[]): Promise<OctaneEntity[]> {

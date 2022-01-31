@@ -294,8 +294,6 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
     */
     private async getHtmlForWebview(webview: vscode.Webview, context: any, data: any | OctaneEntity | undefined, fields: any[]): Promise<string> {
 
-        let session = OctaneService.getInstance().getAuthSession();
-        
         //load default fields at first opening of the given entity
         var activeFields: string[] | undefined = [];
         let mementoKey = this.getMementoKeyForFields(data);
@@ -357,7 +355,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                             ${await generateBodyElement(data, fields, activeFields)}
                         </div>
                     </div>
-                    <div id="comments-element-id" class="comments-element" currentAuthor='${session?.account?.label ?? ''}'>
+                    <div id="comments-element-id" class="comments-element" currentAuthor='${OctaneService.getInstance().getLoggedInUserName()}'>
                         <div id="comments-sidebar-id" class="comments-sidebar">
                             ${await generateCommentElement(data)}
                         </div>
