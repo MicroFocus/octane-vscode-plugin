@@ -407,7 +407,7 @@
                                                     }
                                                 } else {
                                                     //in case of selecting none for a reference
-                                                    if (val === 'none-selected') {
+                                                    if (val === 'none-selected' && field.name !== 'phase') {
                                                         updatedData[fieldNameMap.get(field.name) ?? field.name] = null;
                                                     }
                                                 }

@@ -26,6 +26,7 @@ export class PhaseInputTemplate extends AbstractFieldTemplate {
     async generateInputField(): Promise<string> {
         return `
             <select id="select_phase" name="action" class="action">
+                <option value='none-selected'>None selected</option>
                 ${this.generateSelectOptions()}
             </select>
         `;
