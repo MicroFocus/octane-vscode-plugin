@@ -355,7 +355,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                             ${await generateBodyElement(data, fields, activeFields)}
                         </div>
                     </div>
-                    <div id="comments-element-id" class="comments-element" currentAuthor='${''}'>
+                    <div id="comments-element-id" class="comments-element" currentAuthor='${OctaneService.getInstance().getLoggedInUserName()}'>
                         <div id="comments-sidebar-id" class="comments-sidebar">
                             ${await generateCommentElement(data)}
                         </div>
