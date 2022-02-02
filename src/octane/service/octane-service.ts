@@ -20,6 +20,7 @@ export class OctaneService {
     private octane?: any;
 
     private loggedInUserId?: number;
+    private loggedInUserName?: string;
     private transitions?: Transition[];
 
     private octaneMap = new Map<string, any[]>();
@@ -63,7 +64,7 @@ export class OctaneService {
             this.logger.debug('Successful auth test.', result.data);
             return result.data && result.data[0] ? (result.data[0].full_name ? result.data[0].full_name : username) : username;
         } catch (e: any) {
-            throw new AuthError("Error while testing auth.");
+            throw e;
         }
     }
 
@@ -105,6 +106,7 @@ export class OctaneService {
                 .query(Query.field('name').equal(this.session.account.user).build())
                 .execute();
             this.loggedInUserId = result.data[0].id;
+            this.loggedInUserName = result.data[0].full_name ?? result.data[0].email;
 
             {
                 const result = await this.octane.get(Octane.Octane.entityTypes.transitions)
@@ -116,6 +118,7 @@ export class OctaneService {
 
         } else {
             this.loggedInUserId = undefined;
+            this.loggedInUserName = undefined;
         }
     }
 
@@ -205,6 +208,10 @@ export class OctaneService {
 
     public isLoggedIn(): boolean {
         return this.loggedInUserId !== undefined;
+    }
+
+    public getLoggedInUserName(): string {
+        return this.loggedInUserName ?? '';
     }
 
     private async refreshMyWork(subtype: string | string[]): Promise<OctaneEntity[]> {
