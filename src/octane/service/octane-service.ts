@@ -728,10 +728,9 @@ export class OctaneService {
         const logger = getLogger('vs');
         if (tokenResult.ok) {
             const tokenResponse = await tokenResult.json();
-            logger.info(tokenResponse);
+            logger.debug(tokenResponse);
             return tokenResponse;
         } else {
-            logger.error(tokenResult.statusText);
             throw new Error(tokenResult.statusText);
         }
     }
