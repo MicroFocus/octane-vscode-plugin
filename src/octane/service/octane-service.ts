@@ -702,7 +702,7 @@ export class OctaneService {
             }
             const self = this;
             const logWrapper = function (msg: string) {
-                self.logger.info(msg);
+                self.logger.debug(msg);
             };
 
             const decoratedFetchToken = retryDecorator(this.fetchAuthenticationToken, { retries: 100, delay: 1000, logger: logWrapper });
