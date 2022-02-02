@@ -710,7 +710,7 @@ export class OctaneService {
             this.logger.debug('Fetchtoken returned: ', token);
 
             const userResponse = await this.fetchCurrentUser(uri, token);
-            return { cookieName: token.cookie_name, accessToken: token.access_token, username: userResponse.fullName ?? userResponse.name ?? userResponse.id };
+            return { cookieName: token.cookie_name, accessToken: token.access_token, username: userResponse.name ?? '' };
         }
         throw new Error(`While fetching grant token: ${idResult.statusText}`);
     }

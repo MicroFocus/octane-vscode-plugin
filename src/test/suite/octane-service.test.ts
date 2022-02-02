@@ -58,11 +58,11 @@ suite('OctaneService test suite', () => {
 		assert.strictEqual(true, service.isLoggedIn());
 	}).timeout(5000);
 
-	test('grantTokenAuthenticate should log in -- needs user interaction', async function () {
+	test.skip('grantTokenAuthenticate should log in -- needs user interaction', async function () {
 		this.timeout(15000);
 		let service = OctaneService.getInstance();
 		let details = await service.grantTokenAuthenticate(accessDetails.serverUri);
-		assert.strictEqual(details.username, accessDetails.name);
+		assert.strictEqual(details.username, accessDetails.user);
 	});
 
 	suite('Octane integration tests', async function () {
