@@ -143,16 +143,25 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                                 authTestResult = e;
                             }
                             if (authTestResult.error) {
-                                if (authTestResult.statusCode === 403 || authTestResult.statusCode === 404) {
-                                    webviewView.webview.postMessage({
-                                        type: 'workspaceIdDoesNotExist',
-                                        message: 'Current user is not authorized to perform this operation.'
-                                    });
-                                } else {
-                                    webviewView.webview.postMessage({
-                                        type: 'workspaceIdDoesNotExist',
-                                        message: authTestResult?.response?.body?.description_translated ?? 'Invalid URI/Space/Workspace'
-                                    });
+                                switch (authTestResult.statusCode) {
+                                    case 404:
+                                        webviewView.webview.postMessage({
+                                            type: 'workspaceIdDoesNotExist',
+                                            message: authTestResult?.response?.body?.description_translated ?? 'Invalid URI/Space/Workspace'
+                                        });
+                                        break;
+                                    case 403:
+                                        webviewView.webview.postMessage({
+                                            type: 'workspaceIdDoesNotExist',
+                                            message: 'Current user is not authorized to perform this operation.'
+                                        });
+                                        break;
+                                    default:
+                                        webviewView.webview.postMessage({
+                                            type: 'workspaceIdDoesNotExist',
+                                            message: authTestResult?.response?.body?.description_translated
+                                        });
+                                        break;
                                 }
                                 webviewView.webview.postMessage({
                                     type: 'testConnectionResponse',
