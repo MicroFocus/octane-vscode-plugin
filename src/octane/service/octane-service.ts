@@ -9,6 +9,8 @@ import { AlmOctaneAuthenticationSession, AlmOctaneAuthenticationType } from '../
 import fetch, { Blob, Headers, RequestInit } from 'node-fetch';
 import { getLogger } from 'log4js';
 import { AuthError } from '../../auth/auth-error';
+import { retryDecorator } from 'ts-retry-promise';
+import { User } from '../model/user';
 
 export class OctaneService {
 
@@ -530,16 +532,21 @@ export class OctaneService {
         return '';
     }
 
-    public setHeaders(session: any): Headers {
-        var myHeaders = new Headers();
-        myHeaders.append('ALM_OCTANE_TECH_PREVIEW', 'true');
-        myHeaders.append('HPECLIENTTYPE', 'OCTANE_IDE_PLUGIN');
+    private setHeaders(session: any): Headers {
+        var myHeaders = this.commonHeaders();
         if (session.type === AlmOctaneAuthenticationType.browser) {
             myHeaders.append('Cookie', `${session.cookieName}=${session.accessToken}`);
         } else {
             myHeaders.set('Authorization', 'Basic ' + Buffer.from(session.account.user + ":" + session.accessToken).toString('base64'));
         }
         myHeaders.append('Content-Type', 'application/octet-stream');
+        return myHeaders;
+    }
+
+    private commonHeaders(): Headers {
+        var myHeaders = new Headers();
+        myHeaders.append('ALM_OCTANE_TECH_PREVIEW', 'true');
+        myHeaders.append('HPECLIENTTYPE', 'OCTANE_IDE_PLUGIN');
         return myHeaders;
     }
 
@@ -676,6 +683,69 @@ export class OctaneService {
 
     public getBrowserUri(entity: any): vscode.Uri {
         return vscode.Uri.parse(`${this.session?.account.uri}ui/?p=${this.session?.account.space}%2F${this.session?.account.workSpace}#/entity-navigation?entityType=${entity.type}&id=${entity.id}`);
+    }
+
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    public async grantTokenAuthenticate(uri: string): Promise<{ cookieName: string, accessToken: string, username: string }> {
+        var requestOptions: RequestInit = {
+            method: 'GET',
+            headers: this.commonHeaders(),
+            redirect: 'follow'
+        };
+        const idResult = await fetch(`${uri}authentication/grant_tool_token`, requestOptions);
+        if (idResult.ok) {
+            const response = await idResult.json();
+            this.logger.debug(response);
+            const browserResponse = await vscode.env.openExternal(vscode.Uri.parse(response?.authentication_url));
+            if (!browserResponse) {
+                throw new Error('Opening external browser window was not possible.');
+            }
+            const self = this;
+            const logWrapper = function (msg: string) {
+                self.logger.debug(msg);
+            };
+
+            const decoratedFetchToken = retryDecorator(this.fetchAuthenticationToken, { retries: 100, delay: 1000, logger: logWrapper });
+            const token = await decoratedFetchToken(self, uri, response);
+            this.logger.debug('Fetchtoken returned: ', token);
+
+            const userResponse = await this.fetchCurrentUser(uri, token);
+            return { cookieName: token.cookie_name, accessToken: token.access_token, username: userResponse.name ?? '' };
+        }
+        throw new Error(`While fetching grant token: ${idResult.statusText}`);
+    }
+
+    private async fetchAuthenticationToken(self: any, uri: string, response: any): Promise<any> {
+        let headers = self.commonHeaders();
+        headers.append('Content-Type', 'application/json');
+        var requestOptions: RequestInit = {
+            method: 'POST',
+            headers: headers,
+            redirect: 'follow',
+            body: JSON.stringify({ identifier: response.identifier })
+        };
+        const tokenResult = await fetch(`${uri}authentication/grant_tool_token`, requestOptions);
+        const logger = getLogger('vs');
+        if (tokenResult.ok) {
+            const tokenResponse = await tokenResult.json();
+            logger.debug(tokenResponse);
+            return tokenResponse;
+        } else {
+            throw new Error(tokenResult.statusText);
+        }
+    }
+
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    private async fetchCurrentUser(uri: string, token: { cookie_name: string, access_token: string }): Promise<User> {
+        let headers = this.commonHeaders();
+        headers.append('Cookie', `${token.cookie_name}=${token.access_token}`);
+        var requestOptions: RequestInit = {
+            method: 'GET',
+            headers: headers,
+            redirect: 'follow'
+        };
+        const userResponse = await fetch(`${uri}api/current_user`, requestOptions);
+        return new User(await userResponse.json());
     }
 }
 

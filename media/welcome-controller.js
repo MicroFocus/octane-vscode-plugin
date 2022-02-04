@@ -33,6 +33,15 @@
         if (input) {
             input.setAttribute("disabled", "disabled");
         }
+        var element = document.getElementById('authentication_username_id');
+        if (element) {
+            element.style.opacity = "0.6";
+            element.setAttribute("disabled", "disabled");
+        }
+        var input = document.getElementsByClassName('authentication_username')[0];
+        if (input) {
+            input.setAttribute("disabled", "disabled");
+        }
     });
 
     document.querySelector('.attempt_authentication_radio').addEventListener('click', () => {
@@ -42,6 +51,15 @@
             element.style.opacity = "100";
         }
         var input = document.getElementsByClassName('authentication_password')[0];
+        if (input) {
+            input.removeAttribute("disabled");
+        }
+        var element = document.getElementById('authentication_username_id');
+        if (element) {
+            element.style.display = "flex";
+            element.style.opacity = "100";
+        }
+        var input = document.getElementsByClassName('authentication_username')[0];
         if (input) {
             input.removeAttribute("disabled");
         }

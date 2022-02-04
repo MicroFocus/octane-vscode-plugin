@@ -118,53 +118,36 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 		const user: string | undefined = loginData?.user;
 		const space: string | undefined = loginData?.space;
 		const workspace: string | undefined = loginData?.workspace;
-		if (uri === undefined || user === undefined || uri === '' || user === '') {
-			throw new Error('Username cannot be blank. Password cannot be blank.');
+		if (uri === undefined || uri === '') {
+			throw new Error('Octane URL was not defined.');
 		}
 		uri = uri.endsWith('/') ? uri : uri + '/';
 
 		let session: AlmOctaneAuthenticationSession | undefined;
 		const password = OctaneService.getInstance().getPasswordForAuthentication();
 		if (password !== undefined) {
+			if (user === undefined || user.trim() === '') {
+				throw new Error('Login username was not defined.');
+			}
 			session = await this.createManualSession(uri, space, workspace, user, password);
 		} else {
-			const idResult = await fetch(`${uri}authentication/tokens`, { method: 'POST' });
-			if (idResult.ok) {
-				const response = await idResult.json();
-				this.logger.debug(response);
-				const self = this;
-				const logWrapper = function (msg: string) {
-					self.logger.info(msg);
-				};
-				const browserResponse = await vscode.env.openExternal(vscode.Uri.parse(response?.authentication_url));
-				if (browserResponse) {
-					const decoratedFetchToken = retryDecorator(this.fetchToken, { retries: 100, delay: 1000, logger: logWrapper });
-					const token = await decoratedFetchToken(uri, user, response);
-					this.logger.debug('Fetchtoken returned: ', token);
-					const authTestResult = await OctaneService.getInstance().testAuthentication(uri, space, workspace, user, undefined, token.cookie_name, token.access_token);
-					if (authTestResult === undefined) {
-						throw new Error('Authentication failed.');
-					}
-					session = {
-						id: uuid(),
-						account: {
-							label: authTestResult,
-							id: user,
-							user: user,
-							uri: uri,
-							space: space,
-							workSpace: workspace
-						},
-						scopes: scopes,
-						accessToken: token.access_token,
-						cookieName: token.cookie_name,
-						type: AlmOctaneAuthenticationType.browser
-					};
-
-				}
-			} else {
-				this.logger.error(idResult.statusText);
-			}
+			let tokenResult = await OctaneService.getInstance().grantTokenAuthenticate(uri);
+			const authTestResult = await OctaneService.getInstance().testAuthentication(uri, space, workspace, tokenResult.username, undefined, tokenResult.cookieName, tokenResult.accessToken);
+			session = {
+				id: uuid(),
+				account: {
+					label: authTestResult,
+					id: tokenResult.username,
+					user: tokenResult.username,
+					uri: uri,
+					space: space,
+					workSpace: workspace
+				},
+				scopes: scopes,
+				accessToken: tokenResult.accessToken,
+				cookieName: tokenResult.cookieName,
+				type: AlmOctaneAuthenticationType.browser
+			};
 		}
 		if (session !== undefined) {
 			await this.storeSession(session);
