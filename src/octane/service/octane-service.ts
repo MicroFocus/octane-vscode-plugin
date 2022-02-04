@@ -31,12 +31,12 @@ export class OctaneService {
     private constructor() {
     }
 
-    public async testConnectionOnBrowserAuthentication(uri: string) {
+    public async testConnectionOnBrowserAuthentication(uri: string): Promise<boolean> {
         try {
             const fetchResult = await fetch(`${uri}authentication/tokens`, { method: 'POST' });
             return fetchResult ? true : false;
         } catch (e) {
-            return false;
+            throw e;
         }
     }
 
