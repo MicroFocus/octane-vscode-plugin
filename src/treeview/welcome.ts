@@ -127,6 +127,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                                     data.uri = data.uri.split('ui')[0];
                                 }
                             }
+                            data.uri = data.uri.endsWith('/') ? data.uri : data.uri + '/';
                         }
                         if (data.browser) {
                             try {
