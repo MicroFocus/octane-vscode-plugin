@@ -141,7 +141,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                             } catch (e: any) {
                                 webviewView.webview.postMessage({
                                     type: 'workspaceIdDoesNotExist',
-                                    message: new ErrorHandler(e).getErrorMessage()
+                                    message: ErrorHandler.handle(e)
                                 });
                                 webviewView.webview.postMessage({
                                     type: 'testConnectionResponse',
@@ -162,7 +162,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                             } catch (e: any) {
                                 webviewView.webview.postMessage({
                                     type: 'workspaceIdDoesNotExist',
-                                    message: new ErrorHandler(e).getErrorMessage()
+                                    message: ErrorHandler.handle(e)
                                 });
                                 webviewView.webview.postMessage({
                                     type: 'testConnectionResponse',

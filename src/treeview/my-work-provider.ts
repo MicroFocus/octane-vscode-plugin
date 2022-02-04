@@ -35,7 +35,7 @@ export abstract class MyWorkProvider implements vscode.TreeDataProvider<MyWorkIt
             return this.getRelevantEntities()
                 .then((r: OctaneEntity[]) => r.map((e: OctaneEntity) => this.getMyWorkItem(e)))
                 .catch((e: any) => {
-                    this.logger.error('While generating work item ', new ErrorHandler(e).getErrorMessage());
+                    this.logger.error('While generating work item ', ErrorHandler.handle(e));
                     return null;
                 });
 

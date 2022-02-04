@@ -45,14 +45,14 @@ export function registerCommand(context: ExtensionContext) {
 							logger.log(`Script saved to: ${fileInfos.path}`);
 							await vscode.commands.executeCommand('vscode.open', vscode.Uri.file(fileInfos.path));
 						} catch (e: any) {
-							logger.error(new ErrorHandler(e).getErrorMessage());
+							logger.error(ErrorHandler.handle(e));
 						}
 						vscode.window.showInformationMessage('Script saved.');
 					} catch (e: any) {
-						logger.error('While downloading script ', new ErrorHandler(e).getErrorMessage());
+						logger.error('While downloading script ', ErrorHandler.handle(e));
 					}
 				} catch (error: any) {
-					logger.error('While saving script: ', new ErrorHandler(error).getErrorMessage());
+					logger.error('While saving script: ', ErrorHandler.handle(error));
 					vscode.window.showErrorMessage('Access error occurred while saving script.');
 				}
 

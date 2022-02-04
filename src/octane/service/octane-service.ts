@@ -86,7 +86,7 @@ export class OctaneService {
         try {
             await this.initializeOctaneInstance();
         } catch (e: any) {
-            this.logger.error(new ErrorHandler(e).getErrorMessage());
+            this.logger.error(ErrorHandler.handle(e));
         }
     }
 
@@ -167,7 +167,7 @@ export class OctaneService {
             }
             return [];
         } catch (e: any) {
-            this.logger.error('While global searching', new ErrorHandler(e).getErrorMessage());
+            this.logger.error('While global searching', ErrorHandler.handle(e));
             return [];
         }
     }
@@ -179,7 +179,7 @@ export class OctaneService {
                 'detected_by{id,name,full_name}', 'severity', 'author{id,name,full_name}'];
             return this.globalSearch(Octane.Octane.entityTypes.workItems, subtype, criteria, fields);
         } catch (e: any) {
-            this.logger.error('While global searching work items.', new ErrorHandler(e).getErrorMessage());
+            this.logger.error('While global searching work items.', ErrorHandler.handle(e));
             return [];
         }
     }
@@ -189,7 +189,7 @@ export class OctaneService {
             const fields = ['name', 'phase', 'owner{id,name,full_name}', 'author{id,name,full_name}'];
             return this.globalSearch(Octane.Octane.entityTypes.requirements, 'requirement_document', criteria, fields);
         } catch (e: any) {
-            this.logger.error('While global searching requirements.', new ErrorHandler(e).getErrorMessage());
+            this.logger.error('While global searching requirements.', ErrorHandler.handle(e));
             return [];
         }
     }
@@ -199,7 +199,7 @@ export class OctaneService {
             let fields = ['id', 'name', 'author{id,name,full_name}', 'owner{id,name,full_name}', 'phase'];
             return this.globalSearch(Octane.Octane.entityTypes.tasks, undefined, criteria, fields);
         } catch (e: any) {
-            this.logger.error('While global searching tasks.', new ErrorHandler(e).getErrorMessage());
+            this.logger.error('While global searching tasks.', ErrorHandler.handle(e));
             return [];
         }
     }
@@ -209,7 +209,7 @@ export class OctaneService {
             let fields = ['name', 'owner{id,name,full_name}', 'author{id,name,full_name}', 'phase'];
             return this.globalSearch(Octane.Octane.entityTypes.tests, ['test_manual', 'test_suite', 'gherkin_test', 'test_automated', 'scenario_test'], criteria, fields);
         } catch (e: any) {
-            this.logger.error('While global searching tests.', new ErrorHandler(e).getErrorMessage());
+            this.logger.error('While global searching tests.', ErrorHandler.handle(e));
             return [];
         }
     }
@@ -406,7 +406,7 @@ export class OctaneService {
             let entities = response.data.map((r: any) => new Comment(r));
             return entities;
         } catch (e: any) {
-            this.logger.error('While retreiving comment: ', new ErrorHandler(e).getErrorMessage());
+            this.logger.error('While retreiving comment: ', ErrorHandler.handle(e));
         }
     }
 
@@ -426,7 +426,7 @@ export class OctaneService {
                 .then((res: any) => {
                     vscode.window.showInformationMessage('Your comment has been saved.');
                 }, (error: any) => {
-                    this.logger.error('While saving comment: ', new ErrorHandler(error).getErrorMessage());
+                    this.logger.error('While saving comment: ', ErrorHandler.handle(error));
                     vscode.window.showErrorMessage((error.response.body.description) ?? 'We couldn’t save your comment.');
                 });
         }
@@ -448,7 +448,7 @@ export class OctaneService {
                 setValueForMap(this.octaneMap, element.entity_name, element);
             });
         } catch (e: any) {
-            this.logger.error('While fetching remote fields.', new ErrorHandler(e).getErrorMessage());
+            this.logger.error('While fetching remote fields.', ErrorHandler.handle(e));
         }
     }
 
@@ -512,7 +512,7 @@ export class OctaneService {
             .then((res: any) => {
                 vscode.window.showInformationMessage('Your item changes have been saved.');
             }, (error: any) => {
-                this.logger.error('While updating entity: ', new ErrorHandler(error).getErrorMessage());
+                this.logger.error('While updating entity: ', ErrorHandler.handle(error));
                 vscode.window.showErrorMessage((error.response.body.description) ?? 'We couldn’t save your changes');
             });
     }
@@ -560,7 +560,7 @@ export class OctaneService {
                 return result ?? undefined;
             }
         } catch (e: any) {
-            this.logger.error('While getting full data for entity ', new ErrorHandler(e).getErrorMessage());
+            this.logger.error('While getting full data for entity ', ErrorHandler.handle(e));
         }
     }
 
@@ -577,7 +577,7 @@ export class OctaneService {
                 const buffer = await result.buffer();
                 return `data:${result.headers.get('Content-Type')};base64,` + buffer.toString('base64');
             } catch (e: any) {
-                this.logger.error('While downloading attachment ', new ErrorHandler(e).getErrorMessage());
+                this.logger.error('While downloading attachment ', ErrorHandler.handle(e));
                 vscode.window.showErrorMessage((e.error?.errors[0]?.description) ?? 'Attachment download failed.');
             }
         }
@@ -660,7 +660,7 @@ export class OctaneService {
                 }
             }
         } catch (e: any) {
-            this.logger.error('While adding to MyWork ', new ErrorHandler(e).getErrorMessage());
+            this.logger.error('While adding to MyWork ', ErrorHandler.handle(e));
             throw e;
         }
     }
@@ -722,12 +722,12 @@ export class OctaneService {
                         .execute();
                     vscode.window.showInformationMessage('Item dismissed.');
                 } catch (e: any) {
-                    this.logger.error('While dismiss entity ', new ErrorHandler(e).getErrorMessage());
+                    this.logger.error('While dismiss entity ', ErrorHandler.handle(e));
                     vscode.window.showErrorMessage((e.error?.errors[0]?.description) ?? 'Item dismissal failed');
                 }
             }
         } catch (e: any) {
-            this.logger.error('While dismissing entity from MyWork ', new ErrorHandler(e).getErrorMessage());
+            this.logger.error('While dismissing entity from MyWork ', ErrorHandler.handle(e));
         }
     }
 

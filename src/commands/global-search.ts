@@ -37,13 +37,13 @@ export function registerCommand(context: ExtensionContext) {
 						try {
 							await vscode.env.openExternal(service.getBrowserUri(item.entity));
 						} catch (e: any) {
-							logger.error('While opening entity externally ', new ErrorHandler(e).getErrorMessage());
+							logger.error('While opening entity externally ', ErrorHandler.handle(e));
 						}
 					} else {
 						await vscode.commands.executeCommand('vscode.openWith', vscode.Uri.parse(`octane:///octane/${item.entity.type}/${item.entity.subtype}/${item.entity.id}`), OctaneEntityEditorProvider.viewType);
 					}
 				} catch (e: any) {
-					logger.error(new ErrorHandler(e).getErrorMessage());
+					logger.error(ErrorHandler.handle(e));
 				}
 			}
 		});

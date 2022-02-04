@@ -151,7 +151,7 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 					type: AlmOctaneAuthenticationType.browser
 				};
 			} catch (e: any) {
-				this.logger.error(new ErrorHandler(e).getErrorMessage());
+				this.logger.error(ErrorHandler.handle(e));
 			}
 		}
 		if (session !== undefined) {

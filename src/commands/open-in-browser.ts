@@ -16,14 +16,14 @@ export function registerCommand(context: ExtensionContext) {
 					try {
 						await vscode.env.openExternal(service.getBrowserUri((e.entity as Comment).ownerEntity));
 					} catch (e: any) {
-						logger.error('While opening in browser ', new ErrorHandler(e).getErrorMessage());
+						logger.error('While opening in browser ', ErrorHandler.handle(e));
 					}
 				}
 			} else {
 				try {
 					await vscode.env.openExternal(service.getBrowserUri(e.entity));
 				} catch (e: any) {
-					logger.error('While opening in browser ', new ErrorHandler(e).getErrorMessage());
+					logger.error('While opening in browser ', ErrorHandler.handle(e));
 				}
 			}
 		}
