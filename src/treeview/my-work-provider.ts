@@ -4,8 +4,12 @@ import { Comment } from "../octane/model/comment";
 import { OctaneEntity } from "../octane/model/octane-entity";
 import { OctaneEntityHolder } from '../octane/model/octane-entity-holder';
 import { OctaneEntityEditorProvider } from '../details/octane-editor';
+import { getLogger } from 'log4js';
+import { ErrorHandler } from '../octane/service/error-handler';
 
 export abstract class MyWorkProvider implements vscode.TreeDataProvider<MyWorkItem> {
+
+    private logger = getLogger('vs');
 
     private _onDidChangeTreeData: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
     readonly onDidChangeTreeData: vscode.Event<any> = this._onDidChangeTreeData.event;
@@ -28,7 +32,13 @@ export abstract class MyWorkProvider implements vscode.TreeDataProvider<MyWorkIt
             if (!this.service.isLoggedIn()) {
                 return null;
             }
-            return this.getRelevantEntities().then((r: OctaneEntity[]) => r.map((e: OctaneEntity) => this.getMyWorkItem(e)));
+            return this.getRelevantEntities()
+                .then((r: OctaneEntity[]) => r.map((e: OctaneEntity) => this.getMyWorkItem(e)))
+                .catch((e: any) => {
+                    this.logger.error('While generating work item ', ErrorHandler.handle(e));
+                    return null;
+                });
+
         }
     }
 
@@ -36,7 +46,7 @@ export abstract class MyWorkProvider implements vscode.TreeDataProvider<MyWorkIt
 
     getMyWorkItem(i: OctaneEntity): MyWorkItem {
         const item = new MyWorkItem(i);
-        
+
         return item;
     }
 
@@ -68,7 +78,7 @@ export abstract class MyWorkProvider implements vscode.TreeDataProvider<MyWorkIt
             item.tooltip = new vscode.MarkdownString(
                 '**' + item.entity.id + '** ' + (item.entity?.name ?? '')
                 + '\n\n'
-                + (item.entity.storyPoints  ? '| SP: ' + (item.entity.storyPoints ?? '-') + ' ' : '')
+                + (item.entity.storyPoints ? '| SP: ' + (item.entity.storyPoints ?? '-') + ' ' : '')
                 + (item.entity.phase ? '| Phase: ' + (item.entity.phase.name ?? '-') + ' ' : '')
                 + (item.entity.severity ? '| Severity: ' + (item.entity.severity?.split(/[\s.]+/).pop() ?? '-') + ' ' : '')
                 + '\n\n'

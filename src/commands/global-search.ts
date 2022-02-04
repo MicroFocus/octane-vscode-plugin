@@ -7,10 +7,12 @@ import { OctaneEntity } from '../octane/model/octane-entity';
 import { debounce } from 'ts-debounce';
 import { OctaneEntityEditorProvider } from '../details/octane-editor';
 import * as entitiesInMyWork from '../configurations/entities-in-my-work.json';
+import { log } from "console";
+import { ErrorHandler } from "../octane/service/error-handler";
 
 export function registerCommand(context: ExtensionContext) {
 	const logger = getLogger('vs');
-    context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.quickPick', async (value: OctaneQuickPickItem) => {
+	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.quickPick', async (value: OctaneQuickPickItem) => {
 
 		let service = OctaneService.getInstance();
 
@@ -32,12 +34,16 @@ export function registerCommand(context: ExtensionContext) {
 				try {
 					let entityWithTypeOrSubType = item.entity.subtype ? item.entity.subtype : item.entity.type;
 					if (entityWithTypeOrSubType && !entitiesInMyWork.includes(entityWithTypeOrSubType)) {
-						await vscode.env.openExternal(service.getBrowserUri(item.entity));
+						try {
+							await vscode.env.openExternal(service.getBrowserUri(item.entity));
+						} catch (e: any) {
+							logger.error('While opening entity externally ', ErrorHandler.handle(e));
+						}
 					} else {
 						await vscode.commands.executeCommand('vscode.openWith', vscode.Uri.parse(`octane:///octane/${item.entity.type}/${item.entity.subtype}/${item.entity.id}`), OctaneEntityEditorProvider.viewType);
 					}
-				} catch (e) {
-					logger.error(e);
+				} catch (e: any) {
+					logger.error(ErrorHandler.handle(e));
 				}
 			}
 		});

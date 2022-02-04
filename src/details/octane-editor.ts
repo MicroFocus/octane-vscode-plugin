@@ -10,6 +10,7 @@ import * as defaultFieldsMap from '../configurations/default-fields.json';
 import * as entityIcons from '../configurations/entity-icons.json';
 import { ActionButtonTemplateFactory } from './action-button-template-factory';
 import { FieldsSelectButtonTemplate } from './action-buttons/fields-select-button-template';
+import { ErrorHandler } from '../octane/service/error-handler';
 
 
 class OctaneEntityDocument implements vscode.CustomDocument {
@@ -269,9 +270,9 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                 this.logger.error("Error: entity has been deleted.");
                 errorMessage = `Error: entity with id "${id}" and type "${subType === '' ? type : subType}" has been deleted.`;
             } else if (e.message) {
-                errorMessage = e.message;
+                errorMessage = ErrorHandler.handle(e);
             } else {
-                this.logger.error(e);
+                this.logger.error(ErrorHandler.handle(e));
             }
             vscode.window.showErrorMessage(errorMessage);
             webviewPanel.webview.html = errorMessage;

@@ -6,15 +6,20 @@ import { MyWorkItem } from '../treeview/my-work-provider';
 import * as path from 'path';
 import * as fs from 'fs';
 import { TextEncoder } from 'util';
+import { ErrorHandler } from "../octane/service/error-handler";
 
 export function registerCommand(context: ExtensionContext) {
 	const logger = getLogger('vs');
-    let downloadTestCommand = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.myTests.download', async (e: MyWorkItem) => {
+	let downloadTestCommand = vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.myTests.download', async (e: MyWorkItem) => {
 		logger.info('visual-studio-code-plugin-for-alm-octane.myTests.download called', e);
 
 		if (e.entity) {
 			let service = OctaneService.getInstance();
-			const script = await service.downloadScriptForTest(e.entity);
+			// try {
+			// 	const script = await service.downloadScriptForTest(e.entity);
+			// } catch (e: any) {
+			// 	logger.error('While downloading script ', new ErrorHandler(e).getErrorMessage());
+			// }
 			if (vscode === undefined || vscode.workspace === undefined || vscode.workspace.workspaceFolders === undefined || vscode.workspace.workspaceFolders[0] === undefined) {
 				vscode.window.showErrorMessage('No workspace opened. Can not save test script.');
 				return;
@@ -33,16 +38,21 @@ export function registerCommand(context: ExtensionContext) {
 			const fileInfos = await vscode.window.showSaveDialog({ defaultUri: newFile });
 			if (fileInfos) {
 				try {
-					await vscode.workspace.fs.writeFile(vscode.Uri.file(fileInfos.path), new TextEncoder().encode(`${script}`));
 					try {
-						logger.log(`Script saved to: ${fileInfos.path}`);
-						await vscode.commands.executeCommand('vscode.open', vscode.Uri.file(fileInfos.path));
-					} catch (e) {
-						logger.error(e);
+						const script = await service.downloadScriptForTest(e.entity);
+						await vscode.workspace.fs.writeFile(vscode.Uri.file(fileInfos.path), new TextEncoder().encode(`${script}`));
+						try {
+							logger.log(`Script saved to: ${fileInfos.path}`);
+							await vscode.commands.executeCommand('vscode.open', vscode.Uri.file(fileInfos.path));
+						} catch (e: any) {
+							logger.error(ErrorHandler.handle(e));
+						}
+						vscode.window.showInformationMessage('Script saved.');
+					} catch (e: any) {
+						logger.error('While downloading script ', ErrorHandler.handle(e));
 					}
-					vscode.window.showInformationMessage('Script saved.');
-				} catch (error) {
-					logger.error('While saving script: ', e);
+				} catch (error: any) {
+					logger.error('While saving script: ', ErrorHandler.handle(error));
 					vscode.window.showErrorMessage('Access error occurred while saving script.');
 				}
 

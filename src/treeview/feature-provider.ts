@@ -4,8 +4,13 @@ import { OctaneEntity } from "../octane/model/octane-entity";
 export class MyFeatureProvider extends MyWorkProvider {
 
     async getRelevantEntities(): Promise<OctaneEntity[]> {
-        const result = this.service.getMyFeatures();
-        return result;
+        try {
+            const result = this.service.getMyFeatures();
+            return result;
+        } catch (e: any) {
+            throw e;
+
+        }
     }
 
 }

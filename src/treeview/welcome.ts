@@ -3,6 +3,7 @@ import { AlmOctaneAuthenticationProvider, AlmOctaneAuthenticationType } from '..
 import { OctaneService } from '../octane/service/octane-service';
 import { v4 as uuid } from 'uuid';
 import { getLogger } from 'log4js';
+import { ErrorHandler } from '../octane/service/error-handler';
 
 export class WelcomeViewProvider implements vscode.WebviewViewProvider {
 
@@ -128,43 +129,44 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                             }
                         }
                         if (data.browser) {
-                            authTestResult = await OctaneService.getInstance().testConnectionOnBrowserAuthentication(data.uri);
-                            webviewView.webview.postMessage({
-                                type: 'workspaceIdDoesExist',
-                            });
-                            webviewView.webview.postMessage({
-                                type: 'testConnectionResponse',
-                                authTestResult: authTestResult ? true : false
-                            });
-                        } else {
                             try {
-                                authTestResult = await OctaneService.getInstance().testAuthentication(data.uri, data.space, data.workspace, data.user, data.password, undefined, undefined);
+                                authTestResult = await OctaneService.getInstance().testConnectionOnBrowserAuthentication(data.uri);
+                                webviewView.webview.postMessage({
+                                    type: 'workspaceIdDoesExist',
+                                });
+                                webviewView.webview.postMessage({
+                                    type: 'testConnectionResponse',
+                                    authTestResult: authTestResult ? true : false
+                                });
                             } catch (e: any) {
-                                authTestResult = e;
-                            }
-                            if (authTestResult.error) {
-                                if (authTestResult.statusCode === 403 || authTestResult.statusCode === 404) {
-                                    webviewView.webview.postMessage({
-                                        type: 'workspaceIdDoesNotExist',
-                                        message: 'Current user is not authorized to perform this operation.'
-                                    });
-                                } else {
-                                    webviewView.webview.postMessage({
-                                        type: 'workspaceIdDoesNotExist',
-                                        message: authTestResult?.response?.body?.description_translated ?? 'Invalid URI/Space/Workspace'
-                                    });
-                                }
+                                webviewView.webview.postMessage({
+                                    type: 'workspaceIdDoesNotExist',
+                                    message: ErrorHandler.handle(e)
+                                });
                                 webviewView.webview.postMessage({
                                     type: 'testConnectionResponse',
                                     authTestResult: false
                                 });
-                            } else {
+                            }
+
+                        } else {
+                            try {
+                                authTestResult = await OctaneService.getInstance().testAuthentication(data.uri, data.space, data.workspace, data.user, data.password, undefined, undefined);
                                 webviewView.webview.postMessage({
                                     type: 'workspaceIdDoesExist',
                                 });
                                 webviewView.webview.postMessage({
                                     type: 'testConnectionResponse',
                                     authTestResult: true
+                                });
+                            } catch (e: any) {
+                                webviewView.webview.postMessage({
+                                    type: 'workspaceIdDoesNotExist',
+                                    message: ErrorHandler.handle(e)
+                                });
+                                webviewView.webview.postMessage({
+                                    type: 'testConnectionResponse',
+                                    authTestResult: false
                                 });
                             }
                         }
