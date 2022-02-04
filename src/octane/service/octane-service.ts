@@ -265,20 +265,24 @@ export class OctaneService {
     }
 
     public async getMyRequirements(): Promise<OctaneEntity[]> {
-        const response = await this.octane.get(Octane.Octane.entityTypes.requirements)
-            .fields('name', 'phase', 'owner{id,name,full_name}', 'author{id,name,full_name}')
-            .query(
-                Query.field('subtype').inComparison(['requirement_document']).and()
-                    .field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
-                    .build()
-            )
-            .orderBy('creation_time')
-            .execute();
-        this.logger.debug(response);
+        try {
+            const response = await this.octane.get(Octane.Octane.entityTypes.requirements)
+                .fields('name', 'phase', 'owner{id,name,full_name}', 'author{id,name,full_name}')
+                .query(
+                    Query.field('subtype').inComparison(['requirement_document']).and()
+                        .field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
+                        .build()
+                )
+                .orderBy('creation_time')
+                .execute();
+            this.logger.debug(response);
 
-        let entities = response.data.map((r: any) => new OctaneEntity(r));
-        this.logger.debug(entities);
-        return entities;
+            let entities = response.data.map((r: any) => new OctaneEntity(r));
+            this.logger.debug(entities);
+            return entities;
+        } catch (e: any) {
+            throw e;
+        }
     }
 
     public async getMyDefects(): Promise<OctaneEntity[]> {
@@ -307,68 +311,84 @@ export class OctaneService {
 
     public async getMyQualityStories(): Promise<OctaneEntity[]> {
         try {
-        return this.refreshMyWork('quality_story');
-        } catch(e: any) {
+            return this.refreshMyWork('quality_story');
+        } catch (e: any) {
             throw e;
         }
     }
 
     public async getMyTests(): Promise<OctaneEntity[]> {
-        const response = await this.octane.get(Octane.Octane.entityTypes.tests)
-            .fields('name', 'owner{id,name,full_name}', 'author{id,name,full_name}', 'phase')
-            .query(
-                Query.field('subtype').inComparison(['test_manual', 'gherkin_test', 'scenario_test']).and()
-                    .field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
-                    .build()
-            )
-            .orderBy('creation_time')
-            .execute();
-        let entities = response.data.map((r: any) => new OctaneEntity(r));
-        this.logger.debug(entities);
-        return entities;
+        try {
+            const response = await this.octane.get(Octane.Octane.entityTypes.tests)
+                .fields('name', 'owner{id,name,full_name}', 'author{id,name,full_name}', 'phase')
+                .query(
+                    Query.field('subtype').inComparison(['test_manual', 'gherkin_test', 'scenario_test']).and()
+                        .field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
+                        .build()
+                )
+                .orderBy('creation_time')
+                .execute();
+            let entities = response.data.map((r: any) => new OctaneEntity(r));
+            this.logger.debug(entities);
+            return entities;
+        } catch (e: any) {
+            throw e;
+        }
     }
 
     public async getMyTestRuns(): Promise<OctaneEntity[]> {
-        const response = await this.octane.get(Octane.Octane.entityTypes.runs)
-            .fields('name', 'author{id,name,full_name}', 'run_by{full_name}')
-            .query(
-                Query.field('subtype').inComparison(['run_manual', 'run_suite']).and()
-                    .field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
-                    .build()
-            )
-            .orderBy('creation_time')
-            .execute();
-        let entities = response.data.map((r: any) => new OctaneEntity(r));
-        this.logger.debug(entities);
-        return entities;
+        try {
+            const response = await this.octane.get(Octane.Octane.entityTypes.runs)
+                .fields('name', 'author{id,name,full_name}', 'run_by{full_name}')
+                .query(
+                    Query.field('subtype').inComparison(['run_manual', 'run_suite']).and()
+                        .field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
+                        .build()
+                )
+                .orderBy('creation_time')
+                .execute();
+            let entities = response.data.map((r: any) => new OctaneEntity(r));
+            this.logger.debug(entities);
+            return entities;
+        } catch (e: any) {
+            throw e;
+        }
     }
 
     public async getMyMentions(): Promise<OctaneEntity[]> {
-        const response = await this.octane.get(Octane.Octane.entityTypes.comments)
-            .fields('text', 'owner_work_item', 'owner_requirement', 'owner_test', 'owner_run', 'owner_bdd_spec', 'owner_task', 'author{id,name,full_name}')
-            .query(
-                Query.field('mention_user').equal(Query.field('id').equal(this.loggedInUserId))
-                    .build()
-            )
-            .orderBy('creation_time')
-            .execute();
-        let entities = response.data.map((r: any) => new Comment(r));
-        this.logger.debug(entities);
-        return entities;
+        try {
+            const response = await this.octane.get(Octane.Octane.entityTypes.comments)
+                .fields('text', 'owner_work_item', 'owner_requirement', 'owner_test', 'owner_run', 'owner_bdd_spec', 'owner_task', 'author{id,name,full_name}')
+                .query(
+                    Query.field('mention_user').equal(Query.field('id').equal(this.loggedInUserId))
+                        .build()
+                )
+                .orderBy('creation_time')
+                .execute();
+            let entities = response.data.map((r: any) => new Comment(r));
+            this.logger.debug(entities);
+            return entities;
+        } catch (e: any) {
+            throw e;
+        }
     }
 
     public async getMyTasks(): Promise<OctaneEntity[]> {
-        const response = await this.octane.get(Octane.Octane.entityTypes.tasks)
-            .fields('id', 'name', 'author{id,name,full_name}', 'owner{id,name,full_name}', 'phase', 'story')
-            .query(
-                Query.field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
-                    .build()
-            )
-            .orderBy('creation_time')
-            .execute();
-        let entities = response.data.map((r: any) => new Task(r));
-        this.logger.debug(entities);
-        return entities;
+        try {
+            const response = await this.octane.get(Octane.Octane.entityTypes.tasks)
+                .fields('id', 'name', 'author{id,name,full_name}', 'owner{id,name,full_name}', 'phase', 'story')
+                .query(
+                    Query.field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
+                        .build()
+                )
+                .orderBy('creation_time')
+                .execute();
+            let entities = response.data.map((r: any) => new Task(r));
+            this.logger.debug(entities);
+            return entities;
+        } catch (e: any) {
+            throw e;
+        }
     }
 
     public async getCommentsForEntity(entity: OctaneEntity): Promise<Comment[] | undefined> {
@@ -385,8 +405,8 @@ export class OctaneService {
                 .execute();
             let entities = response.data.map((r: any) => new Comment(r));
             return entities;
-        } catch (e) {
-            this.logger.error('While retreiving comment: ', e);
+        } catch (e: any) {
+            this.logger.error('While retreiving comment: ', new ErrorHandler(e).getErrorMessage());
         }
     }
 
@@ -406,7 +426,7 @@ export class OctaneService {
                 .then((res: any) => {
                     vscode.window.showInformationMessage('Your comment has been saved.');
                 }, (error: any) => {
-                    this.logger.error('While saving comment: ', error);
+                    this.logger.error('While saving comment: ', new ErrorHandler(error).getErrorMessage());
                     vscode.window.showErrorMessage((error.response.body.description) ?? 'We couldn’t save your comment.');
                 });
         }
@@ -427,8 +447,8 @@ export class OctaneService {
             result.data.forEach((element: any) => {
                 setValueForMap(this.octaneMap, element.entity_name, element);
             });
-        } catch (e) {
-            this.logger.error('While fetching remote fields.', e);
+        } catch (e: any) {
+            this.logger.error('While fetching remote fields.', new ErrorHandler(e).getErrorMessage());
         }
     }
 
@@ -471,14 +491,14 @@ export class OctaneService {
             const transitions = this.transitions.filter(t =>
                 (t.sourcePhase && t.sourcePhase.id === phaseId)
             );
-            this.logger.debug("[transitions]", transitions);
+            this.logger.debug("[transitions] ", transitions);
             return transitions;
         }
         return [];
     }
 
     public async updateEntity(type: string | undefined, subType: string | undefined, body: any) {
-        this.logger.debug("update", body);
+        this.logger.debug("[update] ", body);
         const apiEntityType = type || subType;
         if (!apiEntityType) {
             return;
@@ -492,7 +512,7 @@ export class OctaneService {
             .then((res: any) => {
                 vscode.window.showInformationMessage('Your item changes have been saved.');
             }, (error: any) => {
-                this.logger.error('While updating entity: ', error);
+                this.logger.error('While updating entity: ', new ErrorHandler(error).getErrorMessage());
                 vscode.window.showErrorMessage((error.response.body.description) ?? 'We couldn’t save your changes');
             });
     }
@@ -539,8 +559,8 @@ export class OctaneService {
                     .execute();
                 return result ?? undefined;
             }
-        } catch (e) {
-            this.logger.error('While getting full data for entity ()', e);
+        } catch (e: any) {
+            this.logger.error('While getting full data for entity ', new ErrorHandler(e).getErrorMessage());
         }
     }
 
@@ -557,7 +577,7 @@ export class OctaneService {
                 const buffer = await result.buffer();
                 return `data:${result.headers.get('Content-Type')};base64,` + buffer.toString('base64');
             } catch (e: any) {
-                this.logger.error('While downloading attachment ', e);
+                this.logger.error('While downloading attachment ', new ErrorHandler(e).getErrorMessage());
                 vscode.window.showErrorMessage((e.error?.errors[0]?.description) ?? 'Attachment download failed.');
             }
         }
@@ -586,8 +606,7 @@ export class OctaneService {
         try {
             const script = await this.octane.get(Octane.Octane.entityTypes.tests).at(e.id).script().execute();
             return script.script;
-        } catch (e) {
-            this.logger.error('While downloading script.', e);
+        } catch (e: any) {
             throw e;
         }
     }
