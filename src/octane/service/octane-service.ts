@@ -11,6 +11,7 @@ import { getLogger } from 'log4js';
 import { AuthError } from '../../auth/auth-error';
 import { retryDecorator } from 'ts-retry-promise';
 import { User } from '../model/user';
+import { ErrorHandler } from './error-handler';
 
 export class OctaneService {
 
@@ -82,43 +83,50 @@ export class OctaneService {
 
         this.octaneMap = new Map<string, any[]>();
 
-        await this.initializeOctaneInstance();
+        try {
+            await this.initializeOctaneInstance();
+        } catch (e: any) {
+            this.logger.error(new ErrorHandler(e).getErrorMessage());
+        }
     }
 
     public async initializeOctaneInstance() {
-        if (this.session && this.session.account.uri && this.session.account.space && this.session.account.workSpace && this.session.account.user) {
-            this.octane = new Octane.Octane({
-                server: this.session.account.uri,
-                sharedSpace: this.session.account.space,
-                workspace: this.session.account.workSpace,
-                user: this.session.account.user,
-                password: this.session.type === AlmOctaneAuthenticationType.userNameAndPassword ? this.session.accessToken : undefined,
-                headers: {
-                    // eslint-disable-next-line @typescript-eslint/naming-convention
-                    ALM_OCTANE_TECH_PREVIEW: true,
-                    // eslint-disable-next-line @typescript-eslint/naming-convention
-                    HPECLIENTTYPE: 'OCTANE_IDE_PLUGIN',
-                    // eslint-disable-next-line @typescript-eslint/naming-convention
-                    Cookie: this.session.type === AlmOctaneAuthenticationType.browser ? `${this.session.cookieName}=${this.session.accessToken}` : undefined
-                }
-            });
-            const result: any = await this.octane.get(Octane.Octane.entityTypes.workspaceUsers)
-                .query(Query.field('name').equal(this.session.account.user).build())
-                .execute();
-            this.loggedInUserId = result.data[0].id;
-            this.loggedInUserName = result.data[0].full_name ?? result.data[0].email;
-
-            {
-                const result = await this.octane.get(Octane.Octane.entityTypes.transitions)
-                    .fields('id', 'entity', 'logical_name', 'is_primary', 'source_phase{name}', 'target_phase{name}')
+        try {
+            if (this.session && this.session.account.uri && this.session.account.space && this.session.account.workSpace && this.session.account.user) {
+                this.octane = new Octane.Octane({
+                    server: this.session.account.uri,
+                    sharedSpace: this.session.account.space,
+                    workspace: this.session.account.workSpace,
+                    user: this.session.account.user,
+                    password: this.session.type === AlmOctaneAuthenticationType.userNameAndPassword ? this.session.accessToken : undefined,
+                    headers: {
+                        // eslint-disable-next-line @typescript-eslint/naming-convention
+                        ALM_OCTANE_TECH_PREVIEW: true,
+                        // eslint-disable-next-line @typescript-eslint/naming-convention
+                        HPECLIENTTYPE: 'OCTANE_IDE_PLUGIN',
+                        // eslint-disable-next-line @typescript-eslint/naming-convention
+                        Cookie: this.session.type === AlmOctaneAuthenticationType.browser ? `${this.session.cookieName}=${this.session.accessToken}` : undefined
+                    }
+                });
+                const result: any = await this.octane.get(Octane.Octane.entityTypes.workspaceUsers)
+                    .query(Query.field('name').equal(this.session.account.user).build())
                     .execute();
-                this.transitions = result.data.map((t: any) => new Transition(t));
-                this.logger.debug(this.transitions);
-            }
+                this.loggedInUserId = result.data[0].id;
+                this.loggedInUserName = result.data[0].full_name ?? result.data[0].email;
 
-        } else {
-            this.loggedInUserId = undefined;
-            this.loggedInUserName = undefined;
+                {
+                    const result = await this.octane.get(Octane.Octane.entityTypes.transitions)
+                        .fields('id', 'entity', 'logical_name', 'is_primary', 'source_phase{name}', 'target_phase{name}')
+                        .execute();
+                    this.transitions = result.data.map((t: any) => new Transition(t));
+                    this.logger.debug(this.transitions);
+                }
+            } else {
+                this.loggedInUserId = undefined;
+                this.loggedInUserName = undefined;
+            }
+        } catch (e: any) {
+            throw e;
         }
     }
 
@@ -158,8 +166,8 @@ export class OctaneService {
                 return entities;
             }
             return [];
-        } catch (e) {
-            this.logger.error('While global searching', e);
+        } catch (e: any) {
+            this.logger.error('While global searching', new ErrorHandler(e).getErrorMessage());
             return [];
         }
     }
@@ -170,8 +178,8 @@ export class OctaneService {
                 'invested_hours', 'estimated_hours', 'remaining_hours',
                 'detected_by{id,name,full_name}', 'severity', 'author{id,name,full_name}'];
             return this.globalSearch(Octane.Octane.entityTypes.workItems, subtype, criteria, fields);
-        } catch (e) {
-            this.logger.error('While global searching work items.', e);
+        } catch (e: any) {
+            this.logger.error('While global searching work items.', new ErrorHandler(e).getErrorMessage());
             return [];
         }
     }
@@ -180,8 +188,8 @@ export class OctaneService {
         try {
             const fields = ['name', 'phase', 'owner{id,name,full_name}', 'author{id,name,full_name}'];
             return this.globalSearch(Octane.Octane.entityTypes.requirements, 'requirement_document', criteria, fields);
-        } catch (e) {
-            this.logger.error('While global searching requirements.', e);
+        } catch (e: any) {
+            this.logger.error('While global searching requirements.', new ErrorHandler(e).getErrorMessage());
             return [];
         }
     }
@@ -190,8 +198,8 @@ export class OctaneService {
         try {
             let fields = ['id', 'name', 'author{id,name,full_name}', 'owner{id,name,full_name}', 'phase'];
             return this.globalSearch(Octane.Octane.entityTypes.tasks, undefined, criteria, fields);
-        } catch (e) {
-            this.logger.error('While global searching tasks.', e);
+        } catch (e: any) {
+            this.logger.error('While global searching tasks.', new ErrorHandler(e).getErrorMessage());
             return [];
         }
     }
@@ -200,8 +208,8 @@ export class OctaneService {
         try {
             let fields = ['name', 'owner{id,name,full_name}', 'author{id,name,full_name}', 'phase'];
             return this.globalSearch(Octane.Octane.entityTypes.tests, ['test_manual', 'test_suite', 'gherkin_test', 'test_automated', 'scenario_test'], criteria, fields);
-        } catch (e) {
-            this.logger.error('While global searching tests.', e);
+        } catch (e: any) {
+            this.logger.error('While global searching tests.', new ErrorHandler(e).getErrorMessage());
             return [];
         }
     }
@@ -215,26 +223,30 @@ export class OctaneService {
     }
 
     private async refreshMyWork(subtype: string | string[]): Promise<OctaneEntity[]> {
-        let subtypes: string[] = [];
-        if (!Array.isArray(subtype)) {
-            subtypes.push(subtype);
-        } else {
-            subtypes = subtype;
+        try {
+            let subtypes: string[] = [];
+            if (!Array.isArray(subtype)) {
+                subtypes.push(subtype);
+            } else {
+                subtypes = subtype;
+            }
+            const response = await this.octane.get(Octane.Octane.entityTypes.workItems)
+                .fields('name', 'story_points', 'phase', 'owner{id,name,full_name}',
+                    'invested_hours', 'estimated_hours', 'remaining_hours',
+                    'detected_by{id,name,full_name}', 'severity', 'author{id,name,full_name}')
+                .query(
+                    Query.field('subtype').inComparison(subtypes).and()
+                        .field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
+                        .build()
+                )
+                .orderBy('creation_time')
+                .execute();
+            let entities = response.data.map((r: any) => new OctaneEntity(r));
+            this.logger.debug(entities);
+            return entities;
+        } catch (e: any) {
+            throw e;
         }
-        const response = await this.octane.get(Octane.Octane.entityTypes.workItems)
-            .fields('name', 'story_points', 'phase', 'owner{id,name,full_name}',
-                'invested_hours', 'estimated_hours', 'remaining_hours',
-                'detected_by{id,name,full_name}', 'severity', 'author{id,name,full_name}')
-            .query(
-                Query.field('subtype').inComparison(subtypes).and()
-                    .field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
-                    .build()
-            )
-            .orderBy('creation_time')
-            .execute();
-        let entities = response.data.map((r: any) => new OctaneEntity(r));
-        this.logger.debug(entities);
-        return entities;
     }
 
     public static getInstance(): OctaneService {
@@ -245,7 +257,11 @@ export class OctaneService {
     }
 
     public async getMyBacklog(): Promise<OctaneEntity[]> {
-        return this.refreshMyWork(['defect', 'story', 'quality_story']);
+        try {
+            return this.refreshMyWork(['defect', 'story', 'quality_story']);
+        } catch (e: any) {
+            throw e;
+        }
     }
 
     public async getMyRequirements(): Promise<OctaneEntity[]> {
@@ -266,19 +282,35 @@ export class OctaneService {
     }
 
     public async getMyDefects(): Promise<OctaneEntity[]> {
-        return this.refreshMyWork('defect');
+        try {
+            return this.refreshMyWork('defect');
+        } catch (e: any) {
+            throw e;
+        }
     }
 
     public async getMyFeatures(): Promise<OctaneEntity[]> {
-        return this.refreshMyWork('feature');
+        try {
+            return this.refreshMyWork('feature');
+        } catch (e: any) {
+            throw e;
+        }
     }
 
     public async getMyStories(): Promise<OctaneEntity[]> {
-        return this.refreshMyWork('story');
+        try {
+            return this.refreshMyWork('story');
+        } catch (e: any) {
+            throw e;
+        }
     }
 
     public async getMyQualityStories(): Promise<OctaneEntity[]> {
+        try {
         return this.refreshMyWork('quality_story');
+        } catch(e: any) {
+            throw e;
+        }
     }
 
     public async getMyTests(): Promise<OctaneEntity[]> {

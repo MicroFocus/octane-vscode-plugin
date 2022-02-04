@@ -20,7 +20,10 @@ export class ErrorHandler {
             case 403:
                 this.message = 'Current user is not authorized to perform this operation.';
             default:
-                this.message = e?.response?.body?.description_translated ?? `Error occured with status code ${e.statusCode}`;
+                this.message = e.statusCode ?
+                    e?.response?.body?.description_translated ?? `Error occured with status code ${e.statusCode}` :
+                    e.message;
         }
+
     }
 }
