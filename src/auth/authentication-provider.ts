@@ -7,6 +7,7 @@ import { OctaneService } from '../octane/service/octane-service';
 import { getLogger } from 'log4js';
 import { LoginData } from './login-data';
 import { AuthError } from './auth-error';
+import { ErrorHandler } from '../octane/service/error-handler';
 
 export const type = 'alm-octane.auth';
 
@@ -131,23 +132,27 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 			}
 			session = await this.createManualSession(uri, space, workspace, user, password);
 		} else {
-			let tokenResult = await OctaneService.getInstance().grantTokenAuthenticate(uri);
-			const authTestResult = await OctaneService.getInstance().testAuthentication(uri, space, workspace, tokenResult.username, undefined, tokenResult.cookieName, tokenResult.accessToken);
-			session = {
-				id: uuid(),
-				account: {
-					label: authTestResult,
-					id: tokenResult.username,
-					user: tokenResult.username,
-					uri: uri,
-					space: space,
-					workSpace: workspace
-				},
-				scopes: scopes,
-				accessToken: tokenResult.accessToken,
-				cookieName: tokenResult.cookieName,
-				type: AlmOctaneAuthenticationType.browser
-			};
+			try {
+				let tokenResult = await OctaneService.getInstance().grantTokenAuthenticate(uri);
+				const authTestResult = await OctaneService.getInstance().testAuthentication(uri, space, workspace, tokenResult.username, undefined, tokenResult.cookieName, tokenResult.accessToken);
+				session = {
+					id: uuid(),
+					account: {
+						label: authTestResult,
+						id: tokenResult.username,
+						user: tokenResult.username,
+						uri: uri,
+						space: space,
+						workSpace: workspace
+					},
+					scopes: scopes,
+					accessToken: tokenResult.accessToken,
+					cookieName: tokenResult.cookieName,
+					type: AlmOctaneAuthenticationType.browser
+				};
+			} catch (e: any) {
+				this.logger.error(new ErrorHandler(e).getErrorMessage());
+			}
 		}
 		if (session !== undefined) {
 			await this.storeSession(session);
