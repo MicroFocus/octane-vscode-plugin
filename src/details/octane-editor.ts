@@ -191,14 +191,10 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                 }
                 if (m.type === 'update') {
                     OctaneService.getInstance().updateEntity(document.entity.type, document.entity.subtype, m.data);
+                    await this.refreshView(document, webviewPanel);
                 }
                 if (m.type === 'refresh') {
-                    await document.updated();
-                    webviewPanel.webview.html = await this.getHtmlForWebview(webviewPanel.webview, this.context, document.entity, document.fields);
-                    webviewPanel.webview.postMessage({
-                        type: 'init',
-                        from: 'webview'
-                    });
+                    await this.refreshView(document, webviewPanel);
                 }
                 if (m.type === 'post-comment') {
                     let comment: Comment = new Comment(m.data);
@@ -279,6 +275,15 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
         }
 
 
+    }
+
+    private async refreshView(document: OctaneEntityDocument, webviewPanel: vscode.WebviewPanel) {
+        await document.updated();
+        webviewPanel.webview.html = await this.getHtmlForWebview(webviewPanel.webview, this.context, document.entity, document.fields);
+        webviewPanel.webview.postMessage({
+            type: 'init',
+            from: 'webview'
+        });
     }
 
     private getMementoKeyForFields(entity: OctaneEntity) {
