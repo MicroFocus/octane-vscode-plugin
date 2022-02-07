@@ -284,6 +284,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
             type: 'init',
             from: 'webview'
         });
+        vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.refreshAll');
     }
 
     private getMementoKeyForFields(entity: OctaneEntity) {
