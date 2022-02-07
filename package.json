@@ -30,6 +30,7 @@
 		"onCommand:visual-studio-code-plugin-for-alm-octane.quickPick",
 		"onView:visual-studio-code-plugin-for-alm-octane-explorer",
 		"onCommand:visual-studio-code-plugin-for-alm-octane.details",
+		"onCommand:visual-studio-code-plugin-for-alm-octane.parentDetailsMentions",
 		"onCommand:visual-studio-code-plugin-for-alm-octane.setFilterSelection",
 		"onCommand:visual-studio-code-plugin-for-alm-octane.getLoginData",
 		"onCommand:visual-studio-code-plugin-for-alm-octane.saveLoginData",
@@ -194,28 +195,33 @@
 			"view/item/context": [
 				{
 					"command": "visual-studio-code-plugin-for-alm-octane.details",
-					"when": "view in visual-studio-code-plugin-for-alm-octane.supportedViews",
+					"when": "view in visual-studio-code-plugin-for-alm-octane.supportedViews && view != 'myMentions'",
 					"group": "octane@0"
+				},
+				{
+					"command": "visual-studio-code-plugin-for-alm-octane.parentDetailsMentions",
+					"when": "view == 'myMentions'",
+					"group": "octane@1"
 				},
 				{
 					"command": "visual-studio-code-plugin-for-alm-octane.startWork",
 					"when": "view in visual-studio-code-plugin-for-alm-octane.supportedViews && viewItem in visual-studio-code-plugin-for-alm-octane.supportsStartWork",
-					"group": "octane@3"
+					"group": "octane@4"
 				},
 				{
 					"command": "visual-studio-code-plugin-for-alm-octane.commitMessage",
 					"when": "view in visual-studio-code-plugin-for-alm-octane.supportedViews && viewItem in visual-studio-code-plugin-for-alm-octane.supportsStartWork",
-					"group": "octane@4"
+					"group": "octane@5"
 				},
 				{
 					"command": "visual-studio-code-plugin-for-alm-octane.myTests.download",
 					"when": "view in visual-studio-code-plugin-for-alm-octane.supportedViews && viewItem in visual-studio-code-plugin-for-alm-octane.supportsDownloadScript",
-					"group": "octane@5"
+					"group": "octane@6"
 				},
 				{
 					"command": "visual-studio-code-plugin-for-alm-octane.openInBrowser",
 					"when": "view in visual-studio-code-plugin-for-alm-octane.supportedViews",
-					"group": "octane@2"
+					"group": "octane@3"
 				},
 				{
 					"command": "visual-studio-code-plugin-for-alm-octane.dismissItem",
@@ -225,7 +231,7 @@
 				{
 					"command": "visual-studio-code-plugin-for-alm-octane.parentDetails",
 					"when": "view in visual-studio-code-plugin-for-alm-octane.supportedViews && viewItem == 'task'",
-					"group": "octane@1"
+					"group": "octane@2"
 				}
 			]
 		},
@@ -323,6 +329,11 @@
 			{
 				"command": "visual-studio-code-plugin-for-alm-octane.details",
 				"title": "View details",
+				"icon": "$(open-preview)"
+			},
+			{
+				"command": "visual-studio-code-plugin-for-alm-octane.parentDetailsMentions",
+				"title": "View parent details",
 				"icon": "$(open-preview)"
 			},
 			{

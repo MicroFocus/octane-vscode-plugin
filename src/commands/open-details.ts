@@ -8,9 +8,11 @@ import { getLogger } from 'log4js';
 export function registerCommand(context: ExtensionContext) {
 
     context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.details', async (e: MyWorkItem) => {
-		if (e.command && e.command.arguments) {
-			await vscode.commands.executeCommand(e.command.command, e.command.arguments[0], e.command.arguments[1]);
-		}
+		await openDetails(e);
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.parentDetailsMentions', async (e: MyWorkItem) => {
+		await openDetails(e);
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.parentDetails', async (e: MyWorkItem) => {
@@ -26,4 +28,10 @@ export function registerCommand(context: ExtensionContext) {
 		}
 	}));
 	
+}
+
+async function openDetails(e: MyWorkItem) {
+	if (e.command && e.command.arguments) {
+		await vscode.commands.executeCommand(e.command.command, e.command.arguments[0], e.command.arguments[1]);
+	}
 }
