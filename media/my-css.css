@@ -23,9 +23,13 @@ span {
 input {
     width: 100%;
     height: 2rem;
-    border: 0.5px solid; 
-    border-color: var(--vscode-dropdown-border);
+    border: 0.5px solid !important; 
+    border-color: var(--vscode-dropdown-border) !important;
     cursor: pointer;
+}
+
+.name-input-style {
+    border: none !important;
 }
 
 textarea {
@@ -300,6 +304,7 @@ label {
 
 .phase-select {
     margin-top: 1rem;
+    min-width: 7rem;
 }
 
 .select-fields {
