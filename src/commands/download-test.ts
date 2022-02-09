@@ -15,25 +15,15 @@ export function registerCommand(context: ExtensionContext) {
 
 		if (e.entity) {
 			let service = OctaneService.getInstance();
-			// try {
-			// 	const script = await service.downloadScriptForTest(e.entity);
-			// } catch (e: any) {
-			// 	logger.error('While downloading script ', new ErrorHandler(e).getErrorMessage());
-			// }
-			if (vscode === undefined || vscode.workspace === undefined || vscode.workspace.workspaceFolders === undefined || vscode.workspace.workspaceFolders[0] === undefined) {
-				vscode.window.showErrorMessage('No workspace opened. Can not save test script.');
-				return;
+					
+			let baseUri = vscode.Uri.file(path.resolve('./'));
+			if (vscode !== undefined && vscode.workspace !== undefined && vscode.workspace.workspaceFolders !== undefined 
+				&& vscode.workspace.workspaceFolders[0] !== undefined) {
+					baseUri = vscode.workspace.workspaceFolders[0].uri;
 			}
-
-			logger.debug(`Trying to populate download script default location using ${vscode.workspace.workspaceFolders[0].uri}`);
+			logger.debug(`Trying to populate download script default location using ${baseUri}`);
 			let newFile;
-			try {
-				fs.accessSync(vscode.workspace.workspaceFolders[0].uri.path, fs.constants.W_OK);
-				newFile = vscode.Uri.parse(path.join(vscode.workspace.workspaceFolders[0].uri.path, `${e.entity.name}_${e.entity.id}.feature`));
-			} catch (error) {
-				logger.error('workspace folder is not writabel', error);
-				newFile = vscode.Uri.parse(`file://${e.entity.name}_${e.entity.id}.feature`);
-			}
+			newFile = vscode.Uri.joinPath(baseUri, `${e.entity.name}_${e.entity.id}.feature`);
 
 			const fileInfos = await vscode.window.showSaveDialog({ defaultUri: newFile });
 			if (fileInfos) {
