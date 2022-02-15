@@ -603,7 +603,7 @@ export class OctaneService {
                 const ATTACHMENT_URL: string = `${this.session.account.uri}api/shared_spaces/${this.session.account.space}/workspaces/${this.session.account.workSpace}/attachments/${id}`;
                 let result = await fetch(ATTACHMENT_URL, requestOptions);
                 if (result && result.status === 401) {
-                    this.JSONauthenticate(this.session);
+                    await this.JSONauthenticate(this.session);
                     if (this.LWSSO_COOKIE_KEY) {
                         myHeaders.append('Cookie', `${this.LWSSO_COOKIE_KEY}`);
                         requestOptions.headers = myHeaders;
