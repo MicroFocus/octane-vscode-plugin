@@ -583,8 +583,15 @@ export class OctaneService {
         };
         try {
             let result = await fetch(`${session.account.uri}authentication/sign_in`, requestOptions);
-            if (result && result.status === 200) {
-                this.LWSSO_COOKIE_KEY = result?.headers.get('set-cookie') ?? undefined;
+            if (result && result.ok) {
+                this.LWSSO_COOKIE_KEY = undefined;
+                const rawHeaders = result.headers.raw()['set-cookie'].forEach(h => {
+                    if (this.LWSSO_COOKIE_KEY === undefined) {
+                        this.LWSSO_COOKIE_KEY = h.split(';')[0];
+                    } else {
+                        this.LWSSO_COOKIE_KEY += ';' + h.split(';')[0];
+                    }
+                });
             }
         } catch (error: any) {
             this.logger.error('While authenticating with JSONauthentication ', ErrorHandler.handle(error));
