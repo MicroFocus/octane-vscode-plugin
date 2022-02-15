@@ -6,7 +6,7 @@ import { Task } from '../model/task';
 import { Transition } from '../model/transition';
 import { Comment } from '../model/comment';
 import { AlmOctaneAuthenticationSession, AlmOctaneAuthenticationType } from '../../auth/authentication-provider';
-import fetch, { Blob, Headers, RequestInit } from 'node-fetch';
+import fetch, { Blob, BodyInit, Headers, RequestInit, RequestRedirect } from 'node-fetch';
 import { getLogger } from 'log4js';
 import { AuthError } from '../../auth/auth-error';
 import { retryDecorator } from 'ts-retry-promise';
@@ -28,6 +28,8 @@ export class OctaneService {
 
     private password?: string;
     private session?: AlmOctaneAuthenticationSession;
+
+    private LWSSO_COOKIE_KEY?: string;
 
     private constructor() {
     }
@@ -567,16 +569,48 @@ export class OctaneService {
         }
     }
 
+    private async JSONauthenticate(session: any) {
+        var myHeaders = this.commonHeaders();
+        myHeaders.append('Content-Type', 'application/json');
+        let body: any = {
+            user: session.account.user,
+            password: session.accessToken
+        };
+        let requestOptions: RequestInit = {
+            method: 'POST',
+            headers: myHeaders,
+            redirect: 'follow',
+            body: JSON.stringify(body)
+        };
+        try {
+            let result = await fetch(`${session.account.uri}authentication/sign_in`, requestOptions);
+            if (result && result.status === 200) {
+                this.LWSSO_COOKIE_KEY = result?.headers.get('set-cookie') ?? undefined;
+            }
+        } catch (error: any) {
+            this.logger.error('While authenticating with JSONauthentication ', ErrorHandler.handle(error));
+        }
+    }
+
     public async fetchAttachment(id: number): Promise<string> {
         if (this.session) {
             let myHeaders = this.setHeaders(this.session);
-            var requestOptions: RequestInit = {
+            let requestOptions: RequestInit = {
                 method: 'GET',
                 headers: myHeaders,
                 redirect: 'follow'
             };
             try {
-                let result = await fetch(`${this.session.account.uri}api/shared_spaces/${this.session.account.space}/workspaces/${this.session.account.workSpace}/attachments/${id}`, requestOptions);
+                const ATTACHMENT_URL: string = `${this.session.account.uri}api/shared_spaces/${this.session.account.space}/workspaces/${this.session.account.workSpace}/attachments/${id}`;
+                let result = await fetch(ATTACHMENT_URL, requestOptions);
+                if (result && result.status === 401) {
+                    this.JSONauthenticate(this.session);
+                    if (this.LWSSO_COOKIE_KEY) {
+                        myHeaders.append('Cookie', `${this.LWSSO_COOKIE_KEY}`);
+                        requestOptions.headers = myHeaders;
+                        result = await fetch(ATTACHMENT_URL, requestOptions);
+                    }
+                }
                 const buffer = await result.buffer();
                 return `data:${result.headers.get('Content-Type')};base64,` + buffer.toString('base64');
             } catch (e: any) {
@@ -592,6 +626,9 @@ export class OctaneService {
         if (session.type === AlmOctaneAuthenticationType.browser) {
             myHeaders.append('Cookie', `${session.cookieName}=${session.accessToken}`);
         } else {
+            if (this.LWSSO_COOKIE_KEY) {
+                myHeaders.append('Cookie', `${this.LWSSO_COOKIE_KEY}`);
+            }
             myHeaders.set('Authorization', 'Basic ' + Buffer.from(session.account.user + ":" + session.accessToken).toString('base64'));
         }
         myHeaders.append('Content-Type', 'application/octet-stream');
