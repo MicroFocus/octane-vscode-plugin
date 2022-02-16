@@ -11,17 +11,18 @@ import { getLogger } from 'log4js';
 
 function getValidSession(): AlmOctaneAuthenticationSession {
 	return {
-		accessToken: accessDetails.password,
+		// NOTE: octane access details are taken from npm parameters before trying to use the octane-access-details.json file
+		accessToken: process.env.npm_config_password ? process.env.npm_config_password : accessDetails.password,
 		id: 'test',
 		scopes: ['default'],
 		type: AlmOctaneAuthenticationType.userNameAndPassword,
 		account: {
 			id: 'test',
 			label: 'test',
-			space: accessDetails.space,
-			workSpace: accessDetails.workspace,
-			uri: accessDetails.serverUri,
-			user: accessDetails.user
+			space: process.env.npm_config_space ? process.env.npm_config_space : accessDetails.space,
+			workSpace: process.env.npm_config_workspace ? process.env.npm_config_workspace : accessDetails.workspace,
+			uri: process.env.npm_config_serverUri ? process.env.npm_config_serverUri : accessDetails.serverUri,
+			user: process.env.npm_config_user ? process.env.npm_config_user : accessDetails.user
 		},
 		cookieName: ''
 	};
