@@ -241,7 +241,7 @@ label {
 }
 
 .dropdown-menu.show {
-    width: -webkit-fill-available;
+    max-width: 22rem;
 }
 
 .form-check {
@@ -253,6 +253,8 @@ label {
     margin-bottom: unset !important;
     padding-left: 2rem !important;
     margin: unset !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .text-center {
