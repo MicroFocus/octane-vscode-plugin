@@ -498,27 +498,24 @@ export class OctaneService {
         return [];
     }
 
-    public async updateEntity(type: string | undefined, subType: string | undefined, body: any): Promise<boolean> {
+    public async updateEntity(type: string | undefined, subType: string | undefined, body: any) {
         this.logger.debug("[update] ", body);
         const apiEntityType = type || subType;
         if (!apiEntityType) {
-            return false;
+            return;
         }
         const endPoint = entityTypeApiEndpoint.get(apiEntityType);
         if (!endPoint) {
-            return false;
+            return;
         }
-        let entity = await this.octane.get(endPoint).at(body.id).execute();
-        this.octane.update(endPoint, body).execute()
-            .then((res: any) => {
-                vscode.window.showInformationMessage('Your item changes have been saved.');
-                return true;
-            }, (error: any) => {
-                this.logger.error('While updating entity: ', ErrorHandler.handle(error));
-                vscode.window.showErrorMessage((error.response.body.description) ?? 'We couldn’t save your changes');
-                return false;
-            });
-        return false;
+        try {
+            await this.octane.get(endPoint).at(body.id).execute();
+            await this.octane.update(endPoint, body).execute();
+            vscode.window.showInformationMessage('Your item changes have been saved.');
+        } catch (error: any) {
+            this.logger.error('While updating entity: ', ErrorHandler.handle(error));
+            vscode.window.showErrorMessage((error.response.body.description) ?? 'We couldn’t save your changes');
+        }
     }
 
     public async getFullDataForEntity(entityTypes: string, field: any, fullData: any) {
