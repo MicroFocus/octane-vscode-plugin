@@ -229,6 +229,7 @@ label {
     border-radius: unset;
     font-size: 13px !important;
     height: 2rem !important;
+    background: unset;
 }
 
 .dropdown-item {
