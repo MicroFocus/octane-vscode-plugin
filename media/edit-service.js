@@ -16,6 +16,12 @@
                 fieldsToSave.add(this.id);
             });
         });
+        $('.datetimepicker-input').each(function () {
+            $(this).on('click', e => {
+                inputIsDirty = true;
+                fieldsToSave.add(this.id);
+            });
+        });
         $('#select_phase').on('change', e => {
             inputIsDirty = true;
             fieldsToSave.add('phase');
@@ -418,6 +424,9 @@
                                                 val = JSON.parse(d?.value);
                                             } else {
                                                 val = doc?.value;
+                                            }
+                                            if (val === '' && field.field_type === 'date_time') {
+                                                updatedData[fieldNameMap.get(field.name) ?? field.name] = null;
                                             }
                                             if (val && val !== 'none' && val !== '-') {
                                                 if (field.field_type === 'integer') {
