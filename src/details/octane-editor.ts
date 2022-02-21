@@ -265,13 +265,17 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                 let id: string = pathComponents[4];
                 this.logger.error("Error: entity has been deleted.");
                 errorMessage = `Error: entity with id "${id}" and type "${subType === '' ? type : subType}" has been deleted.`;
+                vscode.window.showErrorMessage(errorMessage);
+                webviewPanel.webview.html = errorMessage;
             } else if (e.message) {
-                errorMessage = ErrorHandler.handle(e);
+                if (e.message !== 'Webview is disposed') {
+                    errorMessage = ErrorHandler.handle(e);
+                    vscode.window.showErrorMessage(errorMessage);
+                    webviewPanel.webview.html = errorMessage;
+                }
             } else {
                 this.logger.error(ErrorHandler.handle(e));
             }
-            vscode.window.showErrorMessage(errorMessage);
-            webviewPanel.webview.html = errorMessage;
         }
 
 
