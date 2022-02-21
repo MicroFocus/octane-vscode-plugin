@@ -43,183 +43,191 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
         context: vscode.WebviewViewResolveContext,
         token: vscode.CancellationToken,
     ) {
-        this.logger.info('WelcomeViewProvider.resolveWebviewView called');
-        this.logger.debug('context: ', context);
-        this.logger.debug('token: ', token);
-        this.view = webviewView;
+        try {
+            this.logger.info('WelcomeViewProvider.resolveWebviewView called');
+            this.logger.debug('context: ', context);
+            this.logger.debug('token: ', token);
+            this.view = webviewView;
 
-        webviewView.webview.options = {
-            // Allow scripts in the webview
-            enableScripts: true,
+            webviewView.webview.options = {
+                // Allow scripts in the webview
+                enableScripts: true,
 
-            localResourceRoots: [
-                this.extensionUri
-            ]
-        };
+                localResourceRoots: [
+                    this.extensionUri
+                ]
+            };
 
-        webviewView.onDidDispose(
-            () => {
-                this.wasDisposed = true;
-            }
-        );
-        webviewView.webview.html = await this.getHtmlForWebview(webviewView.webview);
+            webviewView.onDidDispose(
+                () => {
+                    this.wasDisposed = true;
+                }
+            );
+            webviewView.webview.html = await this.getHtmlForWebview(webviewView.webview);
 
-        webviewView.webview.onDidReceiveMessage(async data => {
-            switch (data.type) {
-                case 'attemptAuthentication':
-                    {
-                        try {
-                            const uri = vscode.workspace.getConfiguration('visual-studio-code-plugin-for-alm-octane');
-                            //save url to memento
-                            let regularUri = data.uri;
-                            let regExp = regularUri.match(/\?p=(\d+\/\d+)/) ?? regularUri.match(/(\/?%\d*[A-Za-z]*)/) ?? regularUri.match(/\/ui/);
-                            if (regExp) {
-                                regularUri = regularUri.split(regExp[0])[0];
-                                if (regularUri) {
-                                    regularUri = regularUri.split('ui')[0];
+            webviewView.webview.onDidReceiveMessage(async data => {
+                switch (data.type) {
+                    case 'attemptAuthentication':
+                        {
+                            try {
+                                const uri = vscode.workspace.getConfiguration('visual-studio-code-plugin-for-alm-octane');
+                                //save url to memento
+                                let regularUri = data.uri;
+                                let regExp = regularUri.match(/\?p=(\d+\/\d+)/) ?? regularUri.match(/(\/?%\d*[A-Za-z]*)/) ?? regularUri.match(/\/ui/);
+                                if (regExp) {
+                                    regularUri = regularUri.split(regExp[0])[0];
+                                    if (regularUri) {
+                                        regularUri = regularUri.split('ui')[0];
+                                    }
                                 }
+                                await vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.saveLoginData',
+                                    {
+                                        "uri": data.uri,
+                                        "url": regularUri.endsWith('/') ? regularUri : regularUri + '/',
+                                        "authTypeBrowser": data.browser,
+                                        "space": data.space,
+                                        "workspace": data.workspace,
+                                        "user": data.user
+                                    }
+                                );
+
+                                if (data.browser) {
+                                    try {
+                                        await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: true });
+                                    } catch (e: any) {
+                                        // this.logger.error(`Error on login: ${e}`);
+                                        vscode.window.showErrorMessage("Error on login.");
+                                        // throw e;
+                                    }
+                                } else {
+                                    try {
+                                        OctaneService.getInstance().storePasswordForAuthentication(data.password);
+                                        // await this.authenticationProvider.createManualSession(data.password);
+                                        await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: true });
+                                    } catch (e: any) {
+                                        // this.logger.error(`Error on login: ${e}`);
+                                        vscode.window.showErrorMessage("Error on login.");
+                                        // throw e;
+                                    } finally {
+                                        OctaneService.getInstance().storePasswordForAuthentication(undefined);
+                                    }
+                                }
+                            } catch (e) {
+                                this.logger.error('While creating session.', e);
                             }
-                            await vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.saveLoginData',
-                                {
-                                    "uri": data.uri,
-                                    "url": regularUri.endsWith('/') ? regularUri : regularUri + '/',
-                                    "authTypeBrowser": data.browser,
-                                    "space": data.space,
-                                    "workspace": data.workspace,
-                                    "user": data.user
+                            break;
+                        }
+                    case 'testConnection':
+                        {
+                            var authTestResult: any;
+                            if (data.uri !== undefined) {
+                                let regExp = data.uri.match(/\?p=(\d+\/\d+)/) ?? data.uri.match(/(\/?%\d*[A-Za-z]*)/) ?? data.uri.match(/\/ui/);
+                                if (regExp) {
+                                    data.uri = data.uri.split(regExp[0])[0];
+                                    if (data.uri) {
+                                        data.uri = data.uri.split('ui')[0];
+                                    }
                                 }
-                            );
-
+                                data.uri = data.uri.endsWith('/') ? data.uri : data.uri + '/';
+                            }
                             if (data.browser) {
                                 try {
-                                    await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: true });
+                                    authTestResult = await OctaneService.getInstance().testConnectionOnBrowserAuthentication(data.uri);
+                                    webviewView.webview.postMessage({
+                                        type: 'workspaceIdDoesExist',
+                                    });
+                                    webviewView.webview.postMessage({
+                                        type: 'testConnectionResponse',
+                                        authTestResult: authTestResult ? true : false
+                                    });
                                 } catch (e: any) {
-                                    // this.logger.error(`Error on login: ${e}`);
-                                    vscode.window.showErrorMessage("Error on login.");
-                                    // throw e;
+                                    webviewView.webview.postMessage({
+                                        type: 'workspaceIdDoesNotExist',
+                                        message: ErrorHandler.handle(e)
+                                    });
+                                    webviewView.webview.postMessage({
+                                        type: 'testConnectionResponse',
+                                        authTestResult: false
+                                    });
                                 }
+
                             } else {
                                 try {
-                                    OctaneService.getInstance().storePasswordForAuthentication(data.password);
-                                    // await this.authenticationProvider.createManualSession(data.password);
-                                    await vscode.authentication.getSession(AlmOctaneAuthenticationProvider.type, ['default'], { createIfNone: true });
+                                    authTestResult = await OctaneService.getInstance().testAuthentication(data.uri, data.space, data.workspace, data.user, data.password, undefined, undefined);
+                                    webviewView.webview.postMessage({
+                                        type: 'workspaceIdDoesExist',
+                                    });
+                                    webviewView.webview.postMessage({
+                                        type: 'testConnectionResponse',
+                                        authTestResult: true
+                                    });
                                 } catch (e: any) {
-                                    // this.logger.error(`Error on login: ${e}`);
-                                    vscode.window.showErrorMessage("Error on login.");
-                                    // throw e;
-                                } finally {
-                                    OctaneService.getInstance().storePasswordForAuthentication(undefined);
+                                    webviewView.webview.postMessage({
+                                        type: 'workspaceIdDoesNotExist',
+                                        message: ErrorHandler.handle(e)
+                                    });
+                                    webviewView.webview.postMessage({
+                                        type: 'testConnectionResponse',
+                                        authTestResult: false
+                                    });
                                 }
                             }
-                        } catch (e) {
-                            this.logger.error('While creating session.', e);
+
+                            break;
                         }
-                        break;
-                    }
-                case 'testConnection':
-                    {
-                        var authTestResult: any;
-                        if (data.uri !== undefined) {
-                            let regExp = data.uri.match(/\?p=(\d+\/\d+)/) ?? data.uri.match(/(\/?%\d*[A-Za-z]*)/) ?? data.uri.match(/\/ui/);
-                            if (regExp) {
-                                data.uri = data.uri.split(regExp[0])[0];
-                                if (data.uri) {
-                                    data.uri = data.uri.split('ui')[0];
+                    case 'changeInURL':
+                        {
+                            let url: string = data.url;
+                            let regExp = url.match(/\?p=(\d+\/\d+)\/?#?/);
+                            let space = regExp !== null ? regExp[1].split('/')[0] : null;
+                            let workspace = regExp !== null ? regExp[1].split('/')[1] : null;
+                            if (space === null || workspace === null) {
+                                let altRegExp = url.match(/\?p=((\d+)(\/?%?\d*[A-Za-z]*)(\d+))\/?#?/);
+                                space = altRegExp !== null ? altRegExp[2] : null;
+                                workspace = altRegExp !== null ? altRegExp[4] : null;
+                            }
+                            if (space === null || workspace === null) {
+                                let altRegExp = url.match(/\?[A-Za-z]*&?p=((\d+)(\/?%?\d*[A-Za-z]*)(\d+))\/?#?/);
+                                space = altRegExp !== null ? altRegExp[1].split('/')[0] : null;
+                                workspace = altRegExp !== null ? altRegExp[1].split('/')[1] : null;
+                            }
+                            if (space === null || workspace === null) {
+                                webviewView.webview.postMessage({
+                                    type: 'incorrectURLFormat',
+                                    message: "Could not get sharedspace/workspace ids from URL \n Example: (http|https)://{serverurl[:port]}/?p={sharedspaceid}/{workspaceid}"
+                                });
+                            } else {
+                                webviewView.webview.postMessage({
+                                    type: 'correctURLFormat',
+                                    space: space,
+                                    workspace: workspace
+                                });
+                            }
+                            break;
+                        }
+                    case 'clearAllSavedLoginData':
+                        {
+                            await vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.saveLoginData',
+                                {
+                                    "uri": '',
+                                    "url": '',
+                                    "authTypeBrowser": false,
+                                    "space": '',
+                                    "workspace": '',
+                                    "user": ''
                                 }
-                            }
-                            data.uri = data.uri.endsWith('/') ? data.uri : data.uri + '/';
+                            );
+                            break;
                         }
-                        if (data.browser) {
-                            try {
-                                authTestResult = await OctaneService.getInstance().testConnectionOnBrowserAuthentication(data.uri);
-                                webviewView.webview.postMessage({
-                                    type: 'workspaceIdDoesExist',
-                                });
-                                webviewView.webview.postMessage({
-                                    type: 'testConnectionResponse',
-                                    authTestResult: authTestResult ? true : false
-                                });
-                            } catch (e: any) {
-                                webviewView.webview.postMessage({
-                                    type: 'workspaceIdDoesNotExist',
-                                    message: ErrorHandler.handle(e)
-                                });
-                                webviewView.webview.postMessage({
-                                    type: 'testConnectionResponse',
-                                    authTestResult: false
-                                });
-                            }
-
-                        } else {
-                            try {
-                                authTestResult = await OctaneService.getInstance().testAuthentication(data.uri, data.space, data.workspace, data.user, data.password, undefined, undefined);
-                                webviewView.webview.postMessage({
-                                    type: 'workspaceIdDoesExist',
-                                });
-                                webviewView.webview.postMessage({
-                                    type: 'testConnectionResponse',
-                                    authTestResult: true
-                                });
-                            } catch (e: any) {
-                                webviewView.webview.postMessage({
-                                    type: 'workspaceIdDoesNotExist',
-                                    message: ErrorHandler.handle(e)
-                                });
-                                webviewView.webview.postMessage({
-                                    type: 'testConnectionResponse',
-                                    authTestResult: false
-                                });
-                            }
-                        }
-
-                        break;
-                    }
-                case 'changeInURL':
-                    {
-                        let url: string = data.url;
-                        let regExp = url.match(/\?p=(\d+\/\d+)\/?#?/);
-                        let space = regExp !== null ? regExp[1].split('/')[0] : null;
-                        let workspace = regExp !== null ? regExp[1].split('/')[1] : null;
-                        if (space === null || workspace === null) {
-                            let altRegExp = url.match(/\?p=((\d+)(\/?%?\d*[A-Za-z]*)(\d+))\/?#?/);
-                            space = altRegExp !== null ? altRegExp[2] : null;
-                            workspace = altRegExp !== null ? altRegExp[4] : null;
-                        }
-                        if (space === null || workspace === null) {
-                            let altRegExp = url.match(/\?[A-Za-z]*&?p=((\d+)(\/?%?\d*[A-Za-z]*)(\d+))\/?#?/);
-                            space = altRegExp !== null ? altRegExp[1].split('/')[0] : null;
-                            workspace = altRegExp !== null ? altRegExp[1].split('/')[1] : null;
-                        }
-                        if (space === null || workspace === null) {
-                            webviewView.webview.postMessage({
-                                type: 'incorrectURLFormat',
-                                message: "Could not get sharedspace/workspace ids from URL \n Example: (http|https)://{serverurl[:port]}/?p={sharedspaceid}/{workspaceid}"
-                            });
-                        } else {
-                            webviewView.webview.postMessage({
-                                type: 'correctURLFormat',
-                                space: space,
-                                workspace: workspace
-                            });
-                        }
-                        break;
-                    }
-                case 'clearAllSavedLoginData':
-                    {
-                        await vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.saveLoginData',
-                            {
-                                "uri": '',
-                                "url": '',
-                                "authTypeBrowser": false,
-                                "space": '',
-                                "workspace": '',
-                                "user": ''
-                            }
-                        );
-                        break;
-                    }
+                }
+            });
+        } catch (e: any) {
+            if (e.message && e.message !== 'Webview is disposed') {
+                let errorMessage = ErrorHandler.handle(e);
+                vscode.window.showErrorMessage(errorMessage);
+                webviewView.webview.html = errorMessage;
             }
-        });
+        }
     }
 
     async getHtmlForWebview(webview: vscode.Webview): Promise<string> {
