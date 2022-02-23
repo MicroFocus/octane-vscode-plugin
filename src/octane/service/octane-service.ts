@@ -624,7 +624,7 @@ export class OctaneService {
         return '';
     }
 
-    private setHeaders(session: any): Headers {
+    private setHeaders(session: any, contentType?: string): Headers {
         var myHeaders = this.commonHeaders();
         if (session.type === AlmOctaneAuthenticationType.browser) {
             myHeaders.append('Cookie', `${session.cookieName}=${session.accessToken}`);
@@ -634,7 +634,11 @@ export class OctaneService {
             }
             myHeaders.set('Authorization', 'Basic ' + Buffer.from(session.account.user + ":" + session.accessToken).toString('base64'));
         }
-        myHeaders.append('Content-Type', 'application/octet-stream');
+        if (contentType) {
+            myHeaders.append('Content-Type', `application/${contentType}`);
+        } else {
+            myHeaders.append('Content-Type', 'application/octet-stream');
+        }
         return myHeaders;
     }
 
@@ -717,8 +721,7 @@ export class OctaneService {
             if (e.type === 'comment') {
 
                 if (this.session) {
-                    let myHeaders = this.setHeaders(this.session);
-
+                    let myHeaders = this.setHeaders(this.session, 'json');
                     let entityModel: string = JSON.stringify({
                         id: `${e.id}`
                     });
@@ -732,6 +735,7 @@ export class OctaneService {
 
                     try {
                         let result = await fetch(`${this.session.account.uri}internal-api/shared_spaces/${this.session.account.space}/workspaces/${this.session.account.workSpace}/comments/${e.id}/dismiss`, requestOptions);
+                        vscode.window.showInformationMessage('Item dismissed.');
                         this.logger.debug(result);
                     } catch (e: any) {
                         vscode.window.showErrorMessage((e.error?.errors[0]?.description) ?? 'Item dismissal failed');
