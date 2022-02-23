@@ -296,7 +296,6 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                 if (error.message !== 'Webview is disposed') {
                     let errorMessage = ErrorHandler.handle(error);
                     vscode.window.showErrorMessage(errorMessage);
-                    webviewPanel.webview.html = errorMessage;
                 }
             }
         }
