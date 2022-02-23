@@ -455,7 +455,13 @@
                             }
                         }
                     } catch (e) {
-                        console.log(e);
+                        if (e.message) {
+                            if (e.message !== 'Webview is disposed') {
+                                console.log(e);
+                            }
+                        }
+
+                        
                     }
                     break;
                 }
