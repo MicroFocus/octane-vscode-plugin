@@ -282,14 +282,23 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
     }
 
     private async refreshView(document: OctaneEntityDocument, webviewPanel: vscode.WebviewPanel) {
-        await document.updated();
-        webviewPanel.webview.html = await this.getHtmlForWebview(webviewPanel.webview, this.context, document.entity, document.fields);
-        webviewPanel.webview.postMessage({
-            type: 'init',
-            from: 'webview'
-        });
-        vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.refreshAll');
-        vscode.window.showInformationMessage('The entity has been refreshed.');
+        try {
+            await document.updated();
+            webviewPanel.webview.html = await this.getHtmlForWebview(webviewPanel.webview, this.context, document.entity, document.fields);
+            webviewPanel.webview.postMessage({
+                type: 'init',
+                from: 'webview'
+            });
+            vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.refreshAll');
+            vscode.window.showInformationMessage('The entity has been refreshed.');
+        } catch (error: any) {
+            if (error.message) {
+                if (error.message !== 'Webview is disposed') {
+                    let errorMessage = ErrorHandler.handle(error);
+                    vscode.window.showErrorMessage(errorMessage);
+                }
+            }
+        }
     }
 
     private getMementoKeyForFields(entity: OctaneEntity) {
