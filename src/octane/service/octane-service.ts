@@ -735,6 +735,14 @@ export class OctaneService {
 
                     try {
                         let result = await fetch(`${this.session.account.uri}internal-api/shared_spaces/${this.session.account.space}/workspaces/${this.session.account.workSpace}/comments/${e.id}/dismiss`, requestOptions);
+                        if (result && result.status === 401) {
+                            await this.JSONauthenticate(this.session);
+                            if (this.LWSSO_COOKIE_KEY) {
+                                myHeaders.append('Cookie', `${this.LWSSO_COOKIE_KEY}`);
+                                requestOptions.headers = myHeaders;
+                                result = await fetch(`${this.session.account.uri}internal-api/shared_spaces/${this.session.account.space}/workspaces/${this.session.account.workSpace}/comments/${e.id}/dismiss`, requestOptions);
+                            }
+                        }                        
                         vscode.window.showInformationMessage('Item dismissed.');
                         this.logger.debug(result);
                     } catch (e: any) {
