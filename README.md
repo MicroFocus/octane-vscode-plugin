@@ -1,25 +1,24 @@
 # Visual Studio Code for ALM Octane
 
 With the ALM Octane Visual Studio Code plugin, you can do your ALM Octane work (on stories, defects, tasks, and so on) directly within the Visual Studio Code development framework.
-## Dependencies
 
-* node (tested with v14.17.0)
-* npm (tested with 6.14.13)
+## Description
 
-## Steps to build and run
+Using the plugin, developers can connect to an ALM Octane workspace, view ALM Octane items, and make updates.
 
-1. git checkout
-2. `cd octane-vscode-plugin/`
-3. `npm install`
+The plugin supports two-way integration:
+- The plugin shows work item data from ALM Octane in VS Code;
+- Changes made in VS Code impact data in ALM Octane.
 
-## Testing and installing locally
+## Minimum requirements
+- ALM Octane version: 16.0.300 or later;
+- VS Code version: 1.56.0 or later.
 
-* Inside the editor, press `F5` to compile and run the extension. This will run the extension in a new Extension Developement Host window.
-* One can install the extension by issueing the following command in shell: `code --install-extension visual-studio-code-plugin-for-alm-octane-0.0.1.vsix` providing the path to the `.vsix` file.
+## Additional info
 
-## Publishing and packaging the extention
+- The plugin is open source. Feel free to create a pull request if you consider that changes can be made in order to improve this extension: [VS Code plugin github page]( https://github.com/MicroFocus/octane-vscode-plugin ).
+- If you have any questions regarding it, don't hesitate to ask them on our [community forum](https://community.microfocus.com/adtd/alm_octane/f/restapibeta).
+- [Documentation link](https://admhelp.microfocus.com/octane/en/latest/Online/Content/UserGuide/how-work-in-VSCode.htm).
 
-1. intall `vsce` ,short for "Visual Studio Code Extensions": `npm install -g vsce`
-2. `cd octane-vscode-plugin/`
-3. run command `vsce package` if you want to package and test the extension on your local install of VS Code.
-4. run command `vsce publish` if you want to publish the extension.
+
+© 2016-2022 Micro Focus
