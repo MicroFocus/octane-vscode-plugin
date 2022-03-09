@@ -32,18 +32,21 @@ suite('OctaneService test suite', () => {
 
 	test('Password authentication should fail with empty credentials', async () => {
 		let service = OctaneService.getInstance();
-		await assert.rejects(service.testAuthentication(accessDetails.serverUri, accessDetails.space, accessDetails.workspace, '', '', undefined, undefined));
+		const validSession = getValidSession();
+		await assert.rejects(service.testAuthentication(validSession.account.uri, validSession.account.space, validSession.account.workSpace, '', '', undefined, undefined));
 	}).timeout(5000);
 
 
 	test('Password authentication should succeed with correct credentials', async () => {
 		let service = OctaneService.getInstance();
-		await service.testAuthentication(accessDetails.serverUri, accessDetails.space, accessDetails.workspace, accessDetails.user, accessDetails.password, undefined, undefined);
+		const validSession = getValidSession();
+		await service.testAuthentication(validSession.account.uri, validSession.account.space, validSession.account.workSpace, validSession.account.user, validSession.accessToken, undefined, undefined);
 	}).timeout(5000);
 
 	test('SSO authentication test test', async () => {
 		let service = OctaneService.getInstance();
-		let success = await service.testConnectionOnBrowserAuthentication(accessDetails.serverUri);
+		const validSession = getValidSession();
+		let success = await service.testConnectionOnBrowserAuthentication(validSession.account.uri);
 		assert.strictEqual(success, true, 'Unsuccessful authentication test');
 	}).timeout(5000);
 
@@ -62,8 +65,9 @@ suite('OctaneService test suite', () => {
 	test.skip('grantTokenAuthenticate should log in -- needs user interaction', async function () {
 		this.timeout(15000);
 		let service = OctaneService.getInstance();
-		let details = await service.grantTokenAuthenticate(accessDetails.serverUri);
-		assert.strictEqual(details.username, accessDetails.user);
+		const validSession = getValidSession();
+		let details = await service.grantTokenAuthenticate(validSession.account.uri);
+		assert.strictEqual(details.username, validSession.account.user);
 	});
 
 	suite('Octane integration tests', async function () {
