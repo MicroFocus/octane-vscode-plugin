@@ -584,6 +584,12 @@ export class OctaneService {
                             .build())
                     .execute();
                 return result ?? undefined;
+            } 
+            if (entityTypes === 'workspace_user') {
+                const result = await this.octane.get(endPoint)
+                    .query(Query.field('activity_level').equal(0).build())
+                    .execute();
+                return result ?? undefined;
             } else {
                 const result = await this.octane.get(endPoint)
                     .execute();

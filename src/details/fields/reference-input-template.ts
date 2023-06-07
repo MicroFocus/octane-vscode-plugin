@@ -91,11 +91,11 @@ export class ReferenceInputTemplate extends AbstractFieldTemplate {
     }
 
     private generateOptionName(value: any) {
-        if (value.name) {
-            return value.name;
-        } else if (value.full_name) {
+        if (value.full_name) {
             return value.full_name;
-        }
+        } else if (value.name) {
+            return value.name;
+        } 
         return value;
     }
 }

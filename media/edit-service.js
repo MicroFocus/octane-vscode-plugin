@@ -165,42 +165,42 @@
         select.html(html);
         html += `<option value='none-selected'>None selected</option>`;
         if (options) {
+            let dropdownOptions;
+            let fieldType;
+            let displayField;
+
             if (options.data) {
-                for (let option of options.data) {
-                    if (option.type === 'workspace_user') {
-                        if (option.full_name !== selectedName) {
-                            html += `<option value='${JSON.stringify(option)}'>${option.full_name}</option>`;
-                        } else {
-                            html += `<option selected value='${JSON.stringify(option)}'>${option.full_name}</option>`;
-                        }
-                    } else {
-                        if (option.name !== selectedName) {
-                            html += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
-                        } else {
-                            html += `<option selected value='${JSON.stringify(option)}'>${option.name}</option>`;
-                        }
-                    }
-                }
+                dropdownOptions = options.data;
             } else {
-                for (let option of options) {
-                    if (option.type === 'workspace_user') {
-                        if (option.full_name !== selectedName) {
-                            html += `<option value='${JSON.stringify(option)}'>${option.full_name}</option>`;
-                        } else {
-                            html += `<option selected value='${JSON.stringify(option)}'>${option.full_name}</option>`;
-                        }
-                    } else {
-                        if (option.name !== selectedName) {
-                            html += `<option value='${JSON.stringify(option)}'>${option.name}</option>`;
-                        } else {
-                            html += `<option selected value='${JSON.stringify(option)}'>${option.name}</option>`;
-                        }
-                    }
+                dropdownOptions = options;
+            }
+
+
+            if (dropdownOptions.length > 0) {
+                fieldType = dropdownOptions[0].type;
+                
+                displayField = fieldType === 'workspace_user' ? 'full_name' : 'name';
+
+                for (let dropdownOption of dropdownOptions) {
+                    html += addOptionsBasedOnSelection(dropdownOption, displayField, selectedName);
+                }                
+
+                if (selectedName !== "" && !dropdownOptions.map(o => o[displayField]).includes(selectedName)) {
+                    html = `<option value='${null}'>${selectedName}</option>` + html;
                 }
             }
+
             select.html(html);
             selectDataPresent.push(fieldName);
             $('#' + fieldName).multiselect('rebuild');
+        }
+    }
+
+    function addOptionsBasedOnSelection(option, field, selectedName) {
+        if (option[field] !== selectedName) {
+            return `<option value='${JSON.stringify(option)}'>${option[field]}</option>`;
+        } else {
+            return `<option selected value='${JSON.stringify(option)}'>${option[field]}</option>`;
         }
     }
 

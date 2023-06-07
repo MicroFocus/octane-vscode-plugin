@@ -596,11 +596,11 @@ function getFieldValue(data: any, fieldName: string): string | any[] {
         });
         return ref.length ? ref : '';
     }
-    if (field['name']) {
-        return field['name'];
-    }
     if (field['full_name']) {
         return field['full_name'];
+    }
+    if (field['name']) {
+        return field['name'];
     }
     return field;
 }
