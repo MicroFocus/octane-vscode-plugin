@@ -4,7 +4,7 @@
 	"icon": "media/logo.png",
 	"publisher": "IdoRan",
 	"description": "With the ALM Octane Visual Studio Code plugin, you can do your ALM Octane work (on stories, defects, tasks, and so on) directly within the Visual Studio Code development framework.",
-	"version": "16.0.301",
+	"version": "2023.0.0",
 	"engines": {
 		"vscode": "^1.56.0"
 	},
