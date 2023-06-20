@@ -21,4 +21,4 @@ The plugin supports two-way integration:
 - [Documentation link](https://admhelp.microfocus.com/octane/en/latest/Online/Content/UserGuide/how-work-in-VSCode.htm).
 
 
-© 2021-2023 Micro Focus
+Copyright 2021-2023 Open Text
