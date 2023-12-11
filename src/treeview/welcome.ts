@@ -287,7 +287,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
 				<link href="${styleVSCodeUri}" rel="stylesheet">
 				<link href="${myStyle}" rel="stylesheet">
 				
-				<title>Welcome to ALM Octane</title>
+				<title>Welcome to ValueEdge</title>
 			</head>
 			<body>
                 <div class="main-container">
@@ -307,7 +307,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                 <div class="main-container" style="flex-direction: row; align-items: center;">
 				    <input style="width: unset" id="attempt_authentication_radio_id" class="attempt_authentication_radio" type="radio" name="auth"></input> <label style="margin: unset !important;">Login with username and password</label>
                     <span 
-                        title="Log into ALM Octane directly with your username and password, in non-SSO environments. This method saves your login credentials between sessions, so you do not have to re-enter them." 
+                        title="Log into ValueEdge directly with your username and password, in non-SSO environments. This method saves your login credentials between sessions, so you do not have to re-enter them." 
                         style="margin: 0rem 0rem 0rem 0.5rem; cursor: pointer;  display: flex;">
                         <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="16px" height="16px" viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve">  <image id="image0" width="16" height="16" x="0" y="0"
                             href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAABGdBTUEAALGPC/xhBQAAACBjSFJN
@@ -348,7 +348,7 @@ export class WelcomeViewProvider implements vscode.WebviewViewProvider {
                 <div class="main-container" style="flex-direction: row; align-items: center;">
 				    <input style="width: unset" id="attempt_browser_authentication_radio_id" class="attempt_browser_authentication_radio" type="radio" name="auth"></input> <label style="margin: unset !important;">Login using a browser</label>
                     <span 
-                        title="Log into ALM Octane using a browser. You can use this method for non-SSO, SSO, and federated environments. Your login credentials are not saved between sessions, so you will have to re-enter them each time." 
+                        title="Log into ValueEdge using a browser. You can use this method for non-SSO, SSO, and federated environments. Your login credentials are not saved between sessions, so you will have to re-enter them each time." 
                         style="margin: 0rem 0rem 0rem 0.5rem; cursor: pointer; display: flex;">
                         <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="16px" height="16px" viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve">  <image id="image0" width="16" height="16" x="0" y="0"
                             href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAABGdBTUEAALGPC/xhBQAAACBjSFJN

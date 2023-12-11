@@ -1,17 +1,17 @@
-# Visual Studio Code for ALM Octane
+# Visual Studio Code for ValueEdge
 
-With the ALM Octane Visual Studio Code plugin, you can do your ALM Octane work (on stories, defects, tasks, and so on) directly within the Visual Studio Code development framework.
+With the ValueEdge Visual Studio Code plugin, you can do your ValueEdge work (on stories, defects, tasks, and so on) directly within the Visual Studio Code development framework.
 
 ## Description
 
-Using the plugin, developers can connect to an ALM Octane workspace, view ALM Octane items, and make updates.
+Using the plugin, developers can connect to an ValueEdge workspace, view ValueEdge items, and make updates.
 
 The plugin supports two-way integration:
-- The plugin shows work item data from ALM Octane in VS Code;
-- Changes made in VS Code impact data in ALM Octane.
+- The plugin shows work item data from ValueEdge in VS Code;
+- Changes made in VS Code impact data in ValueEdge.
 
 ## Minimum requirements
-- ALM Octane version: 16.0.300 or later;
+- ValueEdge version: 16.0.300 or later;
 - VS Code version: 1.56.0 or later.
 
 ## Additional info
