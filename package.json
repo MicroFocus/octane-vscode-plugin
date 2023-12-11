@@ -1,9 +1,9 @@
 {
 	"name": "visual-studio-code-plugin-for-alm-octane",
-	"displayName": "ALM Octane",
+	"displayName": "ValueEdge",
 	"icon": "media/logo.png",
 	"publisher": "IdoRan",
-	"description": "With the ALM Octane Visual Studio Code plugin, you can do your ALM Octane work (on stories, defects, tasks, and so on) directly within the Visual Studio Code development framework.",
+	"description": "With the ValueEdge Visual Studio Code plugin, you can do your ValueEdge work (on stories, defects, tasks, and so on) directly within the Visual Studio Code development framework.",
 	"version": "2023.0.1",
 	"engines": {
 		"vscode": "^1.56.0"
@@ -42,13 +42,13 @@
 	"contributes": {
 		"authentication": [
 			{
-				"label": "ALM Octane",
+				"label": "ValueEdge",
 				"id": "alm-octane"
 			}
 		],
 		"configuration": [
 			{
-				"title": "Visual Studio Code plugin for ALM Octane",
+				"title": "Visual Studio Code plugin for ValueEdge",
 				"properties": {
 					"visual-studio-code-plugin-for-alm-octane.logLevel": {
 						"type": "string",
@@ -79,7 +79,7 @@
 			"activitybar": [
 				{
 					"id": "visual-studio-code-plugin-for-alm-octane-explorer",
-					"title": "My Work - ALM Octane",
+					"title": "My Work - ValueEdge",
 					"icon": "media/logo.svg"
 				}
 			]
@@ -88,7 +88,7 @@
 			"visual-studio-code-plugin-for-alm-octane-explorer": [
 				{
 					"id": "visual-studio-code-plugin-for-alm-octane.myWelcome",
-					"name": "Welcome to ALM Octane",
+					"name": "Welcome to ValueEdge",
 					"icon": "media/favicon.png",
 					"type": "webview",
 					"when": "!visual-studio-code-plugin-for-alm-octane.hasSession"
@@ -338,7 +338,7 @@
 			},
 			{
 				"command": "visual-studio-code-plugin-for-alm-octane.quickPick",
-				"title": "Octane - Search Issues",
+				"title": "ValueEdge - Search Issues",
 				"icon": "$(search-view-icon)"
 			},
 			{
@@ -348,7 +348,7 @@
 			},
 			{
 				"command": "visual-studio-code-plugin-for-alm-octane.details.closeAll",
-				"title": "Close all octane entity editors",
+				"title": "Close all ValueEdge entity editors",
 				"icon": "$(close-all)"
 			}
 		]

@@ -1,4 +1,4 @@
-# Visual Studio Code for ALM Octane 
+# Visual Studio Code for ValueEdge 
 
 ## Dependencies 
 

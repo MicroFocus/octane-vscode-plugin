@@ -46,7 +46,7 @@ export function registerCommand(context: ExtensionContext) {
 		let service = OctaneService.getInstance();
 
 		const quickPick = vscode.window.createQuickPick();
-		quickPick.title = 'Search in Octane';
+		quickPick.title = 'Search in ValueEdge';
 		quickPick.placeholder = 'Search term';
 		quickPick.items = [];
 		let history: OctaneQuickPickItem[] = context.workspaceState.get('visual-studio-code-plugin-for-alm-octane.quickPick.history', []);
