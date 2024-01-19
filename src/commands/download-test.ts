@@ -51,8 +51,18 @@ export function registerCommand(context: ExtensionContext) {
 					baseUri = vscode.workspace.workspaceFolders[0].uri;
 			}
 			logger.debug(`Trying to populate download script default location using ${baseUri}`);
+
 			let newFile;
-			newFile = vscode.Uri.joinPath(baseUri, `${e.entity.name}_${e.entity.id}.feature`);
+
+			if (e.entity.subtype === 'scenario_test') {
+				const entity = await service.getDataFromOctaneForTypeAndId(e.entity.type, e.entity.subtype, e.entity.id, [{'name': 'bdd_spec'}]);
+				const parentEntityName = entity.bdd_spec.name;
+				const parentEntityId = entity.bdd_spec.id;
+
+				newFile = vscode.Uri.joinPath(baseUri, `${parentEntityName}_${parentEntityId}.feature`);
+			} else {
+				newFile = vscode.Uri.joinPath(baseUri, `${e.entity.name}_${e.entity.id}.feature`);
+			}
 
 			const fileInfos = await vscode.window.showSaveDialog({ defaultUri: newFile });
 			if (fileInfos) {
