@@ -489,16 +489,21 @@ export class OctaneService {
         return this.octaneMap.get(type);
     }
 
-    public async getDataFromOctaneForTypeAndId(type: string | undefined, subType: string | undefined, id: string) {
+    public async getDataFromOctaneForTypeAndId(type: string | undefined, subType: string | undefined, id: string, fields?: any[]) {
         const octaneType = subType || type;
         if (!octaneType) {
             return;
         }
-        const fields = await this.getFieldsForType(octaneType);
+
         if (!fields) {
-            this.logger.error(`Could not determine fields for type ${octaneType}.`);
-            return;
+            fields = await this.getFieldsForType(octaneType);
+
+            if (!fields) {
+                this.logger.error(`Could not determine fields for type ${octaneType}.`);
+                return;
+            }
         }
+
         const apiEntityType = type || subType;
         if (!apiEntityType) {
             return;
