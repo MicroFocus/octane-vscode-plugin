@@ -4,7 +4,7 @@
 	"icon": "media/logo.png",
 	"publisher": "IdoRan",
 	"description": "With the ValueEdge Visual Studio Code plugin, you can do your ValueEdge work (on stories, defects, tasks, and so on) directly within the Visual Studio Code development framework.",
-	"version": "24.1.0",
+	"version": "2024.1.0",
 	"engines": {
 		"vscode": "^1.56.0"
 	},
