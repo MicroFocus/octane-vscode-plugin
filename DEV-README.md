@@ -2,9 +2,9 @@
 
 ## Dependencies 
 
- * node (tested with v14.17.0) 
+ * node (tested with v18.15.0) 
 
-* npm (tested with 6.14.13) 
+* npm (tested with 9.5.0) 
 
   
 
