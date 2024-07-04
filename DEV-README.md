@@ -1,4 +1,4 @@
-# Visual Studio Code for ValueEdge 
+# Visual Studio Code for OpenText™️ Core Software Delivery Platform 
 
 ## Dependencies 
 

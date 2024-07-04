@@ -99,7 +99,7 @@ suite('OctaneService test suite', () => {
 		assert.strictEqual(details.username, validSession.account.user);
 	});
 
-	suite('ValueEdge integration tests', async function () {
+	suite('OpenText™️ Core Software Delivery Platform integration tests', async function () {
 
 		const createdEntities: { endpoint: any; id: string; type: string }[] = [];
 

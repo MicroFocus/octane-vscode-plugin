@@ -82,7 +82,7 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 
 		this.keychain = new Keychain(context, `${type}.auth`);
 
-		context.subscriptions.push(vscode.authentication.registerAuthenticationProvider(type, 'ValueEdge', this, { supportsMultipleAccounts: false }));
+		context.subscriptions.push(vscode.authentication.registerAuthenticationProvider(type, 'OpenText™️ Core Software Delivery Platform', this, { supportsMultipleAccounts: false }));
 
 		context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.saveLoginData', async (loginData) => {
 			if (loginData) {
@@ -149,7 +149,7 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 		const space: string | undefined = loginData?.space;
 		const workspace: string | undefined = loginData?.workspace;
 		if (uri === undefined || uri === '') {
-			throw new Error('ValueEdge URL was not defined.');
+			throw new Error('OpenText™️ Core Software Delivery Platform URL was not defined.');
 		}
 		uri = uri.endsWith('/') ? uri : uri + '/';
 

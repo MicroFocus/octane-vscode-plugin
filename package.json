@@ -1,10 +1,10 @@
 {
 	"name": "visual-studio-code-plugin-for-alm-octane",
-	"displayName": "ValueEdge",
+	"displayName": "OpenText™️ Core Software Delivery Platform",
 	"icon": "media/logo.png",
 	"publisher": "IdoRan",
-	"description": "With the ValueEdge Visual Studio Code plugin, you can do your ValueEdge work (on stories, defects, tasks, and so on) directly within the Visual Studio Code development framework.",
-	"version": "2024.2.0",
+	"description": "With the OpenText™️ Core Software Delivery Platform Visual Studio Code plugin, you can do your OpenText™️ Core Software Delivery Platform work (on stories, defects, tasks, and so on) directly within the Visual Studio Code development framework.",
+	"version": "2024.3.0",
 	"engines": {
 		"vscode": "^1.56.0"
 	},
@@ -42,13 +42,13 @@
 	"contributes": {
 		"authentication": [
 			{
-				"label": "ValueEdge",
+				"label": "OpenText™️ Core Software Delivery Platform",
 				"id": "alm-octane"
 			}
 		],
 		"configuration": [
 			{
-				"title": "Visual Studio Code plugin for ValueEdge",
+				"title": "Visual Studio Code plugin for OpenText™️ Core Software Delivery Platform",
 				"properties": {
 					"visual-studio-code-plugin-for-alm-octane.logLevel": {
 						"type": "string",
@@ -79,7 +79,7 @@
 			"activitybar": [
 				{
 					"id": "visual-studio-code-plugin-for-alm-octane-explorer",
-					"title": "My Work - ValueEdge",
+					"title": "My Work - OpenText™️ Core Software Delivery Platform",
 					"icon": "media/logo.svg"
 				}
 			]
@@ -88,7 +88,7 @@
 			"visual-studio-code-plugin-for-alm-octane-explorer": [
 				{
 					"id": "visual-studio-code-plugin-for-alm-octane.myWelcome",
-					"name": "Welcome to ValueEdge",
+					"name": "Welcome to OpenText™️ Core Software Delivery Platform",
 					"icon": "media/favicon.png",
 					"type": "webview",
 					"when": "!visual-studio-code-plugin-for-alm-octane.hasSession"
@@ -338,7 +338,7 @@
 			},
 			{
 				"command": "visual-studio-code-plugin-for-alm-octane.quickPick",
-				"title": "ValueEdge - Search Issues",
+				"title": "OpenText™️ Core Software Delivery Platform - Search Issues",
 				"icon": "$(search-view-icon)"
 			},
 			{
@@ -348,7 +348,7 @@
 			},
 			{
 				"command": "visual-studio-code-plugin-for-alm-octane.details.closeAll",
-				"title": "Close all ValueEdge entity editors",
+				"title": "Close all OpenText™️ Core Software Delivery Platform entity editors",
 				"icon": "$(close-all)"
 			}
 		]

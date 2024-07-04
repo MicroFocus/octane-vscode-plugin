@@ -1,17 +1,17 @@
-# Visual Studio Code for ValueEdge
+# Visual Studio Code for OpenText™️ Core Software Delivery Platform
 
-With the ValueEdge Visual Studio Code plugin, you can do your ValueEdge work (on stories, defects, tasks, and so on) directly within the Visual Studio Code development framework.
+With the OpenText™️ Core Software Delivery Platform Visual Studio Code plugin, you can do your OpenText™️ Core Software Delivery Platform work (on stories, defects, tasks, and so on) directly within the Visual Studio Code development framework.
 
 ## Description
 
-Using the plugin, developers can connect to an ValueEdge workspace, view ValueEdge items, and make updates.
+Using the plugin, developers can connect to an OpenText™️ Core Software Delivery Platform workspace, view OpenText™️ Core Software Delivery Platform items, and make updates.
 
 The plugin supports two-way integration:
-- The plugin shows work item data from ValueEdge in VS Code;
-- Changes made in VS Code impact data in ValueEdge.
+- The plugin shows work item data from OpenText™️ Core Software Delivery Platform in VS Code;
+- Changes made in VS Code impact data in OpenText™️ Core Software Delivery Platform.
 
 ## Minimum requirements
-- ValueEdge version: 16.0.300 or later;
+- OpenText™️ Core Software Delivery Platform version: 16.0.300 or later;
 - VS Code version: 1.56.0 or later.
 
 ## Additional info
