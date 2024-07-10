@@ -464,7 +464,7 @@ export class OctaneService {
 
     private async getRemoteFieldsForType(type: string) {
         if (!this.isLoggedIn()) {
-            throw new Error('Please log in to query ValueEdge entities.');
+            throw new Error('Please log in to query Core Software Delivery Platform entities.');
         }
         try {
             const result = await this.octane.get(Octane.Octane.entityTypes.fieldsMetadata)
