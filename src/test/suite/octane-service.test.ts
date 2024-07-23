@@ -30,8 +30,7 @@
 import * as assert from 'assert';
 
 import { OctaneService } from '../../octane/service/octane-service';
-import * as Octane from '@microfocus/alm-octane-js-rest-sdk';
-import * as Query from '@microfocus/alm-octane-js-rest-sdk/lib/query';
+import { Octane, Query } from '@microfocus/alm-octane-js-rest-sdk';
 import { AlmOctaneAuthenticationSession, AlmOctaneAuthenticationType } from '../../auth/authentication-provider';
 import * as accessDetails from './octane-access-details.json';
 import * as entitiesToCreate from './octane-test-entities.json';
@@ -105,10 +104,10 @@ suite('OctaneService test suite', () => {
 
 		const validSession = getValidSession();
 
-		const octaneInstace = new Octane.Octane({
+		const octaneInstace = new Octane({
 			server: validSession.account.uri,
-			sharedSpace: validSession.account.space,
-			workspace: validSession.account.workSpace,
+			sharedSpace: Number(validSession.account.space),
+			workspace: Number(validSession.account.workSpace),
 			user: validSession.account.user,
 			password: validSession.accessToken,
 			headers: {
@@ -142,7 +141,7 @@ suite('OctaneService test suite', () => {
 		this.afterAll(async () => {
 			for (let i = 0; i < createdEntities.length; i++) {
 				await octaneInstace.delete(createdEntities[i].endpoint)
-					.at(createdEntities[i].id)
+					.at(Number(createdEntities[i].id))
 					.execute();
 			}
 		});

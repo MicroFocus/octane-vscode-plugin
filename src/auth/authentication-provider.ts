@@ -163,7 +163,7 @@ export class AlmOctaneAuthenticationProvider implements vscode.AuthenticationPro
 		} else {
 			try {
 				let tokenResult = await OctaneService.getInstance().grantTokenAuthenticate(uri);
-				const authTestResult = await OctaneService.getInstance().testAuthentication(uri, space, workspace, tokenResult.username, undefined, tokenResult.cookieName, tokenResult.accessToken);
+				const authTestResult = await OctaneService.getInstance().testAuthentication(uri, space, workspace, tokenResult.username, '', tokenResult.cookieName, tokenResult.accessToken);
 				session = {
 					id: uuid(),
 					account: {
