@@ -18,8 +18,5 @@
 	"exclude": [
 		"node_modules",
 		".vscode-test"
-	],
-	// "include": [
-	// 	"decs.d.ts"
-	// ]
+	]
 }

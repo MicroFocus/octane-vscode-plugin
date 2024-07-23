@@ -28,8 +28,7 @@
  */
 
 import * as vscode from 'vscode';
-import * as Octane from '@microfocus/alm-octane-js-rest-sdk';
-import * as Query from '@microfocus/alm-octane-js-rest-sdk/lib/query';
+import { Octane, Query } from '@microfocus/alm-octane-js-rest-sdk';
 import { OctaneEntity } from '../model/octane-entity';
 import { Task } from '../model/task';
 import { Transition } from '../model/transition';
@@ -71,24 +70,24 @@ export class OctaneService {
         }
     }
 
-    public async testAuthentication(uri: string, space: string | undefined, workspace: string | undefined, username: string, password: string | undefined, cookieName: string | undefined, cookie: string | undefined): Promise<string | undefined | any> {
-        const octaneInstace = new Octane.Octane({
+    public async testAuthentication(uri: string, space: string | undefined, workspace: string | undefined, username: string, password: string, cookieName: string | undefined, cookie: string | undefined): Promise<string | undefined | any> {
+        const octaneInstace = new Octane({
             server: uri,
-            sharedSpace: space,
-            workspace: workspace,
+            sharedSpace: Number(space),
+            workspace: Number(workspace),
             user: username,
-            password: (cookieName === undefined || cookieName === '') ? password : undefined,
+            password:  (cookieName === undefined || cookieName === '') ? password : '',
             headers: {
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 ALM_OCTANE_TECH_PREVIEW: true,
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 HPECLIENTTYPE: 'OCTANE_IDE_PLUGIN',
                 // eslint-disable-next-line @typescript-eslint/naming-convention
-                Cookie: (cookieName === undefined || cookieName === '') ? undefined : `${cookieName}=${cookie}`
+                Cookie: (cookieName === undefined || cookieName === '') ? '' : `${cookieName}=${cookie}`
             }
         });
         try {
-            const result: any = await octaneInstace.get(Octane.Octane.entityTypes.workspaceUsers)
+            const result: any = await octaneInstace.get(Octane.entityTypes.workspaceUsers)
                 .fields('id', 'name', 'full_name')
                 .query(Query.field('name').equal(username).build())
                 .execute();
@@ -123,29 +122,29 @@ export class OctaneService {
     public async initializeOctaneInstance() {
         try {
             if (this.session && this.session.account.uri && this.session.account.space && this.session.account.workSpace && this.session.account.user) {
-                this.octane = new Octane.Octane({
+                this.octane = new Octane({
                     server: this.session.account.uri,
-                    sharedSpace: this.session.account.space,
-                    workspace: this.session.account.workSpace,
+                    sharedSpace: Number(this.session.account.space),
+                    workspace: Number(this.session.account.workSpace),
                     user: this.session.account.user,
-                    password: this.session.type === AlmOctaneAuthenticationType.userNameAndPassword ? this.session.accessToken : undefined,
+                    password:  this.session.type === AlmOctaneAuthenticationType.userNameAndPassword ? this.session.accessToken : '',
                     headers: {
                         // eslint-disable-next-line @typescript-eslint/naming-convention
                         ALM_OCTANE_TECH_PREVIEW: true,
                         // eslint-disable-next-line @typescript-eslint/naming-convention
                         HPECLIENTTYPE: 'OCTANE_IDE_PLUGIN',
                         // eslint-disable-next-line @typescript-eslint/naming-convention
-                        Cookie: this.session.type === AlmOctaneAuthenticationType.browser ? `${this.session.cookieName}=${this.session.accessToken}` : undefined
+                        Cookie: this.session.type === AlmOctaneAuthenticationType.browser ? `${this.session.cookieName}=${this.session.accessToken}` : ''
                     }
                 });
-                const result: any = await this.octane.get(Octane.Octane.entityTypes.workspaceUsers)
+                const result: any = await this.octane.get(Octane.entityTypes.workspaceUsers)
                     .query(Query.field('name').equal(this.session.account.user).build())
                     .execute();
                 this.loggedInUserId = result.data[0].id;
                 this.loggedInUserName = result.data[0].full_name ?? result.data[0].email;
 
                 {
-                    const result = await this.octane.get(Octane.Octane.entityTypes.transitions)
+                    const result = await this.octane.get(Octane.entityTypes.transitions)
                         .fields('id', 'entity', 'logical_name', 'is_primary', 'source_phase{name}', 'target_phase{name}')
                         .execute();
                     this.transitions = result.data.map((t: any) => new Transition(t));
@@ -207,7 +206,7 @@ export class OctaneService {
             const fields = ['name', 'story_points', 'phase', 'owner{id,name,full_name}',
                 'invested_hours', 'estimated_hours', 'remaining_hours',
                 'detected_by{id,name,full_name}', 'severity', 'author{id,name,full_name}'];
-            return this.globalSearch(Octane.Octane.entityTypes.workItems, subtype, criteria, fields);
+            return this.globalSearch(Octane.entityTypes.workItems, subtype, criteria, fields);
         } catch (e: any) {
             this.logger.error('While global searching work items.', ErrorHandler.handle(e));
             return [];
@@ -217,7 +216,7 @@ export class OctaneService {
     public async globalSearchRequirements(criteria: string): Promise<OctaneEntity[]> {
         try {
             const fields = ['name', 'phase', 'owner{id,name,full_name}', 'author{id,name,full_name}'];
-            return this.globalSearch(Octane.Octane.entityTypes.requirements, 'requirement_document', criteria, fields);
+            return this.globalSearch(Octane.entityTypes.requirements, 'requirement_document', criteria, fields);
         } catch (e: any) {
             this.logger.error('While global searching requirements.', ErrorHandler.handle(e));
             return [];
@@ -227,7 +226,7 @@ export class OctaneService {
     public async globalSearchTasks(criteria: string): Promise<OctaneEntity[]> {
         try {
             let fields = ['id', 'name', 'author{id,name,full_name}', 'owner{id,name,full_name}', 'phase'];
-            return this.globalSearch(Octane.Octane.entityTypes.tasks, undefined, criteria, fields);
+            return this.globalSearch(Octane.entityTypes.tasks, undefined, criteria, fields);
         } catch (e: any) {
             this.logger.error('While global searching tasks.', ErrorHandler.handle(e));
             return [];
@@ -237,7 +236,7 @@ export class OctaneService {
     public async globalSearchTests(criteria: string): Promise<OctaneEntity[]> {
         try {
             let fields = ['name', 'owner{id,name,full_name}', 'author{id,name,full_name}', 'phase'];
-            return this.globalSearch(Octane.Octane.entityTypes.tests, ['test_manual', 'test_suite', 'gherkin_test', 'test_automated', 'scenario_test'], criteria, fields);
+            return this.globalSearch(Octane.entityTypes.tests, ['test_manual', 'test_suite', 'gherkin_test', 'test_automated', 'scenario_test'], criteria, fields);
         } catch (e: any) {
             this.logger.error('While global searching tests.', ErrorHandler.handle(e));
             return [];
@@ -260,7 +259,7 @@ export class OctaneService {
             } else {
                 subtypes = subtype;
             }
-            const response = await this.octane.get(Octane.Octane.entityTypes.workItems)
+            const response = await this.octane.get(Octane.entityTypes.workItems)
                 .fields('name', 'story_points', 'phase', 'owner{id,name,full_name}',
                     'invested_hours', 'estimated_hours', 'remaining_hours',
                     'detected_by{id,name,full_name}', 'severity', 'author{id,name,full_name}')
@@ -296,7 +295,7 @@ export class OctaneService {
 
     public async getMyRequirements(): Promise<OctaneEntity[]> {
         try {
-            const response = await this.octane.get(Octane.Octane.entityTypes.requirements)
+            const response = await this.octane.get(Octane.entityTypes.requirements)
                 .fields('name', 'phase', 'owner{id,name,full_name}', 'author{id,name,full_name}')
                 .query(
                     Query.field('subtype').inComparison(['requirement_document']).and()
@@ -349,7 +348,7 @@ export class OctaneService {
 
     public async getMyTests(): Promise<OctaneEntity[]> {
         try {
-            const response = await this.octane.get(Octane.Octane.entityTypes.tests)
+            const response = await this.octane.get(Octane.entityTypes.tests)
                 .fields('name', 'owner{id,name,full_name}', 'author{id,name,full_name}', 'phase')
                 .query(
                     Query.field('subtype').inComparison(['test_manual', 'gherkin_test', 'scenario_test']).and()
@@ -368,7 +367,7 @@ export class OctaneService {
 
     public async getMyTestRuns(): Promise<OctaneEntity[]> {
         try {
-            const response = await this.octane.get(Octane.Octane.entityTypes.runs)
+            const response = await this.octane.get(Octane.entityTypes.runs)
                 .fields('name', 'author{id,name,full_name}', 'run_by{full_name}')
                 .query(
                     Query.field('subtype').inComparison(['run_manual', 'run_suite']).and()
@@ -387,7 +386,7 @@ export class OctaneService {
 
     public async getMyMentions(): Promise<OctaneEntity[]> {
         try {
-            const response = await this.octane.get(Octane.Octane.entityTypes.comments)
+            const response = await this.octane.get(Octane.entityTypes.comments)
                 .fields('text', 'owner_work_item', 'owner_requirement', 'owner_test', 'owner_run', 'owner_bdd_spec', 'owner_task', 'author{id,name,full_name}')
                 .query(
                     Query.field('mention_user').equal(Query.field('id').equal(this.loggedInUserId))
@@ -405,7 +404,7 @@ export class OctaneService {
 
     public async getMyTasks(): Promise<OctaneEntity[]> {
         try {
-            const response = await this.octane.get(Octane.Octane.entityTypes.tasks)
+            const response = await this.octane.get(Octane.entityTypes.tasks)
                 .fields('id', 'name', 'author{id,name,full_name}', 'owner{id,name,full_name}', 'phase', 'story')
                 .query(
                     Query.field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
@@ -426,7 +425,7 @@ export class OctaneService {
             return;
         }
         try {
-            const response = await this.octane.get(Octane.Octane.entityTypes.comments)
+            const response = await this.octane.get(Octane.entityTypes.comments)
                 .fields('id', 'author', 'owner_work_item', 'owner_requirement', 'owner_test', 'owner_run', 'owner_bdd_spec', 'owner_task', 'creation_time', 'text')
                 .query(
                     Query.field(`owner_${entity.type}`).equal(Query.field('id').equal(entity.id))
@@ -467,7 +466,7 @@ export class OctaneService {
             throw new Error('Please log in to query Core Software Delivery Platform entities.');
         }
         try {
-            const result = await this.octane.get(Octane.Octane.entityTypes.fieldsMetadata)
+            const result = await this.octane.get(Octane.entityTypes.fieldsMetadata)
                 .query(Query.field('entity_name').inComparison([type])
                     .and()
                     .field('visible_in_ui').equal('true')
@@ -691,7 +690,7 @@ export class OctaneService {
 
     public async downloadScriptForTest(e: OctaneEntity): Promise<string> {
         try {
-            const script = await this.octane.get(Octane.Octane.entityTypes.tests).at(e.id).script().execute();
+            const script = await this.octane.get(Octane.entityTypes.tests).at(e.id).script().execute();
             return script.script;
         } catch (e: any) {
             throw e;
@@ -738,7 +737,7 @@ export class OctaneService {
                     vscode.window.showWarningMessage(`Item was not added, it is already in "My work"`);
                 } else {
                     try {
-                        await this.octane.create(Octane.Octane.entityTypes.userItems, entityModel).execute();
+                        await this.octane.create(Octane.entityTypes.userItems, entityModel).execute();
                         vscode.window.showInformationMessage('Your item changes have been saved.');
                     } catch (e: any) {
                         this.logger.error('While adding to MyWork.', e);
@@ -807,7 +806,7 @@ export class OctaneService {
                 }
 
                 try {
-                    await this.octane.delete(Octane.Octane.entityTypes.userItems)
+                    await this.octane.delete(Octane.entityTypes.userItems)
                         .query(Query.field(field).equal(Query.field('id').equal(e.id))
                             .and()
                             .field('user').equal(Query.field('id').equal(this.loggedInUserId))
@@ -915,58 +914,57 @@ function setValueForMap(map: any, key: any, value: any) {
 }
 
 const entityTypeApiEndpoint: Map<string, string> = new Map([
-    ['application_module', Octane.Octane.entityTypes.applicationModules],
-    ['attachment', Octane.Octane.entityTypes.applicationModules],
-    ['automated_run', Octane.Octane.entityTypes.automatedRuns],
-    ['ci_build', Octane.Octane.entityTypes.ciBuilds],
-    ['comment', Octane.Octane.entityTypes.comments],
-    ['defect', Octane.Octane.entityTypes.defects],
-    ['epic', Octane.Octane.entityTypes.epics],
-    ['feature', Octane.Octane.entityTypes.features],
-    ['flag_rule', Octane.Octane.entityTypes.flagRules],
-    ['gherkin_test', Octane.Octane.entityTypes.gherkinTest],
-    ['list_node', Octane.Octane.entityTypes.listNodes],
-    ['manual_run', Octane.Octane.entityTypes.manualRuns],
-    ['manualTest', Octane.Octane.entityTypes.manualTests],
-    ['metaphase', Octane.Octane.entityTypes.metaphases],
-    ['milestone', Octane.Octane.entityTypes.milestones],
-    ['phase', Octane.Octane.entityTypes.phases],
-    ['pipeline_node', Octane.Octane.entityTypes.pipelineNodes],
-    ['pipeline_run', Octane.Octane.entityTypes.pipelineRuns],
-    ['previous_run', Octane.Octane.entityTypes.previousRuns],
-    ['program', Octane.Octane.entityTypes.programs],
-    ['release', Octane.Octane.entityTypes.releases],
-    ['requirement_document', Octane.Octane.entityTypes.requirementDocuments],
-    ['requirement_folder', Octane.Octane.entityTypes.requirementFolders],
-    ['requirement_root', Octane.Octane.entityTypes.requirementRoots],
-    ['requirement', Octane.Octane.entityTypes.requirements],
-    ['role', Octane.Octane.entityTypes.roles],
-    ['run_step', Octane.Octane.entityTypes.runSteps],
-    ['run', Octane.Octane.entityTypes.runs],
-    ['scm_commit', Octane.Octane.entityTypes.scmCommits],
-    ['sprint', Octane.Octane.entityTypes.sprints],
-    ['story', Octane.Octane.entityTypes.stories],
-    ['suite_run', Octane.Octane.entityTypes.suiteRun],
-    ['task', Octane.Octane.entityTypes.tasks],
-    ['taxonomy_category_node', Octane.Octane.entityTypes.taxonomyCategoryNodes],
-    ['taxonomy_item_node', Octane.Octane.entityTypes.taxonomyItemNodes],
-    ['taxonomy_node', Octane.Octane.entityTypes.taxonomyNodes],
-    ['team_sprint', Octane.Octane.entityTypes.teamSprints],
-    ['team', Octane.Octane.entityTypes.teams],
-    ['test_suite_link_to_automated_test', Octane.Octane.entityTypes.testSuiteLinkToAutomatedTests],
-    ['test_suite_link_to_gherkin_test', Octane.Octane.entityTypes.testSuiteLinkToGherkinTests],
-    ['test_suite_link_to_manual_test', Octane.Octane.entityTypes.testSuiteLinkToManualTests],
-    ['test_suite_link_to_test', Octane.Octane.entityTypes.testSuiteLinkToTests],
-    ['test_suite', Octane.Octane.entityTypes.testSuites],
-    ['test', Octane.Octane.entityTypes.tests],
-    ['transition', Octane.Octane.entityTypes.transitions],
-    ['user_item', Octane.Octane.entityTypes.userItems],
-    ['user_tag', Octane.Octane.entityTypes.userTags],
-    ['user', Octane.Octane.entityTypes.users],
-    ['work_item_root', Octane.Octane.entityTypes.workItemRoots],
-    ['work_item', Octane.Octane.entityTypes.workItems],
-    ['workspace_role', Octane.Octane.entityTypes.workspaceRoles],
-    ['workspace_user', Octane.Octane.entityTypes.workspaceUsers],
-    ['quality_story', Octane.Octane.entityTypes.qualityStories],
+    ['application_module', Octane.entityTypes.applicationModules],
+    ['attachment', Octane.entityTypes.applicationModules],
+    ['automated_run', Octane.entityTypes.automatedRuns],
+    ['ci_build', Octane.entityTypes.ciBuilds],
+    ['comment', Octane.entityTypes.comments],
+    ['defect', Octane.entityTypes.defects],
+    ['epic', Octane.entityTypes.epics],
+    ['feature', Octane.entityTypes.features],
+    ['gherkin_test', Octane.entityTypes.gherkinTests],
+    ['list_node', Octane.entityTypes.listNodes],
+    ['manual_run', Octane.entityTypes.manualRuns],
+    ['manualTest', Octane.entityTypes.manualTests],
+    ['metaphase', Octane.entityTypes.metaphases],
+    ['milestone', Octane.entityTypes.milestones],
+    ['phase', Octane.entityTypes.phases],
+    ['pipeline_node', Octane.entityTypes.pipelineNodes],
+    ['pipeline_run', Octane.entityTypes.pipelineRuns],
+    ['previous_run', Octane.entityTypes.previousRuns],
+    ['program', Octane.entityTypes.programs],
+    ['release', Octane.entityTypes.releases],
+    ['requirement_document', Octane.entityTypes.requirementDocuments],
+    ['requirement_folder', Octane.entityTypes.requirementFolders],
+    ['requirement_root', Octane.entityTypes.requirementRoots],
+    ['requirement', Octane.entityTypes.requirements],
+    ['role', Octane.entityTypes.roles],
+    ['run_step', Octane.entityTypes.runSteps],
+    ['run', Octane.entityTypes.runs],
+    ['scm_commit', Octane.entityTypes.scmCommits],
+    ['sprint', Octane.entityTypes.sprints],
+    ['story', Octane.entityTypes.stories],
+    ['suite_run', Octane.entityTypes.suiteRun],
+    ['task', Octane.entityTypes.tasks],
+    ['taxonomy_category_node', Octane.entityTypes.taxonomyCategoryNodes],
+    ['taxonomy_item_node', Octane.entityTypes.taxonomyItemNodes],
+    ['taxonomy_node', Octane.entityTypes.taxonomyNodes],
+    ['team_sprint', Octane.entityTypes.teamSprints],
+    ['team', Octane.entityTypes.teams],
+    ['test_suite_link_to_automated_test', Octane.entityTypes.testSuiteLinkToAutomatedTests],
+    ['test_suite_link_to_gherkin_test', Octane.entityTypes.testSuiteLinkToGherkinTests],
+    ['test_suite_link_to_manual_test', Octane.entityTypes.testSuiteLinkToManualTests],
+    ['test_suite_link_to_test', Octane.entityTypes.testSuiteLinkToTests],
+    ['test_suite', Octane.entityTypes.testSuites],
+    ['test', Octane.entityTypes.tests],
+    ['transition', Octane.entityTypes.transitions],
+    ['user_item', Octane.entityTypes.userItems],
+    ['user_tag', Octane.entityTypes.userTags],
+    ['user', Octane.entityTypes.users],
+    ['work_item_root', Octane.entityTypes.workItemRoots],
+    ['work_item', Octane.entityTypes.workItems],
+    ['workspace_role', Octane.entityTypes.workspaceRoles],
+    ['workspace_user', Octane.entityTypes.workspaceUsers],
+    ['quality_story', Octane.entityTypes.qualityStories],
     ['bdd_spec', 'bdd_specs']
 ]);
