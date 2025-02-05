@@ -384,7 +384,7 @@
 		"vscode-test": "^1.5.0"
 	},
 	"dependencies": {
-		"@microfocus/alm-octane-js-rest-sdk": "^24.2.1",
+		"@microfocus/alm-octane-js-rest-sdk": "^25.1.0",
 		"log4js": "^6.3.0",
 		"node-fetch": "^2.6.1",
 		"string-strip-html": "^8.3.0",
