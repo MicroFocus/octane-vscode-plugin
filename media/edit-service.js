@@ -159,7 +159,7 @@
     }
 
     function addOptionsForSelect(options, field, selectedName) {
-        let fieldName = $.escapeSelector(field[0].name);
+        let fieldName = field[0].name;
         let select = $('#' + fieldName);
         let html = ``;
         select.html(html);
@@ -205,7 +205,7 @@
     }
 
     function addOptionsForMultipleSelect(options, field, selected) {
-        let fieldName = $.escapeSelector(field[0].name);
+        let fieldName = field[0].name;
         let select = $('#' + fieldName);
         let html = ``;
         select.html(html);
