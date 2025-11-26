@@ -16,5 +16,13 @@
     "run_manual": ["MR", "#29ceff"],
     "epic": ["E", "#7425AD"],
     "run_automated": ["AR", "#ba47ee"],
-    "gherkin_automated_run": ["GAR", "#ba47e2"]
+    "gherkin_automated_run": ["GAR", "#ba47e2"],
+    "unit": ["U", "#3A37FF"],
+    "model": ["MO", "#A8FBDF"],
+    "process_quality_gate": ["QG","#4434C1"],
+    "process_action": ["MA","#BD4FD8"],
+    "process_auto_action": ["AA", "#55C3BA"],
+    "model_based_test": ["MBT", "#E6F9FD"],
+    "suite_run_scheduler" : ["SCH", "#FF2DBF"],
+    "suite_run_scheduler_run": ["SCR", "#1696B5"]
 }

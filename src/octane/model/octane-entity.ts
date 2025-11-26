@@ -107,6 +107,24 @@ export class OctaneEntity extends BaseEntity {
             case 'gherkin_automated_run':
                 this.label = 'GAR';
                 break;
+            case 'unit':
+                this.label = 'U';
+                break;
+            case 'model':
+                this.label = 'MO';
+                break;
+            case 'process_action':
+                this.label = 'MA';
+                break;
+            case 'process_auto_action':
+                this.label = 'AA';
+                break;
+            case 'process_quality_gate':
+                this.label = 'QG';
+                break;
+            case 'model_based_test':
+                this.label = 'MBT';
+                break;
 
             case '':
             case undefined:
@@ -117,6 +135,13 @@ export class OctaneEntity extends BaseEntity {
                     case 'bdd_spec':
                         this.label = 'BSP';
                         break;
+                    case 'suite_run_scheduler':
+                        this.label = 'SCH';
+                        break;
+                    case 'suite_run_scheduler_run':
+                        this.label = 'SCR';
+                        break;   
+                        
                 }
                 break;
         }

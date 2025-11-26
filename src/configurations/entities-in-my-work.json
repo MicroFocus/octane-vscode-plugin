@@ -7,5 +7,14 @@
     "requirement_document",
     "test_manual",
     "gherkin_test",
-    "scenario_test"
+    "scenario_test",
+    "unit",
+    "model",
+    "process_quality_gate",
+    "process_action",
+    "process_auto_action",
+    "test_suite",
+    "model_based_test",
+    "suite_run_scheduler",
+    "suite_run_scheduler_run"
 ]

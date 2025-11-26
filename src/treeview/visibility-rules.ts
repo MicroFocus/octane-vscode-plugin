@@ -36,6 +36,10 @@ export function setVisibilityRules() {
     // All views provided by this extension.
     vscode.commands.executeCommand('setContext', 'visual-studio-code-plugin-for-alm-octane.supportedViews', [
 		'myBacklog',
+		'myModelItems',
+		'myProcessItems',
+		'mySuiteRunSchedulers',
+		'mySuiteRunSchedulersRuns',
 		'myTests',
 		'myTestRuns',
 		'myFeatures',

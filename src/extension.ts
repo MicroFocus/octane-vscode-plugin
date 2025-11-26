@@ -53,6 +53,10 @@ import { registerCommand as registerDismissItemCommand } from './commands/dismis
 import { register as registerActiveItemCommands } from './commands/active-item';
 import { initializeLog } from './log/log';
 import { setVisibilityRules } from './treeview/visibility-rules';
+import { MyModelItemsProvider } from './treeview/my-model-items-provider';
+import { MyProcessItemsProvider } from './treeview/my-process-items-provider';
+import { MySuiteRunSchedulersProvider } from './treeview/my-suite-run-schedulers-provider';
+import { MySuiteRunSchedulerRunsProvider } from './treeview/my-suite-run-schedulers-runs-provider';
 
 export async function activate(context: vscode.ExtensionContext) {
 
@@ -86,6 +90,18 @@ export async function activate(context: vscode.ExtensionContext) {
 	const myBacklogProvider = new BacklogProvider(context, service, 'visual-studio-code-plugin-for-alm-octane.myBacklog.refreshEntry');
 	vscode.window.registerTreeDataProvider('myBacklog', myBacklogProvider);
 
+	const myModelItemsProvider = new MyModelItemsProvider(context, service, 'visual-studio-code-plugin-for-alm-octane.myModelItems.refreshEntry');
+	vscode.window.registerTreeDataProvider('myModelItems', myModelItemsProvider);
+
+	const myProcessItemsProvider = new MyProcessItemsProvider(context, service, 'visual-studio-code-plugin-for-alm-octane.myProcessItems.refreshEntry');
+	vscode.window.registerTreeDataProvider('myProcessItems', myProcessItemsProvider);
+
+	const mySuiteRunSchedulersProvider = new MySuiteRunSchedulersProvider(context, service, 'visual-studio-code-plugin-for-alm-octane.mySuiteRunSchedulers.refreshEntry');
+	vscode.window.registerTreeDataProvider('mySuiteRunSchedulers', mySuiteRunSchedulersProvider);
+
+	const mySuiteRunSchedulersRunsProvider = new MySuiteRunSchedulerRunsProvider(context, service, 'visual-studio-code-plugin-for-alm-octane.mySuiteRunSchedulersRuns.refreshEntry');
+	vscode.window.registerTreeDataProvider('mySuiteRunSchedulersRuns', mySuiteRunSchedulersRunsProvider);
+
 	const myTestsProvider = new MyTestsProvider(context, service, 'visual-studio-code-plugin-for-alm-octane.myTests.refreshEntry');
 	vscode.window.registerTreeDataProvider('myTests', myTestsProvider);
 
@@ -109,6 +125,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(vscode.commands.registerCommand('visual-studio-code-plugin-for-alm-octane.refreshAll', () => {
 		vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myBacklog.refreshEntry');
+		vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myModelItems.refreshEntry');
+		vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myProcessItems.refreshEntry');
 		vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myTests.refreshEntry');
 		vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myMentions.refreshEntry');
 		vscode.commands.executeCommand('visual-studio-code-plugin-for-alm-octane.myFeatures.refreshEntry');

@@ -22,6 +22,11 @@
 		"*",
 		"onCommand:visual-studio-code-plugin-for-alm-octane.refreshAll",
 		"onCommand:visual-studio-code-plugin-for-alm-octane.myBacklog.refreshEntry",
+		"onCommand:visual-studio-code-plugin-for-alm-octane.myModelItems.refreshEntry",
+		"onCommand:visual-studio-code-plugin-for-alm-octane.myProcessItems.refreshEntry",
+		"onCommand:visual-studio-code-plugin-for-alm-octane.mySuiteRunSchedulers.refreshEntry",
+		"onCommand:visual-studio-code-plugin-for-alm-octane.mySuiteRunSchedulersRuns.refreshEntry",
+		"onCommand:visual-studio-code-plugin-for-alm-octane.myProcessItems.refreshEntry",
 		"onCommand:visual-studio-code-plugin-for-alm-octane.myTests.refreshEntry",
 		"onCommand:visual-studio-code-plugin-for-alm-octane.myFeatures.refreshEntry",
 		"onCommand:visual-studio-code-plugin-for-alm-octane.myMentions.refreshEntry",
@@ -141,6 +146,30 @@
 					"name": "Mentions",
 					"icon": "media/favicon.png",
 					"when": "visual-studio-code-plugin-for-alm-octane.hasSession"
+				},
+				{
+					"id": "myModelItems",
+					"name": "Model Items",
+					"icon": "media/favicon.png",
+					"when": "visual-studio-code-plugin-for-alm-octane.hasSession"
+				},
+				{
+					"id": "myProcessItems",
+					"name": "Process Items",
+					"icon": "media/favicon.png",
+					"when": "visual-studio-code-plugin-for-alm-octane.hasSession"
+				},
+				{
+					"id": "mySuiteRunSchedulers",
+					"name": "Suite Run Schedulers",
+					"icon": "media/favicon.png",
+					"when": "visual-studio-code-plugin-for-alm-octane.hasSession"
+				},
+				{
+					"id": "mySuiteRunSchedulersRuns",
+					"name": "Suite Run Schedulers Runs",
+					"icon": "media/favicon.png",
+					"when": "visual-studio-code-plugin-for-alm-octane.hasSession"
 				}
 			]
 		},
@@ -149,6 +178,26 @@
 				{
 					"command": "visual-studio-code-plugin-for-alm-octane.myBacklog.refreshEntry",
 					"when": "view == myBacklog",
+					"group": "navigation"
+				},
+				{
+					"command": "visual-studio-code-plugin-for-alm-octane.myModelItems.refreshEntry",
+					"when": "view == myModelItems",
+					"group": "navigation"
+				},
+				{
+					"command": "visual-studio-code-plugin-for-alm-octane.myProcessItems.refreshEntry",
+					"when": "view == myProcessItems",
+					"group": "navigation"
+				},
+				{
+					"command": "visual-studio-code-plugin-for-alm-octane.mySuiteRunSchedulers.refreshEntry",
+					"when": "view == mySuiteRunSchedulers",
+					"group": "navigation"
+				},
+				{
+					"command": "visual-studio-code-plugin-for-alm-octane.mySuiteRunSchedulersRuns.refreshEntry",
+					"when": "view == mySuiteRunSchedulersRuns",
 					"group": "navigation"
 				},
 				{
@@ -297,6 +346,26 @@
 				"icon": "$(extensions-refresh)"
 			},
 			{
+				"command": "visual-studio-code-plugin-for-alm-octane.myModelItems.refreshEntry",
+				"title": "Refresh MyModelItems",
+				"icon": "$(extensions-refresh)"
+			},
+			{
+				"command": "visual-studio-code-plugin-for-alm-octane.myProcessItems.refreshEntry",
+				"title": "Refresh MyProcessItems",
+				"icon": "$(extensions-refresh)"
+			},
+			{
+				"command": "visual-studio-code-plugin-for-alm-octane.mySuiteRunSchedulers.refreshEntry",
+				"title": "Refresh MySuiteRunSchedulers",
+				"icon": "$(extensions-refresh)"
+			},
+			{
+				"command": "visual-studio-code-plugin-for-alm-octane.mySuiteRunSchedulersRuns.refreshEntry",
+				"title": "Refresh MySuiteRunSchedulersRuns",
+				"icon": "$(extensions-refresh)"
+			},
+			{
 				"command": "visual-studio-code-plugin-for-alm-octane.myTests.refreshEntry",
 				"title": "Refresh MyStories",
 				"icon": "$(extensions-refresh)"
@@ -384,7 +453,7 @@
 		"vscode-test": "^1.5.0"
 	},
 	"dependencies": {
-		"@microfocus/alm-octane-js-rest-sdk": "^25.1.0",
+		"@microfocus/alm-octane-js-rest-sdk": "file:../alm-octane-js-rest-sdk",
 		"log4js": "^6.3.0",
 		"node-fetch": "^2.6.1",
 		"string-strip-html": "^8.3.0",

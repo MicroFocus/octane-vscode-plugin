@@ -69,6 +69,24 @@ export class Comment extends OctaneEntity {
             this.ownerEntity = new OctaneEntity(i.owner_task);
             this.ownerEntity.type = this.ownerEntity.type;
         }
+        if (i?.owner_model_item){
+            this.ownerEntity = new OctaneEntity(i.owner_model_item);
+            this.ownerEntity.subtype = this.ownerEntity.type;
+            this.ownerEntity.type = "model_item";
+        }
+        if (i?.owner_process){
+            this.ownerEntity = new OctaneEntity(i.owner_process);
+            this.ownerEntity.subtype = this.ownerEntity.type;
+            this.ownerEntity.type = "process";
+        }
+        if (i?.owner_suite_run_scheduler){
+            this.ownerEntity = new OctaneEntity(i.owner_suite_run_scheduler);
+            this.ownerEntity.type = this.ownerEntity.type;
+        }
+        if (i?.owner_suite_run_scheduler_run){
+            this.ownerEntity = new OctaneEntity(i.owner_suite_run_scheduler_run);
+            this.ownerEntity.type = this.ownerEntity.type;
+        }
     }
 
     getStrippedText(): string {

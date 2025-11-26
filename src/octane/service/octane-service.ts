@@ -278,6 +278,56 @@ export class OctaneService {
         }
     }
 
+    private async refreshMyModelItems(subtype: string | string[]): Promise<OctaneEntity[]> {
+        try {
+            let subtypes: string[] = [];
+            if (!Array.isArray(subtype)) {
+                subtypes.push(subtype);
+            } else {
+                subtypes = subtype;
+            }
+            const response = await this.octane.get(Octane.entityTypes.modelItems)
+                .fields('name', 'phase','author{id,name,full_name}', 'owner{id,name,full_name}')
+                .query(
+                    Query.field('subtype').inComparison(subtypes).and()
+                        .field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
+                        .build()
+                )
+                .orderBy('creation_time')
+                .execute();
+            let entities = response.data.map((r: any) => new OctaneEntity(r));
+            this.logger.debug(entities);
+            return entities;
+        } catch (e: any) {
+            throw e;
+        }
+    }
+
+    private async refreshMyProcessItems(subtype: string | string[]): Promise<OctaneEntity[]> {
+        try {
+            let subtypes: string[] = [];
+            if (!Array.isArray(subtype)) {
+                subtypes.push(subtype);
+            } else {
+                subtypes = subtype;
+            }
+            const response = await this.octane.get(Octane.entityTypes.processItems)
+                .fields('name', 'phase','author{id,name,full_name}', 'owner{id,name,full_name}')
+                .query(
+                    Query.field('subtype').inComparison(subtypes).and()
+                        .field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
+                        .build()
+                )
+                .orderBy('creation_time')
+                .execute();
+            let entities = response.data.map((r: any) => new OctaneEntity(r));
+            this.logger.debug(entities);
+            return entities;
+        } catch (e: any) {
+            throw e;
+        }
+    }
+
     public static getInstance(): OctaneService {
         if (!OctaneService._instance) {
             OctaneService._instance = new OctaneService();
@@ -292,6 +342,22 @@ export class OctaneService {
             throw e;
         }
     }
+
+    public async getMyModelItems(): Promise<OctaneEntity[]> {
+        try {
+            return this.refreshMyModelItems(['unit', 'model']);
+        } catch (e: any) {
+            throw e;
+        }
+    } 
+
+     public async getMyProcessItems(): Promise<OctaneEntity[]> {
+        try {
+            return this.refreshMyProcessItems(['process_quality_gate', 'process_action', 'process_auto_action']);
+        } catch (e: any) {
+            throw e;
+        }
+    } 
 
     public async getMyRequirements(): Promise<OctaneEntity[]> {
         try {
@@ -346,12 +412,27 @@ export class OctaneService {
         }
     }
 
+    public async getMyModels(): Promise<OctaneEntity[]> {
+        try {
+            return this.refreshMyModelItems('model');
+        } catch (e: any) {
+            throw e;
+        }
+    }
+
+    public async getMyUnits(): Promise<OctaneEntity[]> {
+        try {
+            return this.refreshMyModelItems('unit');
+        } catch (e: any) {
+            throw e;
+        }
+    }
     public async getMyTests(): Promise<OctaneEntity[]> {
         try {
             const response = await this.octane.get(Octane.entityTypes.tests)
                 .fields('name', 'owner{id,name,full_name}', 'author{id,name,full_name}', 'phase')
                 .query(
-                    Query.field('subtype').inComparison(['test_manual', 'gherkin_test', 'scenario_test']).and()
+                    Query.field('subtype').inComparison(['test_manual', 'gherkin_test', 'scenario_test','test_suite','model_based_test']).and()
                         .field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
                         .build()
                 )
@@ -406,6 +487,42 @@ export class OctaneService {
         try {
             const response = await this.octane.get(Octane.entityTypes.tasks)
                 .fields('id', 'name', 'author{id,name,full_name}', 'owner{id,name,full_name}', 'phase', 'story')
+                .query(
+                    Query.field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
+                        .build()
+                )
+                .orderBy('creation_time')
+                .execute();
+            let entities = response.data.map((r: any) => new Task(r));
+            this.logger.debug(entities);
+            return entities;
+        } catch (e: any) {
+            throw e;
+        }
+    }
+
+    public async getMySuiteRunSchedulers(): Promise<OctaneEntity[]> {
+        try {
+            const response = await this.octane.get(Octane.entityTypes.suiteRunSchedulers)
+                .fields('id', 'name', 'author{id,name,full_name}')
+                .query(
+                    Query.field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
+                        .build()
+                )
+                .orderBy('creation_time')
+                .execute();
+            let entities = response.data.map((r: any) => new Task(r));
+            this.logger.debug(entities);
+            return entities;
+        } catch (e: any) {
+            throw e;
+        }
+    }
+
+    public async getMySuiteRunSchedulersRuns(): Promise<OctaneEntity[]> {
+        try {
+            const response = await this.octane.get(Octane.entityTypes.suiteRunSchedulerRuns)
+                .fields('id', 'name')
                 .query(
                     Query.field('user_item').equal(Query.field('user').equal(Query.field('id').equal(this.loggedInUserId)))
                         .build()
@@ -929,10 +1046,12 @@ const entityTypeApiEndpoint: Map<string, string> = new Map([
     ['metaphase', Octane.entityTypes.metaphases],
     ['milestone', Octane.entityTypes.milestones],
     ['phase', Octane.entityTypes.phases],
+    ['model_item', Octane.entityTypes.modelItems],
     ['pipeline_node', Octane.entityTypes.pipelineNodes],
     ['pipeline_run', Octane.entityTypes.pipelineRuns],
     ['previous_run', Octane.entityTypes.previousRuns],
     ['program', Octane.entityTypes.programs],
+    ['process', Octane.entityTypes.processItems],
     ['release', Octane.entityTypes.releases],
     ['requirement_document', Octane.entityTypes.requirementDocuments],
     ['requirement_folder', Octane.entityTypes.requirementFolders],
@@ -945,6 +1064,8 @@ const entityTypeApiEndpoint: Map<string, string> = new Map([
     ['sprint', Octane.entityTypes.sprints],
     ['story', Octane.entityTypes.stories],
     ['suite_run', Octane.entityTypes.suiteRun],
+    ['suite_run_scheduler', Octane.entityTypes.suiteRunSchedulers],
+    ['suite_run_scheduler_run', Octane.entityTypes.suiteRunSchedulerRuns],
     ['task', Octane.entityTypes.tasks],
     ['taxonomy_category_node', Octane.entityTypes.taxonomyCategoryNodes],
     ['taxonomy_item_node', Octane.entityTypes.taxonomyItemNodes],

@@ -1,18 +1,18 @@
 <svg width="136" height="136" xmlns="http://www.w3.org/2000/svg">
-  <title>RD icon</title>
+  <title>MBT icon</title>
   <g>
     <title>Layer 1</title>
     <ellipse ry="135.5" rx="135.5" cy="309.5" cx="404.59902" stroke="#000" fill="#fff"/>
-    <ellipse stroke-width="0" stroke="#000" ry="68" rx="68" cy="67.28572" cx="68" fill="#0b8eac"/>
+    <ellipse stroke-width="3" stroke="#0A7999" ry="68" rx="68" cy="67.28572" cx="68" fill="#A8E6F0"/>
     <text
       x="68"
       y="67.28572"
       fill="#000000"
-      font-size="64"
+      font-size="48"
       font-family="Noto Sans JP"
       font-weight="bold"
       text-anchor="middle"
       dominant-baseline="middle"
-    >RD</text>
+    >MBT</text>
   </g>
 </svg>

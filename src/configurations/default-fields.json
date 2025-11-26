@@ -17,5 +17,13 @@
     "run_automated": ["Test_name", "Draft_run", "Run_by", "Assigned_to_(On_it)", "Component", "Started", "Duration", "Backlog_Coverage"],
     "gherkin_automated_run": ["Test_name", "Native_status", "Run_by", "Started", "Duration", "Content", "Last_modified", "Backlog_Coverage"],
     "requirement_folder": ["Author", "Owner", "Release", "Creation_time", "Last_modified", "Description"],
+    "unit": ["Author", "Owner","Creation_time", "Last_modified","Description","Automation_status","Risk"],
+    "model": ["Author", "Owner","Creation_time", "Last_modified","Description"],
+    "process_quality_gate": ["Author", "Owner","Creation_time", "Last_modified","Description","Start_time","End_time","Duration","Parent_process","Parent","Transition_note"],
+    "process_auto_action": ["Author", "Owner","Creation_time", "Last_modified","Description","Start_time","End_time","Duration","Parent_process","Parent","Action_type"],
+    "process_action": ["Author", "Owner","Creation_time", "Last_modified","Description","Start_time","End_time","Duration","Parent_process","Parent"],
+    "model_based_test":["Author", "Owner","Creation_time", "Last_modified","Description","Backlog_Coverage","Automation_coverage","Readiness"],
+    "suite_run_scheduler": ["Author", "Owner", "Creation_time", "Description", "Last_modified","Release","Status","Milestone"],
+    "suite_run_scheduler_run": ["Author", "Owner", "Creation_time", "Description", "Last_modified", "Status","Start_time"],
     "default": ["Description"]
 }
