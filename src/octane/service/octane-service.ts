@@ -281,6 +281,7 @@ export class OctaneService {
     private async refreshMyModelItems(subtype: string | string[]): Promise<OctaneEntity[]> {
         try {
             let subtypes: string[] = [];
+
             if (!Array.isArray(subtype)) {
                 subtypes.push(subtype);
             } else {
@@ -297,6 +298,7 @@ export class OctaneService {
                 .execute();
             let entities = response.data.map((r: any) => new OctaneEntity(r));
             this.logger.debug(entities);
+
             return entities;
         } catch (e: any) {
             throw e;
@@ -306,6 +308,7 @@ export class OctaneService {
     private async refreshMyProcessItems(subtype: string | string[]): Promise<OctaneEntity[]> {
         try {
             let subtypes: string[] = [];
+
             if (!Array.isArray(subtype)) {
                 subtypes.push(subtype);
             } else {
@@ -322,6 +325,7 @@ export class OctaneService {
                 .execute();
             let entities = response.data.map((r: any) => new OctaneEntity(r));
             this.logger.debug(entities);
+
             return entities;
         } catch (e: any) {
             throw e;
@@ -413,19 +417,11 @@ export class OctaneService {
     }
 
     public async getMyModels(): Promise<OctaneEntity[]> {
-        try {
-            return this.refreshMyModelItems('model');
-        } catch (e: any) {
-            throw e;
-        }
+        return this.refreshMyModelItems('model');
     }
 
     public async getMyUnits(): Promise<OctaneEntity[]> {
-        try {
-            return this.refreshMyModelItems('unit');
-        } catch (e: any) {
-            throw e;
-        }
+       return this.refreshMyModelItems('unit');
     }
     public async getMyTests(): Promise<OctaneEntity[]> {
         try {
@@ -513,6 +509,7 @@ export class OctaneService {
                 .execute();
             let entities = response.data.map((r: any) => new Task(r));
             this.logger.debug(entities);
+
             return entities;
         } catch (e: any) {
             throw e;
@@ -531,6 +528,7 @@ export class OctaneService {
                 .execute();
             let entities = response.data.map((r: any) => new Task(r));
             this.logger.debug(entities);
+            
             return entities;
         } catch (e: any) {
             throw e;

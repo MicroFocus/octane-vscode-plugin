@@ -4,13 +4,7 @@ import { OctaneEntity } from "../octane/model/octane-entity";
 export class MySuiteRunSchedulerRunsProvider extends MyWorkProvider {
 
     async getRelevantEntities(): Promise<OctaneEntity[]> {
-        try {
-            const result = this.service.getMySuiteRunSchedulersRuns();
-            return result;
-        } catch (e: any) {
-            throw e;
-        }
-
-    }
+    return this.service.getMySuiteRunSchedulersRuns();
+}
 
 }

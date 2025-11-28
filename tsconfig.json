@@ -17,7 +17,6 @@
 	},
 	"exclude": [
 		"node_modules",
-		".vscode-test",
-		"alm-octane-js-rest-sdk"
+		".vscode-test"
 	]
 }
