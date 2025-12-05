@@ -453,7 +453,7 @@
 		"vscode-test": "^1.5.0"
 	},
 	"dependencies": {
-		"@microfocus/alm-octane-js-rest-sdk": "file:../alm-octane-js-rest-sdk",
+		"@microfocus/alm-octane-js-rest-sdk": "^26.1.0",
 		"log4js": "^6.3.0",
 		"node-fetch": "^2.6.1",
 		"string-strip-html": "^8.3.0",

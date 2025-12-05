@@ -314,7 +314,7 @@ export class OctaneService {
             } else {
                 subtypes = subtype;
             }
-            const response = await this.octane.get(Octane.entityTypes.processItems)
+            const response = await this.octane.get(Octane.entityTypes.processes)
                 .fields('name', 'phase','author{id,name,full_name}', 'owner{id,name,full_name}')
                 .query(
                     Query.field('subtype').inComparison(subtypes).and()
@@ -1049,7 +1049,7 @@ const entityTypeApiEndpoint: Map<string, string> = new Map([
     ['pipeline_run', Octane.entityTypes.pipelineRuns],
     ['previous_run', Octane.entityTypes.previousRuns],
     ['program', Octane.entityTypes.programs],
-    ['process', Octane.entityTypes.processItems],
+    ['process', Octane.entityTypes.processes],
     ['release', Octane.entityTypes.releases],
     ['requirement_document', Octane.entityTypes.requirementDocuments],
     ['requirement_folder', Octane.entityTypes.requirementFolders],
