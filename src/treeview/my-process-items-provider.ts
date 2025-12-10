@@ -4,7 +4,8 @@ import { OctaneEntity } from "../octane/model/octane-entity";
 export class MyProcessItemsProvider extends MyWorkProvider {
 
     async getRelevantEntities(): Promise<OctaneEntity[]> {
-    return this.service.getMyProcessItems();
-}
+
+        return this.service.getMyProcessItems();
+    }
 
 }

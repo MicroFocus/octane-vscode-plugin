@@ -498,7 +498,6 @@ export class OctaneService {
     }
 
     public async getMySuiteRunSchedulers(): Promise<OctaneEntity[]> {
-        try {
             const response = await this.octane.get(Octane.entityTypes.suiteRunSchedulers)
                 .fields('id', 'name', 'author{id,name,full_name}')
                 .query(
@@ -511,13 +510,9 @@ export class OctaneService {
             this.logger.debug(entities);
 
             return entities;
-        } catch (e: any) {
-            throw e;
-        }
     }
 
     public async getMySuiteRunSchedulersRuns(): Promise<OctaneEntity[]> {
-        try {
             const response = await this.octane.get(Octane.entityTypes.suiteRunSchedulerRuns)
                 .fields('id', 'name')
                 .query(
@@ -530,9 +525,6 @@ export class OctaneService {
             this.logger.debug(entities);
             
             return entities;
-        } catch (e: any) {
-            throw e;
-        }
     }
 
     public async getCommentsForEntity(entity: OctaneEntity): Promise<Comment[] | undefined> {
