@@ -1,0 +1,21 @@
+<svg width="136" height="136" xmlns="http://www.w3.org/2000/svg">
+  <title>SCH Icon</title>
+  <circle
+    cx="68"
+    cy="68"
+    r="68"
+    fill="#FF2DBF"
+  />
+  <text
+    x="68"
+    y="68"
+    fill="#000000"
+    font-size="48"
+    font-family="Noto Sans JP"
+    font-weight="bold"
+    text-anchor="middle"
+    dominant-baseline="middle"
+  >
+    SCH
+  </text>
+</svg>

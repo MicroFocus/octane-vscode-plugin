@@ -1,0 +1,20 @@
+<svg width="136" height="136" xmlns="http://www.w3.org/2000/svg">
+  <circle
+    cx="68"
+    cy="68"
+    r="68"
+    fill="#4434C1"
+  />
+  <text
+    x="68"
+    y="68"
+    fill="#000000"
+    font-size="64"
+    font-family="Noto Sans JP"
+    font-weight="bold"
+    text-anchor="middle"
+    dominant-baseline="middle"
+  >
+    QG
+  </text>
+</svg>
