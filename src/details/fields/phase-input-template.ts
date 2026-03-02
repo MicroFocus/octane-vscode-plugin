@@ -30,6 +30,7 @@
 import { Transition } from "../../octane/model/transition";
 import { OctaneService } from "../../octane/service/octane-service";
 import { AbstractFieldTemplate } from "./abstract-field-template";
+import {EXCLUDED_MOVE_TO_PROCESS_SUBTYPES} from "./entity-field-constants";
 
 export class PhaseInputTemplate extends AbstractFieldTemplate {
 
@@ -40,10 +41,25 @@ export class PhaseInputTemplate extends AbstractFieldTemplate {
     constructor(field: any, entity: any[], visible: boolean) {
         super(field, entity, visible);
         this.value = this.getFieldStringValue(entity, field.name);
-        this.transitions = OctaneService.getInstance().getPhaseTransitionForEntity(this.entity.phase.id);
+        if (!this.isMoveToDisabled()) {
+            this.transitions = OctaneService.getInstance().getPhaseTransitionForEntity(this.entity.phase.id);
+        } else {
+            this.transitions = [];
+         }
     }
 
+    private isMoveToDisabled(): boolean {
+    return EXCLUDED_MOVE_TO_PROCESS_SUBTYPES.has(this.entity?.subtype);
+  }
+
     public async generate(): Promise<string> {
+        if (this.isMoveToDisabled()) {
+      return `
+        <div>
+          <h6 class="current-phase">Current phase: ${this.value}</h6>
+        </div>
+      `;
+       }
         return `${this.generateCurrentPhase()}
                 <div class="${this.generateContainerClass()}">
                     <div class="phase-select">
