@@ -45,21 +45,19 @@ export class PhaseInputTemplate extends AbstractFieldTemplate {
             this.transitions = OctaneService.getInstance().getPhaseTransitionForEntity(this.entity.phase.id);
         } else {
             this.transitions = [];
-         }
+        }
     }
 
     private isMoveToDisabled(): boolean {
-    return EXCLUDED_MOVE_TO_PROCESS_SUBTYPES.has(this.entity?.subtype);
-  }
+        return EXCLUDED_MOVE_TO_PROCESS_SUBTYPES.has(this.entity?.subtype);
+    }
 
     public async generate(): Promise<string> {
         if (this.isMoveToDisabled()) {
-      return `
-        <div>
-          <h6 class="current-phase">Current phase: ${this.value}</h6>
-        </div>
-      `;
-       }
+            return `<div>
+                        <h6 class="current-phase">Current phase: ${this.value}</h6>
+                    </div>`;
+        }
         return `${this.generateCurrentPhase()}
                 <div class="${this.generateContainerClass()}">
                     <div class="phase-select">
