@@ -65,13 +65,15 @@ export class FieldsSelectButtonTemplate extends AbstractFieldTemplate {
         let selectOptions: string = ``;
         for (const [key, field] of this.values) {
             if (field) {
-                const getFieldId = field.label.replaceAll(" ", "_").replaceAll('"', "");
+                const label = field.label || field.name || key || '';
+                const name = field.name || label;
+                const getFieldId = String(label).replace(/ /g, '_').replace(/"/g, '');
                 if (this.isSelectedField(getFieldId, this.activeFields)) {
-                    filteredFields = filteredFields.concat(field.name);
+                    filteredFields = filteredFields.concat(name);
                 } else {
-                    filteredFields = filteredFields.filter(f => f !== field.name);
+                    filteredFields = filteredFields.filter(f => f !== name);
                 }
-                selectOptions += `<option data-label="${field.label}" ${this.generateSelected(filteredFields.includes(field.name))} value='${getFieldId}'>${field.label}</option>`;
+                selectOptions += `<option data-label="${label}" ${this.generateSelected(filteredFields.includes(name))} value='${getFieldId}'>${label}</option>`;
             }
         }
         return selectOptions;
