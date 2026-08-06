@@ -365,10 +365,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
         }
 
         const nameField = getFieldByLabelOrName(fields, 'name');
-        let nameHtml = '';
-        if (nameField) {
-            nameHtml = await FieldTemplateFactory.getTemplate(nameField, data, true).generate();
-        }
+        const nameHtml = nameField ? await FieldTemplateFactory.getTemplate(nameField, data, true).generate() : '';
 
         return `
             <!DOCTYPE html>
