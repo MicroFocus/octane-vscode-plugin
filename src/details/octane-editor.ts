@@ -91,7 +91,7 @@ class OctaneEntityDocument implements vscode.CustomDocument {
     }
 
     async updated(): Promise<void> {
-        this.entity = await OctaneService.getInstance().getDataFromOctaneForTypeAndId(this.entity.type, this.entity.subType, this.entity.id);
+        this.entity = await OctaneService.getInstance().getDataFromOctaneForTypeAndId(this.entity.type, this.entity.subtype, this.entity.id);
         this._onDidChange.fire(this.uri);
     }
 }
@@ -364,10 +364,8 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
             currentDefaultFields = getDefaultFields('default');
         }
 
-        let mapFields = new Map<string, any>();
-        fields.forEach((field): any => {
-            mapFields.set(field.label, field);
-        });
+        const nameField = getFieldByLabelOrName(fields, 'name');
+        const nameHtml = nameField ? await FieldTemplateFactory.getTemplate(nameField, data, true).generate() : '';
 
         return `
             <!DOCTYPE html>
@@ -394,7 +392,7 @@ export class OctaneEntityEditorProvider implements vscode.CustomReadonlyEditorPr
                         <span class="label">${getDataForSubtype(data)[0]}</span>
                     </div>
                     <h6 style="margin: 2.8rem 0rem 0rem 0.5rem;">${data?.id ?? ''}</h6>
-                    ${await FieldTemplateFactory.getTemplate(mapFields.get('Name'), data, true).generate()}
+                    ${nameHtml}
                     <div class="action-container">
                         ${await generateActionBarElement(data, fields, activeFields, currentDefaultFields)}
                     </div>
@@ -452,7 +450,6 @@ function getDataForSubtype(entity: OctaneEntity | undefined): [string, string] {
     if (entity === undefined) {
         return ['', ''];
     }
-    let icon;
     if (entity.type && entity.type in entityIcons) {
         return entityIcons[entity.type as keyof typeof entityIcons] as [string, string];
     }
@@ -474,11 +471,10 @@ async function generateActionBarElement(data: any | OctaneEntity | undefined, fi
     let html: string = ``;
     try {
         if (data.phase) {
-            let mapFields = new Map<string, any>();
-            fields.forEach((field): any => {
-                mapFields.set(field.label, field);
-            });
-            html += await FieldTemplateFactory.getTemplate(mapFields.get('Phase'), data, true).generate();
+            const phaseField = getFieldByLabelOrName(fields, 'phase');
+            if (phaseField) {
+                html += await FieldTemplateFactory.getTemplate(phaseField, data, true).generate();
+            }
         }
         html += ActionButtonTemplateFactory.getTemplate('save').generate();
         html += ActionButtonTemplateFactory.getTemplate('refresh').generate();
@@ -488,8 +484,8 @@ async function generateActionBarElement(data: any | OctaneEntity | undefined, fi
         //mapFields: all fields exept for id, name, and phase
         let mapFields = new Map<string, any>();
         fields.forEach((field): any => {
-            if (field.name !== "id" && field.name !== "phase" && field.name !== "name") {
-                mapFields.set(field.label, field);
+            if (field && field.name !== "id" && field.name !== "phase" && field.name !== "name") {
+                mapFields.set(field.label || field.name, field);
             }
         });
         mapFields = new Map([...mapFields].sort((a, b) => String(a[0]).localeCompare(b[0])));
@@ -537,34 +533,25 @@ async function generateCommentElement(data: any | OctaneEntity | undefined): Pro
 async function generateBodyElement(data: any | OctaneEntity | undefined, fields: any[], activeFields: string[] | undefined): Promise<string> {
     let html: string = ``;
     try {
-        let filteredFields: string[] = [];
         let mapFields = new Map<string, any>();
         fields.forEach((field): any => {
-            if (field.name !== "id" && field.name !== "phase" && field.name !== "name") {
+            if (field && field.name !== "id" && field.name !== "phase" && field.name !== "name") {
                 mapFields.set(field.name, field);
             }
         });
         mapFields = new Map([...mapFields].sort((a, b) => String(a[0]).localeCompare(b[0])));
-        for (const [key, field] of mapFields) {
-            if (field) {
-                if (isSelectedField(field.label.replaceAll(" ", "_").replaceAll('"', ""), activeFields)) {
-                    filteredFields = filteredFields.concat(field.name);
-                } else {
-                    filteredFields = filteredFields.filter(f => f !== field.name);
-                }
-            }
-        }
+        const descriptionField = getFieldByLabelOrName(fields, 'description');
         html += `<div class="information-container-full">`;
-        html += await FieldTemplateFactory.getTemplate(mapFields.get('description'), data, isSelectedField("Description", activeFields)).generate();
+        if (descriptionField) {
+            html += await FieldTemplateFactory.getTemplate(descriptionField, data, shouldFieldBeVisible(descriptionField, activeFields)).generate();
+        }
         html += `</div>`;
 
         html += `<div class="information-container">`;
         for (const [key, field] of mapFields) {
             if (field) {
-                let fieldId = field.label.replaceAll(" ", "_").replaceAll('"', "");
                 if (!['description', 'phase', 'name'].includes(key)) {
-                    // Refactored code
-                    html += await FieldTemplateFactory.getTemplate(field, data, filteredFields.includes(field.name)).generate();
+                    html += await FieldTemplateFactory.getTemplate(field, data, shouldFieldBeVisible(field, activeFields)).generate();
                 }
             }
         }
@@ -573,6 +560,38 @@ async function generateBodyElement(data: any | OctaneEntity | undefined, fields:
         getLogger('vs').error("Error while generating fields", e);
     }
     return html;
+}
+
+function shouldFieldBeVisible(field: any, activeFields: string[] | undefined): boolean {
+    if (!activeFields || activeFields.length === 0) {
+        return true;
+    }
+    return isSelectedField(getFieldSelectorId(field), activeFields);
+}
+
+function getFieldSelectorId(field: any): string {
+    if (!field) {
+        return '';
+    }
+    const source = field.label || field.name || '';
+    return String(source).replace(/ /g, '_').replace(/"/g, '');
+}
+
+function getFieldByLabelOrName(fields: any[] | undefined, labelOrName: string): any | undefined {
+    if (!fields || !labelOrName) {
+        return undefined;
+    }
+
+    const wanted = String(labelOrName).toLowerCase();
+    
+    return fields.find((field) => {
+        if (!field) {
+            return false;
+        }
+        const label = field.label ? String(field.label).toLowerCase() : '';
+        const name = field.name ? String(field.name).toLowerCase() : '';
+        return label === wanted || name === wanted;
+    });
 }
 
 function isSelectedField(fieldName: string, activeFields: string[] | undefined) {

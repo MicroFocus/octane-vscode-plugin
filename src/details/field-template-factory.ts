@@ -41,9 +41,25 @@ import { NameInputTemplate } from './fields/name-input-template';
 import { PhaseInputTemplate } from './fields/phase-input-template';
 import { BuildAndTestJobInputTemplate } from './fields/build-and-test-job-input-template';
 import { PipelineLinksTemplate } from './fields/pipeline-links-template';
+import { EmptyFieldTemplate } from './fields/empty-field-template';
+
 export class FieldTemplateFactory {
 
     public static getTemplate(field: any, data: any, visible: boolean, additionalArg?: any): FieldTemplate {
+        if (!field) {
+            return new EmptyFieldTemplate();
+        }
+
+        if (!field.field_type) {
+            field = {
+                ...field,
+                field_type: 'string',
+                name: field.name || field.label || 'unknown',
+                label: field.label || field.name || 'Unknown',
+                editable: false
+            };
+        }
+
         switch (field.field_type) {
 
             case 'date_time':
@@ -89,6 +105,7 @@ export class FieldTemplateFactory {
                 if (field.type === 'field_metadata') {
                     return new DescriptionFieldInputTemplate(field, data, visible);
                 }
+                return new TextInputTemplate(field, data, visible);
 
             case 'comment':
                 return new CommentInputTemplate(field, data, visible);
